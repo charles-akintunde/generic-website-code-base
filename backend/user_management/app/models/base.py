@@ -14,9 +14,7 @@ class Base:
     Base class for all models.
 
     Attributes:
-        id (Column): Primary key for all tables, using UUIDs.
     """
-    id = Column(pgUUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     
     @declared_attr
     def __tablename__(self,cls):
