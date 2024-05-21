@@ -32,6 +32,16 @@ class UserBase(BaseModel):
     is_confirmed: Optional[bool] = False
     confirmation_token: Optional[str] = None
 
+
+class UserCreate(UserBase):
+    """
+    Schema for creating a new user.
+
+    Attributes:
+        password (str): Password for the user.
+    """
+    password: str
+
 class User(UserBase):
     """
     Scheme for representing a user.
