@@ -52,6 +52,7 @@ class User(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
     confirmation_token = Column(String, nullable= True)
+    is_confirmed = Column(Boolean, default=False)
 
     def __repr__(self):
         return f"<User(username='{self.username}', email='{self.email}', role='{self.role.value}')>"

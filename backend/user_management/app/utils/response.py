@@ -2,10 +2,11 @@
 Utility for handling standardized responses.
 """
 
+from typing import Any, Dict
 from fastapi import status
 from fastapi.responses import JSONResponse
 
-def success_response(message: str, data : dict = None, status_code: int = status.HTTP_200_OK):
+def success_response(message: str, data: Dict[str, Any] = {}, status_code: int = status.HTTP_200_OK):
     """
     Create a standardized success response.
 
@@ -27,7 +28,7 @@ def success_response(message: str, data : dict = None, status_code: int = status
     return JSONResponse(content=response_content, status_code=status_code)
 
 
-def error_response(message: str, status_code: int):
+def error_response(message: str, status_code: int, details: str = None):
     """
     Create a standardized error response.
 
@@ -42,6 +43,8 @@ def error_response(message: str, status_code: int):
         "success": False,
         "message": message
     }
+    if details:
+        response_content["details"] = details
 
     return JSONResponse(content=response_content, status_code=status_code)
      

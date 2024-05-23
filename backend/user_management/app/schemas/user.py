@@ -3,9 +3,8 @@ Schemas for the User model.
 """
 
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Any, Optional
 import uuid
-
 
 class UserBase(BaseModel):
     """
@@ -26,12 +25,12 @@ class UserBase(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
-    role: Optional[str] = 'user'
+    role: Optional[str] = 'USER'
     is_active: Optional[bool] = True
-    is_blocked: Optional[bool] = True
+    is_blocked: Optional[bool] = False
     is_confirmed: Optional[bool] = False
     confirmation_token: Optional[str] = None
-
+    password_hash: Optional[str] = None
 
 class UserCreate(UserBase):
     """
@@ -44,12 +43,43 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     """
-    Scheme for representing a user.
+    Schema for representing a user.
 
     Attributes:
         user_id (UUID): User ID.
     """
     user_id: uuid.UUID
+    class Config:
+        orm_mode = True
+
+class UserOut(UserBase):
+    """
+    Schema for outputting user data.
+
+    Attributes:
+        user_id (UUID): User ID.
+        role (str): Role of the user.
+        is_active (bool): Whether the user is active.
+        is_blocked (bool): Whether the user is blocked.
+    """
+    user_id: str
+    role: str
+    is_active: bool
+    is_blocked: bool
 
     class Config:
         orm_mode = True
+        from_attributes = True
+
+    @classmethod
+    def model_validate(cls, obj: Any) -> 'UserOut':
+        """
+        Validate and create a UserOut instance from an ORM object.
+
+        Args:
+            obj (Any): ORM object.
+
+        Returns:
+            UserOut: Validated UserOut instance.
+        """
+        return cls(**obj.__dict__)

@@ -46,7 +46,7 @@ def create_confirmation_token(email: str):
     Returns:
     str: Encoded JWT token.
     """
-    expire = datetime.now(timezone.utc) + timedelta(hours=24)
+    expire = datetime.now(timezone.utc) + timedelta(seconds=30)
     to_encode = {"exp": expire, "sub": email}
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 

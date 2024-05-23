@@ -11,5 +11,5 @@ Attributes:
 """
 
 from .user import User
-from .team import Team
-from .application import Application
+# from .team import Team
+# from .application import Application

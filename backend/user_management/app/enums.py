@@ -11,6 +11,6 @@ class UserRole(enum.Enum):
         MEMBER: Represents a member user (member of the application).
         USER: Represents a normal user.
     """
-    ADMIN = "admin"
-    MEMBER = "member"
-    USER = "user"
+    ADMIN = "ADMIN"
+    MEMBER = "MEMBER"
+    USER = "USER"

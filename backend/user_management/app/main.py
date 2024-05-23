@@ -3,21 +3,63 @@ Main application module for the User Management Service.
 This module initializes the FastAPI application and includes the routers.
 """
 
-from fastapi import FastAPI
+import logging
+from fastapi import FastAPI, Request
 from app.database import engine, Base
 from app.logging_config import setup_logging
-from app.routers import users, teams, applications
+from app.routers import teams, applications, user
+from app.config import settings
+from app.middleware import ExceptionHandlingMiddleware
+from app.utils.response import error_response
 
-# Setup logging configuration
+# Set up logging
 setup_logging()
+logger = logging.getLogger(__name__)
 
-# Initialize FastAPI applications
-app = FastAPI()
+def create_app() -> FastAPI:
+    """
+    Create and configure the FastAPI application.
+    
+    Returns:
+        app (FastAPI): The configured FastAPI application.
+    """
+    # Initialize FastAPI application
+    app = FastAPI()
 
+    # Add the middleware
+    app.add_middleware(ExceptionHandlingMiddleware)
 
-app.include_router(users.router)
-app.include_router(teams.router)
-app.include_router(applications.router)
+    # Register custom exception handler
+    @app.exception_handler(Exception)
+    async def custom_exception_handler(request: Request, exc: Exception):
+        """
+        Custom exception handler for unhandled exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (Exception): The unhandled exception.
+
+        Returns:
+            JSONResponse: A standardized error response.
+        """
+        return error_response(
+            message="Internal Server Error",
+            status_code=500,
+            details=str(exc)
+        )
+
+    # Common prefix for all routes in this microservice
+    service_prefix = "/user-service"
+
+    # Include routers with common prefix
+    app.include_router(user.router, prefix=f"{service_prefix}/users", tags=["users"])
+    app.include_router(teams.router, prefix=f"{service_prefix}/teams", tags=["teams"])
+    app.include_router(applications.router, prefix=f"{service_prefix}/applications", tags=["applications"])
+
+    return app
+
+# Create and configure the FastAPI application
+app = create_app()
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -29,3 +71,16 @@ def read_root():
     Returns a welcome message.
     """
     return {"message": "Welcome to the User Management Service"}
+
+# Example of how to use settings in an endpoint
+@app.get("/settings")
+def get_settings():
+    """
+    Endpoint to test access to application settings.
+    """
+    return {
+        "secret_key": settings.SECRET_KEY,
+        "database_url": settings.DATABASE_URL,
+        "mail_server": settings.MAIL_SERVER,
+        "frontend_url": settings.FRONTEND_URL,
+    }
