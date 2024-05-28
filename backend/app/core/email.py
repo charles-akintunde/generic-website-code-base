@@ -5,7 +5,7 @@ Email utilities.
 from typing import List
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pydantic import EmailStr
-from app.core.config import settings
+from app.config import settings
 
 
 mail_config = ConnectionConfig(

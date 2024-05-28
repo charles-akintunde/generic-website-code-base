@@ -3,8 +3,8 @@ CRUD operations for User model.
 """
 
 from sqlalchemy.orm import Session
-from app.models.user import User
-from app.schemas.user import UserCreate
+from app.models.user_info import T_UserInfo
+from app.schemas.user_info import UserCreate
 import uuid
 
 class UserCRUD:
@@ -19,7 +19,7 @@ class UserCRUD:
         Returns:
             User: User object if found, otherwise None.
         """
-        return db.query(User).filter(User.email == email).first()
+        return db.query(T_UserInfo).filter(T_UserInfo.email == email).first()
     
     def create_user(self, db: Session, user: UserCreate):
         """
@@ -32,7 +32,7 @@ class UserCRUD:
         Returns:
             User: Created user object.
         """
-        db_user = User(
+        db_user = T_UserInfo(
             user_id=uuid.uuid4(),
             username=user.username,
             email=user.email,

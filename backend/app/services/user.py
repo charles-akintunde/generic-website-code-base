@@ -3,12 +3,12 @@ User service for handling business logic related to users.
 """
 
 from sqlalchemy.orm import Session
-from app.schemas.user import User, UserCreate
-from app.crud.user import  user_crud
+from app.schemas.user_info import User, UserCreate
+from app.crud.user_info import  user_crud
 from passlib.context import CryptContext
 from app.core.auth import create_confirmation_token
 from app.core.email import send_confirmation_email
-from app.schemas.user import UserOut
+from app.schemas.user_info import UserOut
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

@@ -1,0 +1,29 @@
+import uuid
+from datetime import datetime, timezone
+from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean, JSON
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from typing import Optional
+from . import Base 
+
+class T_PageContent(Base):
+    """Page content table."""
+    __tablename__ = 'T_PageContent'
+    PC_ID: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    UI_ID: uuid.UUID = Column(UUID(as_uuid=True), ForeignKey('T_UserInfo.UI_ID'), nullable=False)
+    PG_ID: uuid.UUID = Column(UUID(as_uuid=True), ForeignKey('T_Page.PG_ID'), nullable=False)
+    PC_Title: str = Column(String(200), nullable=False)
+    PC_ThumbImgURL: Optional[str] = Column(String(255))
+    PC_Content: Optional[dict] = Column(JSON, nullable=False)
+    PC_CreatedAt: datetime = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    PC_LastUpdatedAt: datetime = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    PC_DisplayURL: Optional[str] = Column(String(255))
+    PC_IsHidden: bool = Column(Boolean, default=False)
+    PC_Other: Optional[str] = Column(String(255))
+
+    PC_UserInfo = relationship("T_UserInfo", back_populates="UI_PageContents")
+    PC_Page = relationship("T_Page", back_populates="PG_PageContents")
+
+    def __repr__(self):
+        return f"<T_PageContent(PC_ID={self.PC_ID}, PC_Title={self.PC_Title})>"

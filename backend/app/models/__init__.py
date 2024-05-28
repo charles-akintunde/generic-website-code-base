@@ -10,6 +10,11 @@ Attributes:
     Application (class): The Application model class.
 """
 
-from .user import User
-from .team import Team
-from .application import Application
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+from .user_info import T_UserInfo
+from .page import T_Page
+from .page_content import T_PageContent
+

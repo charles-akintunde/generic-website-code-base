@@ -7,10 +7,11 @@ import logging
 from fastapi import FastAPI, Request
 from app.database import engine, Base
 from app.logging_config import setup_logging
-from app.routers import teams, applications, user
+from app.routers import page
 from app.config import settings
 from app.middleware import ExceptionHandlingMiddleware
 from app.utils.response import error_response
+from app.routers import page_content, user_info
 
 # Set up logging
 setup_logging()
@@ -49,12 +50,12 @@ def create_app() -> FastAPI:
         )
 
     # Common prefix for all routes in this microservice
-    service_prefix = "/user-service"
+    service_prefix = "/api/v1"
 
     # Include routers with common prefix
-    app.include_router(user.router, prefix=f"{service_prefix}/users", tags=["users"])
-    app.include_router(teams.router, prefix=f"{service_prefix}/teams", tags=["teams"])
-    app.include_router(applications.router, prefix=f"{service_prefix}/applications", tags=["applications"])
+    app.include_router(user_info.router, prefix=f"{service_prefix}/users", tags=["users"])
+    app.include_router(page.router, prefix=f"{service_prefix}/teams", tags=["teams"])
+    app.include_router(page_content.router, prefix=f"{service_prefix}/applications", tags=["applications"])
 
     return app
 
@@ -79,7 +80,7 @@ def get_settings():
     Endpoint to test access to application settings.
     """
     return {
-        "secret_key": settings.SECRET_KEY,
+        "secret_key": settings.AUTH_SECRET_KEY,
         "database_url": settings.DATABASE_URL,
         "mail_server": settings.MAIL_SERVER,
         "frontend_url": settings.FRONTEND_URL,

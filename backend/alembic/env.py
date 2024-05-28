@@ -13,8 +13,8 @@ import sys
 sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'app')))
 
 # Import your models here
-from app.models.base import Base  # Use the correct base class
-from app.models import user, team, application  # Import your models here
+from app.models import Base  # Use the correct base class
+from app.config import settings
 
 # This is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -29,7 +29,7 @@ target_metadata = Base.metadata
 
 # Configure the database URL from the environment variable or alembic.ini
 def get_url():
-    return os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
+    return settings.DATABASE_URL or os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
 
 def run_migrations_offline():
     """

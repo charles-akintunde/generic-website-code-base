@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from app.config import settings
 
 # Create an SQLAlchemy engine
-engine = create_engine(settings.SQLALCHEMY_DATABASE_URL)
+engine = create_engine(settings.DATABASE_URL)
 
 # Create a configured "Session" class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

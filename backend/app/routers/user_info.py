@@ -5,10 +5,10 @@ API endpoints for user registration and login.
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from app.schemas.user import UserCreate, User as UserSchema
+from app.schemas.user_info import UserCreate, User as UserSchema
 from app.services.user import register_user, resend_confirmation_token
 from app.database import get_db
-from app.crud.user import user_crud
+from app.crud.user_info import user_crud
 from app.utils.response import success_response, error_response
 from app.core.auth import verify_confirmation_token
 

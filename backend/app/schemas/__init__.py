@@ -10,5 +10,5 @@ Attributes:
     Application (class): The Application schema class.
 """
 
-from .user import UserCreate
+from .user_info import UserCreate
 
