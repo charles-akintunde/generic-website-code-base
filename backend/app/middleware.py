@@ -15,6 +15,7 @@ class ExceptionHandlingMiddleware(BaseHTTPMiddleware):
         except Exception as exc:
             logger.error(f"Unhandled error: {exc}", exc_info=True)
             return error_response(
-                message=f"Internal Server Error: {str(exc)}",
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+                message=f"Internal Server Error",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                details=f"{str(exc)}",
             )

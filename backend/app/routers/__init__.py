@@ -1,1 +1,1 @@
-from .user_info import UserSchema, UserCreate
+from .auth import UserSchema, UserCreate

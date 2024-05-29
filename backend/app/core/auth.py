@@ -4,15 +4,59 @@ Authentication utilities.
 
 import os
 from datetime import datetime, timedelta , timezone
+from typing_extensions import deprecated
 from jose import JWTError, jwt
 from typing import Optional
 from dotenv import load_dotenv
+from app.config import settings
+from passlib.context import CryptContext
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("AUTH_SECRET_KEY")
+SECRET_KEY = settings.AUTH_SECRET_KEY
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+CONFIRMATION_TOKEN_EXPIRY_MINUTES = 10
+REFRESH_TOKEN_EXPIRE_DAYS = 7
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """
+    Verify a plain password against a hashed password.
+
+    Args:
+        plain_password (str): Plain password.
+        hashed_password (str): Hashed password.
+
+    Returns:
+        bool: Whether the passwords match.
+    """
+
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def create_refresh_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """
+    Create a JWT refresh token.
+
+    Args:
+        data (dict): Data to encode in the token.
+        expires_delta (Optional[timedelta]): Token expiration time.
+
+    Returns:
+        str: Encoded JWT token.
+    """
+
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+    return encoded_jwt
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -46,12 +90,12 @@ def create_confirmation_token(email: str):
     Returns:
     str: Encoded JWT token.
     """
-    expire = datetime.now(timezone.utc) + timedelta(seconds=30)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=CONFIRMATION_TOKEN_EXPIRY_MINUTES)
     to_encode = {"exp": expire, "sub": email}
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def verify_confirmation_token(token: str):
+def verify_token(token: str):
     """
     Verify a JWT confirmation token.
 
@@ -66,7 +110,7 @@ def verify_confirmation_token(token: str):
     """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload["sub"]
+        return payload
     except JWTError:
         return None
     

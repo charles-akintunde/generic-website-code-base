@@ -2,13 +2,14 @@
 CRUD operations for User model.
 """
 
+from pydantic import EmailStr
 from sqlalchemy.orm import Session
 from app.models.user_info import T_UserInfo
 from app.schemas.user_info import UserCreate
 import uuid
 
 class UserCRUD:
-    def get_user_by_email(self, db: Session, email: str):
+    def get_user_by_email(self, db: Session, email: EmailStr) -> T_UserInfo:
         """
         Get a user by email.
 
@@ -19,9 +20,9 @@ class UserCRUD:
         Returns:
             User: User object if found, otherwise None.
         """
-        return db.query(T_UserInfo).filter(T_UserInfo.email == email).first()
+        return db.query(T_UserInfo).filter(T_UserInfo.UI_Email == email).first()
     
-    def create_user(self, db: Session, user: UserCreate):
+    def create_user(self, db: Session, user: UserCreate) -> T_UserInfo:
         """
         Create a new user.
 
@@ -33,17 +34,12 @@ class UserCRUD:
             User: Created user object.
         """
         db_user = T_UserInfo(
-            user_id=uuid.uuid4(),
-            username=user.username,
-            email=user.email,
-            password_hash=user.password_hash,
-            first_name=user.first_name,
-            last_name=user.last_name,
-            role=user.role,
-            is_active=user.is_active,
-            is_blocked=user.is_blocked,
-            is_confirmed=user.is_confirmed,
-            confirmation_token=user.confirmation_token
+            UI_ID=uuid.uuid4(),
+            UI_Email=user.UI_Email,
+            UI_PasswordHash=user.UI_Password,
+            UI_FirstName=user.UI_FirstName,
+            UI_LastName=user.UI_LastName,
+            UI_ConfirmationTokenHash=user.UI_ConfirmationTokenHash
         )
         db.add(db_user)
         db.commit()

@@ -5,22 +5,28 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from typing import Optional
+
+from app.types.page_content import PageContentTypeAnnotations
 from . import Base 
 
 class T_PageContent(Base):
     """Page content table."""
     __tablename__ = 'T_PageContent'
-    PC_ID: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    UI_ID: uuid.UUID = Column(UUID(as_uuid=True), ForeignKey('T_UserInfo.UI_ID'), nullable=False)
-    PG_ID: uuid.UUID = Column(UUID(as_uuid=True), ForeignKey('T_Page.PG_ID'), nullable=False)
-    PC_Title: str = Column(String(200), nullable=False)
-    PC_ThumbImgURL: Optional[str] = Column(String(255))
-    PC_Content: Optional[dict] = Column(JSON, nullable=False)
-    PC_CreatedAt: datetime = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    PC_LastUpdatedAt: datetime = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-    PC_DisplayURL: Optional[str] = Column(String(255))
-    PC_IsHidden: bool = Column(Boolean, default=False)
-    PC_Other: Optional[str] = Column(String(255))
+
+
+    __annotations__ = PageContentTypeAnnotations.__annotations__
+
+    PC_ID = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    UI_ID = Column(UUID(as_uuid=True), ForeignKey('T_UserInfo.UI_ID'), nullable=False)
+    PG_ID = Column(UUID(as_uuid=True), ForeignKey('T_Page.PG_ID'), nullable=False)
+    PC_Title = Column(String(200), nullable=False)
+    PC_ThumbImgURL = Column(String(255), nullable=True)
+    PC_Content = Column(JSON, nullable=False)
+    PC_CreatedAt = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    PC_LastUpdatedAt = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    PC_DisplayURL = Column(String(255), nullable=True)
+    PC_IsHidden = Column(Boolean, default=False)
+    PC_Other = Column(String(255), nullable=True)
 
     PC_UserInfo = relationship("T_UserInfo", back_populates="UI_PageContents")
     PC_Page = relationship("T_Page", back_populates="PG_PageContents")

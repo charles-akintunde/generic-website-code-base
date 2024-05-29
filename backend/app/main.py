@@ -11,7 +11,8 @@ from app.routers import page
 from app.config import settings
 from app.middleware import ExceptionHandlingMiddleware
 from app.utils.response import error_response
-from app.routers import page_content, user_info
+from app.routers import page_content
+from app.routers import auth
 
 # Set up logging
 setup_logging()
@@ -53,7 +54,7 @@ def create_app() -> FastAPI:
     service_prefix = "/api/v1"
 
     # Include routers with common prefix
-    app.include_router(user_info.router, prefix=f"{service_prefix}/users", tags=["users"])
+    app.include_router(auth.router, prefix=f"{service_prefix}/auth", tags=["auth"])
     app.include_router(page.router, prefix=f"{service_prefix}/teams", tags=["teams"])
     app.include_router(page_content.router, prefix=f"{service_prefix}/applications", tags=["applications"])
 

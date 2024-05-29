@@ -30,7 +30,7 @@ async def send_confirmation_email(email: EmailStr, token: str):
         email (EmailStr): User's email.
         token (str): Confirmation token.
     """
-    confirmation_link = f"http://localhost:8001/user-service/users/confirm/{token}"
+    confirmation_link = f"http://localhost:8001/api/v1/users/confirm/{token}"
     message = MessageSchema(
         subject="Email Confirmation",
         recipients=[email],

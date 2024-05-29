@@ -28,13 +28,14 @@ def success_response(message: str, data: Dict[str, Any] = {}, status_code: int =
     return JSONResponse(content=response_content, status_code=status_code)
 
 
-def error_response(message: str, status_code: int, details: str = None):
+def error_response(message: str, status_code: int, details: str = None) -> JSONResponse:  # type: ignore
     """
     Create a standardized error response.
 
     Args:
         message (str): Error message.
         status_code (int): HTTP status code.
+        details (str): Additional details about the error.
 
     Returns:
         JSONResponse: Standardized error response.
