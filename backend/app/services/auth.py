@@ -1,5 +1,5 @@
 """
-User service for handling business logic related to users.
+User service for handling business logic related to users authentication.
 """
 
 from fastapi import HTTPException, status
@@ -11,12 +11,51 @@ from sqlalchemy.orm import Session
 from app.schemas.user_info import Token, User, UserCreate
 from app.crud.user_info import  user_crud
 from passlib.context import CryptContext
-from app.core.auth import create_access_token, create_confirmation_token, create_refresh_token, verify_password
-from app.core.email import send_confirmation_email
+from app.core.auth import create_access_token, create_confirmation_token, create_refresh_token, verify_password, verify_token
+from app.core.email import send_confirmation_email, send_password_reset_email
 from app.schemas.user_info import UserOut
 from app.models.enums import E_Status
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def confirm_password_reset(db: Session, token: str, new_password: str):
+    """
+    Request password reset by generating a token and sending an email.
+
+    Args:
+        db (Session): Database session.
+        token (str): JWT reset token.
+        new_password (str): New password.
+
+    Raises:
+        HTTPException: If token is invalid or expired.
+        HTTPException: If user is not found.
+    """
+    payload = verify_token(token)
+    if not payload:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired token")
+    
+    email = payload.get("sub")
+    user = user_crud.get_user_by_email(db, email=email)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    user_crud.update_user_password(
+        db=db,
+        user=user,
+        new_passwordhash=pwd_context.hash(new_password))
+
+
+async def request_password_reset(db: Session, email: EmailStr):
+    """
+    Request password reset by generating a token and sending an email.
+    """
+    user = user_crud.get_user_by_email(db=db, email=email)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Emails not found")
+    
+    reset_token = create_confirmation_token(user.UI_Email) # type: ignore
+    await send_password_reset_email(user.UI_Email, reset_token)  # type: ignore
 
 def authenticate_user(db: Session, email: str, password: str) -> Token:
     """
@@ -58,8 +97,6 @@ def authenticate_user(db: Session, email: str, password: str) -> Token:
     access_token = create_access_token(data={"sub": user.UI_Email})
     refresh_token = create_refresh_token(data={"sub": user.UI_Email})
     return Token(access_token=access_token, refresh_token=refresh_token)
-
-    
 
 async def register_user(db: Session, user: UserCreate):
     """

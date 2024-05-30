@@ -17,5 +17,5 @@ class ExceptionHandlingMiddleware(BaseHTTPMiddleware):
             return error_response(
                 message=f"Internal Server Error",
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                details=f"{str(exc)}",
+                detail=f"{str(exc)}",
             )

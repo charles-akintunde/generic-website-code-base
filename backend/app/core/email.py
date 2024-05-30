@@ -21,6 +21,7 @@ mail_config = ConnectionConfig(
     USE_CREDENTIALS=True,
     VALIDATE_CERTS=True
 )
+fm = FastMail(mail_config)
 
 async def send_confirmation_email(email: EmailStr, token: str):
     """
@@ -37,5 +38,14 @@ async def send_confirmation_email(email: EmailStr, token: str):
         body=f"Please click the following link to confirm your email: {confirmation_link}",
         subtype="html"
     )
-    fm = FastMail(mail_config)
     await fm.send_message(message)
+
+async def send_password_reset_email(email: str, token: str):
+    reset_url = f"http://localhost:8001/api/v1/reset-password?token={token}"
+    message = MessageSchema(
+        subject="Password Reset Request",
+        recipients=[email],
+        body=f"Please use the following link to reset your password: {reset_url}",
+        subtype="html"
+    )
+    await fm.send_message(message=message)

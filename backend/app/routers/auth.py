@@ -1,27 +1,71 @@
 """
-API endpoints for user registration and login.
+API endpoints for user authentication.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
-from app.schemas.user_info import Token, UserCreate, User as UserSchema, UserLogin
-from app.services.auth import authenticate_user, register_user, resend_confirmation_token
+from app.schemas.user_info import PasswordResetConfirm, PasswordResetRequest, Token, UserCreate, User as UserSchema, UserLogin
+from app.services.auth import authenticate_user, confirm_password_reset, register_user, request_password_reset, resend_confirmation_token
 from app.database import get_db
 from app.crud.user_info import user_crud
 from app.utils.response import success_response, error_response
 from app.core.auth import create_access_token, create_refresh_token, verify_token
-from app.models.enums import E_Status
+from app.models.enums import E_Status, E_UserRole
+from app.schemas.response import StandardResponse
 
 router = APIRouter()
 
-@router.get("/users")
-def read_users():
+@router.post("/password-reset", response_model=StandardResponse)
+async def request_password_reset_endpoint(
+    request: PasswordResetRequest, 
+    db: Session = Depends(get_db)) -> JSONResponse:
     """
-    Retrieve a list of users.
+    Request passowrd reset.
+
+    Args:
+        request (PasswordResetRequest): Password reset request schema.
+        db (Session): Database session.
+
+    Returns:
+        Str: message for password reset.
     """
-    return {"message": "List of users"}
+    try:
+       await request_password_reset(
+           db, 
+           request.UI_Email)
+       return success_response(
+           message="Password reset email sent")
+    except HTTPException as e:
+        return error_response(
+            message=e.detail, 
+            status_code=e.status_code)
+    
+@router.post("/password-reset/confirm", response_model=StandardResponse)
+async def confirm_password_reset_endpoint(confirm: PasswordResetConfirm, db: Session = Depends(get_db)):
+    """
+    Confirm password reset.
+
+    Args:
+        request (PasswordResetConfirm): Password reset confirm schema.
+        db (Session): Database session.
+
+    Returns:
+        Str: message for password reset.
+        """
+    try: 
+        confirm_password_reset(
+            db=db, 
+            token=confirm.token, 
+            new_password=confirm.new_password)
+        return success_response(
+            message="Password updated successfully")
+    except HTTPException as e:
+        return error_response(
+            message=e.detail, 
+            status_code=e.status_code)
+
 
 @router.post("/register", response_model=UserSchema, status_code=status.HTTP_201_CREATED)
 async def register_user_endpoint(user: UserCreate, db: Session = Depends(get_db)):
@@ -42,9 +86,8 @@ async def register_user_endpoint(user: UserCreate, db: Session = Depends(get_db)
     
     return success_response("User registered successfully. Please check your email for confirmation.", {"user": new_user})
 
-
 @router.post("/login", response_model=Token)
-async def login(user_login: UserLogin, db: Session = Depends(get_db)):
+async def logi_endpoint(user_login: UserLogin, db: Session = Depends(get_db)):
     """
     Authenticate a user and return a JWT token.
 
@@ -63,7 +106,7 @@ async def login(user_login: UserLogin, db: Session = Depends(get_db)):
         return error_response(message=e.detail, status_code=e.status_code)
 
 @router.post("/refresh", response_model=Token)
-async def refresh_toekn(refresh_token: str, db: Session = Depends(get_db)):
+async def refresh_token_endpoint(refresh_token: str, db: Session = Depends(get_db)):
     """
     Refresh the JWT access token using a refresh token.
 
@@ -122,7 +165,7 @@ def confirm_email_endpoint(token: str, db: Session = Depends(get_db)):
     if db_user.UI_Status == E_Status.Active: # type: ignore
         return success_response("Email already confirmed")
     
-    db_user.UI_Status = E_Status.Active # type: ignore
+    db_user.UI_Status, db_user.UI_Role = E_Status.Active, E_UserRole.User # type: ignore
     db.commit()
     db.refresh(db_user)
     

@@ -4,14 +4,19 @@ Authentication utilities.
 
 import os
 from datetime import datetime, timedelta , timezone
+from fastapi import Depends, HTTPException, status
 from typing_extensions import deprecated
 from jose import JWTError, jwt
 from typing import Optional
 from dotenv import load_dotenv
 from app.config import settings
 from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from app.crud.user_info import user_crud
+from app.database import get_db
+from app.models.user_info import T_UserInfo
 
-load_dotenv()
 
 SECRET_KEY = settings.AUTH_SECRET_KEY
 ALGORITHM = "HS256"
@@ -19,7 +24,45 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 CONFIRMATION_TOKEN_EXPIRY_MINUTES = 10
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> T_UserInfo:
+    """
+    Get the currently authenticated user.
+
+    Args:
+        token (str): JWT access token.
+        db (Session): Database session.
+
+    Returns:
+    T_UserInfo: The current user.
+
+    Raises:
+        HTTPException: If the token is invalid or expired, or the user is not found.
+    """
+    credentails_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentails",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = str(payload.get("sub"))
+        if email is None:
+            raise credentails_exception
+    except JWTError:
+        raise credentails_exception
+    
+    user = user_crud.get_user_by_email(db, email=email)
+    if user is None:
+        raise credentails_exception
+    
+    return user
+
+
+
+
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """

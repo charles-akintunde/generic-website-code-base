@@ -15,9 +15,6 @@ class UserBase(BaseModel):
        
     UI_FirstName: str 
     UI_LastName: str 
-    UI_Email: Optional[EmailStr] = None
-    UI_Role: Optional[E_UserRole] = None 
-    UI_Status: Optional[E_Status] = None
     UI_City: Optional[str] = None
     UI_Province: Optional[str] = None 
     UI_Country: Optional[str] = None
@@ -25,9 +22,23 @@ class UserBase(BaseModel):
     UI_PhotoURL: Optional[str] = None
     UI_PhoneNumber: Optional[str] = None
     UI_Organization: Optional[str] = None
-    UI_RegDate: Optional[datetime] = None 
-    UI_Other: Optional[str] = None
-    UI_ConfirmationTokenHash: Optional[str] = None
+
+
+class UserDelete(BaseModel):
+    UI_ID: str
+
+
+class UserProfileUpdate(UserBase):
+    UI_ID: uuid.UUID
+
+
+class UserRoleUpdate(BaseModel):
+    UI_ID: str
+    UI_Role: E_UserRole
+
+class UserStatusUpdate(BaseModel):
+    UI_ID: str
+    UI_Status: E_Status
 
 class UserLogin(BaseModel):
     UI_Email: EmailStr
@@ -38,14 +49,6 @@ class Token(BaseModel):
     refresh_token : str
     #token_type: str
 
-class E_StatusSchema:
-    """
-    Enumeration for user status.
-    """
-
-    Active = 0
-    Unauthenticated = 1
-    Disabled = 2
 
 class UserCreate(BaseModel):
     """
@@ -68,6 +71,7 @@ class User(UserBase):
         UI_ID (UUID): User ID.
     """
     UI_ID: uuid.UUID
+    UI_Email: Optional[EmailStr] = None
     class Config:
         orm_mode = True
 
@@ -79,6 +83,7 @@ class UserOut(UserBase):
         user_id (UUID): User ID.
     """
     UI_ID: str
+    UI_Email: Optional[EmailStr] = None
 
     class Config:
         from_attributes = True
@@ -100,3 +105,13 @@ class UserOut(UserBase):
             UserOut: Validated UserOut instance.
         """
         return cls(**obj.__dict__)
+
+class PasswordResetRequest(BaseModel):
+    UI_Email: EmailStr
+
+class PasswordResetConfirm(BaseModel):
+    token: str
+    new_password: str
+
+class LogoutRequest(BaseModel):
+    refresh_token: str

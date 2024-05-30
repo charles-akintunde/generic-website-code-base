@@ -28,7 +28,7 @@ def success_response(message: str, data: Dict[str, Any] = {}, status_code: int =
     return JSONResponse(content=response_content, status_code=status_code)
 
 
-def error_response(message: str, status_code: int, details: str = None) -> JSONResponse:  # type: ignore
+def error_response(message: str, status_code: int, detail: str = None) -> JSONResponse:  # type: ignore
     """
     Create a standardized error response.
 
@@ -44,8 +44,8 @@ def error_response(message: str, status_code: int, details: str = None) -> JSONR
         "success": False,
         "message": message
     }
-    if details:
-        response_content["details"] = details
+    if detail:
+        response_content["detail"] = detail
 
     return JSONResponse(content=response_content, status_code=status_code)
      
