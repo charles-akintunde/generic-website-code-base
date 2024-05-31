@@ -32,7 +32,6 @@ class T_UserInfo(Base):
     UI_PhoneNumber = Column(String(20))
     UI_Organization = Column(String(100))
     UI_RegDate = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    UI_ConfirmationTokenHash = Column(String(2048), nullable=True)
     UI_Other = Column(String(255))
 
 

@@ -16,7 +16,7 @@ class T_Page(Base):
 
     PG_ID = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     PG_Type = Column(Enum(E_PageType), nullable=False)
-    PG_Name = Column(String(100), nullable=False)
+    PG_Name = Column(String(100), nullable=False, unique=True)
     PG_Permission  = Column(ARRAY(Enum(E_UserRole)), nullable=False, default=[E_UserRole.SuperAdmin])
     PG_Other  = Column(String(255))
 

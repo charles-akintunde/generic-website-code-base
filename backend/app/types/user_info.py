@@ -26,5 +26,4 @@ class UserInfoTypeAnnotations:
     UI_PhoneNumber: Optional[str]
     UI_Organization: Optional[str]
     UI_RegDate: datetime
-    UI_ConfirmationTokenHash: Optional[str]
     UI_Other: Optional[str]

@@ -25,7 +25,36 @@ CONFIRMATION_TOKEN_EXPIRY_MINUTES = 10
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme_without_auto_error = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def get_current_user_without_exception(
+        token: str = Depends(oauth2_scheme_without_auto_error), 
+        db: Session = Depends(get_db)) -> Optional[T_UserInfo]:
+    """
+    Get the currently user making request.
+
+    Args:
+        token (str): JWT access token.
+        db (Session): Database session.
+
+    Returns:
+        Optional[T_UserInfo]: The current user or None if not authenticated.
+    """
+    if not token:
+        return None
+    
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("sub")
+        if email is None:
+            return None
+        user = user_crud.get_user_by_email(db, email=email)
+        return user
+    except JWTError:
+        return None
+
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> T_UserInfo:
     """

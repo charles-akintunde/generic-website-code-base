@@ -6,7 +6,7 @@ from typing import Any, Dict
 from fastapi import status
 from fastapi.responses import JSONResponse
 
-def success_response(message: str, data: Dict[str, Any] = {}, status_code: int = status.HTTP_200_OK):
+def success_response(message: str, data: Any = {}, status_code: int = status.HTTP_200_OK):
     """
     Create a standardized success response.
 
