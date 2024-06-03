@@ -8,7 +8,7 @@ from app.database import get_db
 from app.core.auth import get_current_user
 from app.schemas.response import StandardResponse
 from app.schemas.user_info import UserDelete, UserProfileUpdate, UserRoleUpdate, UserStatusUpdate
-from app.core.utils import is_super_admin
+from app.utils.utils import is_super_admin
 from app.models.user_info import T_UserInfo
 from app.services.user_info import delete_user, update_user_profile, update_user_role, update_user_status
 from app.utils.response import error_response, success_response

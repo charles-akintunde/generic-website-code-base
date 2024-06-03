@@ -6,6 +6,7 @@ from typing import Any, List
 from pydantic import BaseModel, Field
 from typing import Optional
 from app.models.page import E_PageType, E_UserRole
+from app.schemas.page_content import PageContentResponse
 
 
 class Page(BaseModel):
@@ -25,7 +26,12 @@ class PageResponse(BaseModel):
     PG_Type: int
     PG_Name: str 
     PG_Permission: List[int]
-    PG_PageContents: Optional[Any]
+
+class PageMultipleContent(PageResponse):
+    PG_PageContents: Optional[Any]   
+
+class PageSingleContent(PageResponse):
+    PG_PageContent: PageContentResponse
 
 class PageUpdateRequest(BaseModel):
     PG_Type: Optional[E_PageType] = None

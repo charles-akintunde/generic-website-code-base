@@ -13,7 +13,7 @@ from app.schemas.page import GetPageRequest, PageCreate, PageResponse, PageUpdat
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.database import get_db
 from app.core.auth import get_current_user, get_current_user_without_exception
-from app.core.utils import is_super_admin
+from app.utils.utils import is_super_admin
 from app.models.user_info import T_UserInfo
 from app.services.page import create_new_page, delete_page, get_page, update_page
 from app.utils.response import error_response, success_response
@@ -60,12 +60,12 @@ async def get_page_endpoint(
     Returns
         StandardResponse: The response indicating the result of the operation.
     """
-    user_role = E_UserRole(current_user.UI_Role if current_user else E_UserRole.Public)
+   
     try:
         existing_page = get_page(
             db=db, 
             page_name=page_name,
-            user_role=user_role)
+            current_user=current_user)
         return success_response(message="Page fetched successfully", data=existing_page.model_dump())
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)

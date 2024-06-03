@@ -6,13 +6,15 @@
 from typing import Any, List
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from app.schemas.page import GetPageRequest, PageCreate, PageResponse, PageUpdateRequest
+from app.schemas.page import GetPageRequest, PageCreate, PageMultipleContent, PageResponse, PageUpdateRequest
 from app.crud.page import page_crud
+from app.crud.user_info import user_crud
 from app.models.enums import E_UserRole
 from app.models.page import T_Page
 from app.core.auth import get_current_user_without_exception
-from app.core.utils import check_page_permission, is_admin
+from app.utils.utils import check_page_permission, is_admin
 from app.models.user_info import T_UserInfo
+from app.utils.response_json import build_page_content_json
 
 def create_new_page(db: Session, page: PageCreate):
     """
@@ -41,10 +43,11 @@ def create_new_page(db: Session, page: PageCreate):
 def get_page(
         db: Session, 
         page_name: str,
-        user_role: E_UserRole) -> PageResponse:
+        current_user: T_UserInfo) -> PageResponse:
     """
     Service to fetch page.
     """
+    user_role = E_UserRole(current_user.UI_Role if current_user else E_UserRole.Public)
 
     existing_page = page_crud.get_page_by_name(
         db=db,
@@ -62,13 +65,20 @@ def get_page(
         page_accessible_to=page_is_accessible_to, 
         user_role=E_UserRole(user_role))
     
+    converted_page_contents = []
+
+    for page_content in existing_page.PG_PageContents:
+        user  = user_crud.get_user_by_id(db=db,user_id=page_content.UI_ID)
+        converted_page_content = build_page_content_json(page_content, user)
+        converted_page_contents.append(converted_page_content)
+
         
-    existing_page = PageResponse(
+    existing_page = PageMultipleContent(
             PG_ID=str(existing_page.PG_ID),
             PG_Type=existing_page.PG_Type.value,  # Convert enum to its value
             PG_Name=str(existing_page.PG_Name),
             PG_Permission=[role.value for role in existing_page.PG_Permission],   # Assuming this is already a list of E_UserRole # type: ignore
-            PG_PageContents=existing_page.PG_PageContents if existing_page.PG_PageContents else None
+            PG_PageContents=converted_page_contents if converted_page_contents else None
         )
     return existing_page
 
@@ -97,7 +107,7 @@ def update_page(db: Session, page_id: str, page_update: PageUpdateRequest, user:
         page_id=page_id, 
         page_data=page_data)
     
-    page_response = PageResponse(
+    page_response = PageMultipleContent(
             PG_ID=str(updated_page.PG_ID),
             PG_Type=updated_page.PG_Type.value,  # Convert enum to its value
             PG_Name=str(updated_page.PG_Name),

@@ -88,6 +88,19 @@ class UserCRUD:
         """
         return db.query(T_UserInfo).filter(T_UserInfo.UI_Email == email).first()
     
+    def get_user_by_id(self, db: Session, user_id: str) -> T_UserInfo:
+        """
+        Get a user by Id.
+
+        Args:
+            db (Session): Database session.
+            email (str): User's Id.
+
+        Returns:
+            User: User object if found, otherwise None.
+        """
+        return db.query(T_UserInfo).filter(T_UserInfo.UI_ID == user_id).first()
+    
     def create_user(self, db: Session, user: UserCreate) -> T_UserInfo:
         """
         Create a new user.
