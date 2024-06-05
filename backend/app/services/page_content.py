@@ -12,6 +12,9 @@ from app.models.user_info import T_UserInfo
 from app.utils.response_json import build_page_content_json, build_page_json_with_single_content
 from app.schemas.page import PageResponse, PageSingleContent
 from app.models.page_content import T_PageContent
+from app.utils.file_utils import delete_and_save_file, delete_file, extract_path_from_url, save_file
+from app.config import settings
+from app.models.enums import E_PageType
 
 def create_page_content(
         db: Session,
@@ -68,7 +71,7 @@ def create_page_content(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Page content with title ({page_content.PC_Title}) already exists."
         )
-
+    
     new_page_content = page_content_crud.create_page_content(
         db=db,
         page_content= page_content)
@@ -134,21 +137,50 @@ def get_page_content_by_title(
 
     return page_response_json
 
-def update_page_content(
+async def update_page_content(
         db: Session,
         page_content_id: str,
-        page_content_update: PageContentUpdateRequest) :
+        page_content_update: PageContentUpdateRequest):
     """
     Handles logic for updating a page_content.
 
-    Args
-        db (Session) Database Session.
+    Args:
+        db (Session): Database Session.
         page_content_id (str): Unique identifier for page content.
         page_content_update (PageContentUpdateRequest): Schema for page content update request. 
 
-    Returns
-        updated_page (T_PageContent): 
+    Returns:
+        updated_page (T_PageContent): The updated page content.
     """
+
+    existing_page_content = page_content_crud.get_page_content_by_id(
+        db=db,
+        page_content_id=page_content_id
+    )
+    
+    if not existing_page_content:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Page content does not exist."
+        )
+    
+
+    if existing_page_content.PC_Page.PG_Type == E_PageType.ResList:
+        if page_content_update.PC_Resource:
+            page_content_update.PC_DisplayURL = await delete_and_save_file(
+                str(existing_page_content.PC_DisplayURL),
+                page_content_update.PC_Resource,
+                folder=settings.RESOURCE_FILE_PATH
+            )
+            delattr(page_content_update, 'PC_Resource')
+
+    if page_content_update.PC_ThumbImg:
+        page_content_update.PC_ThumbImgURL = await delete_and_save_file(
+            str(existing_page_content.PC_ThumbImgURL),
+            page_content_update.PC_ThumbImg,
+            folder=settings.THUMBNAILS_FILE_PATH
+        )
+        delattr(page_content_update, 'PC_ThumbImg')
 
     updated_page_content = page_content_crud.update_page_content(
         db=db,
@@ -164,12 +196,14 @@ def update_page_content(
     
     user = user_crud.get_user_by_id(
         db=db,
-        user_id=str(updated_page_content.UI_ID))
+        user_id=str(updated_page_content.UI_ID)
+    )
     
     page_content_json = build_page_content_json(
         page_content=updated_page_content,
-        user=user)
-    
+        user=user
+    )
+
     return page_content_json
 
 def delete_page_content(db: Session, page_content_id: str) -> bool:
@@ -180,12 +214,21 @@ def delete_page_content(db: Session, page_content_id: str) -> bool:
         db (Session): Database Session.
         page_content_id (str): Unique Identifier for page content.
     """
-    success = page_content_crud.delete_page_content(db, page_content_id)
+    page_content_to_delete=page_content_crud.get_page_content_by_id(db=db, page_content_id=page_content_id)
+    
+    if not page_content_to_delete:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Page content not found"
+        )
+    
+    success = page_content_crud.delete_page_content(db, page_content_to_delete)
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Page content not found"
         )
+
     return success
 
 

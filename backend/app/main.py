@@ -5,6 +5,7 @@ This module initializes the FastAPI application and includes the routers.
 
 import logging
 from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
 from app.database import engine, Base
 from app.logging_config import setup_logging
 from app.routers import page
@@ -54,6 +55,8 @@ def create_app() -> FastAPI:
 
     # Common prefix for all routes in this microservice
     service_prefix = "/api/v1"
+
+    app.mount("/static", StaticFiles(directory="static"), name="static")
 
     # Include routers with common prefix
     app.include_router(test_auth.router,prefix=f"", tags=["tests"])

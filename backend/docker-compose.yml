@@ -12,7 +12,8 @@ services:
     depends_on:
       - db
     volumes:
-      - .:/app  # Mount the current directory to /app in the container
+      - .:/app 
+      - ./static:/app/static  
     networks:
       - backend_network
 
@@ -26,7 +27,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data  # Persistent storage for PostgreSQL data
+      - pgdata:/var/lib/postgresql/data  # Persistent storage sfor PostgreSQL data
     networks:
       - backend_network
 

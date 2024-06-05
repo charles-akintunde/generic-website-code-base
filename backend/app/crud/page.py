@@ -3,11 +3,14 @@
 """
 
 from typing import Any
+
+from fastapi import HTTPException, status
 from app.schemas.page import PageCreate
 from app.models.page import T_Page
 from sqlalchemy.orm import Session
-
+from app.crud.page_content import page_content_crud
 from app.models.enums import E_UserRole
+from app.crud import page_content
 
 
 class PageCRUD:
@@ -71,9 +74,8 @@ class PageCRUD:
         """
         Remove page content from db.
         """
-        for content in page.PG_PageContents:
-            db.delete(content)
-        db.commit()
+        for page_content in page.PG_PageContents:
+            page_content_crud.delete_page_content(db=db,page_content_to_delete=page_content)
   
     def update_page(self, db: Session, page_id, page_data) -> T_Page:
         """"
@@ -100,8 +102,11 @@ class PageCRUD:
             db.delete(page)
             db.commit()
             return True
-        except:
-            return False
+        except HTTPException as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=e.detail
+            )
 
 
 

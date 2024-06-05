@@ -4,6 +4,7 @@
 
 from datetime import datetime
 from typing import Any, Dict, List
+from fastapi import File, UploadFile
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Optional
 
@@ -14,9 +15,9 @@ class PageContent(BaseModel):
     UI_ID: str
     PG_ID: str
     PC_Title: str
-    PC_Content: Dict
-    PC_ThumbImgURL: Optional[HttpUrl] = None
-    PC_DisplayURL: HttpUrl
+    PC_Content: Optional[Dict]
+    PC_DisplayURL: Optional[str] = None
+    PC_ThumbImgURL: Optional[str] = None
     PC_IsHidden: bool
     PC_CreatedAt: Optional[str] = None
     PC_LastUpdatedAt: Optional[str] = None
@@ -30,11 +31,13 @@ class PageContentResponse(PageContent):
     UI_FirstName: str
     UI_LastName: str
     PC_ThumbImgURL: Optional[str] = None
-    PC_DisplayURL: str
+    # PC_DisplayURL: str
 
 class PageContentUpdateRequest(BaseModel):
-    PC_Title: Optional[str]
-    PC_ThumbImgURL: Optional[HttpUrl]
-    PC_Content: Optional[Dict]
-    PC_DisplayURL: Optional[HttpUrl]
-    PC_IsHidden: Optional[bool]
+    PC_Title: Optional[str] = None
+    PC_ThumbImgURL: Optional[str] = None
+    PC_ThumbImg: Optional[UploadFile] = None
+    PC_Resource: Optional[UploadFile] = None
+    PC_Content: Optional[Dict] = None
+    PC_DisplayURL: Optional[str] = None
+    PC_IsHidden: Optional[bool] = None

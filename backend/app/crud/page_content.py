@@ -5,11 +5,13 @@
 from datetime import datetime, timezone
 from typing import Dict
 from uuid import uuid4
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.schemas.page_content import PageContentCreateRequest, PageContentUpdateRequest
 from app.models.page_content import T_PageContent
 from app.models.page import T_Page
 from app.models.page_content import T_PageContent
+from app.utils.file_utils import delete_file, extract_path_from_url
 
 
 class PageContentCRUD:
@@ -30,10 +32,6 @@ class PageContentCRUD:
     """
 
     page_content_data = page_content.model_dump(exclude_unset=True)
-
-    if page_content_data.get('PC_ThumbImgURL'):
-        page_content_data['PC_ThumbImgURL'] = str(page_content_data['PC_ThumbImgURL'])
-    page_content_data['PC_DisplayURL'] = str(page_content_data['PC_DisplayURL'])
 
     # Create a database model instance
     db_page_content = T_PageContent(**page_content_data)
@@ -129,10 +127,6 @@ class PageContentCRUD:
         return None
         
     update_data = page_content_update.model_dump(exclude_unset=True)
-
-    if update_data.get('PC_ThumbImgURL'):
-        update_data['PC_ThumbImgURL'] = str(update_data['PC_ThumbImgURL'])
-    update_data['PC_DisplayURL'] = str(update_data['PC_DisplayURL'])
     
     for key, value in update_data.items():
         setattr(db_page_content, key, value)
@@ -144,7 +138,7 @@ class PageContentCRUD:
  def delete_page_content(
        self,
        db: Session, 
-       page_content_id: str):
+       page_content_to_delete: T_PageContent):
     
     """
     Deletes page content.
@@ -153,12 +147,23 @@ class PageContentCRUD:
         db (Session): database Session.
         page_content_id (str): Unique Identifier for pagecontent id.
     """
-    db_page_content = db.query(T_PageContent).filter(T_PageContent.PC_ID == page_content_id).first()
-    if db_page_content:
-        db.delete(db_page_content)
-        db.commit()
-        return True
-    return False
+    try:
+        if page_content_to_delete:
+            if page_content_to_delete.PC_DisplayURL: # type: ignore
+                delete_file(extract_path_from_url(page_content_to_delete.PC_DisplayURL)) # type: ignore
+            if str(page_content_to_delete.PC_ThumbImgURL):
+                delete_file(extract_path_from_url(page_content_to_delete.PC_ThumbImgURL)) # type: ignore
+            db.delete(page_content_to_delete)
+            db.commit()
+            return True
+    except HTTPException as e:
+        raise HTTPException(
+          status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+          detail=e.detail)
+
+       
+
+
 
 
 

@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     FRONTEND_URL: str
     MAIL_STARTTLS: bool
     MAIL_SSL_TLS: bool
+    BASE_URL: str
+    THUMBNAILS_FILE_PATH: str
+    RESOURCE_FILE_PATH: str
 
     class Config:
         env_file = ".env"
