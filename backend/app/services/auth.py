@@ -2,7 +2,9 @@
 User service for handling business logic related to users authentication.
 """
 
-from fastapi import HTTPException, status
+from datetime import datetime, timezone
+from fastapi import HTTPException, status, Response
+from fastapi.responses import JSONResponse
 from os import access
 from typing import Optional
 from pydantic import EmailStr
@@ -15,6 +17,7 @@ from app.core.auth import create_access_token, create_confirmation_token, create
 from app.core.email import send_confirmation_email, send_password_reset_email
 from app.schemas.user_info import UserOut
 from app.models.enums import E_Status
+from app.schemas.blacklisted_token import BlackListedToken
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -57,7 +60,7 @@ async def request_password_reset(db: Session, email: EmailStr):
     reset_token = create_confirmation_token(user.UI_Email) # type: ignore
     await send_password_reset_email(user.UI_Email, reset_token)  # type: ignore
 
-def authenticate_user(db: Session, email: str, password: str) -> Token:
+def authenticate_user(db: Session, email: str, password: str, response: Response) -> Token:
     """
     Authenticate a user and return a JWT token.
 
@@ -93,9 +96,21 @@ def authenticate_user(db: Session, email: str, password: str) -> Token:
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account is disabled! Contact Admin",
         )
+    
+    token_data = {
+        "sub": user.UI_Email,
+        "firstname": user.UI_FirstName,
+        "lastname": user.UI_LastName,
+        "role": user.UI_Role.value,
+        "status": user.UI_Status.value,
+        "Id": str(user.UI_ID)
+    }
+    access_token = create_access_token(data=token_data)
+    refresh_token = create_refresh_token(data=token_data)
 
-    access_token = create_access_token(data={"sub": user.UI_Email})
-    refresh_token = create_refresh_token(data={"sub": user.UI_Email})
+    response.set_cookie(key="access_token", value=access_token, httponly=True)
+    response.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
+
     return Token(access_token=access_token, refresh_token=refresh_token)
 
 async def register_user(db: Session, user: UserCreate):
@@ -155,4 +170,30 @@ async def  resend_confirmation_token(db: Session, email: EmailStr):
     await send_confirmation_email(email, confirmation_token)
     return None
 
+def logout_user(access_token: str, refresh_token: str, db: Session):
+    """
+        Handles user logout.
+    """
+
+    access_token_payload = verify_token(token=access_token, db=db)
+    refresh_token_payload = verify_token(token=refresh_token, db=db)
+
+
+    if not access_token_payload and not refresh_token_payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User was never logged in or tokens are invalid",
+        )
     
+    if access_token_payload or refresh_token_payload:
+        access_token_expires_at = datetime.fromtimestamp(access_token_payload['exp'], tz=timezone.utc) # type: ignore
+        refresh_token_expires_at = datetime.fromtimestamp(refresh_token_payload['exp'], tz=timezone.utc) # type: ignore
+        blacklisted_token_data = BlackListedToken(
+            BT_AccessToken=access_token,
+            BT_RefreshToken=refresh_token,
+            BT_AccessTokenExp=access_token_expires_at,
+            BT_RefreshTokenExp=refresh_token_expires_at,
+            BT_BlackListedTime=datetime.utcnow, # type: ignore
+        )
+
+    return blacklisted_token_data

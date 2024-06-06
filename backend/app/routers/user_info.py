@@ -2,7 +2,8 @@
 API endpoints for user profile updates.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Optional
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.core.auth import get_current_user
@@ -68,7 +69,16 @@ async def update_user_role_endpoint(
     
 @router.put("/profile", response_model=StandardResponse)
 async def update_user_profile_endpoint(
-    profile_update: UserProfileUpdate, 
+    UI_ID: Optional[str] = Form(None),
+    UI_Photo: Optional[UploadFile] = File(None),
+    UI_FirstName: Optional[str] = Form(None),
+    UI_LastName: Optional[str] = Form(None),
+    UI_City: Optional[str] = Form(None),
+    UI_Province: Optional[str] = Form(None),
+    UI_Country: Optional[str] = Form(None),
+    UI_PostalCode: Optional[str] = Form(None),
+    UI_PhoneNumber: Optional[str] = Form(None),
+    UI_Organization: Optional[str] = Form(None),
     db: Session = Depends(get_db), 
     current_user: T_UserInfo = Depends(get_current_user)):
     """
@@ -83,7 +93,19 @@ async def update_user_profile_endpoint(
         StandardResponse: contains updated user.
     """
     try:
-        user = update_user_profile(db, str(current_user.UI_ID), profile_update)
+        profile_update = UserProfileUpdate(
+            UI_ID=UI_ID,
+            UI_Photo=UI_Photo,
+            UI_FirstName=UI_FirstName,
+            UI_LastName=UI_LastName,
+            UI_City=UI_City,
+            UI_Province=UI_Province, 
+            UI_Country=UI_Country,
+            UI_PostalCode=UI_PostalCode,
+            UI_PhoneNumber=UI_PhoneNumber,
+            UI_Organization=UI_Organization,
+        )
+        user = await update_user_profile(db, str(current_user.UI_ID), profile_update)
         return success_response("User profile updated successfully")
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)

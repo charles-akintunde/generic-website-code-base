@@ -17,4 +17,5 @@ Base = declarative_base()
 from .user_info import T_UserInfo
 from .page import T_Page
 from .page_content import T_PageContent
+from .blacklisted_token import T_BlackListedToken
 

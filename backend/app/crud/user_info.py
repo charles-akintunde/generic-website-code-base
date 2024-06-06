@@ -34,12 +34,10 @@ class UserCRUD:
             db.refresh(user)
         return user
     
-    def update_user_profile(self, db: Session, user_id: str, update_data: dict):
+    def update_user_profile(self, db: Session, user: T_UserInfo, update_data: dict):
         """
         Update the user's profile.
         """
-
-        user = db.query(T_UserInfo).filter(T_UserInfo.UI_ID == user_id).first()
         if user:
             for key, value in update_data.items():
                 setattr(user, key, value)
@@ -47,15 +45,14 @@ class UserCRUD:
             db.refresh(user)
         return user
     
-    def delete_user(self, db: Session, user_id: str):
+    def delete_user(self, db: Session, user_to_delete: T_UserInfo):
         """
         Delete a user.
         """
-        user = db.query(T_UserInfo).filter(T_UserInfo.UI_ID == user_id).first()
-        if user:
-            db.delete(user)
+        if user_to_delete:
+            db.delete(user_to_delete)
             db.commit()
-        return user
+        return user_to_delete
 
     def update_user_password(self, db: Session, user: T_UserInfo, new_passwordhash: str):
         """

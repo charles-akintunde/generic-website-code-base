@@ -4,6 +4,7 @@ Authentication utilities.
 
 import os
 from datetime import datetime, timedelta , timezone
+from jose.exceptions import ExpiredSignatureError, JWTError
 from fastapi import Depends, HTTPException, status
 from typing_extensions import deprecated
 from jose import JWTError, jwt
@@ -16,6 +17,7 @@ from sqlalchemy.orm import Session
 from app.crud.user_info import user_crud
 from app.database import get_db
 from app.models.user_info import T_UserInfo
+from app.crud.blacklisted_token import blacklisted_token_crud
 
 
 SECRET_KEY = settings.AUTH_SECRET_KEY
@@ -167,7 +169,7 @@ def create_confirmation_token(email: str):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def verify_token(token: str):
+def verify_token(db: Session, token: str):
     """
     Verify a JWT confirmation token.
 
@@ -182,7 +184,11 @@ def verify_token(token: str):
     """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if blacklisted_token_crud.is_token_blacklisted(db=db, token=token):
+            return None
         return payload
+    except ExpiredSignatureError:
+        return None
     except JWTError:
         return None
     

@@ -3,6 +3,7 @@ Schemas for the User model.
 """
 
 from datetime import datetime
+from fastapi import File, UploadFile
 from pydantic import BaseModel, EmailStr
 from typing import Any, Optional
 import uuid
@@ -13,8 +14,8 @@ class UserBase(BaseModel):
     Base schema for user attributes.
     """
        
-    UI_FirstName: str 
-    UI_LastName: str 
+    UI_FirstName: Optional[str] = None 
+    UI_LastName: Optional[str] = None 
     UI_City: Optional[str] = None
     UI_Province: Optional[str] = None 
     UI_Country: Optional[str] = None
@@ -29,7 +30,9 @@ class UserDelete(BaseModel):
 
 
 class UserProfileUpdate(UserBase):
-    UI_ID: uuid.UUID
+    UI_ID: Optional[str] = None
+    UI_Photo: Optional[UploadFile] = File(None)
+
 
 
 class UserRoleUpdate(BaseModel):
