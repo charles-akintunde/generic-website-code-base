@@ -111,5 +111,5 @@ yarn-error.log
 .pnp.js
 
 
-backend/app/static/
-backend/app/static/**
+backend/static/
+backend/static/**

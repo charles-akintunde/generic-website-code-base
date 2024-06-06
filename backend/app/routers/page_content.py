@@ -28,8 +28,6 @@ async def create_page_content_endpoint(
     PC_ThumbImg: Optional[UploadFile] = File(None),
     PC_Resource: Optional[UploadFile] = File(None),
     PC_IsHidden: bool = Form(...),
-    PC_CreatedAt: Optional[str] = Form(None),
-    PC_LastUpdatedAt: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     current_user: T_UserInfo = Depends(get_current_user)
 ):
@@ -52,19 +50,11 @@ async def create_page_content_endpoint(
         PC_Title=PC_Title,
         PC_Content=json.loads(PC_Content) if PC_Content else None,  # Convert JSON string to dict
         PC_IsHidden=PC_IsHidden,
-        PC_CreatedAt=PC_CreatedAt,
-        PC_LastUpdatedAt=PC_LastUpdatedAt
+        PC_ThumbImg=PC_ThumbImg,
+        PC_Resource=PC_Resource
     )
 
-        if PC_ThumbImg:
-            thumbnail_url=await save_file(PC_ThumbImg, settings.THUMBNAILS_FILE_PATH)
-            page_content_data.PC_ThumbImgURL = str(thumbnail_url) 
-
-        if PC_Resource:
-            resource_url=await save_file(PC_Resource, settings.RESOURCE_FILE_PATH)
-            page_content_data.PC_DisplayURL = str(resource_url) 
-
-        new_page_content = create_page_content(
+        new_page_content = await create_page_content(
             db=db,
             user = current_user,
             page_content=page_content_data

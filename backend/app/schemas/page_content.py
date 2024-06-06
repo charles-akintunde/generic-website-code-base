@@ -24,6 +24,8 @@ class PageContent(BaseModel):
     PC_IsHidden: bool
 
 class PageContentCreateRequest(PageContent):
+    PC_Resource: Optional[UploadFile] = None
+    PC_ThumbImg: Optional[UploadFile] = None
     pass
 
 class PageContentResponse(PageContent):

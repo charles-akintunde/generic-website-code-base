@@ -76,7 +76,7 @@ class User(UserBase):
     UI_ID: uuid.UUID
     UI_Email: Optional[EmailStr] = None
     class Config:
-        orm_mode = True
+        form_attributes = True
 
 class UserOut(UserBase):
     """
@@ -90,7 +90,7 @@ class UserOut(UserBase):
 
     class Config:
         from_attributes = True
-        orm_mode = True  # Enable ORM mode
+        form_attributes = True  # Enable ORM mode
 
     @classmethod
     def from_orm(cls, obj: Any) -> 'UserOut':

@@ -14,4 +14,4 @@ class BlackListedToken(BaseModel):
     BT_TokenBlackListedTime: datetime
 
     class Config:
-        orm_mode = True
+        form_attributes = True

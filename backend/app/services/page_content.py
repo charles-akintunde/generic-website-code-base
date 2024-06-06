@@ -16,7 +16,7 @@ from app.utils.file_utils import delete_and_save_file, delete_file, extract_path
 from app.config import settings
 from app.models.enums import E_PageType
 
-def create_page_content(
+async def create_page_content(
         db: Session,
         user: T_UserInfo,
         page_content: PageContentCreateRequest):
@@ -59,7 +59,8 @@ def create_page_content(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Page content title cannot be empty."
         )
-    
+
+
     existing_page_content = page_content_crud.get_page_content(
         page_id=page_content.PG_ID,
         page_content_title=page_content.PC_Title,
@@ -71,7 +72,23 @@ def create_page_content(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Page content with title ({page_content.PC_Title}) already exists."
         )
+
+    if page.PG_Type == E_PageType.SinglePage and len(page.PG_PageContents) >= 1: # type: ignore
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Single pages cannot take more than one item."
+        )
     
+    if page_content.PC_ThumbImg:
+            thumbnail_url=await save_file(page_content.PC_ThumbImg, settings.THUMBNAILS_FILE_PATH)
+            page_content.PC_ThumbImgURL = str(thumbnail_url) 
+    delattr(page_content, "PC_ThumbImg")
+
+    if page_content.PC_Resource:
+            resource_url=await save_file(page_content.PC_Resource, settings.RESOURCE_FILE_PATH)
+            page_content.PC_DisplayURL = str(resource_url) 
+    delattr(page_content, "PC_Resource")
+
     new_page_content = page_content_crud.create_page_content(
         db=db,
         page_content= page_content)

@@ -65,6 +65,7 @@ def delete_file(file_path: str) -> None:
     try:
         if os.path.exists(file_path):
             os.remove(file_path)
+            print("IMG Remove Successfully")
         else:
             raise FileNotFoundError("File not found")
     except (FileNotFoundError, PermissionError, OSError) as e:
