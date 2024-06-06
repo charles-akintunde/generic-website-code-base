@@ -109,3 +109,7 @@ yarn-error.log
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.js
+
+
+backend/static/
+backend/static/**

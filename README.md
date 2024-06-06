@@ -61,7 +61,7 @@ The Generic Website Code-base is a content management system designed to facilit
     Create a `.env` file in the `backend/user_management` directory and add the following:
 
     ```plaintext
-    DATABASE_URL=postgresql://charles:usermanagementpass@db/user_management_service
+    DATABASE_URL=postgresql://{user}:{password}@{host}:{port}/{database}
     ```
 
 5. **Run Docker Containers**:
