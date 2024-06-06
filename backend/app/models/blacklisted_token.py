@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, String,DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from . import Base 
@@ -16,4 +16,4 @@ class T_BlackListedToken(Base):
     BT_RefreshToken = Column(String(512))
     BT_AccessTokenExp=Column(DateTime)
     BT_RefreshTokenExp=Column(DateTime)
-    BT_TokenBlackListedTime=Column(DateTime, default=datetime.utcnow)
+    BT_TokenBlackListedTime=Column(DateTime, default=datetime.now(timezone.utc))

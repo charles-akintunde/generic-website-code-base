@@ -11,7 +11,7 @@ class BlackListedToken(BaseModel):
     BT_RefreshToken: str
     BT_AccessTokenExp: datetime
     BT_RefreshTokenExp: datetime
-    BT_BlackListedTime: datetime
+    BT_TokenBlackListedTime: datetime
 
     class Config:
         orm_mode = True

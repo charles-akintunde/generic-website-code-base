@@ -101,7 +101,7 @@ async def logi_endpoint(response: Response, user_login: UserLogin, db: Session =
     """
 
     try:
-        token = authenticate_user(db, user_login.UI_Email, user_login.UI_Password, response)
+        token = authenticate_user(db=db, email=user_login.UI_Email, password=user_login.UI_Password, response=response)
         return success_response("Login successful", data=token.dict())
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)

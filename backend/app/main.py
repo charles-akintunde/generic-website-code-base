@@ -6,20 +6,26 @@ This module initializes the FastAPI application and includes the routers.
 import logging
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from contextlib import asynccontextmanager
+
 from app.database import engine, Base
 from app.logging_config import setup_logging
-from app.routers import page
 from app.config import settings
 from app.middleware import ExceptionHandlingMiddleware
 from app.utils.response import error_response
-from app.routers import page_content
-from app.routers import auth, user_info
-from app.routers import user_info
+from app.routers import page, page_content, auth, user_info
 from app.tests import test_auth
+from app.scheduler.token_cleaner import start_token_cleaner_scheduler
 
 # Set up logging
 setup_logging()
 logger = logging.getLogger(__name__)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup code here
+    start_token_cleaner_scheduler()
+    yield
 
 def create_app() -> FastAPI:
     """
@@ -28,8 +34,8 @@ def create_app() -> FastAPI:
     Returns:
         app (FastAPI): The configured FastAPI application.
     """
-    # Initialize FastAPI application
-    app = FastAPI()
+    # Initialize FastAPI application with lifespan
+    app = FastAPI(lifespan=lifespan)
 
     # Add the middleware
     app.add_middleware(ExceptionHandlingMiddleware)
@@ -59,7 +65,7 @@ def create_app() -> FastAPI:
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
     # Include routers with common prefix
-    app.include_router(test_auth.router,prefix=f"", tags=["tests"])
+    app.include_router(test_auth.router, prefix="", tags=["tests"])
     app.include_router(auth.router, prefix=f"{service_prefix}/auth", tags=["auth"])
     app.include_router(user_info.router, prefix=f"{service_prefix}/users", tags=["users"])
     app.include_router(page.router, prefix=f"{service_prefix}/pages", tags=["page"])

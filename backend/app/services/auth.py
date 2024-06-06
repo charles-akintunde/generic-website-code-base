@@ -13,11 +13,12 @@ from sqlalchemy.orm import Session
 from app.schemas.user_info import Token, User, UserCreate
 from app.crud.user_info import  user_crud
 from passlib.context import CryptContext
-from app.core.auth import create_access_token, create_confirmation_token, create_refresh_token, verify_password, verify_token
+from app.core.auth import create_access_token, create_confirmation_token, create_refresh_token, verify_password, verify_token, verify_token_raises_error
 from app.core.email import send_confirmation_email, send_password_reset_email
 from app.schemas.user_info import UserOut
 from app.models.enums import E_Status
 from app.schemas.blacklisted_token import BlackListedToken
+from app.crud.blacklisted_token import blacklisted_token_crud
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -34,7 +35,7 @@ def confirm_password_reset(db: Session, token: str, new_password: str):
         HTTPException: If token is invalid or expired.
         HTTPException: If user is not found.
     """
-    payload = verify_token(token)
+    payload = verify_token_raises_error(db=db, token=token)
     if not payload:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired token")
     
@@ -184,16 +185,18 @@ def logout_user(access_token: str, refresh_token: str, db: Session):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User was never logged in or tokens are invalid",
         )
-    
+
     if access_token_payload or refresh_token_payload:
         access_token_expires_at = datetime.fromtimestamp(access_token_payload['exp'], tz=timezone.utc) # type: ignore
         refresh_token_expires_at = datetime.fromtimestamp(refresh_token_payload['exp'], tz=timezone.utc) # type: ignore
+        print(access_token_expires_at,refresh_token_expires_at,)
         blacklisted_token_data = BlackListedToken(
             BT_AccessToken=access_token,
             BT_RefreshToken=refresh_token,
             BT_AccessTokenExp=access_token_expires_at,
             BT_RefreshTokenExp=refresh_token_expires_at,
-            BT_BlackListedTime=datetime.utcnow, # type: ignore
+            BT_TokenBlackListedTime=datetime.now(timezone.utc), 
         )
+        blacklisted_token=blacklisted_token_crud.add_token_to_blacklist(db=db, token_data=blacklisted_token_data)
 
-    return blacklisted_token_data
+    return blacklisted_token

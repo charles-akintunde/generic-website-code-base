@@ -4,7 +4,7 @@
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, timezone
 from app.models.blacklisted_token import T_BlackListedToken
 from app.schemas.blacklisted_token import BlackListedToken
 
@@ -25,7 +25,7 @@ class BlackListedTokenCRUD:
             db_token (T_BlackListedToken)
         """
         
-        db_token = T_BlackListedToken(**token_data.dict())
+        db_token = T_BlackListedToken(**token_data.model_dump())
         db.add(db_token)
         db.commit()
         db.refresh(db_token)
@@ -46,11 +46,11 @@ class BlackListedTokenCRUD:
             None
         """
         return db.query(T_BlackListedToken).filter(
-        (T_BlackListedToken.access_token == token) |
-        (T_BlackListedToken.refresh_token == token)
+        (T_BlackListedToken.BT_AccessToken == token) |
+        (T_BlackListedToken.BT_RefreshToken == token)
     ).first() is not None
 
-    def removed_expired_tokens(
+    def remove_expired_tokens(
             self,
             db: Session,
     ):
@@ -64,10 +64,11 @@ class BlackListedTokenCRUD:
             None
         """
         try:
-            current_time = datetime.utcnow
+            print("I WAS CALLED")
+            current_time = datetime.now(timezone.utc)
             db.query(T_BlackListedToken).filter(
-                (T_BlackListedToken.access_token_expires_at < current_time) |
-                (T_BlackListedToken.refresh_token_expires_at < current_time)
+                (T_BlackListedToken.BT_AccessTokenExp < current_time) |
+                (T_BlackListedToken.BT_RefreshTokenExp < current_time)
             ).delete()
             db.commit()
         except HTTPException as e:

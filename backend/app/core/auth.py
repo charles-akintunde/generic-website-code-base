@@ -4,11 +4,12 @@ Authentication utilities.
 
 import os
 from datetime import datetime, timedelta , timezone
+import stat
 from jose.exceptions import ExpiredSignatureError, JWTError
 from fastapi import Depends, HTTPException, status
 from typing_extensions import deprecated
 from jose import JWTError, jwt
-from typing import Optional
+from typing import Dict, Optional
 from dotenv import load_dotenv
 from app.config import settings
 from passlib.context import CryptContext
@@ -78,7 +79,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = verify_token_raises_error(db=db, token=token)
+        if not payload:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired token")
         email: str = str(payload.get("sub"))
         if email is None:
             raise credentails_exception
@@ -192,3 +195,36 @@ def verify_token(db: Session, token: str):
     except JWTError:
         return None
     
+def verify_token_raises_error(db: Session, token: str) -> Dict:
+    """
+    Verify a JWT confirmation token.
+
+    Args:
+        token (str): JWT token to verify.
+
+    Returns:
+        str: email contained in the token if valid.
+    
+    Raises:
+        JWTError: If the token is invliad or expired.
+    """
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if blacklisted_token_crud.is_token_blacklisted(db=db, token=token):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="You are not logged in"
+            )
+        return payload
+    except ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired token"
+            )
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired token"
+         )
+    
+
