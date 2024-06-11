@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import MenuItems from '../menu-items/MenuItems';
 import appLogo from '@/assets/icons/gw-logo.png';
 import Image from 'next/image';
+import Logo from '@/components/common/Logo';
 
 const Drawer: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -26,33 +27,22 @@ const Drawer: React.FC = () => {
   };
 
   return (
-    <div className="hidden">
-      <Sheet open={isDrawerOpen} onOpenChange={handleClose}>
-        <SheetContent side={'left'}>
-          <SheetHeader>
-            <div className="flex items-center">
-              <Image
-                src={appLogo}
-                alt="App logo"
-                width={40}
-                height={40}
-                className="h-10 w-auto"
-              />
-              <p className="text-base font-bold">Generic Website</p>
-            </div>
-          </SheetHeader>
-          <div>
-            <MenuItems />
+    <Sheet open={isDrawerOpen} onOpenChange={handleClose}>
+      <SheetContent side={'left'}>
+        <SheetHeader>
+          <div className="flex items-center pl-6">
+            <Logo />
           </div>
+        </SheetHeader>
+        <MenuItems />
 
-          {/* <SheetFooter>
+        <SheetFooter className="absolute pl-6 bottom-4">
           <SheetClose asChild>
-            <Button type="submit">Save changes</Button>
+            <Button type="submit">{'Logout'}</Button>
           </SheetClose>
-        </SheetFooter> */}
-        </SheetContent>
-      </Sheet>
-    </div>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 };
 

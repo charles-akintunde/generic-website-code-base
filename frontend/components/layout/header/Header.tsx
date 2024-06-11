@@ -8,6 +8,7 @@ import Drawer from '../drawer/Drawer';
 import Image from 'next/image';
 import MenuItems from '../menu-items/MenuItems';
 import LgNavigation from '../navigation/LgNavigation';
+import Logo from '@/components/common/Logo';
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -22,19 +23,12 @@ const Header: React.FC = () => {
         <div className="container mx-auto flex items-center h-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
-              <Image
-                src={logo}
-                alt="App logo"
-                width={40}
-                height={40}
-                className="h-10 w-auto"
-              />
-              <p className="text-base font-bold">Generic Website</p>
+              <Logo />
             </div>
           </div>
           <div className="flex-1 flex justify-end">
             <div className="hidden lg:block">
-              <LgNavigation />
+              <MenuItems />
             </div>
             <div
               className="block lg:hidden cursor-pointer"
