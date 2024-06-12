@@ -38,3 +38,20 @@ def check_page_permission(page_accessible_to: List[E_UserRole] , user_role: E_Us
             detail="You are not authorized to access this page.")
 
 
+def to_kebab_case(s: str) -> str:
+    """
+    Convert a string from 'Path Name' format to 'path-name' format.
+    
+    Args:
+        s (str): The input string in 'Path Name' format.
+        
+    Returns:
+        str: The converted string in 'path-name' format.
+    """
+    # Convert the string to lowercase
+    s = s.lower()
+    
+    # Replace spaces with hyphens
+    s = s.replace(' ', '-')
+    
+    return s

@@ -6,7 +6,7 @@
 from typing import Any, List
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from app.schemas.page import GetPageRequest, PageCreate, PageMultipleContent, PageResponse, PageUpdateRequest
+from app.schemas.page import GetPageRequest, PageCreate, PageMultipleContent, PageResponse, PageUpdateRequest, PagesResponse
 from app.crud.page import page_crud
 from app.crud.user_info import user_crud
 from app.models.enums import E_UserRole
@@ -14,7 +14,7 @@ from app.models.page import T_Page
 from app.core.auth import get_current_user_without_exception
 from app.utils.utils import check_page_permission, is_admin
 from app.models.user_info import T_UserInfo
-from app.utils.response_json import build_page_content_json
+from app.utils.response_json import build_page_content_json, build_multiple_page_response
 
 def create_new_page(db: Session, page: PageCreate):
     """
@@ -39,6 +39,29 @@ def create_new_page(db: Session, page: PageCreate):
         )
 
     return new_page
+
+def get_pages(db: Session) -> PagesResponse:
+    """
+    Service to create new page.
+
+    db (Session): Database Session.
+    """
+
+    try:
+        pages : List[T_Page] = page_crud.get_pages(db=db);
+        pages_response = []
+        for page in pages:
+            pages_response.append(build_multiple_page_response(page))
+        
+        return PagesResponse(
+            Pages=pages_response
+        )
+        
+    except HTTPException as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={e.detail}
+        )
 
 def get_page(
         db: Session, 

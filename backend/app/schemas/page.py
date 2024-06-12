@@ -38,4 +38,7 @@ class PageUpdateRequest(BaseModel):
     PG_Name: Optional[str] = None
     PG_Permission: Optional[List[E_UserRole]] = None
 
+class PagesResponse(BaseModel):
+    Pages: List[PageResponse]
+
 

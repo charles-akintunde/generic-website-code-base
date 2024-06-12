@@ -2,12 +2,12 @@
     Manages CRUD operations for pages.
 """
 
-from typing import Any
+from typing import Any, List
 
 from fastapi import HTTPException, status
 from app.schemas.page import PageCreate
 from app.models.page import T_Page
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only
 from app.crud.page_content import page_content_crud
 from app.models.enums import E_UserRole
 from app.crud import page_content
@@ -70,6 +70,15 @@ class PageCRUD:
         """
         return db.query(T_Page).filter(T_Page.PG_ID == page_id).first()
     
+
+
+    def get_pages(self, db: Session) -> List[T_Page]:
+        """
+        Get pages for menu items, excluding page content and others.
+        """
+        return db.query(T_Page).options(load_only(T_Page.PG_ID, T_Page.PG_Type, T_Page.PG_Name, T_Page.PG_Permission)).all() # type: ignore
+
+
     def remove_page_content(self, db: Session, page: T_Page):
         """
         Remove page content from db.

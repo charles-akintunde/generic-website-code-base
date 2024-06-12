@@ -1,6 +1,7 @@
 import React from 'react';
 import MenuItem from './MenuItem';
 import { MenuItemProps } from '@/types/commonTypes';
+import useMenuItems from '@/hooks/api-hooks/useMenuItems';
 
 const menuItems = [
   { name: 'Home', href: '/', display: false },
@@ -12,6 +13,7 @@ const menuItems = [
 ];
 
 const MenuItems = () => {
+  const { menuItems } = useMenuItems();
   return (
     <div className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6">
       {menuItems.map((menuItem, index) => (

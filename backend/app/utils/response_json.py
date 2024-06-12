@@ -9,7 +9,7 @@ from app.models.user_info import T_UserInfo
 from app.schemas.page_content import PageContentResponse
 from app.models.page_content import T_PageContent
 from app.models.page import T_Page
-from app.schemas.page import PageSingleContent
+from app.schemas.page import PageResponse, PageSingleContent
 
 
 def build_page_content_json(page_content : T_PageContent, user: T_UserInfo) -> Union[PageContentResponse, Any]:
@@ -55,3 +55,19 @@ def build_page_json_with_single_content(
         PG_PageContent=page_content
     )
 
+def build_multiple_page_response(page: T_Page) -> PageResponse:
+    """
+    Build page with response.
+
+    Args
+        page (T_Page)
+
+    Returns
+        page (PageResponse)
+    """
+    return PageResponse(
+        PG_ID=str(page.PG_ID),
+        PG_Type=page.PG_Type.value,  # Assuming you want the enum's value as a string
+        PG_Name=str(page.PG_Name),
+        PG_Permission=[perm.value for perm in page.PG_Permission]  # Convert enum list to string list
+    )
