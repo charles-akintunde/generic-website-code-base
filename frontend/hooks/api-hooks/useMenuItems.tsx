@@ -1,52 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { useGetMenuItemsQuery } from '@/api/menuApi';
-import { useNotification } from '@/components/common/NotificationProvider';
+import { useNotification } from '@/components/hoc/NotificationProvider';
+import { IPageMenuItem } from '@/types/componentInterfaces';
+import { PAGES_DIR_ALIAS } from 'next/dist/lib/constants';
+import { Page } from '@/types/backendResponseInterfaces';
+import { toKebabCase } from '@/utils/helper';
+import { systemMenuItems } from '@/components/layout/menu-items';
 
 const useMenuItems = () => {
-  const { data, error, isLoading, isSuccess } = useGetMenuItemsQuery();
-  // const { notify, notifyWithAction } = useNotification();
-  const [menuItems, setMenuItems] = useState<any[]>([]);
-  console.log(error, 'error');
-
-  console.log(data, 'Menu ITEMS');
+  const { data: menuItemData, isLoading } = useGetMenuItemsQuery();
+  const [menuItems, setMenuItems] = useState<IPageMenuItem[]>([]);
 
   useEffect(() => {
-    if (isLoading) {
-      // notify('Loading menu items...', '', 'info');
+    if (menuItemData && menuItemData?.data) {
+      const dynamicMenuItems = menuItemData?.data.Pages.map((page: Page) => ({
+        pageId: page.PG_ID,
+        pageName: page.PG_Name,
+        pagePermission: page.PG_Permission,
+        pageType: page.PG_Type,
+        isHidden: false,
+        href: `/${toKebabCase(page.PG_Name)}`,
+      }));
+      const combinedMenuItems = [...systemMenuItems, ...dynamicMenuItems];
+      setMenuItems(combinedMenuItems);
     }
-  }, [isLoading]);
+  }, [menuItemData]);
 
-  useEffect(() => {
-    if (isSuccess && data) {
-      setMenuItems(data);
-      // notify('Menu items loaded successfully!', '', 'success');
-    }
-  }, [isSuccess, data]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      // notify('Menu items loaded successfully!', '', 'success');
-    }
-  }, [isSuccess]);
-
-  // useEffect(() => {
-  //   if (error) {
-  //     notifyWithAction(
-  //       'Failed to load menu items.',
-  //       'Would you like to retry?',
-  //       () => {
-  //         // Retry logic here
-  //         window.location.reload();
-  //       },
-  //       () => {
-  //         // Cancel logic here
-  //         console.log('User canceled the retry action');
-  //       }
-  //     );
-  //   }
-  // }, [error, notifyWithAction]);
-
-  return { menuItems, error, isLoading };
+  return { menuItems, isLoading };
 };
 
 export default useMenuItems;

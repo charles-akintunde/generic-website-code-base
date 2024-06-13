@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import StoreProvider from '@/components/common/StoreProvider';
+import StoreProvider from '@/components/hoc/StoreProvider';
 import Layout from '@/components/layout/Layout';
 import '@/styles/globals.css';
+import RouteGuard from '@/components/hoc/RouteGuard';
 
 export const metadata: Metadata = {
   title: 'Generic Website',
@@ -17,7 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans">
         <StoreProvider>
-          <Layout>{children}</Layout>
+          <RouteGuard> {children}</RouteGuard>
         </StoreProvider>
       </body>
     </html>

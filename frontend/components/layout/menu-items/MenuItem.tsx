@@ -1,16 +1,18 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { MenuItemProps } from '@/types/commonTypes';
+import { IPageMenuItem } from '@/types/componentInterfaces';
 import Link from 'next/link';
 import cx from 'classnames';
 import { usePathname } from 'next/navigation';
 import { closeDrawer } from '@/store/slice/layoutSlice';
 import { useAppDispatch } from '@/hooks/reduxHooks';
 
-const MenuItem: React.FC<MenuItemProps> = ({ menuItem, href, display }) => {
+const MenuItem: React.FC<IPageMenuItem> = ({ pageName, href, isHidden }) => {
   const pathname = usePathname();
   const [isActive, setIsActive] = useState(false);
   const dispatch = useAppDispatch();
+
+  console.log(pathname, href, 'pathname');
 
   const handleClose = () => {
     dispatch(closeDrawer());
@@ -32,13 +34,13 @@ const MenuItem: React.FC<MenuItemProps> = ({ menuItem, href, display }) => {
       className={cx(
         'text-xs cursor-pointer pl-6 p-4 transition-all duration-300 ease-in-out lg:hover:bg-transparent hover:text-primary  md:hover:bg-blue-500 md:hover:bg-opacity-20',
         {
-          hidden: display,
+          hidden: isHidden,
           'text-primary md:bg-blue-500 md:bg-opacity-20 lg:bg-transparent md:border-r-2 lg:border-b-2 lg:border-0 md:border-primary ':
             isActive,
         }
       )}
     >
-      <nav className="text-xs">{menuItem}</nav>
+      <nav className="text-xs">{pageName}</nav>
     </Link>
   );
 };

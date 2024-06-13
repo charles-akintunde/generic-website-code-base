@@ -1,21 +1,22 @@
 import store from '@/store';
 import { NotificationPlacement } from 'antd/lib/notification/interface';
+import { EPageType, EUserRole } from './enums';
+import { ReactNode } from 'react';
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
-export type MenuItemProps = {
-  menuItem: string;
-  href: string;
-  display: boolean;
-};
-
 export type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
-export interface IMenuItem {
-  id: string;
-  // name: string;
-  // href: string;
+export interface IPage {
+  pageId?: string;
+  pageName: string;
+  pagePermission?: EUserRole[];
+  pageType?: EPageType;
+}
+
+export interface IPageMenuItem extends IPage {
+  href: string;
+  isHidden: boolean;
 }
 
 export interface INotificationContextProps {
@@ -31,4 +32,8 @@ export interface INotificationContextProps {
     onConfirm: () => void,
     onCancel?: () => void
   ) => void;
+}
+
+export interface IReactNode {
+  children: ReactNode;
 }
