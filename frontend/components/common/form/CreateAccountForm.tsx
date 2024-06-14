@@ -1,18 +1,20 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import FormField from '../FormField';
 import { Form } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { accountCreationSchema } from '@/utils/formSchema';
-import LoadingButton from '../LoadingButton';
+import LoadingButton from '../button/LoadingButton';
 import Link from 'next/link';
 import { useCreateAccount } from '@/hooks/api-hooks/useCreateAccount';
 import { ICreatAccount } from '@/types/componentInterfaces';
+import AppRequestResult from '../AppRequestResult';
 
 const CreateAccountForm = () => {
-  const { submitCreateAccount, isLoading, isError } = useCreateAccount();
+  const { submitCreateAccount, isLoading, isError, isSuccess, successMessage } =
+    useCreateAccount();
   const form = useForm<z.infer<typeof accountCreationSchema>>({
     resolver: zodResolver(accountCreationSchema),
     defaultValues: {
@@ -27,43 +29,65 @@ const CreateAccountForm = () => {
     await submitCreateAccount(data);
   };
 
+  useEffect(() => {
+    if (isSuccess) {
+      form.reset();
+    }
+  }, [isSuccess, form]);
+
+  if (isSuccess) {
+    return (
+      <AppRequestResult
+        status="success"
+        title="Success"
+        subTitle={successMessage}
+      />
+    );
+  }
+
   return (
     <div className="max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-3 text-primary">Create Account</h2>
+      <h2 className="text-xl font-bold mb-3  text-gray-800">Create Account</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="firstname"
-            label="First Name"
-            placeholder="Your First Name"
-          />
-          <FormField
-            control={form.control}
-            name="lastname"
-            label="Last Name"
-            placeholder="Your Last Name"
-          />
+          <div className="flex justify-center space-x-4">
+            <FormField
+              control={form.control}
+              name="firstname"
+              label="First Name"
+              placeholder="Your First Name"
+            />
+            <FormField
+              control={form.control}
+              name="lastname"
+              label="Last Name"
+              placeholder="Your Last Name"
+            />
+          </div>
+
           <FormField
             control={form.control}
             name="email"
             label="Email"
             placeholder="example@genericapp.com"
           />
-          <FormField
-            control={form.control}
-            name="password"
-            label="Password"
-            placeholder="******"
-            type="password"
-          />
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            label="Confirm Password"
-            placeholder="******"
-            type="password"
-          />
+          <div className="flex justify-center space-x-4">
+            <FormField
+              control={form.control}
+              name="password"
+              label="Password"
+              placeholder="******"
+              type="password"
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              label="Confirm Password"
+              placeholder="******"
+              type="password"
+            />
+          </div>
+
           <LoadingButton
             buttonText="Create Account"
             loading={isLoading}
@@ -74,7 +98,7 @@ const CreateAccountForm = () => {
       <div className="mt-6 text-center">
         <p className="text-gray-600">
           Already have an account?{' '}
-          <Link href="/sign-up" legacyBehavior passHref>
+          <Link href="/sign-in" legacyBehavior passHref>
             <a className="text-blue-500 font-medium hover:underline">Sign In</a>
           </Link>
         </p>

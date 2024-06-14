@@ -4,14 +4,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Form } from '@/components/ui/form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { loginSchema } from '@/utils/formSchema';
 import Logo from '../Logo';
 import FormField from '../FormField';
 import Link from 'next/link';
-import LoadingButton from '../LoadingButton';
+import LoadingButton from '../button/LoadingButton';
+import useUserLogin from '@/hooks/api-hooks/useUserLogin';
+import { IUserLogin } from '@/types/componentInterfaces';
 
 export function LoginForm() {
+  const { sendLoginRequest, isSuccess, isLoading } = useUserLogin();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -19,21 +22,21 @@ export function LoginForm() {
       password: '',
     },
   });
-  const [loading, setLoading] = useState(false);
 
-  const onSubmit = async (data: any) => {
-    setLoading(true);
-    try {
-      // handle form submission
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (isSuccess) {
+      form.reset();
     }
+  }, [isSuccess, form]);
+
+  const onSubmit = async (userLoginData: IUserLogin) => {
+    await sendLoginRequest(userLoginData);
   };
 
   return (
     <>
       <div className="max-w-md mx-auto">
-        <h2 className="text-xl font-bold mb-3  text-primary">Login</h2>
+        <h2 className="text-xl font-bold mb-3  text-gray-800">Login</h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -49,7 +52,11 @@ export function LoginForm() {
               placeholder="******"
               type="password"
             />
-            <LoadingButton buttonText="Login" loading={loading} type="submit" />
+            <LoadingButton
+              buttonText="Login"
+              loading={isLoading}
+              type="submit"
+            />
           </form>
         </Form>
         <div className="mt-6 text-center">

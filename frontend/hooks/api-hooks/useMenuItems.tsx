@@ -8,7 +8,12 @@ import { toKebabCase } from '@/utils/helper';
 import { systemMenuItems } from '@/components/hoc/layout/menu-items';
 
 const useMenuItems = () => {
-  const { data: menuItemData, isLoading } = useGetMenuItemsQuery();
+  const {
+    data: menuItemData,
+    isLoading,
+    isFetching,
+    isSuccess,
+  } = useGetMenuItemsQuery();
   const [menuItems, setMenuItems] = useState<IPageMenuItem[]>([]);
 
   useEffect(() => {
@@ -26,7 +31,7 @@ const useMenuItems = () => {
     }
   }, [menuItemData]);
 
-  return { menuItems, isLoading };
+  return { menuItems, isLoading, isFetching, isSuccess };
 };
 
 export default useMenuItems;

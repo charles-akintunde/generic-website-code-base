@@ -4,3 +4,12 @@ export interface ICreatAccountRequest {
   UI_Email: string;
   UI_Password: string;
 }
+
+export interface IToken {
+  token: string;
+}
+
+export interface IUserLoginRequest {
+  UI_Email: string;
+  UI_Password: string;
+}

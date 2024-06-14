@@ -3,12 +3,15 @@ import { useCreateAccountMutation } from '@/api/authApi';
 import { useNotification } from '@/components/hoc/NotificationProvider';
 import { ICreatAccountRequest } from '@/types/requestInterfaces';
 import { ICreatAccount } from '@/types/componentInterfaces';
-import { IGenericResponse } from '@/types/backendResponseInterfaces';
 
 export const useCreateAccount = () => {
   const [createAccount, { isLoading, isError, error, isSuccess }] =
     useCreateAccountMutation();
-  const { notify, notifyWithAction } = useNotification();
+  const { notify } = useNotification();
+  const [successMessage, setSuccessMessage] = useState<string>(
+    'Your account has been created. Go to you mail to complete verification.'
+  );
+  const [errorMessage, setErrorMessage] = useState<string>('An error occurred');
 
   const submitCreateAccount = async (data: ICreatAccount) => {
     try {
@@ -20,18 +23,14 @@ export const useCreateAccount = () => {
       };
       const response = await createAccount(creatAccountRequest).unwrap();
 
-      if (response.data) {
-        notify(
-          'Success',
-          response.data.message ||
-            'User verified successfully. Go to you mail to complete verification.',
-          'success'
-        );
+      if (response) {
+        console.log(response);
+        setSuccessMessage(response.message);
       }
     } catch (err: any) {
-      notify('Error', err.data.message || 'An error occurred', 'error');
+      notify('Error', err.data.message || errorMessage, 'error');
     }
   };
 
-  return { submitCreateAccount, isLoading, isError };
+  return { submitCreateAccount, isLoading, isError, isSuccess, successMessage };
 };

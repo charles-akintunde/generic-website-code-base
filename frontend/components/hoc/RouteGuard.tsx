@@ -10,14 +10,17 @@ interface IRouteGuard {
 }
 
 const RouteGuard: React.FC<IRouteGuard> = ({ children }) => {
-  const { menuItems } = useMenuItems(); // Removed isLoading
+  const { menuItems, isLoading } = useMenuItems(); // Removed isLoading
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     // Check if menuItems data is available
     if (menuItems && menuItems.length > 0) {
-      const isValidRoute = menuItems.some((item) => item.href === pathname);
+      const isValidRoute =
+        menuItems.some((item) => item.href === pathname) ||
+        pathname.startsWith('/confirm-user/account-creation') ||
+        pathname.startsWith('/confirm-user/reset-password');
       if (!isValidRoute) {
         router.replace('/404');
       }

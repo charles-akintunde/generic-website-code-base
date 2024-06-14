@@ -34,7 +34,7 @@ const PassowordResetForm = () => {
   };
   return (
     <div className="max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-3 text-primary">Reset Password</h2>
+      <h2 className="text-xl font-bold mb-3  text-gray-800">Reset Password</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField

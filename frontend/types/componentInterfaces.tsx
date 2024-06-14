@@ -1,8 +1,9 @@
 import store from '@/store';
 import { NotificationPlacement } from 'antd/lib/notification/interface';
 import { EPageType, EUserRole } from './enums';
-import { ReactNode } from 'react';
+import { ElementType, ReactNode } from 'react';
 import { Control, ControllerProps, FieldValues } from 'react-hook-form';
+import { string } from 'zod';
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
@@ -59,6 +60,25 @@ export interface ICreatAccount {
   email: string;
   password: string;
   confirmPassword: string;
+}
+
+export interface IAppRequestResult {
+  status: 'error' | 'success' | 'warning';
+  title: string;
+  subTitle?: string;
+  extra?: React.ReactNode;
+}
+
+export interface IUserLogin {
+  email: string;
+  password: string;
+}
+
+export interface IButton {
+  isRightPosition: boolean;
+  Icon: ElementType;
+  href: string;
+  buttonText: string;
 }
 
 // UI_FirstName: str

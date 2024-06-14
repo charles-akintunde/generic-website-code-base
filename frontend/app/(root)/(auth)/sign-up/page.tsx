@@ -1,4 +1,4 @@
-import CreateAccountForm from '@/components/common/forms/CreateAccountForm';
+import CreateAccountForm from '@/components/common/form/CreateAccountForm';
 import React from 'react';
 
 const SignUp = () => {
