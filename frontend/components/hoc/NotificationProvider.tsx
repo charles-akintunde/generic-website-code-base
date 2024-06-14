@@ -1,3 +1,4 @@
+'use client';
 import React, { PropsWithChildren, createContext, useContext } from 'react';
 import { notification, Modal } from 'antd';
 import { NotificationPlacement } from 'antd/lib/notification/interface';

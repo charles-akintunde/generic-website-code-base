@@ -5,7 +5,7 @@ import { IPageMenuItem } from '@/types/componentInterfaces';
 import { PAGES_DIR_ALIAS } from 'next/dist/lib/constants';
 import { Page } from '@/types/backendResponseInterfaces';
 import { toKebabCase } from '@/utils/helper';
-import { systemMenuItems } from '@/components/layout/menu-items';
+import { systemMenuItems } from '@/components/hoc/layout/menu-items';
 
 const useMenuItems = () => {
   const { data: menuItemData, isLoading } = useGetMenuItemsQuery();

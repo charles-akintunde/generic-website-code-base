@@ -16,6 +16,7 @@ from app.utils.response import error_response
 from app.routers import page, page_content, auth, user_info
 from app.tests import test_auth
 from app.scheduler.token_cleaner import start_token_cleaner_scheduler
+from fastapi.middleware.cors import CORSMiddleware
 
 # Set up logging
 setup_logging()
@@ -39,6 +40,20 @@ def create_app() -> FastAPI:
 
     # Add the middleware
     app.add_middleware(ExceptionHandlingMiddleware)
+
+    origins = [
+        settings.FRONTEND_URL,  # Your Next.js frontend
+        # Add other origins as needed
+    ]
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
 
     # Register custom exception handler
     @app.exception_handler(Exception)
@@ -87,15 +102,15 @@ def read_root():
     """
     return {"message": "Welcome to the User Management Service"}
 
-# Example of how to use settings in an endpoint
-@app.get("/settings")
-def get_settings():
-    """
-    Endpoint to test access to application settings.
-    """
-    return {
-        "secret_key": settings.AUTH_SECRET_KEY,
-        "database_url": settings.DATABASE_URL,
-        "mail_server": settings.MAIL_SERVER,
-        "frontend_url": settings.FRONTEND_URL,
-    }
+# # Example of how to use settings in an endpoint
+# @app.get("/settings")
+# def get_settings():
+#     """
+#     Endpoint to test access to application settings.
+#     """
+#     return {
+#         "secret_key": settings.AUTH_SECRET_KEY,
+#         "database_url": settings.DATABASE_URL,
+#         "mail_server": settings.MAIL_SERVER,
+#         "frontend_url": settings.FRONTEND_URL,
+  #  }

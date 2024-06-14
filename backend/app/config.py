@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     THUMBNAILS_FILE_PATH: str
     RESOURCE_FILE_PATH: str
     USER_PROFILE_FILE_PATH: str
+    COMPANY_NAME: str
 
     class Config:
         env_file = ".env"

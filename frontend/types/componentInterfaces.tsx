@@ -2,6 +2,7 @@ import store from '@/store';
 import { NotificationPlacement } from 'antd/lib/notification/interface';
 import { EPageType, EUserRole } from './enums';
 import { ReactNode } from 'react';
+import { Control, ControllerProps, FieldValues } from 'react-hook-form';
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
@@ -37,3 +38,30 @@ export interface INotificationContextProps {
 export interface IReactNode {
   children: ReactNode;
 }
+
+export interface IFormField {
+  control: Control<any>;
+  name: string;
+  label: string;
+  placeholder: string;
+  type?: string;
+}
+
+export interface ILoadingButton {
+  buttonText: string;
+  loading: boolean;
+  type?: 'button' | 'submit' | 'reset';
+}
+
+export interface ICreatAccount {
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+// UI_FirstName: str
+// UI_LastName: str
+// UI_Email: EmailStr
+// UI_Password: str

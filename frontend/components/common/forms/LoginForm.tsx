@@ -3,108 +3,73 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import Link from 'next/link';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form } from '@/components/ui/form';
 import { useState } from 'react';
-import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
-
-const formSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address.' }),
-  password: z
-    .string()
-    .min(6, { message: 'Password must be at least 6 characters.' }),
-});
+import { loginSchema } from '@/utils/formSchema';
+import Logo from '../Logo';
+import FormField from '../FormField';
+import Link from 'next/link';
+import LoadingButton from '../LoadingButton';
 
 export function LoginForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
       password: '',
     },
   });
+  const [loading, setLoading] = useState(false);
 
-  const [showPassword, setShowPassword] = useState(false);
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const onSubmit = async (data: any) => {
+    setLoading(true);
+    try {
+      // handle form submission
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-foreground mb-4">Log In</h1>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl className="relative">
-                  <Input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Your password"
-                    {...field}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                  >
-                    {showPassword ? (
-                      <EyeOutlined className="h-5 w-5 text-gray-500" />
-                    ) : (
-                      <EyeInvisibleOutlined className="h-5 w-5 text-gray-500" />
-                    )}
-                  </button>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button
-            type="submit"
-            className="w-full bg-primary text-primary-foreground"
-          >
-            Login
-          </Button>
-        </form>
-      </Form>
-      <div className="mt-4 text-center">
-        <Link href="#" className="text-primary">
-          Forgotten Password?
-        </Link>
-      </div>
-      <div className="mt-4 text-center">
-        <span className="text-muted-foreground">
-          Don't have an account yet?{' '}
-          <Link href="#" className="text-primary">
-            Create account
-          </Link>
-        </span>
+      <div className="max-w-md mx-auto">
+        <h2 className="text-xl font-bold mb-3  text-primary">Login</h2>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="email"
+              label="Email"
+              placeholder="user@genericapp.com"
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              label="Password"
+              placeholder="******"
+              type="password"
+            />
+            <LoadingButton buttonText="Login" loading={loading} type="submit" />
+          </form>
+        </Form>
+        <div className="mt-6 text-center">
+          <p className="text-gray-600">
+            Don’t have an account yet?{' '}
+            <Link href="/sign-up" legacyBehavior passHref>
+              <a className="text-blue-500 font-medium hover:underline">
+                Create Account
+              </a>
+            </Link>
+          </p>
+          <p className="text-gray-500 text-sm mt-2">
+            By clicking you agree to our{' '}
+            <Link href="/terms-and-services" legacyBehavior passHref>
+              <a className="text-blue-500 font-medium hover:underline">
+                Terms and Services
+              </a>
+            </Link>
+          </p>
+        </div>
       </div>
     </>
   );

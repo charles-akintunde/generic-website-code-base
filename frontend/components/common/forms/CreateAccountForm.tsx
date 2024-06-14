@@ -1,0 +1,94 @@
+'use client';
+import React, { useState } from 'react';
+import { z } from 'zod';
+import FormField from '../FormField';
+import { Form } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { accountCreationSchema } from '@/utils/formSchema';
+import LoadingButton from '../LoadingButton';
+import Link from 'next/link';
+import { useCreateAccount } from '@/hooks/api-hooks/useCreateAccount';
+import { ICreatAccount } from '@/types/componentInterfaces';
+
+const CreateAccountForm = () => {
+  const { submitCreateAccount, isLoading, isError } = useCreateAccount();
+  const form = useForm<z.infer<typeof accountCreationSchema>>({
+    resolver: zodResolver(accountCreationSchema),
+    defaultValues: {
+      firstname: '',
+      lastname: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
+  const onSubmit = async (data: ICreatAccount) => {
+    await submitCreateAccount(data);
+  };
+
+  return (
+    <div className="max-w-md mx-auto">
+      <h2 className="text-xl font-bold mb-3 text-primary">Create Account</h2>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="firstname"
+            label="First Name"
+            placeholder="Your First Name"
+          />
+          <FormField
+            control={form.control}
+            name="lastname"
+            label="Last Name"
+            placeholder="Your Last Name"
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            label="Email"
+            placeholder="example@genericapp.com"
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            label="Password"
+            placeholder="******"
+            type="password"
+          />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            label="Confirm Password"
+            placeholder="******"
+            type="password"
+          />
+          <LoadingButton
+            buttonText="Create Account"
+            loading={isLoading}
+            type="submit"
+          />
+        </form>
+      </Form>
+      <div className="mt-6 text-center">
+        <p className="text-gray-600">
+          Already have an account?{' '}
+          <Link href="/sign-up" legacyBehavior passHref>
+            <a className="text-blue-500 font-medium hover:underline">Sign In</a>
+          </Link>
+        </p>
+        <p className="text-gray-500 text-sm mt-2">
+          By clicking you agree to our{' '}
+          <Link href="/terms-and-services" legacyBehavior passHref>
+            <a className="text-blue-500 font-medium hover:underline">
+              Terms and Services
+            </a>
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default CreateAccountForm;

@@ -1,9 +1,8 @@
 'use client';
 
-import { ComponentType, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import useMenuItems from '@/hooks/api-hooks/useMenuItems';
-
 import { useRouter } from 'next/navigation';
 
 interface IRouteGuard {
@@ -11,25 +10,22 @@ interface IRouteGuard {
 }
 
 const RouteGuard: React.FC<IRouteGuard> = ({ children }) => {
-  const { menuItems, isLoading } = useMenuItems();
-  const [isMounted, setIsMounted] = useState(false);
+  const { menuItems } = useMenuItems(); // Removed isLoading
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isMounted && !isLoading) {
+    // Check if menuItems data is available
+    if (menuItems && menuItems.length > 0) {
       const isValidRoute = menuItems.some((item) => item.href === pathname);
       if (!isValidRoute) {
         router.replace('/404');
       }
     }
-  }, [menuItems, isLoading, pathname, router]);
+  }, [menuItems, pathname, router]); // Include menuItems, pathname, and router
 
-  return isMounted && !isLoading ? <>{children}</> : null;
+  // Render children only when menuItems data is ready
+  return menuItems && menuItems.length > 0 ? <>{children}</> : null;
 };
 
 export default RouteGuard;

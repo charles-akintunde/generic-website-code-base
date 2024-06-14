@@ -12,3 +12,12 @@ export interface PagesData {
 export interface PageMenuApiResponse {
   data: PagesData;
 }
+
+export interface ICreateAccountResponse {}
+
+export interface IGenericResponse {
+  success: boolean;
+  message: string;
+  detail?: string; // Optional detail property
+  data?: any;
+}
