@@ -112,9 +112,12 @@ class UserOut(UserBase):
 class PasswordResetRequest(BaseModel):
     UI_Email: EmailStr
 
-class PasswordResetConfirm(BaseModel):
+class BaseToken(BaseModel):
     token: str
+
+class PasswordResetConfirm(BaseToken):
     new_password: str
 
 class LogoutRequest(BaseModel):
     refresh_token: str
+

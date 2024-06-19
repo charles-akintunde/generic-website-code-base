@@ -6,6 +6,7 @@ import {
   IUserLoginRequest,
 } from '@/types/requestInterfaces';
 import publicRouteBaseQuery from './publicRouteBaseQuery';
+import Cookies from 'js-cookie';
 
 const commonUrl = '/auth';
 
@@ -32,13 +33,17 @@ export const authApi = createApi({
         url: `${commonUrl}/login`,
         method: 'POST',
         body: userLoginRegquest,
+        credentials: 'include',
       }),
     }),
     userLogout: builder.mutation<IGenericResponse, void>({
-      query: () => ({
-        url: `${commonUrl}/logout`,
-        method: 'POST',
-      }),
+      query: () => {
+        return {
+          url: `${commonUrl}/logout`,
+          method: 'POST',
+          credentials: 'include',
+        };
+      },
     }),
   }),
 });

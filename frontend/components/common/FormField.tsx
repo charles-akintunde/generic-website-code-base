@@ -9,6 +9,15 @@ import { Input } from '../ui/input';
 import { IFormField } from '@/types/componentInterfaces';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { useState } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import MultiSelect from '../ui/multi-select';
+import { Checkbox } from '../ui/checkbox';
 
 const FormField: React.FC<IFormField> = ({
   control,
@@ -16,6 +25,8 @@ const FormField: React.FC<IFormField> = ({
   label,
   placeholder,
   type = 'text',
+  options = [],
+  multiple = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -32,20 +43,75 @@ const FormField: React.FC<IFormField> = ({
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <div style={{ position: 'relative' }}>
-              <Input
-                type={
-                  type === 'password' && !showPassword ? 'password' : 'text'
-                }
-                autoComplete="off"
-                placeholder={placeholder}
-                {...field}
-              />
-              {type === 'password' && (
-                <div
-                  onClick={togglePasswordVisibility}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
-                >
-                  {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+              {(type === 'text' || type === 'password') && (
+                <>
+                  <Input
+                    type={
+                      type === 'password' && !showPassword ? 'password' : 'text'
+                    }
+                    autoComplete="off"
+                    placeholder={placeholder}
+                    {...field}
+                  />
+                  {type === 'password' && (
+                    <div
+                      onClick={togglePasswordVisibility}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                    >
+                      {showPassword ? (
+                        <EyeInvisibleOutlined />
+                      ) : (
+                        <EyeOutlined />
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+              {type === 'select' && (
+                <Select {...field} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={placeholder} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {options.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {type === 'multiple-select' && (
+                <MultiSelect
+                  options={options.map((option) => ({
+                    ...option,
+                    value: option.value.toString(),
+                  }))}
+                  value={field.value.map((val: string) => ({
+                    label:
+                      options.find((option) => option.value.toString() === val)
+                        ?.label || val,
+                    value: val,
+                  }))}
+                  onChange={(vals) =>
+                    field.onChange(vals.map((val) => val.value))
+                  }
+                  placeholder={placeholder}
+                />
+              )}
+              {type === 'checkbox' && (
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={name}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                  <label
+                    htmlFor={name}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {placeholder}
+                  </label>
                 </div>
               )}
             </div>

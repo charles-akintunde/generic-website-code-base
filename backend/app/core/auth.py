@@ -24,7 +24,7 @@ from app.crud.blacklisted_token import blacklisted_token_crud
 SECRET_KEY = settings.AUTH_SECRET_KEY
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-CONFIRMATION_TOKEN_EXPIRY_MINUTES = 10
+CONFIRMATION_TOKEN_EXPIRY_DAYS = 10
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -167,7 +167,7 @@ def create_confirmation_token(email: str):
     Returns:
     str: Encoded JWT token.
     """
-    expire = datetime.now(timezone.utc) + timedelta(minutes=CONFIRMATION_TOKEN_EXPIRY_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(days=CONFIRMATION_TOKEN_EXPIRY_DAYS)
     to_encode = {"exp": expire, "sub": email}
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 

@@ -108,9 +108,10 @@ def authenticate_user(db: Session, email: str, password: str, response: Response
     }
     access_token = create_access_token(data=token_data)
     refresh_token = create_refresh_token(data=token_data)
+    response.set_cookie(key="access_token", value=access_token, httponly=True, samesite="none")
+    response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, samesite="none")
 
-    response.set_cookie(key="access_token", value=access_token, httponly=True)
-    response.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
+    print(response.headers)
 
     return Token(access_token=access_token, refresh_token=refresh_token)
 
@@ -173,30 +174,37 @@ async def  resend_confirmation_token(db: Session, email: EmailStr):
 
 def logout_user(access_token: str, refresh_token: str, db: Session):
     """
-        Handles user logout.
+    Handles user logout.
     """
-
+    
     access_token_payload = verify_token(token=access_token, db=db)
     refresh_token_payload = verify_token(token=refresh_token, db=db)
-
 
     if not access_token_payload and not refresh_token_payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User was never logged in or tokens are invalid",
+            detail="You were not logged in",
         )
 
-    if access_token_payload or refresh_token_payload:
-        access_token_expires_at = datetime.fromtimestamp(access_token_payload['exp'], tz=timezone.utc) # type: ignore
-        refresh_token_expires_at = datetime.fromtimestamp(refresh_token_payload['exp'], tz=timezone.utc) # type: ignore
-        print(access_token_expires_at,refresh_token_expires_at,)
-        blacklisted_token_data = BlackListedToken(
-            BT_AccessToken=access_token,
-            BT_RefreshToken=refresh_token,
-            BT_AccessTokenExp=access_token_expires_at,
-            BT_RefreshTokenExp=refresh_token_expires_at,
-            BT_TokenBlackListedTime=datetime.now(timezone.utc), 
-        )
-        blacklisted_token=blacklisted_token_crud.add_token_to_blacklist(db=db, token_data=blacklisted_token_data)
+    if access_token_payload:
+        access_token_expires_at = datetime.fromtimestamp(access_token_payload['exp'], tz=timezone.utc)
+    else:
+        access_token_expires_at = None
+
+    if refresh_token_payload:
+        refresh_token_expires_at = datetime.fromtimestamp(refresh_token_payload['exp'], tz=timezone.utc)
+    else:
+        refresh_token_expires_at = None
+
+    print(access_token_expires_at, refresh_token_expires_at)
+    
+    blacklisted_token_data = BlackListedToken(
+        BT_AccessToken=access_token,
+        BT_RefreshToken=refresh_token,
+        BT_AccessTokenExp=access_token_expires_at if access_token_expires_at else None, # type: ignore
+        BT_RefreshTokenExp=refresh_token_expires_at if refresh_token_expires_at else None, # type: ignore
+        BT_TokenBlackListedTime=datetime.now(timezone.utc),
+    )
+    blacklisted_token = blacklisted_token_crud.add_token_to_blacklist(db=db, token_data=blacklisted_token_data)
 
     return blacklisted_token

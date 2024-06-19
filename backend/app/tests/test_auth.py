@@ -10,4 +10,5 @@ router = APIRouter()
 @router.post("/token", response_model=Token)
 async def login_for_access_token(response: Response,form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     token = authenticate_user(db, email=form_data.username, password=form_data.password, response=response)
+    
     return {"access_token": token.access_token, "refresh_token": token.refresh_token, "token_type": "bearer"}

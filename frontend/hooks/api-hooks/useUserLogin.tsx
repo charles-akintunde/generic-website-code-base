@@ -21,6 +21,8 @@ const useUserLogin = () => {
         UI_Password: userLoginData.password,
       };
       const response = await userLogin(userLoginRequestData).unwrap();
+      localStorage.setItem('access_token', response.data.access_token);
+      localStorage.setItem('refresh_token', response.data.access_token);
       notify('Success', response.message || successMessage, 'success');
       router.replace('/');
     } catch (error: any) {

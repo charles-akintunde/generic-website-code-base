@@ -1,3 +1,4 @@
+import { EPageType, EUserRole } from '@/types/enums';
 import { z } from 'zod';
 
 const passwordSchema = () =>
@@ -56,3 +57,12 @@ export const passwordResetSchema = z
     message: 'Passwords do not match',
     path: ['confirmPassword'],
   });
+
+export const createPageSchema = z.object({
+  pageName: requiredTextSchema('Page name'),
+  pageType: z.nativeEnum(EPageType),
+  pagePermission: z
+    .array(z.nativeEnum(EUserRole))
+    .min(1, 'At least one permission must be selected'),
+  isHidden: z.boolean().default(false),
+});

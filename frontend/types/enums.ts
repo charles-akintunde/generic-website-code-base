@@ -5,16 +5,16 @@ export enum EStatus {
 }
 
 export enum EUserRole {
-  SuperAdmin = 0,
-  Admin = 1,
-  Member = 2,
-  User = 3,
-  Public = 4,
+  SuperAdmin = '0',
+  Admin = '1',
+  Member = '2',
+  User = '3',
+  Public = '4',
 }
 
 export enum EPageType {
-  SinglePage = 0,
-  PageList = 1,
-  ResList = 2,
-  System = 3,
+  SinglePage = '0',
+  PageList = '1',
+  ResList = '2',
+  System = '3',
 }

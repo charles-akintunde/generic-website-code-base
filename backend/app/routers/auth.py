@@ -2,12 +2,12 @@
 API endpoints for user authentication.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Header, Response, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
-from app.schemas.user_info import PasswordResetConfirm, PasswordResetRequest, Token, UserCreate, User as UserSchema, UserLogin
+from app.schemas.user_info import BaseToken, PasswordResetConfirm, PasswordResetRequest, Token, UserCreate, User as UserSchema, UserLogin
 from app.services.auth import authenticate_user, confirm_password_reset, logout_user, register_user, request_password_reset, resend_confirmation_token
 from app.database import get_db
 from app.crud.user_info import user_crud
@@ -85,7 +85,7 @@ async def register_user_endpoint(user: UserCreate, db: Session = Depends(get_db)
     if error:
         return error_response(error, status.HTTP_400_BAD_REQUEST)
     
-    return success_response("User registered successfully. Please check your email for confirmation.", {"user": new_user})
+    return success_response("Your account has been created. Go to you mail to complete verification.", {"user": new_user})
 
 @router.post("/login", response_model=Token)
 async def logi_endpoint(response: Response, user_login: UserLogin, db: Session = Depends(get_db)):
@@ -102,6 +102,7 @@ async def logi_endpoint(response: Response, user_login: UserLogin, db: Session =
 
     try:
         token = authenticate_user(db=db, email=user_login.UI_Email, password=user_login.UI_Password, response=response)
+        response.set_cookie('access',token.access_token)
         return success_response("Login successful", data=token.dict())
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
@@ -152,8 +153,18 @@ async def refresh_token_endpoint(
     new_access_token = create_access_token(data=token_data)
     new_refresh_token = create_refresh_token(data=token_data)
 
-    response.set_cookie(key="access_token", value=new_access_token, httponly=True)
-    response.set_cookie(key="refresh_token", value=new_refresh_token, httponly=True)
+    response.set_cookie(
+        key="access_token",
+        value=new_access_token,
+        httponly=True,
+        secure=True,  # Send over HTTPS only
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=new_refresh_token,
+        httponly=True,
+        secure=True,
+    )
 
     return success_response("Token refreshed", data={
         "access_token": new_access_token,
@@ -161,8 +172,8 @@ async def refresh_token_endpoint(
         "token_type": "bearer"
     })
 
-@router.get("/confirm/{token}", response_class=JSONResponse)
-def confirm_email_endpoint(token: str, db: Session = Depends(get_db)):
+@router.post("/account/confirm/", response_class=JSONResponse)
+def confirm_email_endpoint(token: BaseToken, db: Session = Depends(get_db)):
     """
     Confirm user's email address.
 
@@ -173,7 +184,7 @@ def confirm_email_endpoint(token: str, db: Session = Depends(get_db)):
     Returns:
         JSONResponse: Confirmation message.
     """
-    payload = verify_token(token=token,db=db)
+    payload = verify_token(token=token.token,db=db)
     email = payload.get("sub") # type: ignore
     if email is None:
         return error_response("Invalid or expired token", status.HTTP_400_BAD_REQUEST)
@@ -183,7 +194,7 @@ def confirm_email_endpoint(token: str, db: Session = Depends(get_db)):
         return error_response("User not found", status.HTTP_404_NOT_FOUND)
     
     if db_user.UI_Status == E_Status.Active: # type: ignore
-        return success_response("Email already confirmed")
+        return error_response(message="Email already confirmed", status_code=status.HTTP_400_BAD_REQUEST)
     
     db_user.UI_Status, db_user.UI_Role = E_Status.Active, E_UserRole.User # type: ignore
     db.commit()
@@ -210,8 +221,14 @@ async def resend_confirmation_endpoint(email: EmailStr, db: Session = Depends(ge
     
     return success_response("Confirmation email resent successfully")
 
+
 @router.post("/logout", response_model=StandardResponse)
-async def logout(response: Response, db: Session = Depends(get_db), access_token: str = Depends(oauth2_scheme), refresh_token: str = Depends(oauth2_scheme)):
+async def logout(
+    response: Response, 
+    db: Session = Depends(get_db), 
+    access_token: str = Depends(oauth2_scheme), 
+    refresh_token: str = Header(None, alias="x-refresh-token")
+):
     """
     Logout the user by blacklisting the JWT tokens.
 
@@ -225,7 +242,12 @@ async def logout(response: Response, db: Session = Depends(get_db), access_token
         dict: Confirmation of logout.
     """
     try:
-        blacklisted_token = logout_user(access_token, refresh_token, db)
+        if not refresh_token and not access_token:
+            return error_response( message="Missing tokens",status_code=status.HTTP_400_BAD_REQUEST,)
+        
+        print(access_token,"access_toke",refresh_token,"efresh_token")
+
+        blacklisted_token = logout_user(access_token=access_token,refresh_token= refresh_token,db= db)
         response.delete_cookie(key="access_token")
         response.delete_cookie(key="refresh_token")
         return success_response(message="Logout successful.")

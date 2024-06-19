@@ -12,12 +12,21 @@ const useLogout = () => {
     'Account verification failed'
   );
 
-  const sendLogoutRequest = async () => {
+  const sendLogoutRequest = async (handleCloseDrawer: any) => {
     try {
       const response = await useLogout().unwrap();
       notify('Success', response.message || successMessage, 'success');
+      handleCloseDrawer();
     } catch (error: any) {
-      notify('Error', error?.data.message || errorMessage, 'error');
+      console.log(error);
+      notify(
+        'Error',
+        error?.data?.message || error?.data?.detail || errorMessage,
+        'error'
+      );
+
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
     }
   };
   return { sendLogoutRequest, isLoading, isSuccess };

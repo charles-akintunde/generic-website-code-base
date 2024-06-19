@@ -58,6 +58,16 @@ const config = {
       borderColor: {
         glassmorphism: 'rgba(255, 255, 255, 0.2)',
       },
+      utilities: {
+        '.hide-scrollbar': {
+          'scrollbar-width': 'none',
+          '-ms-overflow-style': 'none',
+          '&::-webkit-scrollbar': {
+            width: '0',
+            display: 'none',
+          },
+        },
+      },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },

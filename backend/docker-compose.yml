@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   generic-codebase:
@@ -6,14 +6,14 @@ services:
       context: .
     container_name: api
     ports:
-      - "8001:80"
+      - "8443:443"
     env_file:
       - .env
     depends_on:
       - db
     volumes:
-      - .:/app 
-      - ./static:/app/static  
+      - .:/app
+      - ./static:/app/static
     networks:
       - backend_network
 
@@ -27,7 +27,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data  # Persistent storage sfor PostgreSQL data
+      - pgdata:/var/lib/postgresql/data # Persistent storage sfor PostgreSQL data
     networks:
       - backend_network
 

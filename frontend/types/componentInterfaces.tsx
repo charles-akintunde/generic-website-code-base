@@ -9,11 +9,30 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
+export interface IPageMain {
+  pageName: string;
+  pageType: EPageType;
+  pagePermission: EUserRole[];
+  pageContent?: IPageContentItem[];
+  isHidden: boolean;
+}
+
+export interface IPageListItem {
+  pages: IPageMain[];
+}
+
 export interface IPage {
   pageId?: string;
   pageName: string;
-  pagePermission?: EUserRole[];
-  pageType?: EPageType;
+  pagePermission: EUserRole[];
+  pageType: EPageType;
+  pageContent?: IPageContentItem[];
+  isHidden?: boolean;
+}
+
+export interface IPageContentItem {
+  display: string;
+  name: string;
 }
 
 export interface IPageMenuItem extends IPage {
@@ -46,6 +65,8 @@ export interface IFormField {
   label: string;
   placeholder: string;
   type?: string;
+  multiple?: boolean;
+  options?: { value: EUserRole | EPageType | string; label: string }[];
 }
 
 export interface ILoadingButton {
@@ -75,12 +96,20 @@ export interface IUserLogin {
 }
 
 export interface IButton {
-  isRightPosition: boolean;
-  Icon: ElementType;
-  href: string;
+  isRightPosition?: boolean;
+  Icon?: ElementType;
+  href?: string;
   buttonText: string;
+  onClick?: () => void | Promise<void>;
+  classNames?: string;
 }
 
+// export interface IPage {
+//   pageName: string;
+//   pageType: EPageType;
+//   pagePermission: EUserRole[];
+//   pageContent: string; // or any other type appropriate for your content
+// }
 // UI_FirstName: str
 // UI_LastName: str
 // UI_Email: EmailStr

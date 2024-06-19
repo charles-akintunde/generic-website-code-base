@@ -1,9 +1,8 @@
-import React from 'react'
+import AdminPanel from '@/components/admin-panel/AdminPanel';
+import React from 'react';
 
-const AdminPanel = () => {
-  return (
-    <div>AdminPanel</div>
-  )
-}
+const AdminPage = () => {
+  return <AdminPanel />;
+};
 
-export default AdminPanel
+export default AdminPage;

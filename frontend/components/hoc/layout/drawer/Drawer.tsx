@@ -19,6 +19,9 @@ import Image from 'next/image';
 import Logo from '@/components/common/Logo';
 import Link from 'next/link';
 import { LogOutIcon } from 'lucide-react';
+import OutlinedButton from '@/components/common/button/AppButton';
+import LoadingButton from '@/components/common/button/LoadingButton';
+import LogoutButton from '@/components/common/button/LogoutButton';
 
 const Drawer: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -36,20 +39,16 @@ const Drawer: React.FC = () => {
             <Logo />
           </div>
         </SheetHeader>
-        <MenuItems />
+        <div className="overflow-y-auto max-h-[calc(100vh-10rem)] hide-scrollbar">
+          {' '}
+          {/* Scrollable container */}
+          <MenuItems />
+        </div>
 
         <SheetFooter className="absolute pl-6 bottom-4">
-          <SheetClose>
-            <Button
-              variant="outline"
-              className="border border-blue-500 hover:bg-blue-500 text-blue-500 hover:text-white font-medium py-2 px-4 rounded-md transition duration-200 ease-in-out flex items-center"
-              asChild
-            >
-              <Link href="/sign-in">
-                <LogOutIcon className="mr-2 h-5 w-5" /> Logout
-              </Link>
-            </Button>
-          </SheetClose>
+          {/* <SheetClose> */}
+          <LogoutButton />
+          {/* </SheetClose> */}
         </SheetFooter>
       </SheetContent>
     </Sheet>

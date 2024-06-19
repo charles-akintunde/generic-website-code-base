@@ -19,7 +19,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 backdrop-blur bg-glassmorphism border-b border-glassmorphism h-14 shadow-sm">
+      <header className="sticky top-0 z-40 backdrop-blur bg-glassmorphism border-b border-glassmorphism h-14 shadow-sm">
         <div className="container mx-auto flex items-center h-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
@@ -39,7 +39,7 @@ const Header: React.FC = () => {
           </div>
         </div>
       </header>
-      <div className="md:block">
+      <div className="md:block z-50">
         <Drawer />
       </div>
     </>

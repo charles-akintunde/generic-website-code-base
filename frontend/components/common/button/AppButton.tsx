@@ -2,7 +2,8 @@ import React from 'react';
 import { Button } from '../../ui/button';
 import Link from 'next/link';
 import { IButton } from '@/types/componentInterfaces';
-const SolidButton: React.FC<IButton> = ({
+
+const AppButton: React.FC<IButton> = ({
   isRightPosition,
   Icon,
   href,
@@ -11,7 +12,7 @@ const SolidButton: React.FC<IButton> = ({
   classNames,
 }) => {
   return (
-    <Button onClick={onClick} className={classNames} asChild>
+    <Button onClick={onClick} variant="outline" className={classNames} asChild>
       <Link href={href ? href : ''}>
         {!isRightPosition && Icon && <Icon className="mr-2 h-5 w-5" />}{' '}
         {buttonText}{' '}
@@ -21,4 +22,4 @@ const SolidButton: React.FC<IButton> = ({
   );
 };
 
-export default SolidButton;
+export default AppButton;

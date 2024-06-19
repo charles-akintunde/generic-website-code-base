@@ -43,16 +43,18 @@ def create_app() -> FastAPI:
 
     origins = [
         settings.FRONTEND_URL,  # Your Next.js frontend
+        'https://127.0.0.1:3000'
         # Add other origins as needed
     ]
 
     app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "HEAD", "OPTIONS"],
+    allow_headers=["Access-Control-Allow-Headers", "Content-Type", "Authorization", "Access-Control-Allow-Origin","Set-Cookie", "X-Refresh-Token"],
+)
+
 
 
     # Register custom exception handler

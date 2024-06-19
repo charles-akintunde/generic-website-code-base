@@ -11,7 +11,7 @@ import { passwordResetSchema } from '@/utils/formSchema';
 import Logo from '../Logo';
 import FormField from '../FormField';
 import Link from 'next/link';
-import LoadingButton from '../LoadingButton';
+import LoadingButton from '@/components/common/button/LoadingButton';
 
 const PassowordResetForm = () => {
   const form = useForm<z.infer<typeof passwordResetSchema>>({

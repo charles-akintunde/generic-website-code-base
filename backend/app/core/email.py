@@ -128,7 +128,7 @@ async def send_confirmation_email(email: EmailStr, token: str):
             button_text="Verify Email Address",
             company_name=COMPANY_NAME,
             frontend_url=FRONTEND_URL,
-            logo=get_logo_path()
+            logo='app/assets/logo-white.png'
         ),
         subtype="html"
     )
