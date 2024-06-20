@@ -18,9 +18,7 @@ import {
 } from '@/api/pageApi';
 import { toKebabCase } from '@/utils/helper';
 import { Page } from '@/types/backendResponseInterfaces';
-import { EPageType } from '@/types/enums';
 import { IPageRequest } from '@/types/requestInterfaces';
-import { number } from 'zod';
 import { useNotification } from '@/components/hoc/NotificationProvider';
 import { routes, systemMenuItems } from '@/components/hoc/layout/menu-items';
 

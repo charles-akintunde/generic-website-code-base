@@ -1,9 +1,12 @@
-import React from 'react'
+import { PlateEditor } from '@/components/common/Plate';
+import React from 'react';
 
 const Page = () => {
   return (
-    <div>Page</div>
-  )
-}
+    <div>
+      <PlateEditor />
+    </div>
+  );
+};
 
-export default Page
+export default Page;

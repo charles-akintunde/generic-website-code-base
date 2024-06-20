@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import StoreProvider from '@/components/hoc/StoreProvider';
-import Layout from '@/components/hoc/layout/Layout';
 import '@/styles/globals.css';
 import RouteGuard from '@/components/hoc/RouteGuard';
 import { NotificationProvider } from '@/components/hoc/NotificationProvider';
-import useMenuItems from '@/hooks/api-hooks/useMenuItems';
 
 export const metadata: Metadata = {
   title: 'Generic Website',
