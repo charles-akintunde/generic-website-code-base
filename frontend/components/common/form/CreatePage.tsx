@@ -21,34 +21,47 @@ import {
 import AppButton from '../button/AppButton';
 import { primarySolidButtonStyles } from '@/styles/globals';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { addPage } from '@/store/slice/pageSlice';
-import { useAppDispatch } from '@/hooks/reduxHooks';
+import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
 import usePage from '@/hooks/api-hooks/usePage';
 
-const CreatePage = ({ setIsOpen }) => {
-  const { submitCreatedPage } = usePage();
+const CreatePage = () => {
+  const {
+    submitCreatedPage,
+    editingPage,
+    submitEditedPage,
+    isCreatePageLoading,
+    isCreatePageSuccess,
+    isEditPageSuccess,
+    isEditPageLoading,
+  } = usePage();
   const form = useForm<z.infer<typeof createPageSchema>>({
     resolver: zodResolver(createPageSchema),
-    defaultValues: {
+    defaultValues: editingPage || {
       pageName: '',
-      pageType: EPageType.SinglePage,
+      pageType: '',
       pagePermission: [],
       isHidden: false,
     },
   });
 
   const onSubmit = (data: z.infer<typeof createPageSchema>) => {
-    if (false) {
-      setIsOpen(false);
+    if (editingPage) {
+      submitEditedPage(editingPage.pageId, data);
+      if (isEditPageSuccess) {
+        form.reset();
+      }
+    } else {
+      submitCreatedPage(data);
+      if (isCreatePageSuccess) {
+        form.reset();
+      }
     }
 
-    submitCreatedPage(data);
-
-    console.log(data);
+    // dispatch(toggleCreatePageDialog());
   };
 
   const OPTIONS = [
-    { label: 'SuperAdmin', value: EUserRole.SuperAdmin },
+    { label: 'Super Admin', value: EUserRole.SuperAdmin },
     { label: 'Admin', value: EUserRole.Admin },
     { label: 'Member', value: EUserRole.Member },
     { label: 'User', value: EUserRole.User },
@@ -67,18 +80,21 @@ const CreatePage = ({ setIsOpen }) => {
               placeholder="Events"
               type="text"
             />
-            <FormField
-              placeholder=""
-              control={form.control}
-              name="pageType"
-              label="Page Type"
-              type="select"
-              options={[
-                { value: EPageType.SinglePage, label: 'Single Page' },
-                { value: EPageType.PageList, label: 'Multi Page' },
-                { value: EPageType.ResList, label: 'Resource Page' },
-              ]}
-            />
+            {!editingPage && (
+              <FormField
+                placeholder="Page Type"
+                control={form.control}
+                name="pageType"
+                label="Page Type"
+                type="select"
+                options={[
+                  { value: EPageType.SinglePage, label: 'Single Page' },
+                  { value: EPageType.PageList, label: 'Page List' },
+                  { value: EPageType.ResList, label: 'Resource Page' },
+                ]}
+              />
+            )}
+
             <FormField
               placeholder="Permissions.."
               control={form.control}
@@ -88,14 +104,18 @@ const CreatePage = ({ setIsOpen }) => {
               options={OPTIONS}
               multiple={true} // Enable multiple selections
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="isHidden"
               label=""
               type="checkbox"
               placeholder="Hide this page"
+            /> */}
+            <LoadingButton
+              buttonText="Submit"
+              loading={editingPage ? isEditPageLoading : isCreatePageLoading}
+              type="submit"
             />
-            <LoadingButton buttonText="Submit" loading={false} type="submit" />
           </form>
         </Form>
       </div>
@@ -104,10 +124,19 @@ const CreatePage = ({ setIsOpen }) => {
 };
 
 export const CreatePageDialog = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useAppDispatch();
+  const {
+    submitCreatedPage,
+    pages,
+    editingPage,
+    handleToggleCreateFormDialog,
+  } = usePage();
+  const isDialogOpen = useAppSelector(
+    (state) => state.page.isCreatePageDialogOpen
+  );
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isDialogOpen} onOpenChange={handleToggleCreateFormDialog}>
       <DialogTrigger asChild>
         <AppButton
           buttonText="Create Page"
@@ -119,15 +148,14 @@ export const CreatePageDialog = () => {
         <DialogHeader>
           <DialogTitle>
             {' '}
-            <h2 className="text-xl font-bold  text-gray-800">Create Page</h2>
+            <h2 className="text-xl font-bold  text-gray-800">
+              {editingPage ? 'Edit' : 'Create'} Page
+            </h2>
           </DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <CreatePage setIsOpen={setIsOpen} />
+          <CreatePage />
         </div>
-        {/* <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter> */}
       </DialogContent>
     </Dialog>
   );

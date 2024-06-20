@@ -13,7 +13,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import MenuItems from '../menu-items/MenuItems';
+import { MobileMenuItems } from '../menu-items/MenuItems';
 import appLogo from '@/assets/icons/gw-logo.png';
 import Image from 'next/image';
 import Logo from '@/components/common/Logo';
@@ -42,7 +42,7 @@ const Drawer: React.FC = () => {
         <div className="overflow-y-auto max-h-[calc(100vh-10rem)] hide-scrollbar">
           {' '}
           {/* Scrollable container */}
-          <MenuItems />
+          <MobileMenuItems />
         </div>
 
         <SheetFooter className="absolute pl-6 bottom-4">

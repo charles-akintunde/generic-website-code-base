@@ -1,14 +1,43 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import menuIcon from '@/assets/icons/menu.svg';
 import logo from '@/assets/icons/gw-logo.png';
 import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
 import { toggleDrawer } from '@/store/slice/layoutSlice';
 import Drawer from '../drawer/Drawer';
 import Image from 'next/image';
-import MenuItems from '../menu-items/MenuItems';
-import LgNavigation from '../navigation/LgNavigation';
+import { MenuItems } from '../menu-items/MenuItems';
+import { Menu, Dropdown } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import Logo from '@/components/common/Logo';
+import { Button } from '@/components/ui/button';
+import { Avatar, Space } from 'antd';
+
+const UserProfile = () => {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  const handleLoginLogout = () => {
+    setLoggedIn(!loggedIn);
+  };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="0">
+        <a href="/profile">Profile</a>
+      </Menu.Item>
+      <Menu.Item key="1" onClick={handleLoginLogout}>
+        {loggedIn ? 'Logout' : 'Login'}
+      </Menu.Item>
+    </Menu>
+  );
+
+  return (
+    <Dropdown overlay={menu} trigger={['click']}>
+      <Avatar icon={<UserOutlined />} />
+    </Dropdown>
+  );
+};
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -25,10 +54,13 @@ const Header: React.FC = () => {
             <div className="flex items-center">
               <Logo />
             </div>
-          </div>
-          <div className="flex-1 flex justify-end">
-            <div className="hidden lg:block">
+            <div className="hidden lg:flex items-center space-x-4">
               <MenuItems />
+            </div>
+          </div>
+          <div className="flex-1 flex justify-end items-center space-x-4">
+            <div className="hidden lg:block">
+              <UserProfile />
             </div>
             <div
               className="block lg:hidden cursor-pointer"

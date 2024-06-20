@@ -40,7 +40,7 @@ const MenuItem: React.FC<IPageMenuItem> = ({ pageName, href, isHidden }) => {
         }
       )}
     >
-      <nav className="text-xs">{pageName}</nav>
+      <nav className="text-xs whitespace-nowrap">{pageName}</nav>
     </Link>
   );
 };

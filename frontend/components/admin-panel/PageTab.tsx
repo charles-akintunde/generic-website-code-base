@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import {
   Select,
@@ -12,6 +13,7 @@ import PageList from '../common/page-list/PageList';
 import { IPageMain } from '@/types/componentInterfaces';
 import PageListItem from '../common/page-list/PageListItem';
 import usePage from '@/hooks/api-hooks/usePage';
+import { useAppSelector } from '@/hooks/reduxHooks';
 
 const pages1: IPageMain[] = [
   {
@@ -38,7 +40,6 @@ const pages1: IPageMain[] = [
   // ... more page data
 ];
 const PageTab = () => {
-  const { pages } = usePage();
   return (
     <main className="">
       <header className="flex justify-between items-center py-4 bg-white">
@@ -46,7 +47,7 @@ const PageTab = () => {
         <CreatePageDialog />
       </header>
       <section>
-        <PageListItem pages={pages} />
+        <PageListItem />
       </section>
     </main>
   );

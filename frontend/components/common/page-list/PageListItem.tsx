@@ -11,8 +11,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { Pencil1Icon, Link2Icon, TrashIcon } from '@radix-ui/react-icons';
+import { Link2Icon } from '@radix-ui/react-icons';
 
+import { Popconfirm } from 'antd';
 import { EPageType, EUserRole } from '@/types/enums';
 
 import {
@@ -32,9 +33,15 @@ import {
   IPageContentItem,
   IPageListItem,
 } from '@/types/componentInterfaces';
+import usePage from '@/hooks/api-hooks/usePage';
+import AppPopconfirm from '../AppPopconfirm';
+import Link from 'next/link';
 
-const PageListItem: React.FC<IPageListItem> = ({ pages }) => {
+const PageListItem: React.FC = () => {
   const [viewContent, setViewContent] = useState<IPageMain | null>(null);
+  const { handleEditButtonClick, pages, handleRemovePage } = usePage();
+
+  console.log(pages, 'PAGES');
 
   const columns = [
     {
@@ -73,14 +80,14 @@ const PageListItem: React.FC<IPageListItem> = ({ pages }) => {
         </div>
       ),
     },
-    {
-      title: 'Status',
-      dataIndex: 'isHidden',
-      key: 'isHidden',
-      render: (status: boolean, record: IPageMain) => (
-        <span className="font-medium">{status ? 'Hidden' : 'Visible'}</span>
-      ),
-    },
+    // {
+    //   title: 'Status',
+    //   dataIndex: 'isHidden',
+    //   key: 'isHidden',
+    //   render: (status: boolean, record: IPageMain) => (
+    //     <span className="font-medium">{status ? 'Hidden' : 'Visible'}</span>
+    //   ),
+    // },
     {
       title: 'Actions',
       key: 'actions',
@@ -89,24 +96,28 @@ const PageListItem: React.FC<IPageListItem> = ({ pages }) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setViewContent(record)}
+            asChild
+            // onClick={() => setViewContent(record)}
           >
-            <EyeOutlined />
+            <Link href={`${record.href}`}>
+              <EyeOutlined />
+            </Link>
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleEdit(record)}
+            onClick={() => handleEditButtonClick(record)}
           >
             <EditOutlined />
           </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => handleDelete(record)}
+          <AppPopconfirm
+            entity={'page'}
+            onDelete={() => handleRemovePage(record)}
           >
-            <DeleteOutlined />
-          </Button>
+            <Button variant="destructive" size="sm">
+              <DeleteOutlined />
+            </Button>
+          </AppPopconfirm>
         </div>
       ),
     },
@@ -160,6 +171,7 @@ const PageListItem: React.FC<IPageListItem> = ({ pages }) => {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             {viewContent &&
+              viewContent.pageContent &&
               viewContent.pageContent.map((content, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <a

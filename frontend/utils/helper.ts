@@ -14,7 +14,7 @@ export const fromKebabCase = (str: string): string => {
 export const pageTypeLabels: { [key in EPageType]: string } = {
   [EPageType.SinglePage]: 'Single Page',
   [EPageType.PageList]: 'Page List',
-  [EPageType.ResList]: 'Resource List',
+  [EPageType.ResList]: 'Resource Page',
   [EPageType.System]: 'System',
 };
 

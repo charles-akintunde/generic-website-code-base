@@ -11,7 +11,9 @@ const Logo = () => {
         height={40}
         className="h-10 w-auto"
       />
-      <p className="text-base pl-1 font-bold">Generic Website</p>
+      {/* <p className="text-base pl-1 font-bold whitespace-nowrap">
+        Generic Website
+      </p> */}
     </div>
   );
 };

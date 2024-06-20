@@ -9,10 +9,6 @@ export interface PagesData {
   Pages: Page[];
 }
 
-export interface PageMenuApiResponse {
-  data: PagesData;
-}
-
 export interface ICreateAccountResponse {}
 
 export interface IGenericResponse {
@@ -20,4 +16,14 @@ export interface IGenericResponse {
   message: string;
   detail?: string; // Optional detail property
   data?: any;
+}
+
+export interface PageMenuApiResponse extends IGenericResponse {
+  [x: string]: any;
+  data: PagesData;
+}
+
+export interface IPageResponse extends IGenericResponse {
+  [x: string]: any;
+  data: PagesData;
 }

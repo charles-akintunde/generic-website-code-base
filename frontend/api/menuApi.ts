@@ -10,6 +10,16 @@ export const menuApi = createApi({
   endpoints: (builder) => ({
     getMenuItems: builder.query<PageMenuApiResponse, void>({
       query: () => url,
+      // providesTags: (result) =>
+      //   result?.data?.Pages
+      //     ? [
+      //         ...result.data.Pages.map((page) => ({
+      //           type: 'Pages' as const,
+      //           id: page.PG_ID,
+      //         })),
+      //         { type: 'Pages', id: 'LIST' },
+      //       ]
+      //     : [{ type: 'Pages', id: 'LIST' }],
     }),
   }),
 });

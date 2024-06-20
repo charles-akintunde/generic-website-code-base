@@ -10,11 +10,13 @@ export type AppDispatch = typeof store.dispatch;
 export type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
 export interface IPageMain {
+  pageId: string;
   pageName: string;
-  pageType: EPageType;
-  pagePermission: EUserRole[];
+  pageType: string;
+  pagePermission: string[];
   pageContent?: IPageContentItem[];
   isHidden: boolean;
+  href: string;
 }
 
 export interface IPageListItem {
@@ -24,8 +26,8 @@ export interface IPageListItem {
 export interface IPage {
   pageId?: string;
   pageName: string;
-  pagePermission: EUserRole[];
-  pageType: EPageType;
+  pagePermission: string[];
+  pageType: string;
   pageContent?: IPageContentItem[];
   isHidden?: boolean;
 }
