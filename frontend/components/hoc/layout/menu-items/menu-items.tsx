@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import MenuItem from './MenuItem';
+import MenuItem from './menu-item';
 import { IPageMenuItem } from '@/types/componentInterfaces';
-import usePage from '@/hooks/api-hooks/usePage';
+import usePage from '@/hooks/api-hooks/use-page';
 
 export const MobileMenuItems = () => {
   const { menuItems } = usePage();

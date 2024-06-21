@@ -1,4 +1,4 @@
-import Layout from '@/components/hoc/layout/Layout';
+import Layout from '@/components/hoc/layout/layout';
 
 export default function RootLayout({
   children,

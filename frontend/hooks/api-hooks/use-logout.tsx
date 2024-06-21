@@ -1,5 +1,5 @@
 import { useUserLogoutMutation } from '@/api/authApi';
-import { useNotification } from '@/components/hoc/NotificationProvider';
+import { useNotification } from '@/components/hoc/notification-provider';
 import React, { useState } from 'react';
 
 const useLogout = () => {

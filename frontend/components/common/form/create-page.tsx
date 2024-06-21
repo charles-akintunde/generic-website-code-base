@@ -3,12 +3,12 @@
 import React, { useState } from 'react';
 import { EPageType, EUserRole } from '@/types/enums';
 import { Form } from '@/components/ui/form';
-import FormField from '../FormField';
+import FormField from '../form-field';
 import { createPageSchema } from '@/utils/formSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import LoadingButton from '../button/LoadingButton';
+import LoadingButton from '../button/loading-button';
 import {
   Dialog,
   DialogContent,
@@ -18,11 +18,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import AppButton from '../button/AppButton';
+import AppButton from '../button/app-button';
 import { primarySolidButtonStyles } from '@/styles/globals';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
-import usePage from '@/hooks/api-hooks/usePage';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
+import usePage from '@/hooks/api-hooks/use-page';
 
 const CreatePage = () => {
   const {

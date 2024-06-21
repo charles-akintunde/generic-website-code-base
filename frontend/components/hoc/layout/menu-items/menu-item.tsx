@@ -5,7 +5,7 @@ import Link from 'next/link';
 import cx from 'classnames';
 import { usePathname } from 'next/navigation';
 import { closeDrawer } from '@/store/slice/layoutSlice';
-import { useAppDispatch } from '@/hooks/reduxHooks';
+import { useAppDispatch } from '@/hooks/redux-hooks';
 
 const MenuItem: React.FC<IPageMenuItem> = ({ pageName, href, isHidden }) => {
   const pathname = usePathname();

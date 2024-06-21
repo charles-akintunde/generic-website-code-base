@@ -151,9 +151,9 @@ import { withPlaceholders } from '@/components/plate-ui/placeholder';
 import { withDraggables } from '@/components/plate-ui/with-draggables';
 import { EmojiInputElement } from '@/components/plate-ui/emoji-input-element';
 import { TooltipProvider } from '@/components/plate-ui/tooltip';
-import { MediaEmbedElement } from '../plate-ui/media-embed-element';
+import { MediaEmbedElement } from '@/components/plate-ui/media-embed-element';
 
-const plugins = createPlugins(
+export const plugins = createPlugins(
   [
     createParagraphPlugin(),
     createHeadingPlugin(),
@@ -362,34 +362,3 @@ const plugins = createPlugins(
     ),
   }
 );
-
-const initialValue = [
-  {
-    id: '1',
-    type: 'p',
-    children: [{ text: 'Hello, World!' }],
-  },
-];
-
-export function PlateEditor() {
-  return (
-    <TooltipProvider>
-      <DndProvider backend={HTML5Backend}>
-        <CommentsProvider users={{}} myUserId="1">
-          <Plate plugins={plugins} initialValue={initialValue}>
-            <FixedToolbar>
-              <FixedToolbarButtons />
-            </FixedToolbar>
-
-            <Editor />
-
-            <FloatingToolbar>
-              <FloatingToolbarButtons />
-            </FloatingToolbar>
-            <CommentsPopover />
-          </Plate>
-        </CommentsProvider>
-      </DndProvider>
-    </TooltipProvider>
-  );
-}

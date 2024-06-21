@@ -2,17 +2,18 @@
 import React, { useState } from 'react';
 import menuIcon from '@/assets/icons/menu.svg';
 import logo from '@/assets/icons/gw-logo.png';
-import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { toggleDrawer } from '@/store/slice/layoutSlice';
-import Drawer from '../drawer/Drawer';
+import Drawer from '../drawer/drawer';
 import Image from 'next/image';
-import { MenuItems } from '../menu-items/MenuItems';
+import { MenuItems } from '../menu-items/menu-items';
 import { Menu, Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { UserOutlined } from '@ant-design/icons';
-import Logo from '@/components/common/Logo';
+import Logo from '@/components/common/logo';
 import { Button } from '@/components/ui/button';
 import { Avatar, Space } from 'antd';
+import { containerPaddingStyles } from '@/styles/globals';
 
 const UserProfile = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -49,7 +50,7 @@ const Header: React.FC = () => {
   return (
     <>
       <header className="sticky top-0 z-40 backdrop-blur bg-glassmorphism border-b border-glassmorphism h-20 shadow-sm">
-        <div className="container mx-auto flex items-center h-full px-4 sm:px-6 lg:px-8">
+        <div className={`${containerPaddingStyles}`}>
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
               <Logo />

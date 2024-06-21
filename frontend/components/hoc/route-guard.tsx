@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import usePage from '@/hooks/api-hooks/usePage';
+import usePage from '@/hooks/api-hooks/use-page';
 
 interface IRouteGuard {
   children: React.ReactNode;

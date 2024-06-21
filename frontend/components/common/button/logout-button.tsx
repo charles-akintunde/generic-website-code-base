@@ -10,16 +10,15 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { closeDrawer } from '@/store/slice/layoutSlice';
-import AppButton from './AppButton';
+import AppButton from './app-button';
 import { LogOutIcon } from 'lucide-react';
-import { useAppDispatch } from '@/hooks/reduxHooks';
-import SolidButton from './SolidButton';
+import { useAppDispatch } from '@/hooks/redux-hooks';
 import { Button } from '@/components/ui/button';
 import {
   destructiveSolidButtonStyles,
   outlinedButtonStyles,
 } from '@/styles/globals';
-import useLogout from '@/hooks/api-hooks/useLogout';
+import useLogout from '@/hooks/api-hooks/use-logout';
 
 const LogoutButton = () => {
   const dispatch = useAppDispatch();

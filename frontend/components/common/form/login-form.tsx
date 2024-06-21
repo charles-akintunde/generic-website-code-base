@@ -6,11 +6,11 @@ import { z } from 'zod';
 import { Form } from '@/components/ui/form';
 import { useEffect, useState } from 'react';
 import { loginSchema } from '@/utils/formSchema';
-import Logo from '../Logo';
-import FormField from '../FormField';
+import Logo from '../logo';
+import FormField from '../form-field';
 import Link from 'next/link';
-import LoadingButton from '../button/LoadingButton';
-import useUserLogin from '@/hooks/api-hooks/useUserLogin';
+import LoadingButton from '../button/loading-button';
+import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { IUserLogin } from '@/types/componentInterfaces';
 
 export function LoginForm() {

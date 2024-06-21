@@ -1,4 +1,5 @@
-import AdminPanel from '@/components/admin-panel/AdminPanel';
+import AdminPanel from '@/components/admin-panel/admin-panel';
+import './index.css';
 import React from 'react';
 
 const AdminPage = () => {

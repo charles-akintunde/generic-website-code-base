@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../reduxHooks';
+import { useAppDispatch, useAppSelector } from '../redux-hooks';
 import {
   addPages,
   addPage,
@@ -19,7 +19,7 @@ import {
 import { toKebabCase } from '@/utils/helper';
 import { Page } from '@/types/backendResponseInterfaces';
 import { IPageRequest } from '@/types/requestInterfaces';
-import { useNotification } from '@/components/hoc/NotificationProvider';
+import { useNotification } from '@/components/hoc/notification-provider';
 import { routes, systemMenuItems } from '@/components/hoc/layout/menu-items';
 
 const usePage = () => {

@@ -1,12 +1,8 @@
-import { PlateEditor } from '@/components/common/Plate';
+import { PlateEditor } from '@/components/plate/plate';
 import React from 'react';
 
 const Page = () => {
-  return (
-    <div>
-      <PlateEditor />
-    </div>
-  );
+  return <div className="">Dynamic Page</div>;
 };
 
 export default Page;

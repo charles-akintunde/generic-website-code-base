@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { closeDrawer } from '@/store/slice/layoutSlice';
 import {
   Sheet,
@@ -13,15 +13,15 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { MobileMenuItems } from '../menu-items/MenuItems';
+import { MobileMenuItems } from '../menu-items/menu-items';
 import appLogo from '@/assets/icons/gw-logo.png';
 import Image from 'next/image';
-import Logo from '@/components/common/Logo';
+import Logo from '@/components/common/logo';
 import Link from 'next/link';
 import { LogOutIcon } from 'lucide-react';
-import OutlinedButton from '@/components/common/button/AppButton';
-import LoadingButton from '@/components/common/button/LoadingButton';
-import LogoutButton from '@/components/common/button/LogoutButton';
+import OutlinedButton from '@/components/common/button/app-button';
+import LoadingButton from '@/components/common/button/loading-button';
+import LogoutButton from '@/components/common/button/logout-button';
 
 const Drawer: React.FC = () => {
   const dispatch = useAppDispatch();
