@@ -11,6 +11,7 @@ import { FixedToolbarButtons } from '@/components/plate-ui/fixed-toolbar-buttons
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar';
 import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-buttons';
 import { CommentsPopover } from '@/components/plate-ui/comments-popover';
+import { useEffect, useState } from 'react';
 
 const initialValue = [
   {
@@ -21,11 +22,20 @@ const initialValue = [
 ];
 
 export function PlateEditor() {
+  const [editorState, setEditorState] = useState(initialValue);
+
+  useEffect(() => {
+    console.log('Editor state updated:', editorState);
+  }, [editorState]);
   return (
     <TooltipProvider>
       <DndProvider backend={HTML5Backend}>
         <CommentsProvider users={{}} myUserId="1">
-          <Plate plugins={plugins} initialValue={initialValue}>
+          <Plate
+            plugins={plugins}
+            initialValue={initialValue}
+            onChange={(newValue) => setEditorState(newValue)}
+          >
             <FixedToolbar>
               <FixedToolbarButtons />
             </FixedToolbar>

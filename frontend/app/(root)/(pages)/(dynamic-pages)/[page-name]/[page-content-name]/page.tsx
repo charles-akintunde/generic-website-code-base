@@ -1,7 +1,8 @@
+import PageContent from '@/components/page-content/page-content';
 import React from 'react';
 
-const PageContent = () => {
-  return <div>PageContent</div>;
+const DynamicPageContent = () => {
+  return <PageContent />;
 };
 
-export default PageContent;
+export default DynamicPageContent;

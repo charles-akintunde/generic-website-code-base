@@ -2,7 +2,7 @@ import { IReactNode } from '@/types/componentInterfaces';
 import React from 'react';
 import Image from 'next/image';
 import authImage from '@/assets/images/auth-image.webp';
-import Logo from '../common/Logo';
+import Logo from '../common/logo';
 
 const AuthLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (

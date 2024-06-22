@@ -1,4 +1,4 @@
-import { useNotification } from '@/components/hoc/NotificationProvider';
+import { useNotification } from '@/components/hoc/notification-provider';
 import React, { useState } from 'react';
 import { useUserLoginMutation } from '@/api/authApi';
 import { IUserLogin } from '@/types/componentInterfaces';

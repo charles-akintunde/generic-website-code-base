@@ -108,7 +108,17 @@ const PageListItem: React.FC = () => {
       dataIndex: 'pageName',
       key: 'pageName',
       render: (text: string, record: IPageMain) => (
-        <span className="font-medium">{text}</span>
+        <div className="flex items-center justify-between">
+          <a
+            href={record.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline flex items-center"
+          >
+            <Link2Icon className="mr-2 h-4 w-4" />
+            <span className="font-medium"> {text}</span>
+          </a>
+        </div>
       ),
     },
     {

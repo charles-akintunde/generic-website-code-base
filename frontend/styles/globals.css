@@ -89,9 +89,10 @@ body {
 }
 
 .glassmorphism {
-  backdrop-filter: blur(var(--backdrop-blur));
-  background-color: var(--glassmorphism);
-  border-color: var(--glassmorphism);
+  backdrop-filter: blur(10px); /* Adjust the blur amount as needed */
+  background-color: rgba(255, 255, 255, 0.2); /* Use the custom color */
+  border-radius: var(--radius); /* Optional: add some rounded corners */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Optional: add a border */
 }
 
 .bg-glassmorphism {

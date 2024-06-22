@@ -1,25 +1,43 @@
 'use client';
-
 import React, { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import usePage from '@/hooks/api-hooks/use-page';
+import { IPageMenuItem } from '@/types/componentInterfaces';
 
-interface IRouteGuard {
+interface IRouteGuardProps {
   children: React.ReactNode;
 }
 
-const RouteGuard: React.FC<IRouteGuard> = ({ children }) => {
+interface isExistingRouteProps {
+  allAppRoutes: IPageMenuItem[];
+  pathname: string;
+}
+
+const isExistingRoute: React.FC<isExistingRouteProps> = ({
+  allAppRoutes,
+  pathname,
+}) => {
+  return allAppRoutes.some((item) => item.href === pathname);
+};
+
+const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   const { allAppRoutes } = usePage();
   const router = useRouter();
   const pathname = usePathname();
 
+  console.log(pathname.split('/')[1], " pathname: pathname.split('/')[0]");
+
   useEffect(() => {
     if (allAppRoutes && allAppRoutes.length > 0) {
       const isValidRoute =
-        allAppRoutes.some((item) => item.href === pathname) ||
+        isExistingRoute({ allAppRoutes: allAppRoutes, pathname: pathname }) ||
         pathname.startsWith('/confirm-user/account-creation') ||
-        pathname.startsWith('/confirm-user/reset-password');
+        pathname.startsWith('/confirm-user/reset-password') ||
+        isExistingRoute({
+          allAppRoutes: allAppRoutes,
+          pathname: `/${pathname.split('/')[1]}`,
+        });
       if (!isValidRoute) {
         router.replace('/404');
       }
