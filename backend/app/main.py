@@ -93,7 +93,7 @@ def create_app() -> FastAPI:
     app.include_router(auth.router, prefix=f"{service_prefix}/auth", tags=["auth"])
     app.include_router(user_info.router, prefix=f"{service_prefix}/users", tags=["users"])
     app.include_router(page.router, prefix=f"{service_prefix}/pages", tags=["page"])
-    app.include_router(page_content.router, prefix=f"{service_prefix}/page_contents", tags=["page_contents"])
+    app.include_router(page_content.router, prefix=f"{service_prefix}/page-contents", tags=["page-contents"])
 
     return app
 

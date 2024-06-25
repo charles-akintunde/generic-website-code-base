@@ -101,7 +101,7 @@ def get_page(
             PG_Type=existing_page.PG_Type.value,  # Convert enum to its value
             PG_Name=str(existing_page.PG_Name),
             PG_Permission=[role.value for role in existing_page.PG_Permission],   # Assuming this is already a list of E_UserRole # type: ignore
-            PG_PageContents=converted_page_contents if converted_page_contents else None
+            PG_PageContents=converted_page_contents if converted_page_contents else []
         )
     return existing_page
 
