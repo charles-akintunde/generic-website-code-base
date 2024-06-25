@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface IPageContentCard {
+interface IPageContentCardProps {
   title: string;
   excerpt: string;
   imageSrc: string;
@@ -22,7 +22,7 @@ interface IPageContentCard {
   category: string;
 }
 
-const PageContentCard: React.FC<IPageContentCard> = ({
+const PageContentCard: React.FC<IPageContentCardProps> = ({
   title,
   excerpt,
   imageSrc,
@@ -36,8 +36,8 @@ const PageContentCard: React.FC<IPageContentCard> = ({
     <Card className="bg-white">
       <CardHeader>
         <Link href={href}>
-          <Image
-            src={authImg}
+          <img
+            src={imageSrc}
             alt="Article"
             className="w-full h-52 rounded-t-sm object-cover"
           />

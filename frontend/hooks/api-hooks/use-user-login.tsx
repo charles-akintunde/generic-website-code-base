@@ -4,6 +4,7 @@ import { useUserLoginMutation } from '@/api/authApi';
 import { IUserLogin } from '@/types/componentInterfaces';
 import { IUserLoginRequest } from '@/types/requestInterfaces';
 import { useRouter } from 'next/navigation';
+import { decodeJwt, getTokens } from '@/utils/helper';
 
 const useUserLogin = () => {
   const { notify } = useNotification();
@@ -29,6 +30,8 @@ const useUserLogin = () => {
       notify('Error', error.data.message, 'error');
     }
   };
+  const { accessToken, refreshToken } = getTokens();
+  const currentUser = decodeJwt(accessToken ?? '');
 
   return {
     isSuccess,
@@ -37,6 +40,7 @@ const useUserLogin = () => {
     errorMessage,
     isLoading,
     sendLoginRequest,
+    currentUser,
   };
 };
 

@@ -1,3 +1,5 @@
+import { TElement } from '@udecode/plate-common';
+
 export interface ICreatAccountRequest {
   UI_FirstName: string;
   UI_LastName: string;
@@ -22,4 +24,14 @@ export interface IPageRequest {
 
 export interface IPageRequestWithIdentifier extends IPageRequest {
   PG_ID: string;
+}
+
+export interface IPageContentRequest {
+  UI_ID: string;
+  PG_ID: string;
+  PC_Title: string;
+  PC_Content: { [key: string]: TElement[] };
+  PC_DisplayURL: string;
+  PC_ThumbImg: File | string;
+  PC_IsHidden: boolean;
 }

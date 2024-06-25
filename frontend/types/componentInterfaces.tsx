@@ -3,7 +3,8 @@ import { NotificationPlacement } from 'antd/lib/notification/interface';
 import { EPageType, EUserRole } from './enums';
 import { ElementType, ReactNode } from 'react';
 import { Control, ControllerProps, FieldValues } from 'react-hook-form';
-import { string } from 'zod';
+// import { string, z, z, z } from 'zod';
+import { TElement } from '@udecode/plate-common';
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
@@ -14,7 +15,7 @@ export interface IPageMain {
   pageName: string;
   pageType: string;
   pagePermission: string[];
-  pageContent?: IPageContentItem[];
+  pageContents: IPageContentItem[] | IPageContentMain[] | undefined;
   isHidden: boolean;
   href: string;
 }
@@ -32,9 +33,22 @@ export interface IPage {
   isHidden?: boolean;
 }
 
-export interface IPageContentItem {
-  display: string;
-  name: string;
+export interface IPageContentBase {
+  pageContentName: string;
+  pageContentDisplayImage: string | File;
+  isPageContentHidden: boolean;
+  pageContents: TElement[];
+}
+
+export interface IPageContentMain extends IPageContentItem {
+  pageContentId: string;
+}
+
+export interface IPageContentItem extends IPageContentBase {
+  pageId: string;
+  pageName: string;
+  userId: string;
+  href: string;
 }
 
 export interface IPageMenuItem extends IPage {
@@ -105,6 +119,8 @@ export interface IButton {
   onClick?: () => void | Promise<void>;
   classNames?: string;
 }
+
+//
 
 // export interface IPage {
 //   pageName: string;

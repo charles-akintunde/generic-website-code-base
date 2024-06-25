@@ -3,6 +3,8 @@ import publicRouteBaseQuery from './publicRouteBaseQuery';
 import {
   IGenericResponse,
   IPageResponse,
+  ISinglePageResponse,
+  Page,
 } from '@/types/backendResponseInterfaces';
 import { pageTagTypes } from './apiTags';
 import {
@@ -29,6 +31,16 @@ export const pageApi = createApi({
               { type: 'Pages', id: 'LIST' },
             ]
           : [{ type: 'Pages', id: 'LIST' }],
+    }),
+    getPage: builder.query<ISinglePageResponse, string>({
+      query: (PG_Name) => `${url}/${PG_Name}`,
+      providesTags: (result) =>
+        result?.data
+          ? [
+              { type: 'Page', id: result.data.PG_ID },
+              { type: 'Page', id: 'LIST' },
+            ]
+          : [{ type: 'Page', id: 'LIST' }],
     }),
     createPage: builder.mutation<IPageResponse, IPageRequest>({
       query: (newPage) => ({
@@ -67,4 +79,5 @@ export const {
   useCreatePageMutation,
   useEditPageMutation,
   useDeletePageMutation,
+  useGetPageQuery,
 } = pageApi;

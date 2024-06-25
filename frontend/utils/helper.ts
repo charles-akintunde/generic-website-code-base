@@ -1,5 +1,5 @@
 import { EPageType, EUserRole } from '@/types/enums';
-
+import { jwtDecode } from 'jwt-decode';
 export const toKebabCase = (str: string): string => {
   str = str.toLowerCase();
   str = str.replace(/ /g, '-');
@@ -24,4 +24,25 @@ export const userRoleLabels: { [key in EUserRole]: string } = {
   [EUserRole.Member]: 'Member',
   [EUserRole.User]: 'User',
   [EUserRole.Public]: 'Public',
+};
+
+export interface DecodedToken {
+  sub: string;
+  firstname: string;
+  lastname: string;
+  role: number;
+  status: number;
+  Id: string;
+  exp: number;
+}
+
+export const decodeJwt = (token: string) => {
+  return jwtDecode(token) as DecodedToken;
+};
+
+export const getTokens = () => {
+  let accessToken = localStorage.getItem('access_token');
+  let refreshToken = localStorage.getItem('access_token');
+
+  return { accessToken: accessToken, refreshToken: refreshToken };
 };

@@ -8,13 +8,22 @@ import {
   removePage,
   setEditingPage,
   toggleCreatePageDialog,
+  getPageContents,
+  getPage,
+  setCurrentPage,
 } from '@/store/slice/pageSlice';
-import { IPageMain, IPageMenuItem } from '@/types/componentInterfaces';
+import {
+  IPageContentItem,
+  IPageContentMain,
+  IPageMain,
+  IPageMenuItem,
+} from '@/types/componentInterfaces';
 import {
   useGetPagesQuery,
   useCreatePageMutation,
   useEditPageMutation,
   useDeletePageMutation,
+  useGetPageQuery,
 } from '@/api/pageApi';
 import { toKebabCase } from '@/utils/helper';
 import { Page } from '@/types/backendResponseInterfaces';
@@ -22,13 +31,18 @@ import { IPageRequest } from '@/types/requestInterfaces';
 import { useNotification } from '@/components/hoc/notification-provider';
 import { routes, systemMenuItems } from '@/components/hoc/layout/menu-items';
 
-const usePage = () => {
+interface usePageProps {
+  pageName?: string;
+}
+
+const usePage = (pageName?: string) => {
   const {
     data: pagesData,
-    isError: hasPageFetchError,
-    isSuccess: isPageFetchSuccess,
-    isLoading: isPageFetchLoading,
+    isError: hasPagesFetchError,
+    isSuccess: isPagesFetchSuccess,
+    isLoading: isPagesFetchLoading,
   } = useGetPagesQuery();
+
   const { notify } = useNotification();
   const [
     createPage,
@@ -54,9 +68,23 @@ const usePage = () => {
       isLoading: isDeletePageLoading,
     },
   ] = useDeletePageMutation();
+  const pageQueryResult = pageName
+    ? useGetPageQuery(pageName)
+    : { data: undefined, isError: false, isSuccess: false, isLoading: false };
+
+  const {
+    data: pageData,
+    isError: hasPageFetchError,
+    isSuccess: isPageFetchSuccess,
+    isLoading: isPageFetchLoading,
+  } = pageQueryResult;
 
   const dispatch = useAppDispatch();
   const pages = useAppSelector((state) => state.page.pages);
+  const currentPageContents = useAppSelector(
+    (state) => state.page.currentPageContents
+  );
+  const currentPage = useAppSelector((state) => state.page.currentPage);
   const editingPage = useAppSelector((state) => state.page.editingPage);
   const [menuItems, setMenuItems] = useState<IPageMenuItem[]>([]);
   const [allAppRoutes, setAllAppRoutes] = useState<IPageMenuItem[]>([]);
@@ -82,6 +110,54 @@ const usePage = () => {
       dispatch(addPages(normalizedPages));
     }
   }, [pagesData]);
+
+  useEffect(() => {
+    console.log(pageData, 'pageData');
+    if (pageData && pageData.data) {
+      let response: Page = pageData.data;
+      const normalizedPage: IPageMain = {
+        pageId: response.PG_ID,
+        pageName: response.PG_Name,
+        pagePermission: response.PG_Permission.map((permission) =>
+          String(permission)
+        ),
+        pageContents:
+          response.PG_PageContents &&
+          response.PG_PageContents.map((pageContent) => {
+            const pageContentResponse: IPageContentMain = {
+              pageContentId: pageContent.PC_ID,
+              pageId: pageContent.PG_ID,
+              pageName: response.PG_Name,
+              userId: pageContent.UI_ID,
+              href: `${toKebabCase(response.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
+              pageContentName: pageContent.PC_Title,
+              pageContentDisplayImage: pageContent.PC_ThumbImgURL,
+              isPageContentHidden: pageContent.PC_IsHidden,
+              pageContents:
+                pageContent.PC_Content && pageContent.PC_Content['PC_Content'],
+            };
+            return pageContentResponse;
+          }),
+        pageType: String(response.PG_Type),
+        isHidden: false,
+        href: `/${toKebabCase(response.PG_Name)}`,
+      };
+      dispatch(setCurrentPage(normalizedPage));
+      console.log(normalizedPage, 'normalizedPage');
+    }
+  }, [pageData]);
+
+  const getCurrentPageContents = (pageName: string) => {
+    dispatch(getPageContents(pageName));
+  };
+
+  // const setPage = () => {
+  //   dispatch(setCurrentPage());
+  // };
+
+  const getCurrentPage = (pageName: string) => {
+    dispatch(getPage(pageName));
+  };
 
   const submitCreatedPage = async (page: IPageMain) => {
     try {
@@ -187,6 +263,10 @@ const usePage = () => {
     handleRemovePage,
     menuItems,
     allAppRoutes,
+    getCurrentPageContents,
+    currentPageContents,
+    currentPage,
+    getCurrentPage,
   };
 };
 

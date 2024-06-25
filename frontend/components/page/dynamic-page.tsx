@@ -1,13 +1,25 @@
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import PageLayout from './layout';
-import { PlateEditor } from '../plate/plate';
-import PageContentCard from '../page-content/page-content-card';
 import PageContents from '../page-content/page-contents';
+import { usePathname } from 'next/navigation';
+import { fromKebabCase } from '@/utils/helper';
+import { IPageContentItem } from '@/types/componentInterfaces';
+import usePage from '@/hooks/api-hooks/use-page';
 
 const DynamicPage = () => {
+  const pathname = usePathname();
+  const [pageName, setPageName] = useState(
+    fromKebabCase(pathname.split('/')['1'])
+  );
+  const { currentPage, getCurrentPageContents } = usePage(pageName);
+
+  console.log(pageName, 'EEEEEEEEEEEE');
+  console.log(currentPage);
+
   return (
-    <PageLayout title="ACNT Blogs">
-      <PageContents />
+    <PageLayout title={pageName}>
+      <PageContents page={currentPage && currentPage} />
     </PageLayout>
   );
 };

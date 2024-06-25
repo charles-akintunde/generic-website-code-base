@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select';
 import MultiSelect from '../ui/multi-select';
 import { Checkbox } from '../ui/checkbox';
+import { PlateEditor } from '../plate/plate';
 
 const FormField: React.FC<IFormField> = ({
   control,
@@ -113,6 +114,24 @@ const FormField: React.FC<IFormField> = ({
                     {placeholder}
                   </label>
                 </div>
+              )}
+
+              {type === 'picture' && (
+                <Input
+                  id="picture"
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  onChange={(e) => {
+                    const file = e.target.files && e.target.files[0];
+                    if (file) {
+                      field.onChange(file);
+                    }
+                  }}
+                />
+              )}
+
+              {type === 'rich-text-editor' && (
+                <PlateEditor value={field.value} onChange={field.onChange} />
               )}
             </div>
           </FormControl>
