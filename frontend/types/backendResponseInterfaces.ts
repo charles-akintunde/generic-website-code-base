@@ -6,6 +6,7 @@ export interface Page {
   PG_Permission: number[];
   PG_Type: number;
   PG_PageContents?: IPageContentResponse[];
+  PG_PageContent?: IPageContentResponse;
 }
 
 export interface IPageContentResponse {
@@ -29,6 +30,10 @@ export interface PageData {
   Page: Page;
 }
 
+export interface PageContentData extends Page {
+  PageContent: IPageContentResponse;
+}
+
 export interface ICreateAccountResponse {}
 
 export interface IGenericResponse {
@@ -46,6 +51,10 @@ export interface PageMenuApiResponse extends IGenericResponse {
 export interface IPageResponse extends IGenericResponse {
   [x: string]: any;
   data: PagesData;
+}
+
+export interface IPageContentGetResponse extends IGenericResponse {
+  data: Page;
 }
 
 export interface ISinglePageResponse extends IGenericResponse {

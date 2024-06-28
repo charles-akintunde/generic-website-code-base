@@ -1,13 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IPageContentItem, IPageMain } from '@/types/componentInterfaces';
+import {
+  IPageContentItem,
+  IPageContentMain,
+  IPageMain,
+} from '@/types/componentInterfaces';
 
 interface PageState {
   pages: IPageMain[];
   isCreatePageDialogOpen?: boolean;
   currentPage: IPageMain | null;
   currentPageContents: IPageContentItem[] | null;
-  currentPageContent: IPageContentItem | null;
+  currentPageContent: IPageMain | null;
   editingPage: IPageMain | null;
+  editingPageContent: IPageContentMain | null;
 }
 
 const initialState: PageState = {
@@ -17,6 +22,7 @@ const initialState: PageState = {
   editingPage: null,
   currentPageContent: null,
   currentPage: null,
+  editingPageContent: null,
 };
 
 const pageSlice = createSlice({
@@ -96,8 +102,17 @@ const pageSlice = createSlice({
     setEditingPage(state, action: PayloadAction<IPageMain | null>) {
       state.editingPage = action.payload;
     },
+    setEditingPageContent(
+      state,
+      action: PayloadAction<IPageContentMain | null>
+    ) {
+      state.editingPageContent = action.payload;
+    },
     setCurrentPage(state, action: PayloadAction<IPageMain | null>) {
       state.currentPage = action.payload;
+    },
+    setCurrentPageContent(state, action: PayloadAction<IPageMain | null>) {
+      state.currentPageContent = action.payload;
     },
     removePage(state, action: PayloadAction<IPageMain>) {
       state.pages = state.pages.filter(
@@ -110,6 +125,7 @@ const pageSlice = createSlice({
 export const {
   addPage,
   editPage,
+  setEditingPageContent,
   toggleCreatePageDialog,
   setEditingPage,
   removePage,
@@ -118,5 +134,6 @@ export const {
   getPage,
   addPageContent,
   setCurrentPage,
+  setCurrentPageContent,
 } = pageSlice.actions;
 export default pageSlice.reducer;

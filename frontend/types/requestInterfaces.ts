@@ -22,11 +22,16 @@ export interface IPageRequest {
   PG_Type?: number;
 }
 
+export interface IPageContentGetRequest {
+  PG_Name: string;
+  PC_Title: string;
+}
+
 export interface IPageRequestWithIdentifier extends IPageRequest {
   PG_ID: string;
 }
 
-export interface IPageContentRequest {
+export interface IPageContentCreateRequest {
   UI_ID: string;
   PG_ID: string;
   PC_Title: string;

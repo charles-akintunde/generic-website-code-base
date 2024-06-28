@@ -112,7 +112,7 @@ const usePage = (pageName?: string) => {
   }, [pagesData]);
 
   useEffect(() => {
-    console.log(pageData, 'pageData');
+    // console.log(pageData, 'pageData');
     if (pageData && pageData.data) {
       let response: Page = pageData.data;
       const normalizedPage: IPageMain = {
@@ -123,7 +123,7 @@ const usePage = (pageName?: string) => {
         ),
         pageContents:
           response.PG_PageContents &&
-          response.PG_PageContents.map((pageContent) => {
+          (response.PG_PageContents.map((pageContent) => {
             const pageContentResponse: IPageContentMain = {
               pageContentId: pageContent.PC_ID,
               pageId: pageContent.PG_ID,
@@ -131,19 +131,19 @@ const usePage = (pageName?: string) => {
               userId: pageContent.UI_ID,
               href: `${toKebabCase(response.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
               pageContentName: pageContent.PC_Title,
-              pageContentDisplayImage: pageContent.PC_ThumbImgURL,
+              pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
               isPageContentHidden: pageContent.PC_IsHidden,
               pageContents:
                 pageContent.PC_Content && pageContent.PC_Content['PC_Content'],
             };
             return pageContentResponse;
-          }),
+          }) as IPageContentMain[]),
         pageType: String(response.PG_Type),
         isHidden: false,
         href: `/${toKebabCase(response.PG_Name)}`,
       };
       dispatch(setCurrentPage(normalizedPage));
-      console.log(normalizedPage, 'normalizedPage');
+      // console.log(normalizedPage, 'normalizedPage');
     }
   }, [pageData]);
 
@@ -176,7 +176,7 @@ const usePage = (pageName?: string) => {
       );
       handleToggleCreateFormDialog();
     } catch (error: any) {
-      console.log(error, 'error');
+      // console.log(error, 'error');
       notify(
         'Error',
         error?.data?.message ||
@@ -207,7 +207,7 @@ const usePage = (pageName?: string) => {
       );
       handleToggleCreateFormDialog();
     } catch (error: any) {
-      console.log(error, 'error');
+      // console.log(error, 'error');
       notify(
         'Error',
         error.message || 'Failed to update the page. Please try again later.',
@@ -220,20 +220,20 @@ const usePage = (pageName?: string) => {
   const handleEditButtonClick = async (page: IPageMain) => {
     handleToggleCreateFormDialog();
     dispatch(setEditingPage(page));
-    console.log(page, editingPage, 'EDITING PAGE');
+    // console.log(page, editingPage, 'EDITING PAGE');
   };
 
   const handleRemovePage = async (page: IPageMain) => {
     try {
       const response = await deletePage(page.pageId).unwrap();
-      console.log(response, 'RESPONSE');
+      // console.log(response, 'RESPONSE');
       notify(
         'Success',
         response.message || 'The page has been successfully deleted.',
         'success'
       );
     } catch (error: any) {
-      console.log(error, 'error');
+      // console.log(error, 'error');
       notify(
         'Error',
         error.message || 'Failed to delete the page. Please try again later.',

@@ -7,8 +7,10 @@ export const toKebabCase = (str: string): string => {
 };
 
 export const fromKebabCase = (str: string): string => {
-  str = str.replace(/-/g, ' ');
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return str
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 };
 
 export const pageTypeLabels: { [key in EPageType]: string } = {
@@ -37,7 +39,9 @@ export interface DecodedToken {
 }
 
 export const decodeJwt = (token: string) => {
-  return jwtDecode(token) as DecodedToken;
+  if (token) {
+    return jwtDecode(token) as DecodedToken;
+  }
 };
 
 export const getTokens = () => {

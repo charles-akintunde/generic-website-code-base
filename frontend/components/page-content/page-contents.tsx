@@ -7,46 +7,12 @@ import {
   containerNoFlexPaddingStyles,
   primarySolidButtonStyles,
 } from '@/styles/globals';
-import { IPageContentItem, IPageMain } from '@/types/componentInterfaces';
+import {
+  IPageContentItem,
+  IPageContentMain,
+  IPageMain,
+} from '@/types/componentInterfaces';
 import { TElement } from '@udecode/plate-common';
-
-const dummyData = [
-  {
-    title: 'Duis aute irure dolor lorem aute irure ipsum',
-    excerpt:
-      'Nam libero tempore, cum soluta nobis est eligendi optio sssssss  ssssss sssss sssssssss  sssssssssssssssssss   xxxxxxxxxxxxxxxxxxxxxxx   sssss cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.',
-    imageSrc: '/path-to-image.jpg',
-    date: 'December 10, 2021',
-    readTime: '5 min read',
-    href: '/articles/1',
-    category: 'Support',
-  },
-  {
-    title: 'Another article title',
-    excerpt: 'Short excerpt for the article goes here.',
-    imageSrc: '/path-to-another-image.jpg',
-    date: 'December 12, 2021',
-    readTime: '4 min read',
-    href: '/articles/2',
-    category: 'Marketing',
-  },
-  // Add more dummy articles as needed
-];
-
-const dummyData1 = [
-  {
-    pageContentName: 'Duis aute irure dolor lorem aute irure ipsum',
-    excerpt:
-      'Nam libero tempore, cum soluta nobis est eligendi optio sssssss  ssssss sssss sssssssss  sssssssssssssssssss   xxxxxxxxxxxxxxxxxxxxxxx   sssss cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.',
-    pageContentdisplayImage: '/path-to-image.jpg',
-    date: 'December 10, 2021',
-    readTime: '5 min read',
-    href: `events/${toKebabCase(`Duis aute irure dolor lorem aute irure ipsum`)}`,
-    category: 'Support',
-  },
-
-  // Add more dummy articles as needed
-];
 
 interface PageContentProps {
   page: IPageMain | null;
@@ -103,7 +69,8 @@ const PageContents: React.FC<PageContentProps> = ({ page }) => {
   console.log(page, 'PAGE');
   const pageName = toKebabCase(page?.pageName ?? '');
   const pageId = page?.pageId ?? '';
-  const pageContents = page?.pageContents;
+  const pageContents: IPageContentMain[] =
+    (page?.pageContents as IPageContentMain[]) ?? [];
   const queryParams = {
     pageName: pageName,
     pageId: pageId,
@@ -124,14 +91,17 @@ const PageContents: React.FC<PageContentProps> = ({ page }) => {
         {pageContents &&
           pageContents.map((pageContent, index) => (
             <PageContentCard
+              pageContent={pageContent}
+              pageName={`${page?.pageName.toLowerCase() ?? ''}`}
               key={index}
+              id={pageContent.pageContentId}
               title={pageContent.pageContentName}
               excerpt={getPageExcerpt(pageContent.pageContents)}
               imageSrc={pageContent.pageContentDisplayImage}
               date={'5 min read'}
               readTime={'December 10, 2021'}
               href={pageContent.href}
-              category={`${page.pageName}`}
+              category={`${page && page.pageName}`}
             />
           ))}
       </div>

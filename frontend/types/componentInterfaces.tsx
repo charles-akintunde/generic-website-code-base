@@ -15,7 +15,7 @@ export interface IPageMain {
   pageName: string;
   pageType: string;
   pagePermission: string[];
-  pageContents: IPageContentItem[] | IPageContentMain[] | undefined;
+  pageContents: IPageContentItem[] | IPageContentMain[] | IPageContentMain;
   isHidden: boolean;
   href: string;
 }

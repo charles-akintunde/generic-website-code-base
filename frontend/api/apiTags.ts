@@ -1,1 +1,1 @@
-export const pageTagTypes = ['Pages', 'Menus', 'Page'] as const;
+export const pageTagTypes = ['Pages', 'Menus', 'Page', 'PageContent'] as const;
