@@ -120,6 +120,12 @@ export interface IButton {
   classNames?: string;
 }
 
+export type Notify = (
+  message: string,
+  description?: string,
+  type?: NotificationType,
+  placement?: NotificationPlacement
+) => void;
 //
 
 // export interface IPage {

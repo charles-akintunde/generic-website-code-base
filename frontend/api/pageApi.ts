@@ -39,8 +39,13 @@ export const pageApi = createApi({
           ? [
               { type: 'Page', id: result.data.PG_ID },
               { type: 'Page', id: 'LIST' },
+              { type: 'PageContent', id: result.data.PG_ID },
+              { type: 'PageContent', id: 'LIST' },
             ]
-          : [{ type: 'Page', id: 'LIST' }],
+          : [
+              { type: 'Page', id: 'LIST' },
+              { type: 'PageContent', id: 'LIST' },
+            ],
     }),
     createPage: builder.mutation<IPageResponse, IPageRequest>({
       query: (newPage) => ({

@@ -132,3 +132,10 @@ export const pageContentSchema = z.object({
   pageContents: plateJsSchema,
   isPageContentHidden: z.boolean().default(false),
 });
+
+export const optionalImagePageContentSchema = z.object({
+  pageContentName: requiredTextSchema('Content Name'),
+  pageContentDisplayImage: imageSchema.optional(),
+  pageContents: plateJsSchema,
+  isPageContentHidden: z.boolean().default(false),
+});

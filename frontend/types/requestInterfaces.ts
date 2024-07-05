@@ -40,3 +40,12 @@ export interface IPageContentCreateRequest {
   PC_ThumbImg: File | string;
   PC_IsHidden: boolean;
 }
+
+export interface IEditPageContentRequest {
+  PC_ID: string;
+  PC_Title?: string;
+  PC_Content?: string;
+  PC_ThumbImg?: string;
+  PC_Resource?: string;
+  PC_IsHidden?: boolean;
+}

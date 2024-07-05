@@ -1,3 +1,4 @@
+import { Notify } from '@/types/componentInterfaces';
 import { EPageType, EUserRole } from '@/types/enums';
 import { jwtDecode } from 'jwt-decode';
 export const toKebabCase = (str: string): string => {
@@ -49,4 +50,8 @@ export const getTokens = () => {
   let refreshToken = localStorage.getItem('access_token');
 
   return { accessToken: accessToken, refreshToken: refreshToken };
+};
+
+export const notifyNoChangesMade = (notify: Notify) => {
+  notify('Notice', 'No changes were made to the field items.', 'warning');
 };

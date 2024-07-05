@@ -3,15 +3,16 @@ import {
   IGenericResponse,
   IPageContentGetResponse,
   IPageContentResponse,
+  IPageResponse,
   ISinglePageResponse,
 } from '@/types/backendResponseInterfaces';
 import publicRouteBaseQuery from './publicRouteBaseQuery';
 import { pageTagTypes } from './apiTags';
 import {
+  IEditPageContentRequest,
   IPageContentCreateRequest,
   IPageContentGetRequest,
 } from '@/types/requestInterfaces';
-import build from 'next/dist/build';
 
 const url = '/page-contents';
 
@@ -48,10 +49,34 @@ export const pageContentApi = createApi({
         method: 'POST',
         body: newPageContent,
       }),
-      invalidatesTags: [{ type: 'Page', id: 'LIST' }],
+      invalidatesTags: [{ type: 'PageContent', id: 'LIST' }],
+    }),
+    editPageContent: builder.mutation<
+      IPageResponse,
+      Partial<IEditPageContentRequest> & Pick<IEditPageContentRequest, 'PC_ID'>
+    >({
+      query: ({ PC_ID, ...patch }) => ({
+        url: `${url}/${PC_ID}`,
+        method: 'PUT',
+        body: patch.formData,
+      }),
+      invalidatesTags: (result, error, { PC_ID }) => [
+        { type: 'PageContent', id: PC_ID },
+      ],
+    }),
+    deletePageContent: builder.mutation<IGenericResponse, string>({
+      query: (id) => ({
+        url: `${url}/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, id) => [{ type: 'PageContent', id }],
     }),
   }),
 });
 
-export const { useCreatePageContentMutation, useGetPageContentQuery } =
-  pageContentApi;
+export const {
+  useCreatePageContentMutation,
+  useGetPageContentQuery,
+  useDeletePageContentMutation,
+  useEditPageContentMutation,
+} = pageContentApi;

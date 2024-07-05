@@ -38,13 +38,18 @@ interface IPageContentCardProps {
 }
 
 const PageContentCard: React.FC<IPageContentCardProps> = (props) => {
-  const { handlePageContentEditButtonClick, editingPageContent } =
-    usePageContent();
+  const {
+    handlePageContentEditButtonClick,
+    editingPageContent,
+    handleRemovePageContent,
+  } = usePageContent();
   const handleEditButtonClick = () => {
     handlePageContentEditButtonClick(props.pageContent);
   };
   console.log(editingPageContent, 'editingPageContent');
-  const handleRemovePage = (id: string) => {};
+  const handleRemovePage = async () => {
+    await handleRemovePageContent(props.id);
+  };
   const first25Words = props.excerpt.split(' ').slice(0, 25).join(' ');
   return (
     <Card className="bg-white">
