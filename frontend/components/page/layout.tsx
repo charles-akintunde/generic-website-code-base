@@ -18,16 +18,21 @@ const PageLayout: React.FC<LayoutProps> = ({
   return (
     <div className="flex flex-col min-h-screen bg-pg">
       <header
-        className="h-64 z-10 flex flex-col items-center justify-center text-white w-full bg-gray-500 bg-cover bg-no-repeat bg-center object-cover"
+        className="h-96 z-10 flex flex-col items-center justify-center text-white w-full relative"
         style={{
           backgroundImage: `url(${titleImgUrl ? titleImgUrl : '/assets/images/background-img.webp'})`,
           backgroundPosition: 'center',
           backgroundSize: 'cover',
         }}
       >
-        <h1 className="text-center text-3xl font-extrabold ">{title}</h1>
+        {/* Overlay div */}
+        <div className="absolute inset-0 bg-black opacity-40"></div>
+
+        <h1 className="text-center text-3xl font-extrabold relative z-20">
+          {title}
+        </h1>
       </header>
-      <main className=" w-full rounded-3xl min-h-screen z-20">
+      <main className="w-full rounded-3xl min-h-screen z-20">
         <div className={``}>{children}</div>
       </main>
     </div>

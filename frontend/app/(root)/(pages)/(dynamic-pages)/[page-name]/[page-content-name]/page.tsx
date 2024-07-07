@@ -1,8 +1,8 @@
-import PageContent from '@/components/page-content/page-content';
+import PageList from '@/components/page-content/page-list';
 import React from 'react';
 
 const DynamicPageContent = () => {
-  return <PageContent />;
+  return <PageList />;
 };
 
 export default DynamicPageContent;

@@ -69,7 +69,11 @@ export const pageContentApi = createApi({
         url: `${url}/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'PageContent', id }],
+      invalidatesTags: (result, error, id) => [
+        { type: 'PageContent', id },
+        { type: 'PageContent', id: 'LIST' },
+        { type: 'Page', id: id },
+      ],
     }),
   }),
 });

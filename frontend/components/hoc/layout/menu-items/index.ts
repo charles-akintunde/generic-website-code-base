@@ -19,7 +19,7 @@ export const systemMenuItems: IPageMenuItem[] = [
     pageName: 'Admin Panel',
     href: '/admin-panel',
     isHidden: false,
-    pagePermission: ['0', '1'],
+    pagePermission: ['3', '4'],
     pageType: '3',
   },
   {
@@ -41,6 +41,13 @@ export const systemMenuItems: IPageMenuItem[] = [
   {
     pageName: 'Terms and Services',
     href: '/terms-and-services',
+    isHidden: true,
+    pagePermission: ['0', '1', '2'],
+    pageType: '3',
+  },
+  {
+    pageName: 'Access Denied',
+    href: '/access-denied',
     isHidden: true,
     pagePermission: ['0', '1', '2', '3', '4'],
     pageType: '3',

@@ -4,8 +4,10 @@ import { Button } from '../ui/button';
 import { EllipsisVertical } from 'lucide-react';
 import AppPopconfirm from './app-popup-confirm';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import Link from 'next/link';
 
 interface IActionProps {
+  href: string;
   entity: string;
   record: any;
   handleEditButtonClick: (record: any) => void;
@@ -13,6 +15,7 @@ interface IActionProps {
 }
 
 const ActionsButtons: React.FC<IActionProps> = ({
+  href = '',
   entity,
   record,
   handleEditButtonClick,
@@ -38,8 +41,21 @@ const ActionsButtons: React.FC<IActionProps> = ({
               onClick={() => handleEditButtonClick(record)}
               className="flex items-center gap-2 p-2 hover:bg-gray-100 bg-inherit rounded text-left"
             >
-              <EditOutlined className="w-4 h-4 text-blue-500" />
-              <span className="text-sm text-blue-500 font-medium">Edit</span>
+              {href ? (
+                <Link href={href}>
+                  <EditOutlined className="w-4 h-4 text-blue-500" />
+                  <span className="pl-3 text-sm text-blue-500 font-medium">
+                    Edit
+                  </span>
+                </Link>
+              ) : (
+                <>
+                  <EditOutlined className="w-4 h-4 text-blue-500" />
+                  <span className="pl-3 text-sm text-blue-500 font-medium">
+                    Edit
+                  </span>
+                </>
+              )}
             </Button>
             <AppPopconfirm
               entity={entity}

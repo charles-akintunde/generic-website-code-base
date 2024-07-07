@@ -1,3 +1,4 @@
+'use client';
 import { useNotification } from '@/components/hoc/notification-provider';
 import React, { useState } from 'react';
 import { useUserLoginMutation } from '@/api/authApi';
@@ -5,6 +6,7 @@ import { IUserLogin } from '@/types/componentInterfaces';
 import { IUserLoginRequest } from '@/types/requestInterfaces';
 import { useRouter } from 'next/navigation';
 import { decodeJwt, getTokens } from '@/utils/helper';
+import { EUserRole } from '@/types/enums';
 
 const useUserLogin = () => {
   const { notify } = useNotification();
@@ -32,6 +34,9 @@ const useUserLogin = () => {
   };
   const { accessToken, refreshToken } = getTokens();
   const currentUser = decodeJwt(accessToken ?? '');
+  const currentUserRole = currentUser
+    ? String(currentUser.role)
+    : String(EUserRole.Public);
 
   return {
     isSuccess,
@@ -41,6 +46,7 @@ const useUserLogin = () => {
     isLoading,
     sendLoginRequest,
     currentUser,
+    currentUserRole,
   };
 };
 

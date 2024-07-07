@@ -27,7 +27,7 @@ import usePageContent from '@/hooks/api-hooks/use-page-content';
 interface IPageContentCardProps {
   id: string;
   title: string;
-  excerpt: string;
+  excerpt?: string;
   imageSrc: string | File;
   date: string;
   readTime: string;
@@ -37,7 +37,7 @@ interface IPageContentCardProps {
   pageContent: IPageContentMain;
 }
 
-const PageContentCard: React.FC<IPageContentCardProps> = (props) => {
+const PageListCard: React.FC<IPageContentCardProps> = (props) => {
   const {
     handlePageContentEditButtonClick,
     editingPageContent,
@@ -50,19 +50,19 @@ const PageContentCard: React.FC<IPageContentCardProps> = (props) => {
   const handleRemovePage = async () => {
     await handleRemovePageContent(props.id);
   };
-  const first25Words = props.excerpt.split(' ').slice(0, 25).join(' ');
+
   return (
-    <Card className="bg-white">
+    <Card className="bg-white flex flex-col h-full">
       <CardHeader>
         <Link onClick={handleEditButtonClick} href={props.href}>
           <img
             src={props.imageSrc as string}
             alt="Article"
-            className="w-full h-52 rounded-t-sm object-cover"
+            className="w-full h-72 rounded-t-sm object-cover"
           />
         </Link>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-grow">
         <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-blue-200 rounded-sm bg-opacity-50 text-blue-400 px-6 py-1 hover:bg-blue-100 hover:bg-opacity-50">
           {props.category}
         </Badge>
@@ -80,12 +80,12 @@ const PageContentCard: React.FC<IPageContentCardProps> = (props) => {
           </span>
         </Link>
       </CardContent>
-
-      <CardFooter className="flex justify-between bottom-3">
+      <CardFooter className="flex justify-between mt-auto bottom-3">
         <div className="text-sm text-gray-500">
           {props.date} | {props.readTime}
         </div>
         <ActionsButtons
+          href={props.href}
           entity={`${props.pageName} content`}
           record={props}
           handleEditButtonClick={handleEditButtonClick}
@@ -96,4 +96,4 @@ const PageContentCard: React.FC<IPageContentCardProps> = (props) => {
   );
 };
 
-export default PageContentCard;
+export default PageListCard;

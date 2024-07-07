@@ -1,11 +1,16 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import PageLayout from './layout';
-import PageContents from '../page-content/page-contents';
+import PageLists from '../page-content/page-lists';
 import { usePathname } from 'next/navigation';
-import { fromKebabCase } from '@/utils/helper';
+import { fromKebabCase, hasPermission } from '@/utils/helper';
 import { IPageContentItem } from '@/types/componentInterfaces';
 import usePage from '@/hooks/api-hooks/use-page';
+import useUserLogin from '@/hooks/api-hooks/use-user-login';
+import { useRouter } from 'next/navigation';
+import SinglePage from '../page-content/single-page';
+import ResourceList from '../page-content/resource-list';
+import AppLoading from '../common/app-loading';
 
 const DynamicPage = () => {
   const pathname = usePathname();
@@ -14,14 +19,32 @@ const DynamicPage = () => {
   );
   const { currentPage, getCurrentPageContents } = usePage(pageName);
 
-  console.log(pageName, 'EEEEEEEEEEEE');
-  console.log(currentPage);
+  if (!currentPage) {
+    return <AppLoading />;
+  }
 
-  return (
-    <PageLayout title={pageName}>
-      <PageContents page={currentPage && currentPage} />
-    </PageLayout>
-  );
+  const renderPageContent = () => {
+    switch (currentPage.pageType) {
+      case '0':
+        return (
+          <PageLayout title={pageName}>
+            <SinglePage />
+          </PageLayout>
+        );
+      case '1':
+        return (
+          <PageLayout title={pageName}>
+            <PageLists />
+          </PageLayout>
+        );
+      case '2':
+        return <ResourceList />;
+      default:
+        return <div>Page type not recognized</div>;
+    }
+  };
+
+  return <>{renderPageContent()}</>;
 };
 
 export default DynamicPage;

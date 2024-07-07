@@ -42,6 +42,8 @@ export interface IPageContentBase {
 
 export interface IPageContentMain extends IPageContentItem {
   pageContentId: string;
+  pageContentLastUpdatedAt?: string;
+  pageContentCreatedAt?: string;
 }
 
 export interface IPageContentItem extends IPageContentBase {

@@ -70,13 +70,20 @@ const usePage = (pageName?: string) => {
   ] = useDeletePageMutation();
   const pageQueryResult = pageName
     ? useGetPageQuery(pageName)
-    : { data: undefined, isError: false, isSuccess: false, isLoading: false };
+    : {
+        data: undefined,
+        isError: false,
+        isSuccess: false,
+        isLoading: false,
+        refetch: () => {},
+      };
 
   const {
     data: pageData,
     isError: hasPageFetchError,
     isSuccess: isPageFetchSuccess,
     isLoading: isPageFetchLoading,
+    refetch: pageRefetch,
   } = pageQueryResult;
 
   const dispatch = useAppDispatch();
@@ -84,7 +91,8 @@ const usePage = (pageName?: string) => {
   const currentPageContents = useAppSelector(
     (state) => state.page.currentPageContents
   );
-  const currentPage = useAppSelector((state) => state.page.currentPage);
+  // const currentPage = useAppSelector((state) => state.page.currentPage);
+  const [currentPage, setCurrentPage] = useState<IPageMain>();
   const editingPage = useAppSelector((state) => state.page.editingPage);
   const [menuItems, setMenuItems] = useState<IPageMenuItem[]>([]);
   const [allAppRoutes, setAllAppRoutes] = useState<IPageMenuItem[]>([]);
@@ -112,7 +120,7 @@ const usePage = (pageName?: string) => {
   }, [pagesData]);
 
   useEffect(() => {
-    // console.log(pageData, 'pageData');
+    console.log(pageData, 'pageData');
     if (pageData && pageData.data) {
       let response: Page = pageData.data;
       const normalizedPage: IPageMain = {
@@ -133,6 +141,8 @@ const usePage = (pageName?: string) => {
               pageContentName: pageContent.PC_Title,
               pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
               isPageContentHidden: pageContent.PC_IsHidden,
+              pageContentCreatedAt: pageContent.PC_CreatedAt as string,
+              pageContentLastUpdatedAt: pageContent.PC_LastUpdatedAt as string,
               pageContents:
                 pageContent.PC_Content && pageContent.PC_Content['PC_Content'],
             };
@@ -142,7 +152,7 @@ const usePage = (pageName?: string) => {
         isHidden: false,
         href: `/${toKebabCase(response.PG_Name)}`,
       };
-      dispatch(setCurrentPage(normalizedPage));
+      setCurrentPage(normalizedPage);
       // console.log(normalizedPage, 'normalizedPage');
     }
   }, [pageData]);
@@ -150,10 +160,6 @@ const usePage = (pageName?: string) => {
   const getCurrentPageContents = (pageName: string) => {
     dispatch(getPageContents(pageName));
   };
-
-  // const setPage = () => {
-  //   dispatch(setCurrentPage());
-  // };
 
   const getCurrentPage = (pageName: string) => {
     dispatch(getPage(pageName));
@@ -267,6 +273,7 @@ const usePage = (pageName?: string) => {
     currentPageContents,
     currentPage,
     getCurrentPage,
+    pageRefetch,
   };
 };
 

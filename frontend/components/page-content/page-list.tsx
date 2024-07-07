@@ -2,22 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import { PlateEditor } from '../plate/plate';
 import PageLayout from '../page/layout';
-import AppButton from '../common/button/app-button';
-import {
-  containerNoFlexPaddingStyles,
-  glassmorphismSytles,
-  primarySolidButtonStyles,
-} from '@/styles/globals';
 import { z } from 'zod';
 import FormField from '@/components/common/form-field';
 import { Form } from '@/components/ui/form';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  accountCreationSchema,
-  optionalImagePageContentSchema,
-  pageContentSchema,
-} from '@/utils/formSchema';
+import { pageContentSchema } from '@/utils/formSchema';
 import LoadingButton from '../common/button/loading-button';
 import usePageContent from '@/hooks/api-hooks/use-page-content';
 import {
@@ -34,7 +24,6 @@ import {
 import usePage from '@/hooks/api-hooks/use-page';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { IPageContentGetRequest } from '@/types/requestInterfaces';
-import { Skeleton } from '../ui/skeleton';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Spin } from 'antd';
@@ -55,7 +44,6 @@ const CreatePageContent = () => {
   const [plateEditorKey, setPlateEditorKey] = useState<string>(
     JSON.stringify(plateEditor)
   );
-  const router = useRouter();
   const searchParams = useSearchParams();
   const pageId = searchParams.get('pageId');
   const pathname = usePathname();
@@ -87,11 +75,6 @@ const CreatePageContent = () => {
 
     await submitPageContent(pageContent);
     console.log(isCreatePageContentSuccess, 'isCreatePageContentSuccess');
-    if (isCreatePageContentSuccess) {
-      router.replace(
-        `/${toKebabCase(pageName)}/${toKebabCase(data.pageContentName)}`
-      );
-    }
   };
 
   return (
@@ -139,7 +122,7 @@ const CreatePageContent = () => {
 };
 
 const EditPageContent = () => {
-  const { currentUser } = useUserLogin();
+  const { currentUser, currentUserRole } = useUserLogin();
   const [contentData, setContentData] = useState<IPageContentItem | null>(null);
   const pathname = usePathname();
   const page = pathname.split('/');
@@ -153,6 +136,7 @@ const EditPageContent = () => {
     isSuccess: isPageContentFetchSuccess,
     isLoading: isPageContentFetchLoading,
     error: pageContentFetchError,
+    refetch: pageContentFetchRefetch,
   } = useGetPageContentQuery({
     PC_Title: fromKebabCase(pageContentName),
     PG_Name: fromKebabCase(pageName),
@@ -249,6 +233,7 @@ const EditPageContent = () => {
   };
 
   const onSubmit = async (data: IPageContentBase) => {
+    console.log('pageContentFetchRefetch,');
     const pageContent: IPageContentItem = {
       pageContentName: data.pageContentName,
       pageContentDisplayImage: data.pageContentDisplayImage,
@@ -263,12 +248,13 @@ const EditPageContent = () => {
     const changedFields = getChangedFields(originalData, newDataWithContents);
     if (Object.keys(changedFields).length > 0) {
       console.log(changedFields, 'changedFields');
-      await submitEditedPageContent(contentData.pageContentId, changedFields);
-      if (isEditPageContentSuccess) {
-        router.replace(
-          `/${toKebabCase(pageName)}/${toKebabCase(data.pageContentName)}`
-        );
-      }
+      await submitEditedPageContent(
+        pageName,
+        data.pageContentName,
+        contentData.pageContentId,
+        changedFields,
+        pageContentFetchRefetch
+      );
     } else {
       notifyNoChangesMade(notify);
     }
@@ -335,7 +321,7 @@ const EditPageContent = () => {
   );
 };
 
-const PageContent = () => {
+const PageList = () => {
   const pathname = usePathname();
   const page = pathname.split('/');
   const pageContentName = page[2];
@@ -347,4 +333,4 @@ const PageContent = () => {
   }
 };
 
-export default PageContent;
+export default PageList;

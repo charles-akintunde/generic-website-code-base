@@ -1,6 +1,8 @@
-import AdminPanel from '@/components/admin-panel/admin-panel';
-// import './index.css';
 import React from 'react';
+import AdminPanel from '@/components/admin-panel/admin-panel';
+import { systemMenuItems } from '@/components/hoc/layout/menu-items';
+import useUserLogin from '@/hooks/api-hooks/use-user-login';
+import { hasPermission } from '@/utils/helper';
 
 const AdminPage = () => {
   return (

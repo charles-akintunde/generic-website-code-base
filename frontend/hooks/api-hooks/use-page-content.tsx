@@ -20,8 +20,15 @@ import { IPageContentGetRequest } from '@/types/requestInterfaces';
 import { toKebabCase } from '@/utils/helper';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/hoc/notification-provider';
+import usePage from './use-page';
+import { usePathname } from 'next/navigation';
 
 const usePageContent = (pageContent?: IPageContentGetRequest) => {
+  const pathname = usePathname();
+  const page = pathname.split('/');
+  const pageName = page[1];
+  console.log(pageName, 'PPPPPPP');
+  const { pageRefetch } = usePage(pageName);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [plateEditor, setPlateEditor] = useState([
@@ -70,6 +77,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         isSuccess: false,
         isLoading: false,
         error: undefined,
+        refetch: () => {},
       };
   const {
     data: pageContentData,
@@ -77,7 +85,9 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     isSuccess: isPageContentFetchSuccess,
     isLoading: isPageContentFetchLoading,
     error: pageContentFetchError,
+    refetch: pageContentFetchRefetch,
   } = pageContentQueryResult;
+
   const submitPageContent = async (pageContent: IPageContentItem) => {
     try {
       const formData = new FormData();
@@ -94,6 +104,12 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
 
       // console.log(formData, 'rquest');
       const response = await createPageContent(formData).unwrap();
+      console.log(isCreatePageContentSuccess, 'isCreatePageContentSuccess');
+
+      router.replace(
+        `/${toKebabCase(pageContent.pageName)}/${toKebabCase(pageContent.pageContentName)}`
+      );
+
       // console.log(formData, 'response');
     } catch (error: any) {
       console.log(error, 'IPageContentRequest');
@@ -101,8 +117,11 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
   };
 
   const submitEditedPageContent = async (
+    pageName: string,
+    pageContentName: string,
     pageContentId: string,
-    pageContent: IPageContentItem
+    pageContent: IPageContentItem,
+    pageContentFetchRefetch
   ) => {
     try {
       const formData = new FormData();
@@ -128,6 +147,14 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         formData,
       }).unwrap();
 
+      if (pageContent.pageContentName) {
+        router.replace(
+          `/${toKebabCase(pageName)}/${toKebabCase(pageContentName)}`
+        );
+      } else {
+        await pageContentFetchRefetch();
+      }
+      await pageRefetch();
       notify(
         'Success',
         response.message || 'The page has been updated successfully.',
@@ -170,7 +197,15 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
             pageContentName: pageContent.PC_Title,
             pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
             isPageContentHidden: pageContent.PC_IsHidden,
-            pageContents: pageContent.PC_Content?.PC_Content,
+            pageContents: pageContent.PC_Content?.PC_Content
+              ? pageContent.PC_Content?.PC_Content
+              : [
+                  {
+                    id: '1',
+                    type: 'p',
+                    children: [{ text: 'Enter Your Content Here...' }],
+                  },
+                ],
           },
         };
         dispatch(setCurrentPageContent(normalizedPage));
@@ -196,7 +231,11 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
   const handleRemovePageContent = async (pageContentId: string) => {
     try {
       const response = await deletePageContent(pageContentId).unwrap();
-      // console.log(response, 'RESPONSE');
+      console.log(isDeletePageContentSuccess, 'isDeletePageContentSuccess');
+      console.log('I work');
+      await pageRefetch();
+      console.log('I work now');
+
       notify(
         'Success',
         response.message || 'The page has been successfully deleted.',
@@ -229,6 +268,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     handleRemovePageContent,
     setPlateEditor,
     plateEditor,
+    pageContentFetchRefetch,
   };
 };
 
