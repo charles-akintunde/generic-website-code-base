@@ -26,11 +26,7 @@ const DynamicPage = () => {
   const renderPageContent = () => {
     switch (currentPage.pageType) {
       case '0':
-        return (
-          <PageLayout title={pageName}>
-            <SinglePage />
-          </PageLayout>
-        );
+        return <SinglePage />;
       case '1':
         return (
           <PageLayout title={pageName}>

@@ -4,7 +4,7 @@ import React from 'react';
 
 const Page = () => {
   return (
-    <div className="bg-pg">
+    <div className="">
       <DynamicPage />
     </div>
   );

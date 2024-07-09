@@ -6,7 +6,7 @@ import { hasPermission } from '@/utils/helper';
 
 const AdminPage = () => {
   return (
-    <div className="bg-pg">
+    <div className="bg-pg min-h-screen">
       <AdminPanel />;
     </div>
   );

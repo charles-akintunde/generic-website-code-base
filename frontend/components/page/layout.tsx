@@ -3,6 +3,7 @@ import {
   containerPaddingStyles,
 } from '@/styles/globals';
 import React from 'react';
+import { Divider } from 'antd';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,31 +11,22 @@ interface LayoutProps {
   titleImgUrl?: string;
 }
 
-const PageLayout: React.FC<LayoutProps> = ({
-  children,
-  title,
-  titleImgUrl,
-}) => {
+const PageLayout: React.FC<LayoutProps> = ({ children, title }) => {
   return (
-    <div className="flex flex-col min-h-screen bg-pg">
-      <header
-        className="h-96 z-10 flex flex-col items-center justify-center text-white w-full relative"
-        style={{
-          backgroundImage: `url(${titleImgUrl ? titleImgUrl : '/assets/images/background-img.webp'})`,
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-        }}
+    <div className="pg-bg">
+      <div
+        className={` flex flex-col items-center justify-center min-h-screen `}
       >
-        {/* Overlay div */}
-        <div className="absolute inset-0 bg-black opacity-40"></div>
-
-        <h1 className="text-center text-3xl font-extrabold relative z-20">
-          {title}
-        </h1>
-      </header>
-      <main className="w-full rounded-3xl min-h-screen z-20">
-        <div className={``}>{children}</div>
-      </main>
+        <header className="py-10">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-center">
+            {title}
+          </h1>
+        </header>
+        <Divider />
+        <main className="w-full py-10 rounded-3xl min-h-screen z-20 p-5">
+          <div>{children}</div>
+        </main>
+      </div>
     </div>
   );
 };

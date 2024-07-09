@@ -14,11 +14,15 @@ import {
   IPageContentBase,
   IPageContentItem,
   IPageContentMain,
+  IPageMain,
 } from '@/types/componentInterfaces';
 import { usePathname } from 'next/navigation';
 import {
+  createPageContentItem,
   fromKebabCase,
+  getChangedFields,
   notifyNoChangesMade,
+  pageNormalizer,
   toKebabCase,
 } from '@/utils/helper';
 import usePage from '@/hooks/api-hooks/use-page';
@@ -31,9 +35,11 @@ import { useGetPageContentQuery } from '@/api/pageContentApi';
 import { LoadingOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useNotification } from '../hoc/notification-provider';
+import { pageContentPaddingStyles } from '@/styles/globals';
+import PageListLayout from './page-list-layout';
 
 const CreatePageContent = () => {
-  const { currentUser } = useUserLogin();
+  const { currentUser, canEdit } = useUserLogin();
   const [plateEditor, setPlateEditor] = useState([
     {
       id: '1',
@@ -83,26 +89,31 @@ const CreatePageContent = () => {
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="">
             <div className="px-4 sm:px-6 lg:px-8 space-y-6 min-h-screen relative bottom-20">
-              <FormField
-                control={form.control}
-                name="pageContentName"
-                label="Content Name"
-                placeholder="Content Name"
-              />
-              <FormField
-                control={form.control}
-                name="pageContentDisplayImage"
-                label="Display Image"
-                placeholder="Select display Image"
-                type="picture"
-              />
-              <FormField
-                control={form.control}
-                name="isPageContentHidden"
-                label=""
-                placeholder="Hide this Content"
-                type="checkbox"
-              />
+              {canEdit && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="pageContentName"
+                    label="Content Name"
+                    placeholder="Content Name"
+                  />
+                  <FormField
+                    control={form.control}
+                    name="pageContentDisplayImage"
+                    label="Display Image"
+                    placeholder="Select display Image"
+                    type="picture"
+                  />
+                  <FormField
+                    control={form.control}
+                    name="isPageContentHidden"
+                    label=""
+                    placeholder="Hide this Content"
+                    type="checkbox"
+                  />
+                </>
+              )}
+
               <PlateEditor
                 key={plateEditorKey}
                 value={plateEditor}
@@ -112,7 +123,9 @@ const CreatePageContent = () => {
               />
             </div>
             <div className="flex mt-4 w-full fixed justify-center items-center bottom-0 z-40 h-20 shadow2xl px-4 sm:px-6 lg:px-8">
-              <LoadingButton buttonText="Create Content" loading={false} />
+              {canEdit && (
+                <LoadingButton buttonText="Create Content" loading={false} />
+              )}
             </div>
           </form>
         </FormProvider>
@@ -122,7 +135,7 @@ const CreatePageContent = () => {
 };
 
 const EditPageContent = () => {
-  const { currentUser, currentUserRole } = useUserLogin();
+  const { currentUser, currentUserRole, canEdit } = useUserLogin();
   const [contentData, setContentData] = useState<IPageContentItem | null>(null);
   const pathname = usePathname();
   const page = pathname.split('/');
@@ -153,7 +166,7 @@ const EditPageContent = () => {
     JSON.stringify(plateEditor)
   );
   const { notify } = useNotification();
-  const [originalData, setOriginalData] = useState<any>(null);
+  const [originalData, setOriginalData] = useState<IPageMain>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pageId = searchParams.get('pageId');
@@ -163,25 +176,7 @@ const EditPageContent = () => {
       const page = pageContentData.data;
       const pageContent = page.PG_PageContent;
       if (pageContent) {
-        const normalizedPage: IPageMain = {
-          pageId: page.PG_ID,
-          pageName: page.PG_Name,
-          pagePermission: page.PG_Permission.map(String),
-          pageType: String(page.PG_Type),
-          isHidden: false,
-          href: `/${toKebabCase(page.PG_Name)}`,
-          pageContents: {
-            pageContentId: pageContent.PC_ID,
-            pageName: page.PG_Name,
-            pageId: pageContent.PG_ID,
-            userId: pageContent.UI_ID,
-            href: `${toKebabCase(page.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
-            pageContentName: pageContent.PC_Title,
-            pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
-            isPageContentHidden: pageContent.PC_IsHidden,
-            pageContents: pageContent.PC_Content?.PC_Content,
-          },
-        };
+        const normalizedPage = pageNormalizer(page, pageContent);
         setContentData(normalizedPage.pageContents);
         setOriginalData(normalizedPage.pageContents);
         setPlateEditor(normalizedPage.pageContents.pageContents || plateEditor);
@@ -214,36 +209,15 @@ const EditPageContent = () => {
     }
   }, [isPageContentFetchSuccess, contentData, form]);
 
-  // useEffect(() => {
-  //   if (hasPageContentFetchError) {
-  //     router.replace('/404');
-  //   }
-  // }, [hasPageContentFetchError, router]);
-
-  const getChangedFields = (
-    originalData: IPageContentBase,
-    newData: IPageContentBase
-  ): Partial<IPageContentBase> => {
-    return Object.keys(newData).reduce((acc, key) => {
-      if (!_.isEqual(newData[key], originalData[key])) {
-        acc[key] = newData[key];
-      }
-      return acc;
-    }, {} as Partial<IPageContentBase>);
-  };
-
   const onSubmit = async (data: IPageContentBase) => {
-    console.log('pageContentFetchRefetch,');
-    const pageContent: IPageContentItem = {
-      pageContentName: data.pageContentName,
-      pageContentDisplayImage: data.pageContentDisplayImage,
-      isPageContentHidden: data.isPageContentHidden,
-      pageContents: plateEditor,
-      pageId: pageId as string,
-      pageName: pageName,
-      href: `${toKebabCase(pageName)}/${toKebabCase(data.pageContentName)}`,
-      userId: (currentUser && currentUser.Id) as string,
-    };
+    const pageContent = createPageContentItem(
+      data,
+      plateEditor,
+      String(pageId),
+      pageName,
+      String(currentUser?.Id),
+      `${toKebabCase(pageName)}/${toKebabCase(data.pageContentName)}`
+    );
     const newDataWithContents = { ...data, pageContents: plateEditor };
     const changedFields = getChangedFields(originalData, newDataWithContents);
     if (Object.keys(changedFields).length > 0) {
@@ -257,6 +231,7 @@ const EditPageContent = () => {
       );
     } else {
       notifyNoChangesMade(notify);
+      return;
     }
   };
 
@@ -271,36 +246,44 @@ const EditPageContent = () => {
   return (
     <>
       {isPageContentFetchSuccess && (
-        <PageLayout
-          title={
-            contentData ? contentData.pageContentName : `Edit Page Content`
-          }
-          titleImgUrl={contentData && contentData.pageContentDisplayImage}
-        >
+        // <PageLayout
+        //   title={
+        //     contentData ? contentData.pageContentName : `Edit Page Content`
+        //   }
+        //   titleImgUrl={String(
+        //     contentData && contentData.pageContentDisplayImage
+        //   )}
+        // >
+        <PageListLayout page={originalData}>
           <div className={`flex flex-col flex-grow mt-28 min-h-screen`}>
             <FormProvider {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="">
-                <div className="px-4 sm:px-6 lg:px-8 space-y-6 min-h-screen relative bottom-20">
-                  <FormField
-                    control={form.control}
-                    name="pageContentName"
-                    label="Content Name"
-                    placeholder="Content Name"
-                  />
-                  <FormField
-                    control={form.control}
-                    name="pageContentDisplayImage"
-                    label="Change Display Image"
-                    placeholder="Select display Image"
-                    type="picture"
-                  />
-                  <FormField
-                    control={form.control}
-                    name="isPageContentHidden"
-                    label=""
-                    placeholder="Hide this Content"
-                    type="checkbox"
-                  />
+                <div className={` space-y-6 min-h-screen relative bottom-20`}>
+                  {canEdit && (
+                    <>
+                      <FormField
+                        control={form.control}
+                        name="pageContentName"
+                        label="Content Name"
+                        placeholder="Content Name"
+                      />
+                      <FormField
+                        control={form.control}
+                        name="pageContentDisplayImage"
+                        label="Change Display Image"
+                        placeholder="Select display Image"
+                        type="picture"
+                      />
+                      <FormField
+                        control={form.control}
+                        name="isPageContentHidden"
+                        label=""
+                        placeholder="Hide this Content"
+                        type="checkbox"
+                      />
+                    </>
+                  )}
+
                   <PlateEditor
                     key={plateEditorKey}
                     value={plateEditor}
@@ -309,13 +292,17 @@ const EditPageContent = () => {
                     }}
                   />
                 </div>
-                <div className="flex mt-4 w-full fixed justify-center items-center bottom-0 z-40 h-20 shadow2xl px-4 sm:px-6 lg:px-8">
-                  <LoadingButton buttonText="Edit Content" loading={false} />
+                <div
+                  className={`flex mt-4 w-full fixed justify-center items-center bottom-0 z-40 h-20 shadow2xl ${pageContentPaddingStyles}`}
+                >
+                  {canEdit && (
+                    <LoadingButton buttonText="Edit Content" loading={false} />
+                  )}
                 </div>
               </form>
             </FormProvider>
           </div>
-        </PageLayout>
+        </PageListLayout>
       )}
     </>
   );

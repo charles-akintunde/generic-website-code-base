@@ -1,7 +1,17 @@
-import { Notify } from '@/types/componentInterfaces';
+import {
+  IPageContentGetResponse,
+  IPageContentResponse,
+  Page,
+} from '@/types/backendResponseInterfaces';
+import {
+  IPageContentItem,
+  IPageMain,
+  Notify,
+} from '@/types/componentInterfaces';
 import { EPageType, EUserRole } from '@/types/enums';
 import { TElement } from '@udecode/plate-common';
 import { jwtDecode } from 'jwt-decode';
+import _ from 'lodash';
 export const toKebabCase = (str: string): string => {
   str = str.toLowerCase();
   str = str.replace(/ /g, '-');
@@ -124,4 +134,82 @@ export const hasPermission = (
   pagePermission: string[]
 ): boolean => {
   return pagePermission.includes(currentUserRole);
+};
+
+export const getChangedFields = (
+  originalData: any,
+  newData: any
+): Partial<any> => {
+  return Object.keys(newData).reduce((acc, key: any) => {
+    if (!_.isEqual(newData[key], originalData[key])) {
+      acc[key] = newData[key];
+    }
+    return acc;
+  }, {} as Partial<any>);
+};
+
+export const pageNormalizer = (
+  page: Page,
+  pageContent: IPageContentResponse
+) => {
+  const normalizedPage: IPageMain = {
+    pageId: page.PG_ID,
+    pageName: page.PG_Name,
+    pagePermission: page.PG_Permission.map(String),
+    pageType: String(page.PG_Type),
+    isHidden: false,
+    href: `/${toKebabCase(page.PG_Name)}`,
+    pageContents: {
+      pageContentId: pageContent.PC_ID,
+      pageName: page.PG_Name,
+      pageId: pageContent.PG_ID,
+      userId: pageContent.UI_ID,
+      href: `${toKebabCase(page.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
+      pageContentName: pageContent.PC_Title,
+      pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
+      isPageContentHidden: pageContent.PC_IsHidden,
+      pageContents: pageContent.PC_Content?.PC_Content,
+      pageContentCreatedAt: pageContent.PC_CreatedAt as string,
+      // creatorFullName: `${pageContent.UI_FirstName} ${pageContent.UI_LastName}`,
+    },
+  };
+
+  return normalizedPage;
+};
+
+// const pageContentResponse: IPageContentMain = {
+//   pageContentId: pageContent.PC_ID,
+//   pageId: pageContent.PG_ID,
+//   pageName: response.PG_Name,
+//   userId: pageContent.UI_ID,
+//   href: `${toKebabCase(response.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
+//   pageContentName: pageContent.PC_Title,
+//   pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
+//   isPageContentHidden: pageContent.PC_IsHidden,
+//   pageContentCreatedAt: pageContent.PC_CreatedAt as string,
+//   pageContentLastUpdatedAt: pageContent.PC_LastUpdatedAt as string,
+//   pageContents:
+//     pageContent.PC_Content && pageContent.PC_Content['PC_Content'],
+// };
+// return pageContentResponse;
+// }) as IPageContentMain[]),
+
+export const createPageContentItem = (
+  data: any,
+  plateEditor: any,
+  pageId: string,
+  pageName: string,
+  currentUserId: string,
+  href: string
+): IPageContentItem => {
+  return {
+    pageContentName: data.pageContentName,
+    pageContentDisplayImage: data.pageContentDisplayImage,
+    isPageContentHidden: data.isPageContentHidden,
+    pageContents: plateEditor,
+    pageId: pageId,
+    pageName: pageName,
+    href: href,
+    userId: currentUserId,
+  };
 };

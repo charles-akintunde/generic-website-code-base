@@ -10,5 +10,8 @@ export const containerPaddingStyles =
 export const containerNoFlexPaddingStyles =
   'container mx-auto items-center h-full px-4 sm:px-6 lg:px-8';
 
+export const pageContentPaddingStyles =
+  'px-4 sm:px-6 md:px-12 lg:px-72 xl:px-80 2xl:px-96';
+
 export const glassmorphismSytles =
   'h-full w-full bg-gray-100 rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-0 border border-gray-100';

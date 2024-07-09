@@ -15,19 +15,21 @@ const AccessDenied: React.FC<AccessDeniedProps> = ({}) => {
   //   const router = useRouter();
 
   return (
-    <Result
-      status="403"
-      title="403 Forbidden"
-      subTitle="You do not have permission to access this page."
-      extra={
-        <AppButton
-          Icon={HomeOutlined}
-          href={'/'}
-          buttonText={'Go Home'}
-          classNames={`w-auto ${primarySolidButtonStyles}`}
-        />
-      }
-    />
+    <div className="min-h-screen bg-pg">
+      <Result
+        status="403"
+        title="403 Forbidden"
+        subTitle="You do not have permission to access this page."
+        extra={
+          <AppButton
+            Icon={HomeOutlined}
+            href={'/'}
+            buttonText={'Go Home'}
+            classNames={`w-auto ${primarySolidButtonStyles}`}
+          />
+        }
+      />
+    </div>
   );
 };
 

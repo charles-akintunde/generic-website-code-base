@@ -37,6 +37,8 @@ const useUserLogin = () => {
   const currentUserRole = currentUser
     ? String(currentUser.role)
     : String(EUserRole.Public);
+  const canEdit =
+    currentUserRole == '0' || currentUserRole == '1' ? true : false;
 
   return {
     isSuccess,
@@ -47,6 +49,7 @@ const useUserLogin = () => {
     sendLoginRequest,
     currentUser,
     currentUserRole,
+    canEdit,
   };
 };
 

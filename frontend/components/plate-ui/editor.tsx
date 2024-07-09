@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import type { PlateContentProps } from '@udecode/plate-common';
 import type { VariantProps } from 'class-variance-authority';
@@ -6,6 +6,8 @@ import type { VariantProps } from 'class-variance-authority';
 import { cn } from '@udecode/cn';
 import { PlateContent } from '@udecode/plate-common';
 import { cva } from 'class-variance-authority';
+
+import useUserLogin from '@/hooks/api-hooks/use-user-login';
 
 const editorVariants = cva(
   cn(
@@ -61,22 +63,32 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
     },
     ref
   ) => {
+    const { canEdit } = useUserLogin();
+
+    // Determine the actual states based on canEdit
+    const finalReadOnly = !canEdit || readOnly;
+    const finalDisabled = !canEdit || disabled;
+    const finalFocused = canEdit && focused;
+
     return (
       <div className="relative w-full" ref={ref}>
         <PlateContent
-          aria-disabled={disabled}
-          className={cn(
-            editorVariants({
-              disabled,
-              focusRing,
-              focused,
-              size,
-              variant,
-            }),
-            className
-          )}
+          aria-disabled={finalDisabled}
+          className={
+            (cn(
+              editorVariants({
+                disabled,
+                focusRing,
+                focused: finalFocused,
+                size,
+                variant,
+              }),
+              className
+            ),
+            `${canEdit ? 'border-none' : ''}`)
+          }
           disableDefaultStyles
-          readOnly={disabled ?? readOnly}
+          readOnly={finalReadOnly}
           {...props}
         />
       </div>

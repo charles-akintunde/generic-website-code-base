@@ -44,6 +44,7 @@ export interface IPageContentMain extends IPageContentItem {
   pageContentId: string;
   pageContentLastUpdatedAt?: string;
   pageContentCreatedAt?: string;
+  creatorFullName?: string;
 }
 
 export interface IPageContentItem extends IPageContentBase {
@@ -91,6 +92,7 @@ export interface ILoadingButton {
   buttonText: string;
   loading: boolean;
   type?: 'button' | 'submit' | 'reset';
+  onClick?: () => void | Promise<void>;
 }
 
 export interface ICreatAccount {

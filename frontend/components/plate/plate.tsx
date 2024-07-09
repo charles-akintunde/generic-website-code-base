@@ -11,6 +11,7 @@ import { FixedToolbarButtons } from '@/components/plate-ui/fixed-toolbar-buttons
 import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar';
 import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-buttons';
 import { CommentsPopover } from '@/components/plate-ui/comments-popover';
+import useUserLogin from '@/hooks/api-hooks/use-user-login';
 
 type PlateEditorProps = {
   value: TElement[];
@@ -21,21 +22,30 @@ export const PlateEditor: React.FC<PlateEditorProps> = ({
   value,
   onChange,
 }) => {
+  const { canEdit } = useUserLogin();
+
+  console.log(canEdit, 'contentData.pageContentName');
   return (
     <TooltipProvider>
       <DndProvider backend={HTML5Backend}>
         <CommentsProvider users={{}} myUserId="1">
           <Plate plugins={plugins} initialValue={value} onChange={onChange}>
-            <FixedToolbar>
-              <FixedToolbarButtons />
-            </FixedToolbar>
+            {canEdit && (
+              <FixedToolbar>
+                <FixedToolbarButtons />
+              </FixedToolbar>
+            )}
 
             <Editor />
 
-            <FloatingToolbar>
-              <FloatingToolbarButtons />
-            </FloatingToolbar>
-            <CommentsPopover />
+            {canEdit && (
+              <>
+                <FloatingToolbar>
+                  <FloatingToolbarButtons />
+                </FloatingToolbar>
+                <CommentsPopover />
+              </>
+            )}
           </Plate>
         </CommentsProvider>
       </DndProvider>

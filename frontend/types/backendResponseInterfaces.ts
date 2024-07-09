@@ -12,6 +12,8 @@ export interface Page {
 export interface IPageContentResponse {
   PC_ID: string;
   UI_ID: string;
+  UI_FirstName: string;
+  UI_LastName: string;
   PG_ID: string;
   PC_Title: string;
   PC_Content: { [key: string]: TElement[] };

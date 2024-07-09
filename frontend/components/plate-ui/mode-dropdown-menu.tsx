@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
 
@@ -20,6 +20,7 @@ import {
   useOpenState,
 } from './dropdown-menu';
 import { ToolbarButton } from './toolbar';
+import useUserLogin from '@/hooks/api-hooks/use-user-login';
 
 export function ModeDropdownMenu(props: DropdownMenuProps) {
   const editor = useEditorRef();

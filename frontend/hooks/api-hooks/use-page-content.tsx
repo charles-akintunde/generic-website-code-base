@@ -98,7 +98,9 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       formData.append('PG_ID', pageContent.pageId);
       formData.append('PC_Title', pageContent.pageContentName);
       formData.append('PC_DisplayURL', '');
-      formData.append('PC_ThumbImg', pageContent.pageContentDisplayImage);
+      if (pageContent.pageContentDisplayImage) {
+        formData.append('PC_ThumbImg', pageContent.pageContentDisplayImage);
+      }
       formData.append('PC_IsHidden', String(pageContent.isPageContentHidden));
       formData.append('PC_Content', JSON.stringify(pageContentObj));
 
