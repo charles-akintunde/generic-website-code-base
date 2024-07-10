@@ -39,6 +39,7 @@ async def save_file(file: UploadFile, folder: str, delimiter: str = '***') -> st
 
 def extract_path_from_url(file_url: str):
     try:
+        print(file_url,"KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
         parsed_url = urlparse(file_url)
         file_path = parsed_url.path
 

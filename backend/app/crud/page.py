@@ -84,6 +84,7 @@ class PageCRUD:
         Remove page content from db.
         """
         for page_content in page.PG_PageContents:
+            print(page_content,"page_conetnt")
             page_content_crud.delete_page_content(db=db,page_content_to_delete=page_content)
   
     def update_page(self, db: Session, page_id, page_data) -> T_Page:
@@ -109,6 +110,7 @@ class PageCRUD:
         Delete page
         """
         try:
+            print(page,"THE PAGE")
             self.remove_page_content(db=db, page=page)
             db.delete(page)
             db.commit()

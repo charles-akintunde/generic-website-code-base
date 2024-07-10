@@ -156,7 +156,7 @@ def delete_page(db: Session, page_id: str, user: T_UserInfo) -> bool:
         current_user=user,
         detail="You do not have permission to delete this page"
         )
-    
+    print(existing_page,"existing_page")
     is_success = page_crud.delete_page(
         db, 
         page=existing_page)

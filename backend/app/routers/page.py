@@ -113,7 +113,7 @@ async def update_page_endpoint(
             page_id=page_id, 
             page_update=page_update, 
             user=current_user)
-        return success_response(message="Page updated successfully", data=updated_page.model_dump())
+        return success_response(message="Page updated successfully")
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     

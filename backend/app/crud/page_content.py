@@ -152,9 +152,10 @@ class PageContentCRUD:
     """
     try:
         if page_content_to_delete:
-            if page_content_to_delete.PC_DisplayURL: # type: ignore
-                delete_file(extract_path_from_url(page_content_to_delete.PC_DisplayURL)) # type: ignore
-            if str(page_content_to_delete.PC_ThumbImgURL):
+            # if page_content_to_delete.PC_DisplayURL: # type: ignore
+            #     delete_file(extract_path_from_url(page_content_to_delete.PC_DisplayURL)) # type: ignore
+            print(page_content_to_delete,"UUUUUUUUUUUUUUUUUU")
+            if page_content_to_delete.PC_ThumbImgURL: # type: ignore
                 delete_file(extract_path_from_url(page_content_to_delete.PC_ThumbImgURL)) # type: ignore
             db.delete(page_content_to_delete)
             db.commit()
