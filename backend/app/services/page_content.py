@@ -99,8 +99,11 @@ async def create_page_content(
             detail="Error creating page content"
         )
     
+    page = page_crud.get_page_by_id(db=db, page_id=str(page_content.PG_ID))
+    
     return build_page_content_json(
         page_content=new_page_content,
+        page_name=str(page.PG_Name),
         user=user
     )
 
@@ -136,6 +139,8 @@ def get_page_content_by_title(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"This page does not have content with title '{page_content_title}'."
         )
+    
+    
 
     page_content_creator = user_crud.get_user_by_id(
         db=db,
@@ -144,6 +149,7 @@ def get_page_content_by_title(
 
     page_content_json = build_page_content_json(
         page_content=page_content,
+        page_name= str(page.PG_Name),
         user=page_content_creator
     )
 
@@ -216,8 +222,11 @@ async def update_page_content(
         user_id=str(updated_page_content.UI_ID)
     )
     
-    page_content_json = build_page_content_json(
-        page_content=updated_page_content,
+    page = page_crud.get_page_by_id(db=db, page_id=str(updated_page_content.PG_ID))
+    
+    return build_page_content_json(
+        page_content= updated_page_content,
+        page_name=str(page.PG_Name),
         user=user
     )
 

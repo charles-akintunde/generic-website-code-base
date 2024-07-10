@@ -12,7 +12,7 @@ from app.models.page import T_Page
 from app.schemas.page import PageResponse, PageSingleContent
 
 
-def build_page_content_json(page_content : T_PageContent, user: T_UserInfo) -> Union[PageContentResponse, Any]:
+def build_page_content_json(page_content : T_PageContent,user: T_UserInfo,page_name:str=None) -> Union[PageContentResponse, Any]:
     """
     Build page content json.
     """
@@ -23,6 +23,7 @@ def build_page_content_json(page_content : T_PageContent, user: T_UserInfo) -> U
     PG_ID=str(page_content.PG_ID),
     PC_ID=str(page_content.PC_ID),
     PC_Title=str(page_content.PC_Title),
+    PG_Name=page_name,
     UI_FirstName=str(user.UI_FirstName),
     UI_LastName=str(user.UI_LastName),
     PC_ThumbImgURL=str(page_content.PC_ThumbImgURL) if page_content.PC_ThumbImgURL else None, # type: ignore

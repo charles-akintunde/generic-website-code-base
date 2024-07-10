@@ -5,11 +5,12 @@
 from typing import Any, List
 
 from fastapi import HTTPException, status
+from sqlalchemy import func
 from app.schemas.page import PageCreate
 from app.models.page import T_Page
 from sqlalchemy.orm import Session, load_only
 from app.crud.page_content import page_content_crud
-from app.models.enums import E_UserRole
+from app.models.enums import E_PageType, E_UserRole
 from app.crud import page_content
 
 
@@ -26,7 +27,6 @@ class PageCRUD:
         Returns:
             User: Created page object.
         """
-
         db_page = T_Page(**page.model_dump())
         db.add(db_page)
         db.commit()
@@ -45,7 +45,7 @@ class PageCRUD:
             Page (T_Page): Existing page object.
         """
 
-        return db.query(T_Page).filter(T_Page.PG_Name == page_name).first()
+        return db.query(T_Page).filter(func.lower(T_Page.PG_Name) == func.lower(page_name)).first()
     
     def get_page_by_name_and_id(self, db: Session, page_name: str, page_id: str) -> T_Page:
         """
@@ -61,7 +61,7 @@ class PageCRUD:
         """
 
         return db.query(T_Page).filter(
-            T_Page.PG_Name == page_name,
+            func.lower(T_Page.PG_Name) == func.lower(page_name),
             T_Page.PG_ID == page_id).first()
     
     def get_page_by_id(self, db: Session, page_id: str) -> T_Page:
@@ -94,6 +94,8 @@ class PageCRUD:
 
         if page:
             for key, value in page_data.items():
+                if value is None:
+                    continue
                 setattr(page, key, value)
             page.PG_Permission.append(E_UserRole.SuperAdmin)
             permissions = set(page.PG_Permission) # type: ignore

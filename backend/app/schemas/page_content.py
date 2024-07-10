@@ -33,6 +33,7 @@ class PageContentResponse(PageContent):
     UI_FirstName: str
     UI_LastName: str
     PC_ThumbImgURL: Optional[str] = None
+    PG_Name: Optional[str] = None
     # PC_DisplayURL: str
 
 class PageContentUpdateRequest(BaseModel):

@@ -40,6 +40,8 @@ class UserCRUD:
         """
         if user:
             for key, value in update_data.items():
+                if value is None:
+                    continue
                 setattr(user, key, value)
             db.commit()
             db.refresh(user)

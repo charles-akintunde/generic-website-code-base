@@ -63,7 +63,7 @@ async def create_page_content_endpoint(
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     
-@router.get("{page_name}/{page_content_title}", response_model=StandardResponse)
+@router.get("/{page_name}/{page_content_title}", response_model=StandardResponse)
 async def get_page_content_by_title_endpoint(
     page_content_title: str,
     page_name: str,
