@@ -99,6 +99,7 @@ const SinglePage = () => {
   useEffect(() => {
     if (pageData && pageData.data) {
       let response: Page = pageData.data;
+      console.log(response, 'respppppppp');
 
       const normalizedPage = normalizeMultiContentPage(response, true);
       setSinglePage(normalizedPage);
@@ -154,6 +155,7 @@ const SinglePage = () => {
     const pageContentDisplayImage =
       singlePageContent && singlePageContent.pageContentDisplayImage;
     const pageId = String(page?.pageId);
+    const pageType = String(page?.pageType);
     const userId = currentUser?.Id as string;
     const kebabCasePageName = `/${toKebabCase(pageName)}`;
     const pageContent = createPageContentItem(
@@ -164,8 +166,10 @@ const SinglePage = () => {
       },
       plateEditor,
       pageId,
+      pageType,
       pageName,
       userId,
+
       kebabCasePageName
     );
     const newDataWithContents = { editorContent: plateEditor };
@@ -176,6 +180,7 @@ const SinglePage = () => {
         console.log(isSinglePageCreated, 'Edit');
         await submitEditedPageContent(
           pageName,
+          pageType,
           pageName,
           String(pageContentId),
           changedFields as Partial<IPageContentItem>,
@@ -185,14 +190,12 @@ const SinglePage = () => {
           pageName,
           pageName,
           String(pageContentId),
-          changedFields as Partial<IPageContentItem>,
-          // pageContentFetchRefetch,
-          'KKKKKKKKKKKKKKKK'
+          changedFields as Partial<IPageContentItem>
         );
       } else {
         console.log(isSinglePageCreated, 'Create');
         console.log(pageContent, 'pageId');
-        await submitPageContent(pageContent, pageRefetch, true);
+        // await submitPageContent(pageContent, pageRefetch);
       }
     } else {
       notifyNoChangesMade(notify);

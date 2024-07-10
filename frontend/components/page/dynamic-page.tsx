@@ -9,7 +9,7 @@ import usePage from '@/hooks/api-hooks/use-page';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { useRouter } from 'next/navigation';
 import SinglePage from '../page-content/single-page';
-import ResourceList from '../page-content/resource-list';
+import ResourceLists from '../page-content/resource-lists';
 import AppLoading from '../common/app-loading';
 
 const DynamicPage = () => {
@@ -34,7 +34,11 @@ const DynamicPage = () => {
           </PageLayout>
         );
       case '2':
-        return <ResourceList />;
+        return (
+          <PageLayout title={pageName}>
+            <ResourceLists />
+          </PageLayout>
+        );
       default:
         return <div>Page type not recognized</div>;
     }

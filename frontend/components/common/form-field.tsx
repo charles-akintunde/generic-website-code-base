@@ -120,7 +120,21 @@ const FormField: React.FC<IFormField> = ({
                 <Input
                   id="picture"
                   type="file"
-                  accept="image/png, image/jpeg"
+                  accept="image/png, image/jpeg, image/jpg, image/webp"
+                  onChange={(e) => {
+                    const file = e.target.files && e.target.files[0];
+                    if (file) {
+                      field.onChange(file);
+                    }
+                  }}
+                />
+              )}
+
+              {type === 'document' && (
+                <Input
+                  id="document"
+                  type="file"
+                  accept=".pdf, .doc, .docx, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   onChange={(e) => {
                     const file = e.target.files && e.target.files[0];
                     if (file) {

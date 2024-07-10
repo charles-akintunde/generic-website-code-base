@@ -199,6 +199,7 @@ export const createPageContentItem = (
   data: any,
   plateEditor: any,
   pageId: string,
+  pageType: string,
   pageName: string,
   currentUserId: string,
   href: string
@@ -212,6 +213,7 @@ export const createPageContentItem = (
     pageName: pageName,
     href: href,
     userId: currentUserId,
+    pageType: pageType,
   };
 };
 

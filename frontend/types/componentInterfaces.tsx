@@ -36,7 +36,8 @@ export interface IPage {
 
 export interface IPageContentBase {
   pageContentName: string;
-  pageContentDisplayImage: string | File;
+  pageContentDisplayImage?: string | File;
+  pageContentResource?: string | File;
   isPageContentHidden: boolean;
   editorContent: TElement[];
 }
@@ -50,6 +51,7 @@ export interface IPageContentMain extends IPageContentItem {
 
 export interface IPageContentItem extends IPageContentBase {
   pageId: string;
+  pageType?: string;
   pageName: string;
   userId: string;
   href: string;

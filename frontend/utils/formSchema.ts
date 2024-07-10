@@ -95,6 +95,12 @@ const ACCEPTED_IMAGE_MIME_TYPES = [
   'image/png',
   'image/webp',
 ];
+const MAX_DOC_FILE_SIZE = 10 * 1024 * 1024;
+const ACCEPTED_DOC_MIME_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
 
 const descendantSchema = z.lazy(() => z.union([elementSchema, textSchema]));
 
@@ -107,7 +113,7 @@ const plateJsSchema = z
   .array(elementSchema)
   .min(1, { message: 'Page content cannot be empty' });
 
-const fileSchema = z.instanceof(File).superRefine((file, ctx) => {
+const imageFileSchema = z.instanceof(File).superRefine((file, ctx) => {
   if (file.size > MAX_FILE_SIZE) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -122,13 +128,30 @@ const fileSchema = z.instanceof(File).superRefine((file, ctx) => {
   }
 });
 
+const docFileSchema = z.instanceof(File).superRefine((file, ctx) => {
+  if (file.size > MAX_DOC_FILE_SIZE) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Document size exceeds 10MB limit',
+    });
+  }
+  if (!ACCEPTED_DOC_MIME_TYPES.includes(file.type)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Only PDF, DOC, and DOCX documents are allowed',
+    });
+  }
+});
+
 const urlSchema = z.string().url();
 
-const imageSchema = z.union([fileSchema, urlSchema]);
+const imageSchema = z.union([imageFileSchema, urlSchema]);
+const fileSchema = z.union([docFileSchema, urlSchema]);
 
 export const pageContentSchema = z.object({
   pageContentName: requiredTextSchema('Content Name'),
-  pageContentDisplayImage: imageSchema,
+  pageContentDisplayImage: imageSchema.optional(),
+  pageContentResource: fileSchema.optional(),
   editorContent: plateJsSchema,
   isPageContentHidden: z.boolean().default(false),
 });

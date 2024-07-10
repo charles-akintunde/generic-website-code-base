@@ -38,6 +38,7 @@ import { useNotification } from '../hoc/notification-provider';
 import { pageContentPaddingStyles } from '@/styles/globals';
 import PageListLayout from './page-list-layout';
 import { TElement } from '@udecode/plate-common';
+import { EPageType } from '@/types/enums';
 
 const CreatePageContent = () => {
   const { currentUser, canEdit } = useUserLogin();
@@ -53,18 +54,20 @@ const CreatePageContent = () => {
   );
   const searchParams = useSearchParams();
   const pageId = searchParams.get('pageId');
+  const pageType = searchParams.get('pageType');
   const pathname = usePathname();
   const page = pathname.split('/');
   const pageName = page[1];
   const { submitPageContent, isCreatePageContentSuccess } = usePageContent();
 
-  console.log(pageName, 'PAGENAME');
+  console.log(pageType, 'pageType');
 
   const form = useForm({
     resolver: zodResolver(pageContentSchema),
     defaultValues: {
       pageContentName: '',
       pageContentDisplayImage: undefined,
+      pageContentResource: undefined,
       isPageContentHidden: false,
       editorContent: plateEditor,
     },
@@ -78,10 +81,11 @@ const CreatePageContent = () => {
       editorContent: plateEditor,
       pageId: pageId as string,
       pageName: pageName,
+      pageType: pageType ? pageType : '',
       href: `${toKebabCase(pageName)}/${toKebabCase(data.pageContentName)}`,
       userId: (currentUser && currentUser.Id) as string,
     };
-    console.log('OnSubmit Clicked');
+    console.log(pageContent, 'EPageType.ResList');
 
     await submitPageContent(pageContent);
   };
@@ -107,6 +111,16 @@ const CreatePageContent = () => {
                     placeholder="Select display Image"
                     type="picture"
                   />
+
+                  {pageType == EPageType.ResList && (
+                    <FormField
+                      control={form.control}
+                      name="pageContentResource"
+                      label="Display Document"
+                      placeholder="Select Document"
+                      type="document"
+                    />
+                  )}
                   <FormField
                     control={form.control}
                     name="isPageContentHidden"
@@ -114,13 +128,15 @@ const CreatePageContent = () => {
                     placeholder="Hide this Content"
                     type="checkbox"
                   />
-                  <PlateEditor
-                    key={plateEditorKey}
-                    value={plateEditor}
-                    onChange={(value) => {
-                      setPlateEditor(value);
-                    }}
-                  />
+                  {pageType != EPageType.ResList && (
+                    <PlateEditor
+                      key={plateEditorKey}
+                      value={plateEditor}
+                      onChange={(value) => {
+                        setPlateEditor(value);
+                      }}
+                    />
+                  )}
                 </>
               )}
             </div>
@@ -171,6 +187,7 @@ const EditPageContent = () => {
   const [originalData, setOriginalData] = useState<IPageContentMain>();
   const searchParams = useSearchParams();
   const pageId = searchParams.get('pageId');
+  const [pageType, setPageType] = useState<string>('');
 
   useEffect(() => {
     if (pageContentData && pageContentData.data.PG_PageContent) {
@@ -178,6 +195,7 @@ const EditPageContent = () => {
       const pageContent = page.PG_PageContent;
       if (pageContent) {
         const normalizedPage = pageNormalizer(page, pageContent);
+        setPageType(normalizedPage.pageType);
         setContentData(normalizedPage.pageContent);
         setOriginalData(normalizedPage.pageContent);
         setPlateEditor(
@@ -196,6 +214,7 @@ const EditPageContent = () => {
     resolver: zodResolver(pageContentSchema),
     defaultValues: {
       pageContentName: '',
+      pageContentResource: undefined,
       pageContentDisplayImage: undefined,
       isPageContentHidden: false,
       editorContent: plateEditor,
@@ -217,6 +236,7 @@ const EditPageContent = () => {
       data,
       plateEditor,
       String(pageId),
+      pageType,
       pageName,
       String(currentUser?.Id),
       `${toKebabCase(pageName)}/${toKebabCase(data.pageContentName)}`
@@ -227,6 +247,7 @@ const EditPageContent = () => {
     if (Object.keys(changedFields).length > 0) {
       await submitEditedPageContent(
         pageName,
+        pageType,
         data.pageContentName,
         pageContentId,
         changedFields as Partial<IPageContentItem>,
@@ -268,10 +289,20 @@ const EditPageContent = () => {
                       <FormField
                         control={form.control}
                         name="pageContentDisplayImage"
-                        label="Change Display Image"
+                        label="Display Image"
                         placeholder="Select display Image"
                         type="picture"
                       />
+
+                      {pageType == EPageType.ResList && (
+                        <FormField
+                          control={form.control}
+                          name="pageContentResource"
+                          label="Display Document"
+                          placeholder="Select Document"
+                          type="document"
+                        />
+                      )}
                       <FormField
                         control={form.control}
                         name="isPageContentHidden"
@@ -279,16 +310,25 @@ const EditPageContent = () => {
                         placeholder="Hide this Content"
                         type="checkbox"
                       />
+                      {pageType != EPageType.ResList && (
+                        <PlateEditor
+                          key={plateEditorKey}
+                          value={plateEditor}
+                          onChange={(value) => {
+                            setPlateEditor(value);
+                          }}
+                        />
+                      )}
                     </>
                   )}
 
-                  <PlateEditor
+                  {/* <PlateEditor
                     key={plateEditorKey}
                     value={plateEditor}
                     onChange={(value) => {
                       setPlateEditor(value);
                     }}
-                  />
+                  /> */}
                 </div>
 
                 <div

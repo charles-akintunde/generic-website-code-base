@@ -22,6 +22,7 @@ import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/hoc/notification-provider';
 import usePage from './use-page';
 import { usePathname } from 'next/navigation';
+import { EPageType } from '@/types/enums';
 
 const usePageContent = (pageContent?: IPageContentGetRequest) => {
   const pathname = usePathname();
@@ -83,8 +84,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
 
   const submitPageContent = async (
     pageContent: IPageContentItem,
-    pageContentFetchRefetch: () => {},
-    isSinglePage: boolean = false
+    pageContentFetchRefetch?: () => {}
   ) => {
     try {
       const formData = new FormData();
@@ -94,22 +94,29 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       formData.append('UI_ID', pageContent.userId);
       formData.append('PG_ID', pageContent.pageId);
       formData.append('PC_Title', pageContent.pageContentName);
-      formData.append('PC_DisplayURL', '');
       if (pageContent.pageContentDisplayImage) {
         formData.append('PC_ThumbImg', pageContent.pageContentDisplayImage);
       }
       formData.append('PC_IsHidden', String(pageContent.isPageContentHidden));
       formData.append('PC_Content', JSON.stringify(pageContentObj));
 
+      if (
+        pageContent.pageType == EPageType.ResList &&
+        pageContent.pageContentResource
+      ) {
+        formData.append('PC_Resource', String(pageContent.pageContentResource));
+      }
+
       const response = await createPageContent(formData).unwrap();
 
-      if (!isSinglePage) {
+      if (pageContent.pageType != EPageType.SinglePage) {
         router.replace(
           `/${toKebabCase(pageContent.pageName)}/${toKebabCase(pageContent.pageContentName)}`
         );
       } else {
-        pageContentFetchRefetch();
+        if (pageContentFetchRefetch) pageContentFetchRefetch();
       }
+      await pageRefetch();
     } catch (error: any) {
       console.log(error, 'IPageContentRequest');
     }
@@ -117,6 +124,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
 
   const submitEditedPageContent = async (
     pageName: string,
+    pageType: string,
     pageContentName: string,
     pageContentId: string,
     pageContent: Partial<IPageContentItem>,
@@ -151,7 +159,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
           `/${toKebabCase(pageName)}/${toKebabCase(pageContentName)}`
         );
       } else {
-        await singlePageRefetch();
+        singlePageRefetch();
       }
       await pageRefetch();
       notify(
