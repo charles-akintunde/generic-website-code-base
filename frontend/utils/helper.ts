@@ -5,6 +5,7 @@ import {
 } from '@/types/backendResponseInterfaces';
 import {
   IPageContentItem,
+  IPageContentMain,
   IPageMain,
   Notify,
 } from '@/types/componentInterfaces';
@@ -159,7 +160,7 @@ export const pageNormalizer = (
     pageType: String(page.PG_Type),
     isHidden: false,
     href: `/${toKebabCase(page.PG_Name)}`,
-    pageContents: {
+    pageContent: {
       pageContentId: pageContent.PC_ID,
       pageName: page.PG_Name,
       pageId: pageContent.PG_ID,
@@ -168,9 +169,9 @@ export const pageNormalizer = (
       pageContentName: pageContent.PC_Title,
       pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
       isPageContentHidden: pageContent.PC_IsHidden,
-      pageContents: pageContent.PC_Content?.PC_Content,
+      editorContent: pageContent.PC_Content?.PC_Content,
       pageContentCreatedAt: pageContent.PC_CreatedAt as string,
-      // creatorFullName: `${pageContent.UI_FirstName} ${pageContent.UI_LastName}`,
+      creatorFullName: `${pageContent.UI_FirstName} ${pageContent.UI_LastName}`,
     },
   };
 
@@ -206,10 +207,46 @@ export const createPageContentItem = (
     pageContentName: data.pageContentName,
     pageContentDisplayImage: data.pageContentDisplayImage,
     isPageContentHidden: data.isPageContentHidden,
-    pageContents: plateEditor,
+    editorContent: plateEditor,
     pageId: pageId,
     pageName: pageName,
     href: href,
     userId: currentUserId,
+  };
+};
+
+export const normalizeMultiContentPage = (
+  response: Page,
+  isSinglePage: boolean
+): IPageMain => {
+  const pageContents: IPageContentMain[] | undefined =
+    response.PG_PageContents?.map((pageContent: any) => {
+      return {
+        pageContentId: pageContent.PC_ID,
+        pageId: pageContent.PG_ID,
+        pageName: response.PG_Name,
+        userId: pageContent.UI_ID,
+        href: isSinglePage
+          ? toKebabCase(response.PG_Name)
+          : `${toKebabCase(response.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
+        pageContentName: pageContent.PC_Title,
+        pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
+        isPageContentHidden: pageContent.PC_IsHidden,
+        pageContentCreatedAt: pageContent.PC_CreatedAt as string,
+        pageContentLastUpdatedAt: pageContent.PC_LastUpdatedAt as string,
+        editorContent: pageContent.PC_Content?.PC_Content,
+      };
+    });
+
+  return {
+    pageId: response.PG_ID,
+    pageName: response.PG_Name,
+    pagePermission: response.PG_Permission.map((permission: any) =>
+      String(permission)
+    ),
+    pageContents: pageContents,
+    pageType: String(response.PG_Type),
+    isHidden: false,
+    href: `/${toKebabCase(response.PG_Name)}`,
   };
 };

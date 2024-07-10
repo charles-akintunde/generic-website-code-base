@@ -120,7 +120,6 @@ const usePage = (pageName?: string) => {
   }, [pagesData]);
 
   useEffect(() => {
-    console.log(pageData, 'pageData');
     if (pageData && pageData.data) {
       let response: Page = pageData.data;
       const normalizedPage: IPageMain = {
@@ -143,7 +142,7 @@ const usePage = (pageName?: string) => {
               isPageContentHidden: pageContent.PC_IsHidden,
               pageContentCreatedAt: pageContent.PC_CreatedAt as string,
               pageContentLastUpdatedAt: pageContent.PC_LastUpdatedAt as string,
-              pageContents:
+              editorContent:
                 pageContent.PC_Content && pageContent.PC_Content['PC_Content'],
             };
             return pageContentResponse;
@@ -153,7 +152,6 @@ const usePage = (pageName?: string) => {
         href: `/${toKebabCase(response.PG_Name)}`,
       };
       setCurrentPage(normalizedPage);
-      // console.log(normalizedPage, 'normalizedPage');
     }
   }, [pageData]);
 
@@ -182,7 +180,6 @@ const usePage = (pageName?: string) => {
       );
       handleToggleCreateFormDialog();
     } catch (error: any) {
-      // console.log(error, 'error');
       notify(
         'Error',
         error?.data?.message ||
@@ -213,7 +210,7 @@ const usePage = (pageName?: string) => {
       );
       handleToggleCreateFormDialog();
     } catch (error: any) {
-      // console.log(error, 'error');
+      console.log(error, 'error');
       notify(
         'Error',
         error.message || 'Failed to update the page. Please try again later.',
@@ -226,20 +223,17 @@ const usePage = (pageName?: string) => {
   const handleEditButtonClick = async (page: IPageMain) => {
     handleToggleCreateFormDialog();
     dispatch(setEditingPage(page));
-    // console.log(page, editingPage, 'EDITING PAGE');
   };
 
   const handleRemovePage = async (page: IPageMain) => {
     try {
       const response = await deletePage(page.pageId).unwrap();
-      // console.log(response, 'RESPONSE');
       notify(
         'Success',
         response.message || 'The page has been successfully deleted.',
         'success'
       );
     } catch (error: any) {
-      // console.log(error, 'error');
       notify(
         'Error',
         error.message || 'Failed to delete the page. Please try again later.',

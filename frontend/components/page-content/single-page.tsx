@@ -8,6 +8,7 @@ import {
   createPageContentItem,
   fromKebabCase,
   getChangedFields,
+  normalizeMultiContentPage,
   notifyNoChangesMade,
   pageNormalizer,
   toKebabCase,
@@ -19,13 +20,21 @@ import { PlusIcon } from 'lucide-react';
 import AppButton from '../common/button/app-button';
 import LoadingButton from '../common/button/loading-button';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
-import { IPageContentItem, IPageMain } from '@/types/componentInterfaces';
+import {
+  IPageContentItem,
+  IPageContentMain,
+  IPageMain,
+} from '@/types/componentInterfaces';
 import { useNotification } from '../hoc/notification-provider';
 import usePageContent from '@/hooks/api-hooks/use-page-content';
 import { useGetPageContentQuery } from '@/api/pageContentApi';
 import { IPageContentGetRequest } from '@/types/requestInterfaces';
 import AppLoading from '../common/app-loading';
 import PageLayout from '../page/layout';
+import { TElement } from '@udecode/plate-common';
+import { useGetPageQuery } from '@/api/pageApi';
+import { Page } from '@/types/backendResponseInterfaces';
+import { boolean } from 'zod';
 
 const SinglePage = () => {
   const pathname = usePathname();
@@ -33,37 +42,47 @@ const SinglePage = () => {
   const [pageName, setPageName] = useState(
     fromKebabCase(pathname.split('/')['1'])
   );
+  // const {
+  //   data: pageContentData,
+  //   isError: hasPageContentFetchError,
+  //   isSuccess: isPageContentFetchSuccess,
+  //   isLoading: isPageContentFetchLoading,
+  //   error: pageContentFetchError,
+  //   refetch: pageContentFetchRefetch,
+  // } = useGetPageContentQuery({
+  //   PC_Title: fromKebabCase(pageName),
+  //   PG_Name: fromKebabCase(pageName),
+  // } as IPageContentGetRequest);
   const {
-    data: pageContentData,
-    isError: hasPageContentFetchError,
-    isSuccess: isPageContentFetchSuccess,
-    isLoading: isPageContentFetchLoading,
-    error: pageContentFetchError,
-    refetch: pageContentFetchRefetch,
-  } = useGetPageContentQuery({
-    PC_Title: fromKebabCase(pageName),
-    PG_Name: fromKebabCase(pageName),
-  } as IPageContentGetRequest);
+    data: pageData,
+    isError: hasPageFetchError,
+    isSuccess: isPageFetchSuccess,
+    isLoading: isPageFetchLoading,
+    refetch: pageRefetch,
+  } = useGetPageQuery(pageName);
   const { currentUser, currentUserRole } = useUserLogin();
   const [page, setPage] = useState<IPageMain>();
-  const isSinglePageCreated =
-    page?.pageContents && page?.pageContents.length === 0;
-  const [plateEditor, setPlateEditor] = useState([
+  const [singlePageContent, setSinglePageContent] =
+    useState<IPageContentMain>();
+  const [isSinglePageCreated, useIsSinglePageCreated] = useState<boolean>(
+    singlePageContent ? true : false
+  );
+  const [plateEditor, setPlateEditor] = useState<TElement[]>([
     {
       id: '1',
       type: 'p',
       children: [{ text: `Enter Content for ${pageName}` }],
     },
   ]);
-  const [originalSinglePageData, setOriginalSinglePageData] = useState({
-    pageContents: [
-      {
-        id: '1',
-        type: 'p',
-        children: [{ text: `Enter Content for ${pageName}` }],
-      },
-    ],
-  });
+  const [originalSinglePageData, setOriginalSinglePageData] = useState<
+    TElement[]
+  >([
+    {
+      id: '1',
+      type: 'p',
+      children: [{ text: `Enter Content for ${pageName}` }],
+    },
+  ]);
   const [plateEditorKey, setPlateEditorKey] = useState<string>(
     JSON.stringify(plateEditor)
   );
@@ -74,71 +93,127 @@ const SinglePage = () => {
   } = usePageContent();
   const { canEdit } = useUserLogin();
 
+  const [singlePage, setSinglePage] = useState<IPageMain>();
+  //const pageContentId: string = contentData!.pageContentId!;
+
   useEffect(() => {
-    if (pageContentData && pageContentData.data.PG_PageContent) {
-      const page = pageContentData.data;
-      const pageContent = page.PG_PageContent;
-      if (pageContent) {
-        const normalizedPage = pageNormalizer(page, pageContent);
-        setPage(normalizedPage);
-        setOriginalSinglePageData(normalizedPage.pageContents);
-        setPlateEditor(normalizedPage.pageContents.pageContents || plateEditor);
+    if (pageData && pageData.data) {
+      let response: Page = pageData.data;
+
+      const normalizedPage = normalizeMultiContentPage(response, true);
+      setSinglePage(normalizedPage);
+      setPage(normalizedPage);
+      const singlePageContent: IPageContentMain =
+        normalizedPage.pageContents && normalizedPage.pageContents[0];
+      console.log(normalizedPage, 'normalizedPage');
+      console.log(singlePageContent, 'singlePageContent');
+
+      if (singlePageContent) {
+        setOriginalSinglePageData(singlePageContent.editorContent);
+        useIsSinglePageCreated(true);
+        setSinglePageContent(singlePageContent);
+
+        setPlateEditor(singlePageContent.editorContent || plateEditor);
         setPlateEditorKey(
-          JSON.stringify(
-            normalizedPage.pageContents.pageContents || plateEditor
-          )
+          JSON.stringify(singlePageContent.editorContent || plateEditor)
         );
       }
+
+      //  setCurrentPage(normalizedPage);
     }
-  }, [pageContentData]);
+  }, [pageData]);
+
+  // useEffect(() => {
+  //   if (pageContentData && pageContentData.data.PG_PageContent) {
+  //     const page = pageContentData.data;
+  //     const pageContent = page.PG_PageContent;
+  //     if (pageContent) {
+  //       const normalizedPage = pageNormalizer(page, pageContent);
+  //       console.log(normalizedPage, 'normalizedPage');
+  //       setPage(normalizedPage);
+  //       if (normalizedPage.pageContent?.editorContent) {
+  //         setOriginalSinglePageData(normalizedPage.pageContent?.editorContent);
+  //       }
+
+  //       setPlateEditor(
+  //         normalizedPage.pageContent?.editorContent || plateEditor
+  //       );
+  //       setPlateEditorKey(
+  //         JSON.stringify(
+  //           normalizedPage.pageContent?.editorContent || plateEditor
+  //         )
+  //       );
+  //     }
+  //   }
+  // }, [pageContentData]);
   const handleSinglePageSubmit = async () => {
+    console.log(singlePageContent, 'singlePageContent');
+    const pageContentId = singlePageContent && singlePageContent.pageContentId;
+    const pageContentName = page?.pageName;
+    const isPageContentHidden = false;
+    const pageContentDisplayImage =
+      singlePageContent && singlePageContent.pageContentDisplayImage;
+    const pageId = String(page?.pageId);
+    const userId = currentUser?.Id as string;
+    const kebabCasePageName = `/${toKebabCase(pageName)}`;
     const pageContent = createPageContentItem(
       {
-        pageContentName: String(page && page.pageName),
-        isPageContentHidden: page && page.pageContents.pageContentDisplayImage,
-        pageContentDisplayImage:
-          page && page.pageContents.pageContentDisplayImage,
+        pageContentName,
+        isPageContentHidden,
+        pageContentDisplayImage,
       },
       plateEditor,
-      String(page && page.pageId),
+      pageId,
       pageName,
-      (currentUser && currentUser.Id) as string,
-      `${toKebabCase(pageName)}}`
+      userId,
+      kebabCasePageName
     );
-    const newDataWithContents = { pageContents: plateEditor };
-    const changedFields = getChangedFields(
-      originalSinglePageData,
-      newDataWithContents
-    );
+    const newDataWithContents = { editorContent: plateEditor };
+    const originalData = { editorContent: originalSinglePageData };
+    const changedFields = getChangedFields(originalData, newDataWithContents);
     if (Object.keys(changedFields).length > 0) {
-      await submitPageContent(pageContent);
+      if (isSinglePageCreated) {
+        console.log(isSinglePageCreated, 'Edit');
+        await submitEditedPageContent(
+          pageName,
+          pageName,
+          String(pageContentId),
+          changedFields as Partial<IPageContentItem>,
+          pageRefetch
+        );
+        console.log(
+          pageName,
+          pageName,
+          String(pageContentId),
+          changedFields as Partial<IPageContentItem>,
+          // pageContentFetchRefetch,
+          'KKKKKKKKKKKKKKKK'
+        );
+      } else {
+        console.log(isSinglePageCreated, 'Create');
+        console.log(pageContent, 'pageId');
+        await submitPageContent(pageContent, pageRefetch, true);
+      }
     } else {
       notifyNoChangesMade(notify);
       return;
     }
-    console.log('Create');
-    if (isSinglePageCreated) {
-    } else {
-      await submitEditedPageContent(
-        pageName,
-        pageName,
-        page?.pageContents.pageContentId,
-        changedFields,
-        pageContentFetchRefetch
-      );
-    }
   };
 
-  if (isPageContentFetchLoading) {
+  if (isPageFetchLoading) {
     return <AppLoading />;
   }
 
   return (
     <>
-      <PageLayout title={page?.pageName as string}>
-        <div className={`flex flex-col flex-grow mt-28 min-h-screen`}>
+      <PageLayout
+        title={`${!isSinglePageCreated ? 'Edit' : ''} ${fromKebabCase(pageName)}`}
+      >
+        <div
+          className={`flex flex-col flex-grow mt-28 min-h-screen max-w-screen-lg mx-auto`}
+        >
           <div
-            className={`${pageContentPaddingStyles} space-y-6 min-h-screen relative bottom-20`}
+            className={`${pageContentPaddingStyles} mb-10 space-y-6 min-h-screen relative bottom-20`}
           >
             <PlateEditor
               key={plateEditorKey}
@@ -148,10 +223,12 @@ const SinglePage = () => {
               }}
             />
           </div>
-          <div className="flex mt-4 w-full fixed justify-center items-center bottom-0 z-40 h-20 shadow2xl px-4 sm:px-6 lg:px-8">
+          <div
+            className={`w-full fixed bottom-0 z-40 h-20 shadow2xl ${pageContentPaddingStyles}`}
+          >
             {canEdit && (
               <LoadingButton
-                buttonText={`${isSinglePageCreated ? 'Create' : 'Edit'} ${pageName}`}
+                buttonText={`Edit ${pageName}`}
                 loading={false}
                 onClick={handleSinglePageSubmit}
               />

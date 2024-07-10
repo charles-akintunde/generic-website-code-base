@@ -17,7 +17,7 @@ import {
   useEditPageContentMutation,
 } from '@/api/pageContentApi';
 import { IPageContentGetRequest } from '@/types/requestInterfaces';
-import { toKebabCase } from '@/utils/helper';
+import { fromKebabCase, toKebabCase } from '@/utils/helper';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/hoc/notification-provider';
 import usePage from './use-page';
@@ -27,17 +27,10 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
   const pathname = usePathname();
   const page = pathname.split('/');
   const pageName = page[1];
-  console.log(pageName, 'PPPPPPP');
-  const { pageRefetch } = usePage(pageName);
+
+  const { pageRefetch } = usePage(fromKebabCase(pageName));
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const [plateEditor, setPlateEditor] = useState([
-    {
-      id: '1',
-      type: 'p',
-      children: [{ text: 'Hello, World!' }],
-    },
-  ]);
   const currentPageContent = useAppSelector(
     (state) => state.page.currentPageContent
   );
@@ -88,11 +81,15 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     refetch: pageContentFetchRefetch,
   } = pageContentQueryResult;
 
-  const submitPageContent = async (pageContent: IPageContentItem) => {
+  const submitPageContent = async (
+    pageContent: IPageContentItem,
+    pageContentFetchRefetch: () => {},
+    isSinglePage: boolean = false
+  ) => {
     try {
       const formData = new FormData();
       let pageContentObj = {
-        ['PC_Content']: pageContent.pageContents,
+        ['PC_Content']: pageContent.editorContent,
       };
       formData.append('UI_ID', pageContent.userId);
       formData.append('PG_ID', pageContent.pageId);
@@ -104,15 +101,15 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       formData.append('PC_IsHidden', String(pageContent.isPageContentHidden));
       formData.append('PC_Content', JSON.stringify(pageContentObj));
 
-      // console.log(formData, 'rquest');
       const response = await createPageContent(formData).unwrap();
-      console.log(isCreatePageContentSuccess, 'isCreatePageContentSuccess');
 
-      router.replace(
-        `/${toKebabCase(pageContent.pageName)}/${toKebabCase(pageContent.pageContentName)}`
-      );
-
-      // console.log(formData, 'response');
+      if (!isSinglePage) {
+        router.replace(
+          `/${toKebabCase(pageContent.pageName)}/${toKebabCase(pageContent.pageContentName)}`
+        );
+      } else {
+        pageContentFetchRefetch();
+      }
     } catch (error: any) {
       console.log(error, 'IPageContentRequest');
     }
@@ -122,13 +119,13 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     pageName: string,
     pageContentName: string,
     pageContentId: string,
-    pageContent: IPageContentItem,
-    pageContentFetchRefetch
+    pageContent: Partial<IPageContentItem>,
+    singlePageRefetch: () => {}
   ) => {
     try {
       const formData = new FormData();
       let pageContentObj = {
-        ['PC_Content']: pageContent.pageContents,
+        ['PC_Content']: pageContent.editorContent,
       };
 
       if (pageContent.pageContentName) {
@@ -140,7 +137,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       if (pageContent.isPageContentHidden !== undefined) {
         formData.append('PC_IsHidden', String(pageContent.isPageContentHidden));
       }
-      if (pageContent.pageContents) {
+      if (pageContent.editorContent) {
         formData.append('PC_Content', JSON.stringify(pageContentObj));
       }
 
@@ -154,7 +151,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
           `/${toKebabCase(pageName)}/${toKebabCase(pageContentName)}`
         );
       } else {
-        await pageContentFetchRefetch();
+        await singlePageRefetch();
       }
       await pageRefetch();
       notify(
@@ -162,26 +159,21 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         response.message || 'The page has been updated successfully.',
         'success'
       );
-
-      // Handle response if needed
-      console.log(response);
     } catch (error: any) {
       notify(
         'Error',
-        error.message || 'Failed to update the page. Please try again later.',
+        error?.data?.message ||
+          'Failed to update the page. Please try again later.',
         'error'
       );
     }
   };
 
   useEffect(() => {
-    console.log(pageContentData, 'pageContentData');
-    // const { data: page } = pageContentData;
-
     if (pageContentData && pageContentData.data.PG_PageContent) {
       const page = pageContentData.data;
       const pageContent = page.PG_PageContent;
-      console.log(pageContent, 'normalizedPage');
+
       if (pageContent) {
         const normalizedPage: IPageMain = {
           pageId: page.PG_ID,
@@ -190,7 +182,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
           pageType: String(page.PG_Type),
           isHidden: false,
           href: `/${toKebabCase(page.PG_Name)}`,
-          pageContents: {
+          pageContent: {
             pageContentId: pageContent.PC_ID,
             pageName: page.PG_Name,
             pageId: pageContent.PG_ID,
@@ -199,7 +191,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
             pageContentName: pageContent.PC_Title,
             pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
             isPageContentHidden: pageContent.PC_IsHidden,
-            pageContents: pageContent.PC_Content?.PC_Content
+            editorContent: pageContent.PC_Content?.PC_Content
               ? pageContent.PC_Content?.PC_Content
               : [
                   {
@@ -208,18 +200,9 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
                     children: [{ text: 'Enter Your Content Here...' }],
                   },
                 ],
-          },
+          } as IPageContentMain,
         };
         dispatch(setCurrentPageContent(normalizedPage));
-        setPlateEditor(normalizedPage.pageContents.pageContents);
-        // console.log(normalizedPage, 'normalizedPage');
-        // console.log(
-        //   pageContentFetchError && pageContentFetchError.status === 404,
-        //   'pageContentFetchError && pageContentFetchError.status === 404'
-        // );
-        // if (pageContentFetchError && pageContentFetchError.status === 404) {
-        //   router.replace('/404');
-        // }
       }
 
       // Do something with normalizedPage if needed
@@ -233,10 +216,8 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
   const handleRemovePageContent = async (pageContentId: string) => {
     try {
       const response = await deletePageContent(pageContentId).unwrap();
-      console.log(isDeletePageContentSuccess, 'isDeletePageContentSuccess');
-      console.log('I work');
+
       await pageRefetch();
-      console.log('I work now');
 
       notify(
         'Success',
@@ -244,7 +225,6 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         'success'
       );
     } catch (error: any) {
-      // console.log(error, 'error');
       notify(
         'Error',
         error.data.message ||
@@ -268,8 +248,8 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     hasPageContentFetchError,
     pageContentFetchError,
     handleRemovePageContent,
-    setPlateEditor,
-    plateEditor,
+    // setPlateEditor,
+    // plateEditor,
     pageContentFetchRefetch,
   };
 };

@@ -25,8 +25,6 @@ const VerifyUserAccount: React.FC = () => {
     sendAccountVerificationToken(token);
   }, [token]);
 
-  console.log(errorMessage, successMessage, isError, isSuccess);
-
   return (
     <>
       {isSuccess ? (

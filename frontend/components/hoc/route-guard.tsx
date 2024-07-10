@@ -33,10 +33,6 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
     (item) => item.href === `/${pathname.split('/')[1]}`
   );
 
-  console.log(currentPage, 'PATHNAME');
-
-  console.log(pathname.split('/')[1], " pathname: pathname.split('/')[0]");
-
   useEffect(() => {
     if (allAppRoutes && allAppRoutes.length > 0) {
       const isValidRoute =

@@ -24,7 +24,6 @@ export const useCreateAccount = () => {
       const response = await createAccount(creatAccountRequest).unwrap();
 
       if (response) {
-        console.log(response);
         setSuccessMessage(response.message);
       }
     } catch (err: any) {

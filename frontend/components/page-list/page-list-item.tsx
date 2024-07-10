@@ -42,12 +42,12 @@ import usePage from '@/hooks/api-hooks/use-page';
 import AppPopconfirm from '../common/app-popup-confirm';
 import Link from 'next/link';
 import { record } from 'zod';
+import useUserLogin from '@/hooks/api-hooks/use-user-login';
 
 const PageListItem: React.FC = () => {
   const [viewContent, setViewContent] = useState<IPageMain | null>(null);
   const { handleEditButtonClick, pages, handleRemovePage } = usePage();
-
-  console.log(pages, 'PAGES');
+  const { currentUser, canEdit } = useUserLogin();
 
   interface IActionsColumnProps {
     record: IPageMain;
@@ -161,11 +161,15 @@ const PageListItem: React.FC = () => {
       title: 'Actions',
       key: 'actions',
       render: (_: any, record: IPageMain) => (
-        <ActionsColumn
-          handleEditButtonClick={handleEditButtonClick}
-          handleRemovePage={handleRemovePage}
-          record={record}
-        />
+        <>
+          {canEdit && (
+            <ActionsColumn
+              handleEditButtonClick={handleEditButtonClick}
+              handleRemovePage={handleRemovePage}
+              record={record}
+            />
+          )}
+        </>
       ),
     },
   ];

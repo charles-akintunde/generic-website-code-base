@@ -69,24 +69,22 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
     const finalReadOnly = !canEdit || readOnly;
     const finalDisabled = !canEdit || disabled;
     const finalFocused = canEdit && focused;
+    const canEditClassName = !canEdit ? 'border-none' : '';
 
     return (
       <div className="relative w-full" ref={ref}>
         <PlateContent
           aria-disabled={finalDisabled}
-          className={
-            (cn(
-              editorVariants({
-                disabled,
-                focusRing,
-                focused: finalFocused,
-                size,
-                variant,
-              }),
-              className
-            ),
-            `${canEdit ? 'border-none' : ''}`)
-          }
+          className={cn(
+            editorVariants({
+              disabled,
+              focusRing,
+              focused: finalFocused,
+              size,
+              variant,
+            }),
+            canEditClassName
+          )}
           disableDefaultStyles
           readOnly={finalReadOnly}
           {...props}

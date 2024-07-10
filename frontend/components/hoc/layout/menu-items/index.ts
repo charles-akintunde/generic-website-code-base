@@ -19,7 +19,7 @@ export const systemMenuItems: IPageMenuItem[] = [
     pageName: 'Admin Panel',
     href: '/admin-panel',
     isHidden: false,
-    pagePermission: ['3', '4'],
+    pagePermission: ['0', '1'],
     pageType: '3',
   },
   {

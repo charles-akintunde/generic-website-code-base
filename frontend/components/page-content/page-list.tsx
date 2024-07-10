@@ -37,10 +37,11 @@ import _ from 'lodash';
 import { useNotification } from '../hoc/notification-provider';
 import { pageContentPaddingStyles } from '@/styles/globals';
 import PageListLayout from './page-list-layout';
+import { TElement } from '@udecode/plate-common';
 
 const CreatePageContent = () => {
   const { currentUser, canEdit } = useUserLogin();
-  const [plateEditor, setPlateEditor] = useState([
+  const [plateEditor, setPlateEditor] = useState<TElement[]>([
     {
       id: '1',
       type: 'p',
@@ -57,13 +58,15 @@ const CreatePageContent = () => {
   const pageName = page[1];
   const { submitPageContent, isCreatePageContentSuccess } = usePageContent();
 
+  console.log(pageName, 'PAGENAME');
+
   const form = useForm({
     resolver: zodResolver(pageContentSchema),
     defaultValues: {
       pageContentName: '',
       pageContentDisplayImage: undefined,
       isPageContentHidden: false,
-      pageContents: plateEditor,
+      editorContent: plateEditor,
     },
   });
 
@@ -72,15 +75,15 @@ const CreatePageContent = () => {
       pageContentName: data.pageContentName,
       pageContentDisplayImage: data.pageContentDisplayImage,
       isPageContentHidden: data.isPageContentHidden,
-      pageContents: plateEditor,
+      editorContent: plateEditor,
       pageId: pageId as string,
       pageName: pageName,
       href: `${toKebabCase(pageName)}/${toKebabCase(data.pageContentName)}`,
       userId: (currentUser && currentUser.Id) as string,
     };
+    console.log('OnSubmit Clicked');
 
     await submitPageContent(pageContent);
-    console.log(isCreatePageContentSuccess, 'isCreatePageContentSuccess');
   };
 
   return (
@@ -111,16 +114,15 @@ const CreatePageContent = () => {
                     placeholder="Hide this Content"
                     type="checkbox"
                   />
+                  <PlateEditor
+                    key={plateEditorKey}
+                    value={plateEditor}
+                    onChange={(value) => {
+                      setPlateEditor(value);
+                    }}
+                  />
                 </>
               )}
-
-              <PlateEditor
-                key={plateEditorKey}
-                value={plateEditor}
-                onChange={(value) => {
-                  setPlateEditor(value);
-                }}
-              />
             </div>
             <div className="flex mt-4 w-full fixed justify-center items-center bottom-0 z-40 h-20 shadow2xl px-4 sm:px-6 lg:px-8">
               {canEdit && (
@@ -136,7 +138,7 @@ const CreatePageContent = () => {
 
 const EditPageContent = () => {
   const { currentUser, currentUserRole, canEdit } = useUserLogin();
-  const [contentData, setContentData] = useState<IPageContentItem | null>(null);
+  const [contentData, setContentData] = useState<IPageContentMain>();
   const pathname = usePathname();
   const page = pathname.split('/');
   const pageName = page[1];
@@ -155,7 +157,7 @@ const EditPageContent = () => {
     PG_Name: fromKebabCase(pageName),
   } as IPageContentGetRequest);
 
-  const [plateEditor, setPlateEditor] = useState([
+  const [plateEditor, setPlateEditor] = useState<TElement[]>([
     {
       id: '1',
       type: 'p',
@@ -166,8 +168,7 @@ const EditPageContent = () => {
     JSON.stringify(plateEditor)
   );
   const { notify } = useNotification();
-  const [originalData, setOriginalData] = useState<IPageMain>(null);
-  const router = useRouter();
+  const [originalData, setOriginalData] = useState<IPageContentMain>();
   const searchParams = useSearchParams();
   const pageId = searchParams.get('pageId');
 
@@ -177,12 +178,14 @@ const EditPageContent = () => {
       const pageContent = page.PG_PageContent;
       if (pageContent) {
         const normalizedPage = pageNormalizer(page, pageContent);
-        setContentData(normalizedPage.pageContents);
-        setOriginalData(normalizedPage.pageContents);
-        setPlateEditor(normalizedPage.pageContents.pageContents || plateEditor);
+        setContentData(normalizedPage.pageContent);
+        setOriginalData(normalizedPage.pageContent);
+        setPlateEditor(
+          normalizedPage.pageContent?.editorContent || plateEditor
+        );
         setPlateEditorKey(
           JSON.stringify(
-            normalizedPage.pageContents.pageContents || plateEditor
+            normalizedPage.pageContent?.editorContent || plateEditor
           )
         );
       }
@@ -195,16 +198,16 @@ const EditPageContent = () => {
       pageContentName: '',
       pageContentDisplayImage: undefined,
       isPageContentHidden: false,
-      pageContents: plateEditor,
+      editorContent: plateEditor,
     },
   });
 
   useEffect(() => {
     if (isPageContentFetchSuccess && contentData) {
       form.reset(contentData);
-      setPlateEditor(contentData.pageContents || plateEditor);
+      setPlateEditor(contentData.editorContent || plateEditor);
       setPlateEditorKey(
-        JSON.stringify(contentData.pageContents || plateEditor)
+        JSON.stringify(contentData.editorContent || plateEditor)
       );
     }
   }, [isPageContentFetchSuccess, contentData, form]);
@@ -218,15 +221,15 @@ const EditPageContent = () => {
       String(currentUser?.Id),
       `${toKebabCase(pageName)}/${toKebabCase(data.pageContentName)}`
     );
-    const newDataWithContents = { ...data, pageContents: plateEditor };
+    const newDataWithContents = { ...data, editorContent: plateEditor };
     const changedFields = getChangedFields(originalData, newDataWithContents);
+    const pageContentId: string = contentData!.pageContentId!;
     if (Object.keys(changedFields).length > 0) {
-      console.log(changedFields, 'changedFields');
       await submitEditedPageContent(
         pageName,
         data.pageContentName,
-        contentData.pageContentId,
-        changedFields,
+        pageContentId,
+        changedFields as Partial<IPageContentItem>,
         pageContentFetchRefetch
       );
     } else {
@@ -245,20 +248,15 @@ const EditPageContent = () => {
 
   return (
     <>
-      {isPageContentFetchSuccess && (
-        // <PageLayout
-        //   title={
-        //     contentData ? contentData.pageContentName : `Edit Page Content`
-        //   }
-        //   titleImgUrl={String(
-        //     contentData && contentData.pageContentDisplayImage
-        //   )}
-        // >
-        <PageListLayout page={originalData}>
-          <div className={`flex flex-col flex-grow mt-28 min-h-screen`}>
+      {isPageContentFetchSuccess && originalData && (
+        <PageListLayout pageContent={originalData}>
+          <div className={`flex flex-col flex-grow min-h-screen`}>
             <FormProvider {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="">
-                <div className={` space-y-6 min-h-screen relative bottom-20`}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className={`${pageContentPaddingStyles}  mb-20`}
+              >
+                <div className={`space-y-6 mb-10 min-h-screen`}>
                   {canEdit && (
                     <>
                       <FormField
@@ -292,8 +290,9 @@ const EditPageContent = () => {
                     }}
                   />
                 </div>
+
                 <div
-                  className={`flex mt-4 w-full fixed justify-center items-center bottom-0 z-40 h-20 shadow2xl ${pageContentPaddingStyles}`}
+                  className={`w-full fixed bottom-0 z-40 h-20 shadow2xl ${pageContentPaddingStyles}`}
                 >
                   {canEdit && (
                     <LoadingButton buttonText="Edit Content" loading={false} />

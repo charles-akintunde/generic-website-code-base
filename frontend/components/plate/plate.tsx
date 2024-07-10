@@ -23,8 +23,6 @@ export const PlateEditor: React.FC<PlateEditorProps> = ({
   onChange,
 }) => {
   const { canEdit } = useUserLogin();
-
-  console.log(canEdit, 'contentData.pageContentName');
   return (
     <TooltipProvider>
       <DndProvider backend={HTML5Backend}>

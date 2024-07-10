@@ -11,7 +11,7 @@ const LoadingButton: React.FC<ILoadingButton> = ({
 }) => {
   return (
     <Button
-      type="submit"
+      type={type}
       className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 flex items-center justify-center"
       disabled={loading}
       onClick={onClick}

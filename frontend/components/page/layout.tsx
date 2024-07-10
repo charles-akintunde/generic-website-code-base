@@ -23,7 +23,7 @@ const PageLayout: React.FC<LayoutProps> = ({ children, title }) => {
           </h1>
         </header>
         <Divider />
-        <main className="w-full py-10 rounded-3xl min-h-screen z-20 p-5">
+        <main className="w-full rounded-3xl min-h-screen z-20 ">
           <div>{children}</div>
         </main>
       </div>

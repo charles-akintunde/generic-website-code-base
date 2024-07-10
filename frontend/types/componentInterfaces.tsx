@@ -15,7 +15,8 @@ export interface IPageMain {
   pageName: string;
   pageType: string;
   pagePermission: string[];
-  pageContents: IPageContentItem[] | IPageContentMain[] | IPageContentMain;
+  pageContents?: IPageContentItem[] | IPageContentMain[];
+  pageContent?: IPageContentMain;
   isHidden: boolean;
   href: string;
 }
@@ -29,7 +30,7 @@ export interface IPage {
   pageName: string;
   pagePermission: string[];
   pageType: string;
-  pageContent?: IPageContentItem[];
+  pageContents?: IPageContentItem[];
   isHidden?: boolean;
 }
 
@@ -37,7 +38,7 @@ export interface IPageContentBase {
   pageContentName: string;
   pageContentDisplayImage: string | File;
   isPageContentHidden: boolean;
-  pageContents: TElement[];
+  editorContent: TElement[];
 }
 
 export interface IPageContentMain extends IPageContentItem {

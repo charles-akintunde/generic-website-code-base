@@ -47,8 +47,6 @@ const PageLists = () => {
     pageId: pageId,
   };
 
-  console.log(pageContents, 'pageCOntents');
-
   const queryString = new URLSearchParams(queryParams).toString();
   return (
     <div className="min-h-screen">
@@ -73,9 +71,9 @@ const PageLists = () => {
                 key={index}
                 id={pageContent.pageContentId}
                 title={pageContent.pageContentName}
-                excerpt={getPageExcerpt(pageContent.pageContents)}
+                excerpt={getPageExcerpt(pageContent.editorContent)}
                 imageSrc={pageContent.pageContentDisplayImage}
-                readTime={`${estimateReadingTime(pageContent.pageContents)} mins Read`}
+                readTime={`${estimateReadingTime(pageContent.editorContent)} mins Read`}
                 date={formatDate(pageContent.pageContentCreatedAt as string)}
                 href={pageContent.href}
                 category={`${page && page.pageName}`}
