@@ -4,7 +4,8 @@ import { Avatar } from 'antd';
 import { IPageContentMain, IPageMain } from '@/types/componentInterfaces';
 import { estimateReadingTime, formatDate } from '@/utils/helper';
 import { pageContentPaddingStyles } from '@/styles/globals';
-
+import { EPageType } from '@/types/enums';
+import { FloatButton } from 'antd';
 interface PageListLayoutProps {
   children: ReactNode;
   pageContent: IPageContentMain;
@@ -20,26 +21,38 @@ const PageListLayout: React.FC<PageListLayoutProps> = ({
   );
   const estimatedReadTime = estimateReadingTime(
     pageContent && pageContent.editorContent
+      ? pageContent.editorContent
+      : [
+          {
+            id: '1',
+            type: 'p',
+            children: [{ text: 'Hello, World!' }],
+          },
+        ]
   );
   const creatorFullName = pageContent && pageContent.creatorFullName;
+  const pageType = pageContent && pageContent.pageType;
 
   return (
     <div className="">
       <header className={`${pageContentPaddingStyles} mt-10`}>
         <h1 className="text-3xl font-bold mb-2">{contentName}</h1>
-        <div className="flex items-center mb-4">
-          <Avatar size="large" icon={<UserOutlined />} />
-          <div className="ml-3">
-            <div className="font-medium">{creatorFullName}</div>
-            <div className="text-gray-500 text-sm">
-              {estimatedReadTime} min{estimatedReadTime > 1 ? 's' : ''} read ·{' '}
-              {createdAt}
+        {pageType != EPageType.ResList && (
+          <div className="flex items-center mb-4">
+            <Avatar size="large" icon={<UserOutlined />} />
+            <div className="ml-3">
+              <div className="font-medium">{creatorFullName}</div>
+              <div className="text-gray-500 text-sm">
+                {estimatedReadTime} min{estimatedReadTime > 1 ? 's' : ''} read ·{' '}
+                {createdAt}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </header>
 
       <div>{children}</div>
+      <FloatButton.BackTop visibilityHeight={400} />
     </div>
   );
 };

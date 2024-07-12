@@ -5,9 +5,10 @@ import { EllipsisVertical } from 'lucide-react';
 import AppPopconfirm from './app-popup-confirm';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import Link from 'next/link';
+import useUserLogin from '@/hooks/api-hooks/use-user-login';
 
 interface IActionProps {
-  href: string;
+  href?: string;
   entity: string;
   record: any;
   handleEditButtonClick: (record: any) => void;
@@ -15,12 +16,17 @@ interface IActionProps {
 }
 
 const ActionsButtons: React.FC<IActionProps> = ({
-  href = '',
+  href,
   entity,
   record,
   handleEditButtonClick,
   handleRemove,
 }) => {
+  const { canEdit } = useUserLogin();
+
+  if (!canEdit) {
+    return <></>;
+  }
   return (
     <div className="flex gap-1 items-center">
       <Popover>

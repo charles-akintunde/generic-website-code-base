@@ -28,7 +28,6 @@ import {
 import usePage from '@/hooks/api-hooks/use-page';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { IPageContentGetRequest } from '@/types/requestInterfaces';
-import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Spin } from 'antd';
 import { useGetPageContentQuery } from '@/api/pageContentApi';
@@ -39,6 +38,9 @@ import { pageContentPaddingStyles } from '@/styles/globals';
 import PageListLayout from './page-list-layout';
 import { TElement } from '@udecode/plate-common';
 import { EPageType } from '@/types/enums';
+import AppLoading from '../common/app-loading';
+import { FloatButton } from 'antd';
+import { useRouter } from 'next/navigation';
 
 const CreatePageContent = () => {
   const { currentUser, canEdit } = useUserLogin();
@@ -77,6 +79,7 @@ const CreatePageContent = () => {
     let pageContent: IPageContentItem = {
       pageContentName: data.pageContentName,
       pageContentDisplayImage: data.pageContentDisplayImage,
+      pageContentResource: data.pageContentResource,
       isPageContentHidden: data.isPageContentHidden,
       editorContent: plateEditor,
       pageId: pageId as string,
@@ -92,10 +95,12 @@ const CreatePageContent = () => {
 
   return (
     <PageLayout title="Create Page Content">
-      <div className={`flex flex-col flex-grow mt-28 min-h-screen`}>
+      <div
+        className={`flex flex-col min-h-screen w-full ${pageContentPaddingStyles}`}
+      >
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="">
-            <div className="px-4 sm:px-6 lg:px-8 space-y-6 min-h-screen relative bottom-20">
+            <div className={`space-y-6 mb-10 min-h-screen }`}>
               {canEdit && (
                 <>
                   <FormField
@@ -140,11 +145,17 @@ const CreatePageContent = () => {
                 </>
               )}
             </div>
-            <div className="flex mt-4 w-full fixed justify-center items-center bottom-0 z-40 h-20 shadow2xl px-4 sm:px-6 lg:px-8">
-              {canEdit && (
-                <LoadingButton buttonText="Create Content" loading={false} />
-              )}
-            </div>
+            {canEdit && (
+              <div
+                className={`w-full sticky bg-white flex mx-auto bottom-0 z-40 h-20 shadow2xl`}
+              >
+                <LoadingButton
+                  className=""
+                  buttonText="Edit Content"
+                  loading={false}
+                />
+              </div>
+            )}
           </form>
         </FormProvider>
       </div>
@@ -153,6 +164,7 @@ const CreatePageContent = () => {
 };
 
 const EditPageContent = () => {
+  const router = useRouter();
   const { currentUser, currentUserRole, canEdit } = useUserLogin();
   const [contentData, setContentData] = useState<IPageContentMain>();
   const pathname = usePathname();
@@ -198,9 +210,11 @@ const EditPageContent = () => {
         setPageType(normalizedPage.pageType);
         setContentData(normalizedPage.pageContent);
         setOriginalData(normalizedPage.pageContent);
+
         setPlateEditor(
           normalizedPage.pageContent?.editorContent || plateEditor
         );
+
         setPlateEditorKey(
           JSON.stringify(
             normalizedPage.pageContent?.editorContent || plateEditor
@@ -217,7 +231,7 @@ const EditPageContent = () => {
       pageContentResource: undefined,
       pageContentDisplayImage: undefined,
       isPageContentHidden: false,
-      editorContent: plateEditor,
+      // editorContent: plateEditor,
     },
   });
 
@@ -243,8 +257,15 @@ const EditPageContent = () => {
     );
     const newDataWithContents = { ...data, editorContent: plateEditor };
     const changedFields = getChangedFields(originalData, newDataWithContents);
+    if (pageType == EPageType.ResList && changedFields) {
+      if (changedFields.editorContent) {
+        delete changedFields['editorContent'];
+      }
+    }
     const pageContentId: string = contentData!.pageContentId!;
+    console.log(changedFields, 'changedFields');
     if (Object.keys(changedFields).length > 0) {
+      console.log(changedFields, 'changedFields');
       await submitEditedPageContent(
         pageName,
         pageType,
@@ -259,85 +280,82 @@ const EditPageContent = () => {
     }
   };
 
+  if (hasPageContentFetchError && pageContentFetchError) {
+    router.replace('/404');
+  }
+
   if (isPageContentFetchLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-pg">
-        <Spin indicator={<LoadingOutlined style={{ fontSize: 100 }} spin />} />
-      </div>
-    );
+    return <AppLoading />;
   }
 
   return (
     <>
       {isPageContentFetchSuccess && originalData && (
         <PageListLayout pageContent={originalData}>
-          <div className={`flex flex-col flex-grow min-h-screen`}>
+          <div
+            className={`flex flex-col min-h-screen w-full ${pageContentPaddingStyles}`}
+          >
             <FormProvider {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className={`${pageContentPaddingStyles}  mb-20`}
-              >
-                <div className={`space-y-6 mb-10 min-h-screen`}>
-                  {canEdit && (
-                    <>
-                      <FormField
-                        control={form.control}
-                        name="pageContentName"
-                        label="Content Name"
-                        placeholder="Content Name"
-                      />
-                      <FormField
-                        control={form.control}
-                        name="pageContentDisplayImage"
-                        label="Display Image"
-                        placeholder="Select display Image"
-                        type="picture"
-                      />
-
-                      {pageType == EPageType.ResList && (
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div className={`space-y-6 mb-10 min-h-screen `}>
+                  <>
+                    {canEdit && (
+                      <>
                         <FormField
                           control={form.control}
-                          name="pageContentResource"
-                          label="Display Document"
-                          placeholder="Select Document"
-                          type="document"
+                          name="pageContentName"
+                          label="Content Name"
+                          placeholder="Content Name"
                         />
-                      )}
-                      <FormField
-                        control={form.control}
-                        name="isPageContentHidden"
-                        label=""
-                        placeholder="Hide this Content"
-                        type="checkbox"
+                        <FormField
+                          control={form.control}
+                          name="pageContentDisplayImage"
+                          label="Display Image"
+                          placeholder="Select display Image"
+                          type="picture"
+                        />
+
+                        {pageType == EPageType.ResList && (
+                          <FormField
+                            control={form.control}
+                            name="pageContentResource"
+                            label="Display Document"
+                            placeholder="Select Document"
+                            type="document"
+                          />
+                        )}
+                        <FormField
+                          control={form.control}
+                          name="isPageContentHidden"
+                          label=""
+                          placeholder="Hide this Content"
+                          type="checkbox"
+                        />
+                      </>
+                    )}
+
+                    {pageType != EPageType.ResList && (
+                      <PlateEditor
+                        key={plateEditorKey}
+                        value={plateEditor}
+                        onChange={(value) => {
+                          setPlateEditor(value);
+                        }}
                       />
-                      {pageType != EPageType.ResList && (
-                        <PlateEditor
-                          key={plateEditorKey}
-                          value={plateEditor}
-                          onChange={(value) => {
-                            setPlateEditor(value);
-                          }}
-                        />
-                      )}
-                    </>
-                  )}
-
-                  {/* <PlateEditor
-                    key={plateEditorKey}
-                    value={plateEditor}
-                    onChange={(value) => {
-                      setPlateEditor(value);
-                    }}
-                  /> */}
+                    )}
+                  </>
                 </div>
-
-                <div
-                  className={`w-full fixed bottom-0 z-40 h-20 shadow2xl ${pageContentPaddingStyles}`}
-                >
-                  {canEdit && (
-                    <LoadingButton buttonText="Edit Content" loading={false} />
-                  )}
-                </div>
+                {canEdit && (
+                  <div
+                    className={`w-full sticky bg-white flex mx-auto bottom-0 z-40 h-20 shadow2xl`}
+                  >
+                    <LoadingButton
+                      className=""
+                      buttonText="Edit Content"
+                      loading={false}
+                    />
+                  </div>
+                )}
               </form>
             </FormProvider>
           </div>

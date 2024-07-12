@@ -93,6 +93,7 @@ export interface IFormField {
 
 export interface ILoadingButton {
   buttonText: string;
+  className?: string;
   loading: boolean;
   type?: 'button' | 'submit' | 'reset';
   onClick?: () => void | Promise<void>;

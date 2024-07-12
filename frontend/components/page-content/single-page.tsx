@@ -124,29 +124,6 @@ const SinglePage = () => {
     }
   }, [pageData]);
 
-  // useEffect(() => {
-  //   if (pageContentData && pageContentData.data.PG_PageContent) {
-  //     const page = pageContentData.data;
-  //     const pageContent = page.PG_PageContent;
-  //     if (pageContent) {
-  //       const normalizedPage = pageNormalizer(page, pageContent);
-  //       console.log(normalizedPage, 'normalizedPage');
-  //       setPage(normalizedPage);
-  //       if (normalizedPage.pageContent?.editorContent) {
-  //         setOriginalSinglePageData(normalizedPage.pageContent?.editorContent);
-  //       }
-
-  //       setPlateEditor(
-  //         normalizedPage.pageContent?.editorContent || plateEditor
-  //       );
-  //       setPlateEditorKey(
-  //         JSON.stringify(
-  //           normalizedPage.pageContent?.editorContent || plateEditor
-  //         )
-  //       );
-  //     }
-  //   }
-  // }, [pageContentData]);
   const handleSinglePageSubmit = async () => {
     console.log(singlePageContent, 'singlePageContent');
     const pageContentId = singlePageContent && singlePageContent.pageContentId;
@@ -213,11 +190,9 @@ const SinglePage = () => {
         title={`${!isSinglePageCreated ? 'Edit' : ''} ${fromKebabCase(pageName)}`}
       >
         <div
-          className={`flex flex-col flex-grow mt-28 min-h-screen max-w-screen-lg mx-auto`}
+          className={`flex flex-col min-h-screen w-full ${pageContentPaddingStyles}`}
         >
-          <div
-            className={`${pageContentPaddingStyles} mb-10 space-y-6 min-h-screen relative bottom-20`}
-          >
+          <div className={`space-y-6 mb-10 min-h-screen `}>
             <PlateEditor
               key={plateEditorKey}
               value={plateEditor}
@@ -226,17 +201,17 @@ const SinglePage = () => {
               }}
             />
           </div>
-          <div
-            className={`w-full fixed bottom-0 z-40 h-20 shadow2xl ${pageContentPaddingStyles}`}
-          >
-            {canEdit && (
+          {canEdit && (
+            <div
+              className={`w-full sticky bg-white flex mx-auto bottom-0 z-40 h-20 shadow2xl`}
+            >
               <LoadingButton
-                buttonText={`Edit ${pageName}`}
+                className=""
+                buttonText="Edit Content"
                 loading={false}
-                onClick={handleSinglePageSubmit}
               />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </PageLayout>
     </>

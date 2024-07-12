@@ -4,6 +4,7 @@ import {
 } from '@/styles/globals';
 import React from 'react';
 import { Divider } from 'antd';
+import { FloatButton } from 'antd';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -25,6 +26,7 @@ const PageLayout: React.FC<LayoutProps> = ({ children, title }) => {
         <Divider />
         <main className="w-full rounded-3xl min-h-screen z-20 ">
           <div>{children}</div>
+          <FloatButton.BackTop visibilityHeight={400} />
         </main>
       </div>
     </div>

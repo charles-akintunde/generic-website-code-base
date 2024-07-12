@@ -152,7 +152,7 @@ export const pageContentSchema = z.object({
   pageContentName: requiredTextSchema('Content Name'),
   pageContentDisplayImage: imageSchema.optional(),
   pageContentResource: fileSchema.optional(),
-  editorContent: plateJsSchema,
+  editorContent: plateJsSchema.optional(),
   isPageContentHidden: z.boolean().default(false),
 });
 

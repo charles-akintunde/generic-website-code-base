@@ -18,6 +18,7 @@ export interface IPageContentResponse {
   PC_Title: string;
   PC_Content: { [key: string]: TElement[] };
   PC_DisplayURL: string;
+  PC_ResourceURL?: string;
   PC_ThumbImgURL?: string | null;
   PC_IsHidden: boolean;
   PC_CreatedAt?: string | null;

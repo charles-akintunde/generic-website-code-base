@@ -163,11 +163,13 @@ export const pageNormalizer = (
     pageContent: {
       pageContentId: pageContent.PC_ID,
       pageName: page.PG_Name,
+      pageType: String(page.PG_Type),
       pageId: pageContent.PG_ID,
       userId: pageContent.UI_ID,
       href: `${toKebabCase(page.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
       pageContentName: pageContent.PC_Title,
       pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
+      pageContentResource: pageContent.PC_DisplayURL as string,
       isPageContentHidden: pageContent.PC_IsHidden,
       editorContent: pageContent.PC_Content?.PC_Content,
       pageContentCreatedAt: pageContent.PC_CreatedAt as string,

@@ -25,6 +25,7 @@ import { Empty } from 'antd';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 
 interface ContentListProps {
+  pageType: string;
   isResourcePage?: boolean;
   pageName: string;
   pageContents: IPageContentMain[];
@@ -40,6 +41,7 @@ interface ContentListProps {
 }
 
 const ContentList: React.FC<ContentListProps> = ({
+  pageType,
   isResourcePage,
   pageName,
   pageContents,
@@ -51,8 +53,8 @@ const ContentList: React.FC<ContentListProps> = ({
   emptyDescription,
 }) => {
   const className = isResourcePage
-    ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-    : 'grid-cols-1 md:grid-cols-2';
+    ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
+    : 'grid-cols-1 md:grid-cols-2 gap-8';
   return (
     <div className="min-h-screen">
       <div className={`${containerNoFlexPaddingStyles} pt-8`}>
@@ -68,7 +70,7 @@ const ContentList: React.FC<ContentListProps> = ({
           )}
         </header>
         {pageContents && pageContents.length > 0 ? (
-          <div className={`grid gap-8 ${className}`}>
+          <div className={`grid  ${className}`}>
             {pageContents.map((pageContent, index) => (
               <ListCardComponent
                 key={index}

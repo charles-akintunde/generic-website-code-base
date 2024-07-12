@@ -1,30 +1,30 @@
+'use client';
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs } from 'antd';
 import UserTab from './user-tab';
 import PageTab from './page-tab';
 import { containerPaddingStyles } from '@/styles/globals';
+import type { TabsProps } from 'antd';
 
-const AdminPanel = () => {
+const items: TabsProps['items'] = [
+  {
+    key: 'pages',
+    label: 'Pages',
+    children: <PageTab />,
+  },
+  {
+    key: 'users',
+    label: 'Users',
+    children: <UserTab />,
+  },
+];
+
+const AdminPanel: React.FC = () => {
   return (
     <section className={`${containerPaddingStyles} py-8`}>
-      <Tabs defaultValue="pages" className="w-full ">
-        <TabsList className="">
-          <TabsTrigger value="pages">Pages</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-        </TabsList>
-
-        {/* Users Tab Content */}
-        <TabsContent value="users">
-          <UserTab />
-        </TabsContent>
-
-        {/* Pages Tab Content */}
-        <TabsContent value="pages">
-          <div className="flex flex-col space-y-4">
-            <PageTab />
-          </div>
-        </TabsContent>
-      </Tabs>
+      <div className="w-full">
+        <Tabs defaultActiveKey="1" items={items} />
+      </div>
     </section>
   );
 };

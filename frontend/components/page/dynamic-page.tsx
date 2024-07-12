@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import SinglePage from '../page-content/single-page';
 import ResourceLists from '../page-content/resource-lists';
 import AppLoading from '../common/app-loading';
+import { EPageType } from '@/types/enums';
 
 const DynamicPage = () => {
   const pathname = usePathname();
@@ -25,15 +26,15 @@ const DynamicPage = () => {
 
   const renderPageContent = () => {
     switch (currentPage.pageType) {
-      case '0':
+      case EPageType.SinglePage:
         return <SinglePage />;
-      case '1':
+      case EPageType.PageList:
         return (
           <PageLayout title={pageName}>
             <PageLists />
           </PageLayout>
         );
-      case '2':
+      case EPageType.ResList:
         return (
           <PageLayout title={pageName}>
             <ResourceLists />

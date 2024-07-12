@@ -138,10 +138,10 @@ const usePage = (pageName?: string) => {
               pageId: pageContent.PG_ID,
               pageName: response.PG_Name,
               userId: pageContent.UI_ID,
-              href: `${toKebabCase(response.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
+              href: `/${toKebabCase(response.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
               pageContentName: pageContent.PC_Title,
               pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
-              // pageContentResource: pageContent.PC
+              pageContentResource: pageContent.PC_ResourceURL as string,
               isPageContentHidden: pageContent.PC_IsHidden,
               pageContentCreatedAt: pageContent.PC_CreatedAt as string,
               pageContentLastUpdatedAt: pageContent.PC_LastUpdatedAt as string,
@@ -154,7 +154,7 @@ const usePage = (pageName?: string) => {
         isHidden: false,
         href: `/${toKebabCase(response.PG_Name)}`,
       };
-      console.log(response, 'normalizedPage');
+      console.log(response, 'RESPONSE');
       setCurrentPage(normalizedPage);
     }
   }, [pageData]);

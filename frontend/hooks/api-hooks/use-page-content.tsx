@@ -98,13 +98,15 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         formData.append('PC_ThumbImg', pageContent.pageContentDisplayImage);
       }
       formData.append('PC_IsHidden', String(pageContent.isPageContentHidden));
-      formData.append('PC_Content', JSON.stringify(pageContentObj));
+      if (pageContent.pageType && pageContent.pageType != EPageType.ResList) {
+        formData.append('PC_Content', JSON.stringify(pageContentObj));
+      }
 
       if (
         pageContent.pageType == EPageType.ResList &&
         pageContent.pageContentResource
       ) {
-        formData.append('PC_Resource', String(pageContent.pageContentResource));
+        formData.append('PC_Resource', pageContent.pageContentResource);
       }
 
       const response = await createPageContent(formData).unwrap();
@@ -132,6 +134,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
   ) => {
     try {
       const formData = new FormData();
+      console.log(pageContent, 'pageContent');
       let pageContentObj = {
         ['PC_Content']: pageContent.editorContent,
       };
@@ -145,9 +148,18 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       if (pageContent.isPageContentHidden !== undefined) {
         formData.append('PC_IsHidden', String(pageContent.isPageContentHidden));
       }
-      if (pageContent.editorContent) {
-        formData.append('PC_Content', JSON.stringify(pageContentObj));
+      if (pageType != EPageType.ResList) {
+        if (pageContent.editorContent) {
+          formData.append('PC_Content', JSON.stringify(pageContentObj));
+        }
       }
+
+      if (pageType == EPageType.ResList && pageContent.pageContentResource) {
+        console.log('kkkkkkkkkkkkkkkkkkkkk');
+        formData.append('PC_Resource', pageContent.pageContentResource);
+      }
+
+      console.log(formData.entries(), pageType, 'ENTRIESSSS');
 
       const response = await editPageContent({
         PC_ID: pageContentId,
@@ -168,6 +180,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         'success'
       );
     } catch (error: any) {
+      console.log(error, 'ERROR');
       notify(
         'Error',
         error?.data?.message ||

@@ -34,9 +34,12 @@ const ResourceLists = () => {
   };
   const queryString = new URLSearchParams(queryParams).toString();
 
+  console.log(currentPage, 'PAGECONETENT');
+
   return (
     <ContentList
       isResourcePage={true}
+      pageType={page?.pageType ?? ''}
       pageName={page?.pageName ?? ''}
       pageContents={pageContents}
       canEdit={canEdit}

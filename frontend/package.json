@@ -70,6 +70,7 @@
     "@udecode/plate-toggle": "^34.0.0",
     "@udecode/plate-trailing-block": "^34.0.0",
     "antd": "^5.18.0",
+    "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
