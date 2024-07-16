@@ -9,7 +9,7 @@ import { pageTypeLabels, userRoleLabels } from '@/utils/helper';
 import { IPageMain } from '@/types/componentInterfaces';
 import usePage from '@/hooks/api-hooks/use-page';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
-import ActionsButtons from '../common/action-buttons';
+import ActionsButtons from '@/components/common/action-buttons';
 
 const PageListItem: React.FC = () => {
   const [viewContent, setViewContent] = useState<IPageMain | null>(null);

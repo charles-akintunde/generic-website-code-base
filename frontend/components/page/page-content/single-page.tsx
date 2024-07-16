@@ -15,22 +15,22 @@ import {
 } from '@/utils/helper';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { PlateEditor } from '../plate/plate';
+import { PlateEditor } from '@/components/plate/plate';
 import { PlusIcon } from 'lucide-react';
-import AppButton from '../common/button/app-button';
-import LoadingButton from '../common/button/loading-button';
+import AppButton from '@/components/common/button/app-button';
+import LoadingButton from '@/components/common/button/loading-button';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import {
   IPageContentItem,
   IPageContentMain,
   IPageMain,
 } from '@/types/componentInterfaces';
-import { useNotification } from '../hoc/notification-provider';
+import { useNotification } from '@/components/hoc/notification-provider';
 import usePageContent from '@/hooks/api-hooks/use-page-content';
 import { useGetPageContentQuery } from '@/api/pageContentApi';
 import { IPageContentGetRequest } from '@/types/requestInterfaces';
-import AppLoading from '../common/app-loading';
-import PageLayout from '../page/layout';
+import AppLoading from '@/components/common/app-loading';
+import PageLayout from '@/components/page/layout';
 import { TElement } from '@udecode/plate-common';
 import { useGetPageQuery } from '@/api/pageApi';
 import { Page } from '@/types/backendResponseInterfaces';

@@ -6,13 +6,9 @@ import { IPageContentMain, IPageMain } from '@/types/componentInterfaces';
 import usePage from '@/hooks/api-hooks/use-page';
 import { usePathname } from 'next/navigation';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
-import ContentList from '../common/content-list/content-list';
-import { Card, Button } from 'antd';
-import { Icon } from 'lucide-react';
-import ActionsButtons from '../common/action-buttons';
-import ResourceListCard from './resource-list-card';
+import ContentList from '@/components/common/content-list/content-list';
 
-const ResourceLists = () => {
+const PageLists = () => {
   const pathname = usePathname();
   const [pageName, setPageName] = useState(
     fromKebabCase(pathname.split('/')['1'])
@@ -25,6 +21,7 @@ const ResourceLists = () => {
     `/${pageNameKebab}/create-page-content?${queryString}`;
   const pageNameKebab = toKebabCase(page?.pageName ?? '');
   const pageId = page?.pageId ?? '';
+  console.log(page, 'PAGE');
   const pageContents: IPageContentMain[] =
     (page?.pageContents as IPageContentMain[]) ?? [];
   const queryParams = {
@@ -33,23 +30,18 @@ const ResourceLists = () => {
     pageId: pageId,
   };
   const queryString = new URLSearchParams(queryParams).toString();
-
-  console.log(currentPage, 'PAGECONETENT');
-
   return (
     <ContentList
-      isResourcePage={true}
-      pageType={page?.pageType ?? ''}
       pageName={page?.pageName ?? ''}
       pageContents={pageContents}
       canEdit={canEdit}
       queryString={queryString}
       pageNameKebab={pageNameKebab}
-      ListCardComponent={ResourceListCard}
+      ListCardComponent={PageListCard}
       createPageHref={createPageHref}
       emptyDescription={`No content for ${page?.pageName.toLowerCase()}`}
     />
   );
 };
 
-export default ResourceLists;
+export default PageLists;

@@ -5,8 +5,10 @@ Schemas for the User model.
 from datetime import datetime
 from fastapi import File, UploadFile
 from pydantic import BaseModel, EmailStr
-from typing import Any, Optional
+from typing import Any, List, Optional
 import uuid
+
+from sqlalchemy import UUID
 from app.models.enums import E_Status, E_UserRole
 
 class UserBase(BaseModel):
@@ -23,6 +25,26 @@ class UserBase(BaseModel):
     UI_PhotoURL: Optional[str] = None
     UI_PhoneNumber: Optional[str] = None
     UI_Organization: Optional[str] = None
+
+class UserPartial(BaseModel):
+    UI_ID: str
+    UI_FirstName: str
+    UI_LastName: str
+    UI_Email: str
+    UI_Role: str
+    UI_Status: str
+    UI_RegDate: str
+    UI_PhotoURL: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
+
+class UsersResponse(BaseModel):
+    users: List[UserPartial]
+    last_first_name: Optional[str] = None
+    last_last_name: Optional[str] = None
+    last_uuid: Optional[str] = None
 
 
 class UserDelete(BaseModel):

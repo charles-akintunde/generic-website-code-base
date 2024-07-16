@@ -1,18 +1,23 @@
 import {
   IPageContentGetResponse,
   IPageContentResponse,
+  IUserResponseData,
   Page,
+  UserResponse,
 } from '@/types/backendResponseInterfaces';
 import {
   IPageContentItem,
   IPageContentMain,
   IPageMain,
+  IUserBase,
+  IUserList,
   Notify,
 } from '@/types/componentInterfaces';
-import { EPageType, EUserRole } from '@/types/enums';
+import { EPageType, EStatus, EUserRole } from '@/types/enums';
 import { TElement } from '@udecode/plate-common';
 import { jwtDecode } from 'jwt-decode';
 import _ from 'lodash';
+
 export const toKebabCase = (str: string): string => {
   str = str.toLowerCase();
   str = str.replace(/ /g, '-');
@@ -39,6 +44,12 @@ export const userRoleLabels: { [key in EUserRole]: string } = {
   [EUserRole.Member]: 'Member',
   [EUserRole.User]: 'User',
   [EUserRole.Public]: 'Public',
+};
+
+export const userStatusLabels: { [key in EStatus]: string } = {
+  [EStatus.Active]: 'Active',
+  [EStatus.Unauthenticated]: 'Unauthenticated',
+  [EStatus.Disabled]: 'Disabled',
 };
 
 export interface DecodedToken {
@@ -252,5 +263,23 @@ export const normalizeMultiContentPage = (
     pageType: String(response.PG_Type),
     isHidden: false,
     href: `/${toKebabCase(response.PG_Name)}`,
+  };
+};
+
+export const mapToIIUserList = (data: IUserResponseData): IUserList => {
+  const users: IUserBase[] = data.users.map((user: UserResponse) => ({
+    uiId: user.UI_ID,
+    uiFirstName: user.UI_FirstName,
+    uiLastName: user.UI_LastName,
+    uiEmail: user.UI_Email,
+    uiRole: user.UI_Role,
+    uiStatus: user.UI_Status,
+    uiRegDate: user.UI_RegDate,
+  }));
+  return {
+    users: users,
+    lastFirstName: data.last_first_name,
+    lastLastName: data.last_last_name,
+    lastUUID: data.last_uuid,
   };
 };

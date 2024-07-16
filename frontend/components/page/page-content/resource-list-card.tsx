@@ -15,12 +15,12 @@ import {
 import { IPageContentMain } from '@/types/componentInterfaces';
 import Link from 'next/link';
 import { toKebabCase } from '@/utils/helper';
-import AppPopconfirm from '../common/app-popup-confirm';
+import AppPopconfirm from '@/components/common/app-popup-confirm';
 
 import axios from 'axios';
 import usePageContent from '@/hooks/api-hooks/use-page-content';
 import { Link2Icon } from 'lucide-react';
-import ActionsButtons from '../common/action-buttons';
+import ActionsButtons from '@/components/common/action-buttons';
 const { Meta } = Card;
 
 interface PageContentCardProps {

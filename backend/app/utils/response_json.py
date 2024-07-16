@@ -4,12 +4,15 @@
 
 
 from datetime import datetime
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union,Tuple
+
+from uuid import UUID
 from app.models.user_info import T_UserInfo
 from app.schemas.page_content import PageContentResponse
 from app.models.page_content import T_PageContent
 from app.models.page import T_Page
 from app.schemas.page import PageResponse, PageSingleContent
+from app.schemas.user_info import UserPartial, UsersResponse
 
 
 def build_page_content_json(page_content : T_PageContent,user: T_UserInfo,page_name:Optional[str]=None) -> Union[PageContentResponse, Any]:
@@ -72,4 +75,12 @@ def build_multiple_page_response(page: T_Page) -> PageResponse:
         PG_Type=page.PG_Type.value,  # Assuming you want the enum's value as a string
         PG_Name=str(page.PG_Name),
         PG_Permission=[perm.value for perm in page.PG_Permission]  # Convert enum list to string list
+    )
+
+def create_users_response(users: List[UserPartial], new_last_key: Optional[Tuple[str, str, str]]) -> UsersResponse:
+    return UsersResponse(
+        users=users,
+        last_first_name=new_last_key[0] if new_last_key else None, # type: ignore
+        last_last_name=new_last_key[1] if new_last_key else None, # type: ignore
+        last_uuid=new_last_key[2] if new_last_key else None # type: ignore
     )

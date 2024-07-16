@@ -1,14 +1,16 @@
 """
 User service for handling business logic related to users.
 """
-
+from typing import List, Optional, Tuple, Union
+from uuid import UUID
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.crud.user_info import user_crud
-from app.schemas.user_info import UserRoleUpdate, UserProfileUpdate, UserDelete, UserStatusUpdate
+from app.schemas.user_info import UserPartial, UserRoleUpdate, UserProfileUpdate, UserDelete, UserStatusUpdate, UsersResponse
 from app.models.user_info import T_UserInfo
 from app.config import settings
 from app.utils.file_utils import delete_and_save_file, delete_file, extract_path_from_url, save_file
+from app.utils.response_json import create_users_response
 
 
 
@@ -124,3 +126,14 @@ def delete_user(db: Session, delete_user_id: str, current_user: T_UserInfo ):
             detail="User not found"
         )
     return user
+
+def get_users(db: Session, last_key: Optional[Tuple[str, str, str]] = None, limit: int = 10) -> UsersResponse:
+    users = user_crud.get_users(db, last_key, limit)
+    if users:
+        last_user = users[-1]
+        new_last_key = (last_user.UI_FirstName, last_user.UI_LastName, last_user.UI_ID)
+    else:
+        new_last_key = None
+    users_response = create_users_response(users, new_last_key)
+    return users_response
+

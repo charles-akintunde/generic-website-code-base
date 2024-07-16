@@ -11,16 +11,20 @@ import authImg from '@/assets/images/auth-image.webp';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { EllipsisVertical } from 'lucide-react';
-import { Button } from '../ui/button';
-import AppPopconfirm from '../common/app-popup-confirm';
+import { Button } from '@/components/ui/button';
+import AppPopconfirm from '@/components/common/app-popup-confirm';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import {
   IPageContentItem,
   IPageContentMain,
 } from '@/types/componentInterfaces';
-import ActionsButtons from '../common/action-buttons';
+import ActionsButtons from '@/components/common/action-buttons';
 import usePage from '@/hooks/api-hooks/use-page';
 import usePageContent from '@/hooks/api-hooks/use-page-content';
 import {

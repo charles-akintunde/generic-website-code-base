@@ -99,7 +99,6 @@ const usePage = (pageName?: string) => {
 
   useEffect(() => {
     if (pagesData && pagesData.data) {
-      console.log(pagesData, 'pagesData.data');
       const normalizedPages: IPageMain[] = pagesData?.data.Pages.map(
         (page: Page) => ({
           pageId: page.PG_ID,
@@ -123,7 +122,6 @@ const usePage = (pageName?: string) => {
   useEffect(() => {
     if (pageData && pageData.data) {
       let response: Page = pageData.data;
-      console.log(response, 'responseresponse');
       const normalizedPage: IPageMain = {
         pageId: response.PG_ID,
         pageName: response.PG_Name,
@@ -154,7 +152,6 @@ const usePage = (pageName?: string) => {
         isHidden: false,
         href: `/${toKebabCase(response.PG_Name)}`,
       };
-      console.log(response, 'RESPONSE');
       setCurrentPage(normalizedPage);
     }
   }, [pageData]);
@@ -214,7 +211,6 @@ const usePage = (pageName?: string) => {
       );
       handleToggleCreateFormDialog();
     } catch (error: any) {
-      console.log(error, 'error');
       notify(
         'Error',
         error.message || 'Failed to update the page. Please try again later.',
@@ -238,7 +234,6 @@ const usePage = (pageName?: string) => {
         'success'
       );
     } catch (error: any) {
-      console.log(error, 'erroreeeeeeeeee');
       notify(
         'Error',
         error.data.message ||

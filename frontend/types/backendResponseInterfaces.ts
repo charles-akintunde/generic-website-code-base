@@ -25,6 +25,28 @@ export interface IPageContentResponse {
   PC_LastUpdatedAt?: string | null;
 }
 
+export interface UserResponse {
+  UI_ID: string;
+  UI_FirstName: string;
+  UI_LastName: string;
+  UI_Email: string;
+  UI_Role: string;
+  UI_Status: string;
+  UI_City: string | null;
+  UI_RegDate: string;
+}
+
+export interface IUserResponseData {
+  users: UserResponse[];
+  last_first_name: string | null;
+  last_last_name: string | null;
+  last_uuid: string | null;
+}
+
+export interface IUserResponse extends IGenericResponse {
+  data: IUserResponseData;
+}
+
 export interface PagesData {
   Pages: Page[];
 }

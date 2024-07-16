@@ -21,6 +21,23 @@ export interface IPageMain {
   href: string;
 }
 
+export interface IUserBase {
+  uiId: string;
+  uiFirstName: string;
+  uiLastName: string;
+  uiEmail: string;
+  uiRole: string;
+  uiStatus: string;
+  uiRegDate: string;
+}
+
+export interface IUserList {
+  users: IUserBase[];
+  lastFirstName: string | null;
+  lastLastName: string | null;
+  lastUUID: string | null;
+}
+
 export interface IPageListItem {
   pages: IPageMain[];
 }

@@ -1,15 +1,15 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import PageLayout from './layout';
-import PageLists from '../page-content/page-lists';
+import PageLists from '@/components/page/page-content/page-lists';
 import { usePathname } from 'next/navigation';
 import { fromKebabCase, hasPermission } from '@/utils/helper';
 import { IPageContentItem } from '@/types/componentInterfaces';
 import usePage from '@/hooks/api-hooks/use-page';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { useRouter } from 'next/navigation';
-import SinglePage from '../page-content/single-page';
-import ResourceLists from '../page-content/resource-lists';
+import SinglePage from '@/components/page/page-content/single-page';
+import ResourceLists from '@/components/page/page-content/resource-lists';
 import AppLoading from '../common/app-loading';
 import { EPageType } from '@/types/enums';
 

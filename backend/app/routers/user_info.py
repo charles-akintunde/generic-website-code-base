@@ -2,8 +2,9 @@
 API endpoints for user profile updates.
 """
 
-from typing import Optional
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from typing import List, Optional, Tuple
+from uuid import UUID
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.core.auth import get_current_user
@@ -11,8 +12,9 @@ from app.schemas.response import StandardResponse
 from app.schemas.user_info import UserDelete, UserProfileUpdate, UserRoleUpdate, UserStatusUpdate
 from app.utils.utils import is_super_admin
 from app.models.user_info import T_UserInfo
-from app.services.user_info import delete_user, update_user_profile, update_user_role, update_user_status
+from app.services.user_info import delete_user, get_users, update_user_profile, update_user_role, update_user_status
 from app.utils.response import error_response, success_response
+
 
 router = APIRouter()
 
@@ -129,6 +131,23 @@ async def delete_user_endpoint(
     try:
         delete_user(db=db, delete_user_id=user_delete.UI_ID,current_user=current_user)
         return success_response("User deleted successfully")
+    except HTTPException as e:
+        return error_response(message=e.detail, status_code=e.status_code)
+
+@router.get("/", response_model=StandardResponse)
+async def get_users_endpoint(
+    last_first_name: Optional[str] = Query(None),
+    last_last_name: Optional[str] = Query(None),
+    last_uuid: Optional[str] = Query(None),
+    limit: int = Query(10, gt=0),
+    db: Session = Depends(get_db)):
+    try: 
+        last_key: Optional[Tuple[str, str, str]] = None
+        if last_first_name and last_last_name and last_uuid:
+            last_key =  (last_first_name, last_last_name, last_uuid) 
+        
+        users_response = get_users(db=db, last_key=last_key, limit=limit)
+        return success_response(data = users_response.model_dump(), message='Users fetched successfully')
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
 
