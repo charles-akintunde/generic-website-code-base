@@ -112,9 +112,9 @@ async def update_user_profile_endpoint(
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     
-@router.delete("/", response_model=StandardResponse)
+@router.delete("/{user_id}", response_model=StandardResponse)
 async def delete_user_endpoint(
-    user_delete: UserDelete, 
+    user_id: str, 
     db: Session = Depends(get_db), 
     current_user: T_UserInfo = Depends(get_current_user)):
     """
@@ -129,27 +129,37 @@ async def delete_user_endpoint(
     """
     is_super_admin(current_user=current_user)
     try:
-        delete_user(db=db, delete_user_id=user_delete.UI_ID,current_user=current_user)
+        delete_user(db=db, delete_user_id=user_id,current_user=current_user)
         return success_response("User deleted successfully")
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
 
+# @router.get("/", response_model=StandardResponse)
+# async def get_users_endpoint(
+#     last_first_name: Optional[str] = Query(None),
+#     last_last_name: Optional[str] = Query(None),
+#     last_uuid: Optional[str] = Query(None),
+#     limit: int = Query(5, gt=0),
+#     db: Session = Depends(get_db)):
+#     try: 
+#         last_key: Optional[Tuple[str, str, str]] = None
+#         if last_first_name and last_last_name and last_uuid:
+#             last_key =  (last_first_name, last_last_name, last_uuid) 
+        
+#         users_response = get_users(db=db, last_key=last_key, limit=limit)
+#         return success_response(data = users_response.model_dump(), message='Users fetched successfully')
+#     except HTTPException as e:
+#         return error_response(message=e.detail, status_code=e.status_code)
+
 @router.get("/", response_model=StandardResponse)
 async def get_users_endpoint(
-    last_first_name: Optional[str] = Query(None),
-    last_last_name: Optional[str] = Query(None),
-    last_uuid: Optional[str] = Query(None),
-    limit: int = Query(10, gt=0),
+    page: int = Query(1),
+    limit: int = Query(5, gt=0),
     db: Session = Depends(get_db)):
     try: 
-        last_key: Optional[Tuple[str, str, str]] = None
-        if last_first_name and last_last_name and last_uuid:
-            last_key =  (last_first_name, last_last_name, last_uuid) 
-        
-        users_response = get_users(db=db, last_key=last_key, limit=limit)
+        users_response = get_users(db=db, page=page, limit=limit)
         return success_response(data = users_response.model_dump(), message='Users fetched successfully')
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
-
 
 

@@ -42,9 +42,11 @@ class UserPartial(BaseModel):
 
 class UsersResponse(BaseModel):
     users: List[UserPartial]
+    total_users_count : int
     last_first_name: Optional[str] = None
     last_last_name: Optional[str] = None
     last_uuid: Optional[str] = None
+
 
 
 class UserDelete(BaseModel):

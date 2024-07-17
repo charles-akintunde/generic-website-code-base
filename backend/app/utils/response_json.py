@@ -77,10 +77,11 @@ def build_multiple_page_response(page: T_Page) -> PageResponse:
         PG_Permission=[perm.value for perm in page.PG_Permission]  # Convert enum list to string list
     )
 
-def create_users_response(users: List[UserPartial], new_last_key: Optional[Tuple[str, str, str]]) -> UsersResponse:
+def create_users_response(users: List[UserPartial], total_users_count: int ,new_last_key: Optional[Tuple[str, str, str]]) -> UsersResponse:
     return UsersResponse(
         users=users,
         last_first_name=new_last_key[0] if new_last_key else None, # type: ignore
         last_last_name=new_last_key[1] if new_last_key else None, # type: ignore
-        last_uuid=new_last_key[2] if new_last_key else None # type: ignore
+        last_uuid=new_last_key[2] if new_last_key else None, # type: ignore
+        total_users_count= total_users_count
     )

@@ -127,13 +127,25 @@ def delete_user(db: Session, delete_user_id: str, current_user: T_UserInfo ):
         )
     return user
 
-def get_users(db: Session, last_key: Optional[Tuple[str, str, str]] = None, limit: int = 10) -> UsersResponse:
-    users = user_crud.get_users(db, last_key, limit)
-    if users:
-        last_user = users[-1]
-        new_last_key = (last_user.UI_FirstName, last_user.UI_LastName, last_user.UI_ID)
-    else:
-        new_last_key = None
-    users_response = create_users_response(users, new_last_key)
-    return users_response
+# def get_users(db: Session, last_key: Optional[Tuple[str, str, str]] = None, limit: int = 10) -> UsersResponse:
+#     users = user_crud.get_users(db, last_key, limit)
+#     total_user_count = user_crud.get_total_user_count(db=db)
+#     if users:
+#         last_user = users[-1]
+#         new_last_key = (last_user.UI_FirstName, last_user.UI_LastName, last_user.UI_ID)
+#     else:
+#         new_last_key = None
+#     users_response = create_users_response(users, total_user_count,new_last_key)
+#     return users_response
 
+def get_users(db: Session, page: int = 1, limit: int = 10):
+    total_user_count = user_crud.get_total_user_count(db=db)
+    total_pages = (total_user_count + limit - 1) // limit
+    if page > total_pages:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid page number: {page}. There are only {total_pages} pages available."
+        )
+    users = user_crud.get_users(db, page, limit)
+    users_response = create_users_response(users, total_user_count,None)
+    return users_response

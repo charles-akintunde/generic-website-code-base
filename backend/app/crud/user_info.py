@@ -101,6 +101,19 @@ class UserCRUD:
         """
         return db.query(T_UserInfo).filter(T_UserInfo.UI_ID == user_id).first()
     
+    def get_total_user_count(self, db: Session) -> int:
+            """
+            Get the total count of users.
+
+            Args:
+                db (Session): Database session.
+
+            Returns:
+                int: Total count of users.
+            """
+            return db.query(T_UserInfo).count()
+
+    
     def create_user(self, db: Session, user: UserCreate) -> T_UserInfo:
         """
         Create a new user.
@@ -124,7 +137,41 @@ class UserCRUD:
         db.refresh(db_user)
         return db_user
     
-    def get_users(self, db: Session,  last_key: Optional[Tuple[str, str, str]] = None, limit: int = 10) -> List[UserPartial]:
+    # def get_users(self, db: Session,  last_key: Optional[Tuple[str, str, str]] = None, limit: int = 10) -> List[UserPartial]:
+    #     query = db.query(
+    #         T_UserInfo.UI_ID,
+    #         T_UserInfo.UI_FirstName,
+    #         T_UserInfo.UI_LastName,
+    #         T_UserInfo.UI_Email,
+    #         T_UserInfo.UI_Role,
+    #         T_UserInfo.UI_Status,
+    #         T_UserInfo.UI_RegDate,
+    #         T_UserInfo.UI_PhotoURL
+    #     )
+    
+    #     if last_key is not None:
+    #         last_first_name, last_last_name, last_uuid = last_key
+    #         query = query.filter(
+    #             (T_UserInfo.UI_FirstName > last_first_name) |
+    #             ((T_UserInfo.UI_FirstName == last_first_name) & (T_UserInfo.UI_LastName > last_last_name)) |
+    #             ((T_UserInfo.UI_FirstName == last_first_name) & (T_UserInfo.UI_LastName == last_last_name) & (T_UserInfo.UI_ID > last_uuid))
+    #         )
+    
+    #     results = query.order_by(T_UserInfo.UI_FirstName, T_UserInfo.UI_LastName, T_UserInfo.UI_ID).limit(limit).all()
+    #     return [UserPartial(
+    #         UI_ID=str(row.UI_ID),
+    #         UI_FirstName=row.UI_FirstName,
+    #         UI_LastName=row.UI_LastName,
+    #         UI_Email=row.UI_Email,
+    #         UI_Role=row.UI_Role, 
+    #         UI_Status=row.UI_Status,
+    #         UI_RegDate=row.UI_RegDate.isoformat(),
+    #         UI_PhotoURL=row.UI_PhotoURL
+    #     ) for row in results]
+    
+
+    def get_users(self, db: Session, page: int = 1, limit: int = 10) -> List[UserPartial]:
+        offset = (page - 1) * limit
         query = db.query(
             T_UserInfo.UI_ID,
             T_UserInfo.UI_FirstName,
@@ -135,16 +182,12 @@ class UserCRUD:
             T_UserInfo.UI_RegDate,
             T_UserInfo.UI_PhotoURL
         )
-    
-        if last_key is not None:
-            last_first_name, last_last_name, last_uuid = last_key
-            query = query.filter(
-                (T_UserInfo.UI_FirstName > last_first_name) |
-                ((T_UserInfo.UI_FirstName == last_first_name) & (T_UserInfo.UI_LastName > last_last_name)) |
-                ((T_UserInfo.UI_FirstName == last_first_name) & (T_UserInfo.UI_LastName == last_last_name) & (T_UserInfo.UI_ID > last_uuid))
-            )
-    
-        results = query.order_by(T_UserInfo.UI_FirstName, T_UserInfo.UI_LastName, T_UserInfo.UI_ID).limit(limit).all()
+
+        results = query.order_by(T_UserInfo.UI_FirstName, T_UserInfo.UI_LastName, T_UserInfo.UI_ID)\
+                    .offset(offset)\
+                    .limit(limit)\
+                    .all()
+        
         return [UserPartial(
             UI_ID=str(row.UI_ID),
             UI_FirstName=row.UI_FirstName,
