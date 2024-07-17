@@ -23,7 +23,6 @@ const ActionsButtons: React.FC<IActionProps> = ({
   handleRemove,
 }) => {
   const { canEdit } = useUserLogin();
-
   if (!canEdit) {
     return <></>;
   }

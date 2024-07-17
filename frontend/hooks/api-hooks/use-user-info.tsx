@@ -1,52 +1,39 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { useGetUsersQuery } from '@/api/userApi';
-import { IUserList } from '@/types/componentInterfaces';
-import { mapToIIUserList } from '@/utils/helper';
+import { useDeleteUserMutation } from '@/api/userApi';
+import { useNotification } from '@/components/hoc/notification-provider';
+import { IUserBase } from '@/types/componentInterfaces';
+import { ExceptionMap } from 'antd/es/result';
 
 export interface GetUsersRequest {
-  lastFirstName: string | null;
-  lastLastName: string | null;
-  lastUUID: string | null;
+  page: number;
   limit: number;
 }
 
-const useUserInfo = ({
-  lastFirstName = null,
-  lastLastName = '',
-  lastUUID = '',
-  limit = 10,
-}: GetUsersRequest) => {
-  const {
-    data: usersResponseData,
-    isError: hasUsersFetchError,
-    isSuccess: isUsersFetchSuccess,
-    isLoading: isUsersFetchLoading,
-  } = useGetUsersQuery({
-    lastFirstName,
-    lastLastName,
-    lastUUID,
-    limit,
-  });
+const useUserInfo = () => {
+  const [deleteUser] = useDeleteUserMutation();
+  const { notify } = useNotification();
 
-  const [usersData, setUsersData] = useState<IUserList>();
-
-  console.log(usersResponseData, 'usersResponseData');
-
-  useEffect(() => {
-    if (usersResponseData && usersResponseData.data) {
-      console.log(usersResponseData, 'usersResponseData');
-      const users: IUserList = mapToIIUserList(usersResponseData.data);
-      setUsersData(users);
-      console.log(users, 'USERSSSSSSSSSS');
+  const handleRemoveUser = async (uiId: string) => {
+    try {
+      const response = await deleteUser(uiId).unwrap();
+      notify(
+        'Success',
+        response.message || 'The page has been successfully deleted.',
+        'success'
+      );
+    } catch (error: any) {
+      console.log(error, 'ERROR');
+      notify(
+        'Error',
+        error.data.message ||
+          'Failed to delete the page. Please try again later.',
+        'error'
+      );
     }
-  }, [usersData]);
+  };
 
   return {
-    usersData,
-    hasUsersFetchError,
-    isUsersFetchSuccess,
-    isUsersFetchLoading,
+    handleRemoveUser,
   };
 };
 

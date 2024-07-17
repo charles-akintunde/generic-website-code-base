@@ -1,4 +1,4 @@
-export enum EStatus {
+export enum EUserStatus {
   Active = 0,
   Unauthenticated = 1,
   Disabled = 2,

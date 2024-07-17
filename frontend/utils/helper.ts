@@ -13,7 +13,7 @@ import {
   IUserList,
   Notify,
 } from '@/types/componentInterfaces';
-import { EPageType, EStatus, EUserRole } from '@/types/enums';
+import { EPageType, EUserRole, EUserStatus } from '@/types/enums';
 import { TElement } from '@udecode/plate-common';
 import { jwtDecode } from 'jwt-decode';
 import _ from 'lodash';
@@ -46,10 +46,10 @@ export const userRoleLabels: { [key in EUserRole]: string } = {
   [EUserRole.Public]: 'Public',
 };
 
-export const userStatusLabels: { [key in EStatus]: string } = {
-  [EStatus.Active]: 'Active',
-  [EStatus.Unauthenticated]: 'Unauthenticated',
-  [EStatus.Disabled]: 'Disabled',
+export const userStatusLabels: { [key in EUserStatus]: string } = {
+  [EUserStatus.Active]: 'Active',
+  [EUserStatus.Unauthenticated]: 'Unauthenticated',
+  [EUserStatus.Disabled]: 'Disabled',
 };
 
 export interface DecodedToken {
@@ -268,18 +268,17 @@ export const normalizeMultiContentPage = (
 
 export const mapToIIUserList = (data: IUserResponseData): IUserList => {
   const users: IUserBase[] = data.users.map((user: UserResponse) => ({
-    uiId: user.UI_ID,
+    id: user.UI_ID,
     uiFirstName: user.UI_FirstName,
     uiLastName: user.UI_LastName,
     uiEmail: user.UI_Email,
     uiRole: user.UI_Role,
     uiStatus: user.UI_Status,
     uiRegDate: user.UI_RegDate,
+    uiPhotoUrl: user.UI_PhotoURL,
   }));
   return {
     users: users,
-    lastFirstName: data.last_first_name,
-    lastLastName: data.last_last_name,
-    lastUUID: data.last_uuid,
+    totalUserCount: data.total_users_count,
   };
 };

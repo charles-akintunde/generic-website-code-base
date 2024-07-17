@@ -1,4 +1,5 @@
 import { TElement } from '@udecode/plate-common';
+import internal from 'stream';
 
 export interface Page {
   PG_ID: string;
@@ -34,6 +35,7 @@ export interface UserResponse {
   UI_Status: string;
   UI_City: string | null;
   UI_RegDate: string;
+  UI_PhotoURL: string;
 }
 
 export interface IUserResponseData {
@@ -41,6 +43,7 @@ export interface IUserResponseData {
   last_first_name: string | null;
   last_last_name: string | null;
   last_uuid: string | null;
+  total_users_count: number;
 }
 
 export interface IUserResponse extends IGenericResponse {

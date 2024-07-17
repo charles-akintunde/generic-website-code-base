@@ -1,6 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import publicRouteBaseQuery from './publicRouteBaseQuery';
-import { IUserResponse } from '@/types/backendResponseInterfaces';
+import {
+  IGenericResponse,
+  IUserResponse,
+} from '@/types/backendResponseInterfaces';
 import { GetUsersRequest } from '@/hooks/api-hooks/use-user-info';
 
 const url = '/users';
@@ -11,8 +14,7 @@ export const userApi = createApi({
   tagTypes: ['Users'],
   endpoints: (builder) => ({
     getUsers: builder.query<IUserResponse, GetUsersRequest>({
-      query: ({ lastFirstName, lastLastName, lastUUID, limit }) =>
-        `${url}?last_first_name=${lastFirstName}&last_last_name=${lastLastName}&last_uuid=${lastUUID}&limit=${limit}`,
+      query: ({ page, limit }) => `${url}?page=${page}&limit=${limit}`,
       providesTags: (result) =>
         result
           ? [
@@ -24,7 +26,14 @@ export const userApi = createApi({
             ]
           : [{ type: 'Users', id: 'LIST' }],
     }),
+    deleteUser: builder.mutation<IGenericResponse, string>({
+      query: (id) => ({
+        url: `${url}/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, id) => [{ type: 'Users', id }],
+    }),
   }),
 });
 
-export const { useGetUsersQuery } = userApi;
+export const { useGetUsersQuery, useDeleteUserMutation } = userApi;

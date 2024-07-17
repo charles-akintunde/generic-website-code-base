@@ -22,20 +22,19 @@ export interface IPageMain {
 }
 
 export interface IUserBase {
-  uiId: string;
+  id: string;
   uiFirstName: string;
   uiLastName: string;
   uiEmail: string;
   uiRole: string;
   uiStatus: string;
   uiRegDate: string;
+  uiPhotoUrl: string;
 }
 
 export interface IUserList {
   users: IUserBase[];
-  lastFirstName: string | null;
-  lastLastName: string | null;
-  lastUUID: string | null;
+  totalUserCount: number;
 }
 
 export interface IPageListItem {
