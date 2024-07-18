@@ -145,6 +145,9 @@ export const hasPermission = (
   currentUserRole: string,
   pagePermission: string[]
 ): boolean => {
+  if (pagePermission == undefined || pagePermission == null) {
+    return false;
+  }
   return pagePermission.includes(currentUserRole);
 };
 

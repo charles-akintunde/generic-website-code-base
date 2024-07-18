@@ -47,6 +47,12 @@ class UsersResponse(BaseModel):
     last_last_name: Optional[str] = None
     last_uuid: Optional[str] = None
 
+class UserResponse(UserBase):
+    UI_ID: str
+    UI_Email: str
+    UI_Role: str
+    UI_Status: str
+    UI_RegDate: str
 
 
 class UserDelete(BaseModel):

@@ -10,7 +10,7 @@ from app.schemas.user_info import UserPartial, UserRoleUpdate, UserProfileUpdate
 from app.models.user_info import T_UserInfo
 from app.config import settings
 from app.utils.file_utils import delete_and_save_file, delete_file, extract_path_from_url, save_file
-from app.utils.response_json import create_users_response
+from app.utils.response_json import create_user_response, create_users_response
 
 
 
@@ -149,3 +149,18 @@ def get_users(db: Session, page: int = 1, limit: int = 10):
     users = user_crud.get_users(db, page, limit)
     users_response = create_users_response(users, total_user_count,None)
     return users_response
+
+
+def get_user_by_id(db: Session, user_id):
+    """
+        Retrieve a user by their ID from the database.
+    """
+    user = user_crud.get_user_by_id(db=db, user_id=user_id)
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'User with ID {user_id} not found.'
+        )
+    
+    return create_user_response(user=user)

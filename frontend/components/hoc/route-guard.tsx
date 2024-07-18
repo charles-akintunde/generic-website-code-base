@@ -7,6 +7,7 @@ import { IPageMenuItem } from '@/types/componentInterfaces';
 import { systemMenuItems } from './layout/menu-items';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { hasPermission } from '@/utils/helper';
+import { useCommentsShowResolvedButton } from '@udecode/plate-comments';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -30,15 +31,24 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
   const currentPage = allAppRoutes.find(
-    (item) => item.href === `/${pathname.split('/')[1]}`
+    (item) =>
+      item.href === `/${pathname.split('/')[1]}` ||
+      item.href.startsWith(`/${pathname.split('/')[1]}`)
+  );
+
+  console.log(
+    pathname.split('/')[1],
+    pathname.split('/')[1].startsWith('users'),
+    "pathname.split('/')[1].startsWith('user-profile')"
   );
 
   useEffect(() => {
     if (allAppRoutes && allAppRoutes.length > 0) {
       const isValidRoute =
-        isExistingRoute({ allAppRoutes: allAppRoutes, pathname: pathname }) ||
+        pathname.split('/')[1].startsWith('user-profile') ||
         pathname.startsWith('/confirm-user/account-creation') ||
         pathname.startsWith('/confirm-user/reset-password') ||
+        isExistingRoute({ allAppRoutes: allAppRoutes, pathname: pathname }) ||
         isExistingRoute({
           allAppRoutes: allAppRoutes,
           pathname: `/${pathname.split('/')[1]}`,
@@ -46,6 +56,7 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       if (!isValidRoute) {
         router.replace('/404');
       } else {
+        console.log(currentPage, 'currentPage');
         if (
           !hasPermission(
             currentUserRole,

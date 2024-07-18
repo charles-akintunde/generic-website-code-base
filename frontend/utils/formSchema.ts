@@ -1,6 +1,9 @@
 import { EPageType, EUserRole } from '@/types/enums';
 import { TElement } from '@udecode/plate-common';
 import { z } from 'zod';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import { getCountries } from 'country-list';
+import { validate as validatePostalCode } from 'postcode-validator';
 
 const passwordSchema = () =>
   z
@@ -161,4 +164,39 @@ export const optionalImagePageContentSchema = z.object({
   pageContentDisplayImage: imageSchema.optional(),
   editorContent: plateJsSchema,
   isPageContentHidden: z.boolean().default(false),
+});
+
+const phoneNumberSchema = z.string().refine(
+  (value, context) => {
+    const countryCode = context.parent.uiCountry;
+    const phoneNumber = parsePhoneNumberFromString(value, countryCode);
+    return phoneNumber?.isValid();
+  },
+  {
+    message: 'Invalid phone number',
+  }
+);
+
+const postalCodeSchema = z.string().refine(
+  (value, context) => {
+    const countryCode = context.parent.uiCountry;
+    return validatePostalCode(value, countryCode);
+  },
+  {
+    message: 'Invalid postal code',
+  }
+);
+
+export const userProfileSchema = z.object({
+  uiFirstName: requiredTextSchema('First Name'),
+  uiLastName: requiredTextSchema('Last Name'),
+  uiPhoto: z.string().optional(),
+  uiCity: z.string().optional(),
+  uiProvince: z.string().optional(),
+  uiCountry: z.string().optional(),
+  uiPostalCode: postalCodeSchema.optional(),
+  uiPhoneNumber: phoneNumberSchema.optional(),
+  uiOrganization: z.string().optional(),
+  uiRole: z.string().optional(),
+  uiStatus: z.string().optional(),
 });

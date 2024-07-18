@@ -1,14 +1,14 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { PlateEditor } from '../plate/plate';
-import PageLayout from '../page/layout';
+import { PlateEditor } from '@/components/plate/plate';
+import PageLayout from '@/components/page/layout';
 import { z } from 'zod';
 import FormField from '@/components/common/form-field';
 import { Form } from '@/components/ui/form';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { pageContentSchema } from '@/utils/formSchema';
-import LoadingButton from '../common/button/loading-button';
+import LoadingButton from '@/components/common/button/loading-button';
 import usePageContent from '@/hooks/api-hooks/use-page-content';
 import {
   IPageContentBase,
@@ -33,12 +33,12 @@ import { Spin } from 'antd';
 import { useGetPageContentQuery } from '@/api/pageContentApi';
 import { LoadingOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useNotification } from '../hoc/notification-provider';
+import { useNotification } from '@/components/hoc/notification-provider';
 import { pageContentPaddingStyles } from '@/styles/globals';
 import PageListLayout from './page-list-layout';
 import { TElement } from '@udecode/plate-common';
 import { EPageType } from '@/types/enums';
-import AppLoading from '../common/app-loading';
+import AppLoading from '@/components/common/app-loading';
 import { FloatButton } from 'antd';
 import { useRouter } from 'next/navigation';
 

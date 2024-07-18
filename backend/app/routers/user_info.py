@@ -12,7 +12,7 @@ from app.schemas.response import StandardResponse
 from app.schemas.user_info import UserDelete, UserProfileUpdate, UserRoleUpdate, UserStatusUpdate
 from app.utils.utils import is_super_admin
 from app.models.user_info import T_UserInfo
-from app.services.user_info import delete_user, get_users, update_user_profile, update_user_role, update_user_status
+from app.services.user_info import delete_user, get_user_by_id, get_users, update_user_profile, update_user_role, update_user_status
 from app.utils.response import error_response, success_response
 
 
@@ -161,5 +161,27 @@ async def get_users_endpoint(
         return success_response(data = users_response.model_dump(), message='Users fetched successfully')
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
+    
+@router.get("/{user_id}", response_model=StandardResponse)
+async def get_user_endpoint( user_id: str, db: Session = Depends(get_db)):
+    """
+    Fetch user details by user ID.
 
+    This endpoint retrieves user details from the database based on the provided user ID.
+
+    Args:
+        user_id (str): The ID of the user to be retrieved.
+        db (Session, optional): The database session dependency.
+
+    Returns:
+        StandardResponse: A response object containing the user data and a success message.
+
+    Raises:
+        HTTPException: If the user is not found or any other error occurs.
+    """
+    try:
+        user_response = get_user_by_id(db=db,user_id=user_id)
+        return success_response(data= user_response.model_dump(), message="User fetched successfully.")
+    except HTTPException as e:
+        return error_response(message=e.detail,status_code=e.status_code)
 

@@ -13,6 +13,7 @@ interface IActionProps {
   record: any;
   handleEditButtonClick: (record: any) => void;
   handleRemove: (recordId: any) => void;
+  hasAccess?: boolean;
 }
 
 const ActionsButtons: React.FC<IActionProps> = ({
@@ -21,9 +22,10 @@ const ActionsButtons: React.FC<IActionProps> = ({
   record,
   handleEditButtonClick,
   handleRemove,
+  hasAccess = true,
 }) => {
   const { canEdit } = useUserLogin();
-  if (!canEdit) {
+  if (!canEdit && !hasAccess) {
     return <></>;
   }
   return (

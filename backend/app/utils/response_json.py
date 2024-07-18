@@ -12,7 +12,7 @@ from app.schemas.page_content import PageContentResponse
 from app.models.page_content import T_PageContent
 from app.models.page import T_Page
 from app.schemas.page import PageResponse, PageSingleContent
-from app.schemas.user_info import UserPartial, UsersResponse
+from app.schemas.user_info import UserPartial, UserResponse, UsersResponse
 
 
 def build_page_content_json(page_content : T_PageContent,user: T_UserInfo,page_name:Optional[str]=None) -> Union[PageContentResponse, Any]:
@@ -84,4 +84,21 @@ def create_users_response(users: List[UserPartial], total_users_count: int ,new_
         last_last_name=new_last_key[1] if new_last_key else None, # type: ignore
         last_uuid=new_last_key[2] if new_last_key else None, # type: ignore
         total_users_count= total_users_count
+    )
+
+def create_user_response(user: T_UserInfo)  -> UserResponse:
+    return UserResponse(
+    UI_ID=str(user.UI_ID),
+    UI_FirstName=str(user.UI_FirstName),
+    UI_LastName=str(user.UI_LastName),
+    UI_Email=str(user.UI_Email),
+    UI_Role=str(user.UI_Role.value),
+    UI_Status=str(user.UI_Status.value),
+    UI_RegDate=str(user.UI_RegDate),
+    UI_PhotoURL=str(user.UI_PhotoURL),
+    UI_City=str(user.UI_City),
+    UI_PhoneNumber=str(user.UI_PhoneNumber),
+    UI_PostalCode=str(user.UI_PostalCode),
+    UI_Country=str(user.UI_Organization),
+    UI_Organization=str(user.UI_Organization),
     )

@@ -39,6 +39,7 @@ const useUserLogin = () => {
     : String(EUserRole.Public);
   const canEdit =
     currentUserRole == '0' || currentUserRole == '1' ? true : false;
+  const isAdmin = currentUserRole == '0' ? true : false;
 
   return {
     isSuccess,
@@ -50,6 +51,7 @@ const useUserLogin = () => {
     currentUser,
     currentUserRole,
     canEdit,
+    isAdmin,
   };
 };
 
