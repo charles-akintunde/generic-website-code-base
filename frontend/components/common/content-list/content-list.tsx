@@ -1,28 +1,13 @@
 'use client';
-import React, { useState } from 'react';
-import {
-  estimateReadingTime,
-  formatDate,
-  fromKebabCase,
-  getPageExcerpt,
-  toKebabCase,
-} from '@/utils/helper';
+import React from 'react';
 import AppButton from '../button/app-button';
 import { PlusIcon } from 'lucide-react';
 import {
   containerNoFlexPaddingStyles,
   primarySolidButtonStyles,
 } from '@/styles/globals';
-import {
-  IPageContentItem,
-  IPageContentMain,
-  IPageMain,
-} from '@/types/componentInterfaces';
-import { TElement } from '@udecode/plate-common';
-import usePage from '@/hooks/api-hooks/use-page';
-import { usePathname } from 'next/navigation';
+import { IPageContentMain } from '@/types/componentInterfaces';
 import { Empty } from 'antd';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
 
 interface ContentListProps {
   pageType: string;

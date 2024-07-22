@@ -1,40 +1,144 @@
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import UserProfileForm from '@/components/common/form/user-profile-form';
-import { MailOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons';
 import {
-  containerNoFlexPaddingStyles,
+  UserOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  HomeOutlined,
+  BankOutlined,
+  CalendarOutlined,
+} from '@ant-design/icons';
+import {
   pageContentPaddingStyles,
+  userProfilePaddingStyles,
 } from '@/styles/globals';
+import { format } from 'date-fns';
+import { Avatar, Divider, Switch, Tooltip } from 'antd';
+import ActionsButtons from '@/components/common/action-buttons';
+import UserProfileFormDialog from '@/components/common/form/user-profile-form';
+import { Badge } from 'antd';
+import { useGetUserQuery } from '@/api/userApi';
+import { formatDate, transformToUserInfo } from '@/utils/helper';
+import { IUserInfo } from '@/types/componentInterfaces';
 
 const UserProfilePage = () => {
-  return (
-    <div className={`${pageContentPaddingStyles} mt-10`}>
-      <div className="flex flex-col">
-        {/* Left Section */}
-        <div className="bg-white sticky top-30 z-20 flex flex-col items-center">
-          <img
-            src="https://localhost:8443/static/images/thumbnails/92953722_820756251748397_6669410420513570816_n***a2875094-eae5-4501-85a8-0035cb9be69d.webp" // replace with the actual image path
-            alt="User Avatar"
-            className="w-24 h-24 rounded-full shadow-lg"
-          />
-          <p className="mt-4 text-lg font-semibold text-gray-800">
-            cameronwilliamson@hotmail.com
-          </p>
-          <p className="text-sm text-gray-500">Last sign in: 16 minutes ago</p>
-          <div className="mt-4 flex flex-col w-full"></div>
-        </div>
+  // 4f98b31c-ae78-4e17-b6c2-883e11654446
+  const [isEditing, setIsEditing] = useState(false);
+  const {
+    data: userData,
+    isError: hasUserFetchError,
+    isSuccess: isUserFetchSuccess,
+    isLoading: isUserFetchLoading,
+  } = useGetUserQuery('4f98b31c-ae78-4e17-b6c2-883e11654446');
+  const [userInfo, setUserInfo] = useState<IUserInfo>();
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
 
-        {/* Right Section */}
-        <div className="">
-          <div className="bg-white p-6 rounded-lg  border-2 border-gray-100 mb-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              Personal Information
-            </h2>
-            <UserProfileForm />
+  useEffect(() => {
+    console.log(userData, 'userData');
+    if (userData?.data) {
+      const userProfile: IUserInfo = transformToUserInfo(userData?.data);
+      setUserInfo(userProfile);
+      console.log(userProfile, 'userProfile');
+    }
+  }, [userData]);
+
+  return (
+    <>
+      {userInfo && (
+        <div className="pt-10 px-6 min-h-screen">
+          <div
+            className={`${userProfilePaddingStyles} p-6 bg-white rounded-lg shadow-sm transition-all duration-300`}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="col-span-1 flex justify-center md:justify-start">
+                <Avatar
+                  size={200}
+                  src={userInfo.uiPhotoUrl}
+                  alt={`${userInfo.uiFirstName} ${userInfo.uiLastName}`}
+                  icon={!userInfo.uiPhotoUrl && <UserOutlined />}
+                  className="shadow-md"
+                />
+              </div>
+              <div className="col-span-3">
+                <div className="flex justify-between items-center mb-4">
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    {userInfo.uiFirstName} {userInfo.uiLastName}
+                  </h1>
+                  <div>
+                    <Switch
+                      size="small"
+                      checked={isEditing}
+                      onChange={handleEditToggle}
+                      className="mr-2"
+                    />{' '}
+                    Edit
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-gray-600 flex items-center">
+                    {userInfo.uiEmail}
+                  </p>
+                  <div className="flex space-x-2">
+                    <p className="flex  items-center">
+                      <Badge status="default" className="mr-2" />{' '}
+                      {userInfo.uiRole}
+                    </p>
+                    <p className="flex items-center">
+                      {' '}
+                      <Badge className="mr-2" status="success" />{' '}
+                      {userInfo.uiStatus}
+                    </p>
+                  </div>
+
+                  <p className="flex items-center">
+                    <HomeOutlined className="mr-2 text-primary" />
+
+                    {userInfo.uiCity ? `${userInfo.uiCity}, ` : ''}
+                    {userInfo.uiProvince ? `${userInfo.uiProvince}, ` : ''}
+                    {userInfo.uiCountry}
+                  </p>
+
+                  <p className="flex items-center">
+                    <PhoneOutlined className="mr-2 text-primary" />
+                    {userInfo.uiPhoneNumber}
+                  </p>
+                  <p className="flex items-center">
+                    <CalendarOutlined className="mr-2 text-primary" />
+                    <span className="font-semibold text-gray-700">
+                      Registered:
+                    </span>{' '}
+                    {formatDate(userInfo.uiRegDate)}
+                  </p>
+                  <p className="flex items-center">
+                    <BankOutlined className="mr-2 text-primary" />
+                    <span className="font-semibold text-gray-700">
+                      Organization:
+                    </span>{' '}
+                    {userInfo.uiOrganization}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <Divider className="my-6" />
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">About Me</h2>
+              <p className="mt-2 text-gray-700">
+                [Add a brief bio or description here]
+              </p>
+              {isEditing && (
+                <div className="mt-4">
+                  {/* UserProfileForm component should be here */}
+                  <UserProfileForm userInfo={userInfo} />
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

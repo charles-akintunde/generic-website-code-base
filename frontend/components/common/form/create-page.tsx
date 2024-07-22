@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { EPageType, EUserRole } from '@/types/enums';
 import { Form } from '@/components/ui/form';
 import FormField from '../form-field';
@@ -12,8 +12,6 @@ import LoadingButton from '../button/loading-button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -147,7 +145,6 @@ export const CreatePageDialog = () => {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
-            {' '}
             <h2 className="text-xl font-bold  text-gray-800">
               {editingPage ? 'Edit' : 'Create'} Page
             </h2>

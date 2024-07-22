@@ -7,16 +7,32 @@ import { useForm } from 'react-hook-form';
 import { userProfileSchema } from '@/utils/formSchema';
 import FormField from '../form-field';
 import { getNames } from 'country-list';
-import AppButton from '../button/app-button';
+import { UserRound } from 'lucide-react';
+import { EditOutlined } from '@ant-design/icons';
+//import AppButton from '../button/app-button';
 import LoadingButton from '../button/loading-button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import AppButton from '../button/app-button';
+import { Button } from '@/components/ui/button';
+import { primarySolidButtonStyles } from '@/styles/globals';
+import { IUserInfo } from '@/types/componentInterfaces';
 
 type UserProfileFormData = z.infer<typeof userProfileSchema>;
 
-const UserProfileForm = () => {
+const UserProfileForm = (userInfo: IUserInfo) => {
+  console.log(userInfo, 'userInfo');
   const countries = getNames();
   const form = useForm<UserProfileFormData>({
     resolver: zodResolver(userProfileSchema),
-    defaultValues: {
+    defaultValues: userInfo || {
       uiFirstName: '',
       uiLastName: '',
       uiPhoto: '',
@@ -32,6 +48,7 @@ const UserProfileForm = () => {
   });
 
   const onSubmit = async (data) => {};
+
   return (
     <Form {...form}>
       <form className="space-y-6 w-full">
@@ -101,7 +118,7 @@ const UserProfileForm = () => {
           label="Status"
           placeholder="Your Status"
         />
-        <LoadingButton loading={true} buttonText={'Submit'} />
+        <LoadingButton loading={false} buttonText={'Submit'} />
       </form>
     </Form>
   );

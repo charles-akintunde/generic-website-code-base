@@ -32,6 +32,15 @@ export interface IUserBase {
   uiPhotoUrl: string;
 }
 
+export interface IUserInfo extends IUserBase {
+  uiCity: string | null;
+  uiProvince: string | null;
+  uiCountry: string;
+  uiPostalCode: string | null;
+  uiPhoneNumber: string | null;
+  uiOrganization: string | null;
+}
+
 export interface IUserList {
   users: IUserBase[];
   totalUserCount: number;

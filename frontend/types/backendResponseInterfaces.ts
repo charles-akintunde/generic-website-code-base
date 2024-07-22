@@ -1,5 +1,6 @@
 import { TElement } from '@udecode/plate-common';
 import internal from 'stream';
+import { EUserRole, EUserStatus } from './enums';
 
 export interface Page {
   PG_ID: string;
@@ -31,11 +32,19 @@ export interface UserResponse {
   UI_FirstName: string;
   UI_LastName: string;
   UI_Email: string;
-  UI_Role: string;
-  UI_Status: string;
+  UI_Role: EUserRole;
+  UI_Status: EUserStatus;
   UI_City: string | null;
   UI_RegDate: string;
   UI_PhotoURL: string;
+}
+
+export interface ICompleteUserResponse extends UserResponse {
+  UI_Province: string | null;
+  UI_Country: string;
+  UI_PostalCode: string | null;
+  UI_PhoneNumber: string | null;
+  UI_Organization: string | null;
 }
 
 export interface IUserResponseData {
@@ -46,8 +55,12 @@ export interface IUserResponseData {
   total_users_count: number;
 }
 
-export interface IUserResponse extends IGenericResponse {
+export interface IUserResponseWrapper {
   data: IUserResponseData;
+}
+
+export interface ICompleteUserResponseWrapper {
+  data: ICompleteUserResponse;
 }
 
 export interface PagesData {

@@ -1,4 +1,5 @@
 import {
+  ICompleteUserResponse,
   IPageContentGetResponse,
   IPageContentResponse,
   IUserResponseData,
@@ -11,6 +12,7 @@ import {
   IPageMain,
   IUserBase,
   IUserList,
+  IUserInfo,
   Notify,
 } from '@/types/componentInterfaces';
 import { EPageType, EUserRole, EUserStatus } from '@/types/enums';
@@ -192,6 +194,25 @@ export const pageNormalizer = (
   };
 
   return normalizedPage;
+};
+
+export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
+  return {
+    id: data.UI_ID,
+    uiFirstName: data.UI_FirstName,
+    uiLastName: data.UI_LastName,
+    uiEmail: data.UI_Email,
+    uiRole: userRoleLabels[data.UI_Role],
+    uiStatus: userStatusLabels[data.UI_Status],
+    uiRegDate: data.UI_RegDate,
+    uiPhotoUrl: data.UI_PhotoURL,
+    uiCity: data.UI_City,
+    uiProvince: data.UI_Province,
+    uiCountry: data.UI_Country,
+    uiPostalCode: data.UI_PostalCode,
+    uiPhoneNumber: data.UI_PhoneNumber,
+    uiOrganization: data.UI_Organization,
+  };
 };
 
 // const pageContentResponse: IPageContentMain = {
