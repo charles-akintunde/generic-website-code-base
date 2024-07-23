@@ -69,9 +69,9 @@ async def update_user_role_endpoint(
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     
-@router.put("/profile", response_model=StandardResponse)
+@router.put("/{UI_ID}", response_model=StandardResponse)
 async def update_user_profile_endpoint(
-    UI_ID: Optional[str] = Form(None),
+    UI_ID: str,
     UI_Photo: Optional[UploadFile] = File(None),
     UI_FirstName: Optional[str] = Form(None),
     UI_LastName: Optional[str] = Form(None),
@@ -81,6 +81,7 @@ async def update_user_profile_endpoint(
     UI_PostalCode: Optional[str] = Form(None),
     UI_PhoneNumber: Optional[str] = Form(None),
     UI_Organization: Optional[str] = Form(None),
+    UI_About: Optional[str] = Form(None),
     db: Session = Depends(get_db), 
     current_user: T_UserInfo = Depends(get_current_user)):
     """
@@ -106,7 +107,10 @@ async def update_user_profile_endpoint(
             UI_PostalCode=UI_PostalCode,
             UI_PhoneNumber=UI_PhoneNumber,
             UI_Organization=UI_Organization,
+            UI_About=UI_About
         )
+
+        print(profile_update,"profile_update")
         user = await update_user_profile(db, str(current_user.UI_ID), profile_update)
         return success_response("User profile updated successfully")
     except HTTPException as e:

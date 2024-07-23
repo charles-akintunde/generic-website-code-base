@@ -53,6 +53,7 @@ class UserResponse(UserBase):
     UI_Role: str
     UI_Status: str
     UI_RegDate: str
+    UI_About: str
 
 
 class UserDelete(BaseModel):
@@ -62,6 +63,7 @@ class UserDelete(BaseModel):
 class UserProfileUpdate(UserBase):
     UI_ID: Optional[str] = None
     UI_Photo: Optional[UploadFile] = File(None)
+    UI_About: Optional[str]  = None
 
 
 

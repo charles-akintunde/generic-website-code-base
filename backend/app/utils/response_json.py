@@ -99,6 +99,8 @@ def create_user_response(user: T_UserInfo)  -> UserResponse:
     UI_City=str(user.UI_City),
     UI_PhoneNumber=str(user.UI_PhoneNumber),
     UI_PostalCode=str(user.UI_PostalCode),
-    UI_Country=str(user.UI_Organization),
+    UI_Country=str(user.UI_Country),
+    UI_Province=str(user.UI_Province),
     UI_Organization=str(user.UI_Organization),
+    UI_About= str(user.UI_About)
     )

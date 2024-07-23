@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Enum, DateTime
+from sqlalchemy import Column, String, Enum, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from pydantic import EmailStr 
@@ -33,6 +33,7 @@ class T_UserInfo(Base):
     UI_Organization = Column(String(100))
     UI_RegDate = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     UI_Other = Column(String(255))
+    UI_About = Column(Text)
 
 
     UI_PageContents = relationship("T_PageContent", back_populates="PC_UserInfo")
