@@ -19,6 +19,7 @@ import {
 import MultiSelect from '../ui/multi-select';
 import { Checkbox } from '../ui/checkbox';
 import { PlateEditor } from '../plate/plate';
+import { Textarea } from '@/components/ui/textarea';
 
 const FormField: React.FC<IFormField> = ({
   control,
@@ -142,6 +143,9 @@ const FormField: React.FC<IFormField> = ({
                     }
                   }}
                 />
+              )}
+              {type == 'textarea' && (
+                <Textarea placeholder="Type your message here." />
               )}
 
               {type === 'rich-text-editor' && (

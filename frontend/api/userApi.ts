@@ -6,6 +6,7 @@ import {
   IUserResponseWrapper,
 } from '@/types/backendResponseInterfaces';
 import { GetUsersRequest } from '@/hooks/api-hooks/use-user-info';
+import { IEditUserRequest } from '@/types/requestInterfaces';
 
 const url = '/users';
 
@@ -37,6 +38,19 @@ export const userApi = createApi({
             ]
           : [{ type: 'User', id: 'LIST' }],
     }),
+    editUser: builder.mutation<
+      IGenericResponse,
+      Partial<IEditUserRequest> & Pick<IEditUserRequest, 'UI_ID'>
+    >({
+      query: ({ UI_ID, ...patch }) => ({
+        url: `${url}/${UI_ID}`,
+        method: 'PUT',
+        body: patch.formData,
+      }),
+      invalidatesTags: (result, error, { UI_ID }) => [
+        { type: 'User', id: UI_ID },
+      ],
+    }),
     deleteUser: builder.mutation<IGenericResponse, string>({
       query: (id) => ({
         url: `${url}/${id}`,
@@ -47,5 +61,9 @@ export const userApi = createApi({
   }),
 });
 
-export const { useGetUsersQuery, useDeleteUserMutation, useGetUserQuery } =
-  userApi;
+export const {
+  useGetUsersQuery,
+  useDeleteUserMutation,
+  useGetUserQuery,
+  useEditUserMutation,
+} = userApi;

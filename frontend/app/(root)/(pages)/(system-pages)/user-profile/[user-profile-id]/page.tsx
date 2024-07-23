@@ -30,6 +30,7 @@ const UserProfilePage = () => {
     isError: hasUserFetchError,
     isSuccess: isUserFetchSuccess,
     isLoading: isUserFetchLoading,
+    refetch: userProfileRefetch,
   } = useGetUserQuery('4f98b31c-ae78-4e17-b6c2-883e11654446');
   const [userInfo, setUserInfo] = useState<IUserInfo>();
   const handleEditToggle = () => {
@@ -67,14 +68,13 @@ const UserProfilePage = () => {
                   <h1 className="text-3xl font-bold text-gray-900">
                     {userInfo.uiFirstName} {userInfo.uiLastName}
                   </h1>
-                  <div>
+                  <div className="flex items-center">
+                    <p className="mr-2">Edit</p>
                     <Switch
                       size="small"
                       checked={isEditing}
                       onChange={handleEditToggle}
-                      className="mr-2"
-                    />{' '}
-                    Edit
+                    />
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -125,13 +125,19 @@ const UserProfilePage = () => {
             <Divider className="my-6" />
             <div>
               <h2 className="text-xl font-semibold text-gray-900">About Me</h2>
-              <p className="mt-2 text-gray-700">
-                [Add a brief bio or description here]
-              </p>
+              {!isEditing && (
+                <div className="mt-4">
+                  {/* UserProfileForm component should be here */}
+                  <p className="mt-2 text-gray-700">{userInfo.uiAbout}</p>
+                </div>
+              )}
               {isEditing && (
                 <div className="mt-4">
                   {/* UserProfileForm component should be here */}
-                  <UserProfileForm userInfo={userInfo} />
+                  <UserProfileForm
+                    userProfileRefetch={userProfileRefetch}
+                    userInfo={userInfo}
+                  />
                 </div>
               )}
             </div>

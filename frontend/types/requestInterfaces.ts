@@ -49,3 +49,19 @@ export interface IEditPageContentRequest {
   PC_Resource?: string;
   PC_IsHidden?: boolean;
 }
+
+export interface IEditUserRequest {
+  UI_ID: string;
+  UI_FirstName: string;
+  UI_LastName: string;
+  // UI_Role: string;
+  // UI_Status: string;
+  UI_PhotoUrl: string;
+  UI_City: string | null;
+  UI_Province: string | null;
+  UI_Country: string;
+  UI_PostalCode: string | null;
+  UI_PhoneNumber: string | null;
+  UI_Organization: string | null;
+  UI_About: string | null;
+}

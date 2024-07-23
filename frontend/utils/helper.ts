@@ -16,6 +16,7 @@ import {
   Notify,
 } from '@/types/componentInterfaces';
 import { EPageType, EUserRole, EUserStatus } from '@/types/enums';
+import { IEditUserRequest } from '@/types/requestInterfaces';
 import { TElement } from '@udecode/plate-common';
 import { jwtDecode } from 'jwt-decode';
 import _ from 'lodash';
@@ -212,6 +213,7 @@ export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
     uiPostalCode: data.UI_PostalCode,
     uiPhoneNumber: data.UI_PhoneNumber,
     uiOrganization: data.UI_Organization,
+    uiAbout: data.UI_About,
   };
 };
 
@@ -306,3 +308,47 @@ export const mapToIIUserList = (data: IUserResponseData): IUserList => {
     totalUserCount: data.total_users_count,
   };
 };
+
+export function transformUserInfoToEditUserRequest(
+  userInfo: IUserInfo
+): FormData {
+  const formData = new FormData();
+
+  formData.append('UI_FirstName', userInfo.uiFirstName);
+  formData.append('UI_LastName', userInfo.uiLastName);
+  // if (userInfo.uiRole) {
+  //   formData.append('UI_Role', userInfo.uiRole);
+  // }
+  // if (userInfo.uiStatus) {
+  //   formData.append('UI_Status', userInfo.uiStatus);
+  // }
+  // if (userInfo.uiRegDate) {
+  //   formData.append('UI_RegDate', userInfo.uiRegDate);
+  // }
+  if (userInfo.uiPhotoUrl) {
+    formData.append('UI_Photo', userInfo.uiPhotoUrl);
+  }
+  if (userInfo.uiCity) {
+    formData.append('UI_City', userInfo.uiCity);
+  }
+  if (userInfo.uiProvince) {
+    formData.append('UI_Province', userInfo.uiProvince);
+  }
+  if (userInfo.uiCountry) {
+    formData.append('UI_Country', userInfo.uiCountry);
+  }
+  if (userInfo.uiPostalCode) {
+    formData.append('UI_PostalCode', userInfo.uiPostalCode);
+  }
+  if (userInfo.uiPhoneNumber) {
+    formData.append('UI_PhoneNumber', userInfo.uiPhoneNumber);
+  }
+  if (userInfo.uiOrganization) {
+    formData.append('UI_Organization', userInfo.uiOrganization);
+  }
+  if (userInfo.uiAbout) {
+    formData.append('UI_About', userInfo.uiAbout);
+  }
+
+  return formData;
+}

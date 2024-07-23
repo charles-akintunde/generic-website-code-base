@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form } from '@/components/ui/form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,15 +24,26 @@ import AppButton from '../button/app-button';
 import { Button } from '@/components/ui/button';
 import { primarySolidButtonStyles } from '@/styles/globals';
 import { IUserInfo } from '@/types/componentInterfaces';
+import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { getChangedFields } from '@/utils/helper';
+
+interface UserProfileFormProps {
+  userInfo: IUserInfo;
+  userProfileRefetch: () => {};
+}
 
 type UserProfileFormData = z.infer<typeof userProfileSchema>;
 
-const UserProfileForm = (userInfo: IUserInfo) => {
+const UserProfileForm: React.FC<UserProfileFormProps> = ({
+  userInfo,
+  userProfileRefetch,
+}) => {
   console.log(userInfo, 'userInfo');
   const countries = getNames();
+  const { handleEditUser } = useUserInfo();
   const form = useForm<UserProfileFormData>({
     resolver: zodResolver(userProfileSchema),
-    defaultValues: userInfo || {
+    defaultValues: (userInfo && userInfo) || {
       uiFirstName: '',
       uiLastName: '',
       uiPhoto: '',
@@ -47,11 +58,23 @@ const UserProfileForm = (userInfo: IUserInfo) => {
     },
   });
 
-  const onSubmit = async (data) => {};
+  useEffect(() => {
+    if (userInfo) {
+      form.reset(userInfo);
+    }
+  }, [userInfo, form]);
+
+  const onSubmit = async (data: IUserInfo, event) => {
+    console.log(data, 'DATA');
+    event.preventDefault();
+    const changedFields = getChangedFields(userInfo, data);
+    console.log(changedFields, 'changedFields');
+    await handleEditUser(userInfo.id, data, userProfileRefetch);
+  };
 
   return (
     <Form {...form}>
-      <form className="space-y-6 w-full">
+      <form className="space-y-6 w-full" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="uiFirstName"
@@ -71,7 +94,7 @@ const UserProfileForm = (userInfo: IUserInfo) => {
           label="Country"
           placeholder="Select Your Country"
           type="select"
-          options={countries.map((country) => ({
+          options={countries.map((country: string) => ({
             value: country,
             label: country,
           }))}
@@ -118,7 +141,29 @@ const UserProfileForm = (userInfo: IUserInfo) => {
           label="Status"
           placeholder="Your Status"
         />
-        <LoadingButton loading={false} buttonText={'Submit'} />
+        <FormField
+          control={form.control}
+          name="uiStatus"
+          label="Status"
+          placeholder="Your Status"
+        />
+        <FormField
+          type="picture"
+          control={form.control}
+          name="uiPhoto"
+          label="Profile Picture"
+          placeholder="Your Status"
+        />
+        <FormField
+          type="textarea"
+          control={form.control}
+          name="uiAbout"
+          label="About"
+          placeholder="Enter a short descrption about you."
+        />
+        <div className="flex items-center  sticky bg-white h-20 bottom-0">
+          <LoadingButton loading={false} buttonText={'Save changes'} />
+        </div>
       </form>
     </Form>
   );

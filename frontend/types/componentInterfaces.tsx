@@ -39,6 +39,7 @@ export interface IUserInfo extends IUserBase {
   uiPostalCode: string | null;
   uiPhoneNumber: string | null;
   uiOrganization: string | null;
+  uiAbout: string | null;
 }
 
 export interface IUserList {

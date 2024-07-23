@@ -190,13 +190,14 @@ const postalCodeSchema = z.string().refine(
 export const userProfileSchema = z.object({
   uiFirstName: requiredTextSchema('First Name'),
   uiLastName: requiredTextSchema('Last Name'),
-  uiPhoto: z.string().optional(),
   uiCity: z.string().optional(),
   uiProvince: z.string().optional(),
   uiCountry: z.string().optional(),
-  uiPostalCode: postalCodeSchema.optional(),
-  uiPhoneNumber: phoneNumberSchema.optional(),
+  uiPostalCode: z.string().optional(),
+  uiPhoneNumber: z.string().optional(),
   uiOrganization: z.string().optional(),
   uiRole: z.string().optional(),
   uiStatus: z.string().optional(),
+  uiPhoto: imageSchema.optional(),
+  uiAbout: z.string().optional(),
 });

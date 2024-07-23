@@ -45,6 +45,7 @@ export interface ICompleteUserResponse extends UserResponse {
   UI_PostalCode: string | null;
   UI_PhoneNumber: string | null;
   UI_Organization: string | null;
+  UI_About: string | null;
 }
 
 export interface IUserResponseData {
