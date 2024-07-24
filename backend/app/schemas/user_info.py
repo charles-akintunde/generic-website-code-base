@@ -67,9 +67,10 @@ class UserProfileUpdate(UserBase):
 
 
 
-class UserRoleUpdate(BaseModel):
+class UserRoleStatusUpdate(BaseModel):
     UI_ID: str
-    UI_Role: E_UserRole
+    UI_Role: Optional[E_UserRole] = None
+    UI_Status: Optional[E_Status] = None
 
 class UserStatusUpdate(BaseModel):
     UI_ID: str

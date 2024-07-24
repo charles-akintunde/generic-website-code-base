@@ -1,7 +1,7 @@
 export enum EUserStatus {
-  Active = 0,
-  Unauthenticated = 1,
-  Disabled = 2,
+  Active = '0',
+  Unauthenticated = '1',
+  Disabled = '2',
 }
 
 export enum EUserRole {

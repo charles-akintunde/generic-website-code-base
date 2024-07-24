@@ -54,8 +54,6 @@ export interface IEditUserRequest {
   UI_ID: string;
   UI_FirstName: string;
   UI_LastName: string;
-  // UI_Role: string;
-  // UI_Status: string;
   UI_PhotoUrl: string;
   UI_City: string | null;
   UI_Province: string | null;
@@ -64,4 +62,10 @@ export interface IEditUserRequest {
   UI_PhoneNumber: string | null;
   UI_Organization: string | null;
   UI_About: string | null;
+}
+
+export interface IEditUserRoleStatusRequest {
+  UI_ID: string;
+  UI_Role: Number;
+  UI_Status: Number;
 }

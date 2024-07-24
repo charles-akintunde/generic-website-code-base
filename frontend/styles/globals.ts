@@ -17,4 +17,4 @@ export const glassmorphismSytles =
   'h-full w-full bg-gray-100 rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-0 border border-gray-100';
 
 export const userProfilePaddingStyles =
-  'container items-center max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8';
+  'container items-center max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8';

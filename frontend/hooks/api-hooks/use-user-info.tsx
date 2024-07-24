@@ -1,9 +1,16 @@
 'use client';
-import { useDeleteUserMutation, useEditUserMutation } from '@/api/userApi';
+import {
+  useDeleteUserMutation,
+  useEditUserMutation,
+  useEditRoleAndStatusMutation,
+} from '@/api/userApi';
 import { useNotification } from '@/components/hoc/notification-provider';
 import { IUserBase, IUserInfo } from '@/types/componentInterfaces';
 import { transformUserInfoToEditUserRequest } from '@/utils/helper';
 import { ExceptionMap } from 'antd/es/result';
+import useUserLogin from './use-user-login';
+import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-profile/[user-profile-id]/page';
+import { useState } from 'react';
 
 export interface GetUsersRequest {
   page: number;
@@ -13,6 +20,14 @@ export interface GetUsersRequest {
 const useUserInfo = () => {
   const [deleteUser] = useDeleteUserMutation();
   const [
+    editRoleAndStatus,
+    {
+      isError: hasEditRoleAndStatusError,
+      isSuccess: isEditRoleAndStatusSuccess,
+      isLoading: isEditRoleAndStatusLoading,
+    },
+  ] = useEditRoleAndStatusMutation();
+  const [
     editPage,
     {
       isError: hasEditPageError,
@@ -20,6 +35,7 @@ const useUserInfo = () => {
       isLoading: isEditPageLoading,
     },
   ] = useEditUserMutation();
+  const { isAdmin, currentUser } = useUserLogin();
   const { notify } = useNotification();
 
   const handleRemoveUser = async (uiId: string) => {
@@ -41,17 +57,17 @@ const useUserInfo = () => {
     }
   };
 
-  const handleEditUser = async (
+  const submitEditUser = async (
     userId: string,
     userInfo: IUserInfo,
     userProfileRefetch: () => {}
   ) => {
     try {
       userInfo['id'] = userId;
-      // const editedUserRequest = transformUserInfoToEditUserRequest(userInfo);
-      // editedUserRequest.forEach((value, key) => {
-      //   console.log(`${key}: ${value}`);
-      // });
+      const isSameUser = sanitizeAndCompare(
+        currentUser?.Id as string,
+        userInfo?.id as string
+      );
       const formData = new FormData();
 
       if (userInfo.uiFirstName) {
@@ -61,17 +77,8 @@ const useUserInfo = () => {
       if (userInfo.uiLastName) {
         formData.append('UI_LastName', userInfo.uiLastName);
       }
-      // if (userInfo.uiRole) {
-      //   formData.append('UI_Role', userInfo.uiRole);
-      // }
-      // if (userInfo.uiStatus) {
-      //   formData.append('UI_Status', userInfo.uiStatus);
-      // }
-      // if (userInfo.uiRegDate) {
-      //   formData.append('UI_RegDate', userInfo.uiRegDate);
-      // }
-      if (userInfo.uiPhotoUrl) {
-        formData.append('UI_Photo', userInfo.uiPhotoUrl);
+      if (userInfo.uiPhoto) {
+        formData.append('UI_Photo', userInfo.uiPhoto);
       }
       if (userInfo.uiCity) {
         formData.append('UI_City', userInfo.uiCity);
@@ -95,22 +102,33 @@ const useUserInfo = () => {
         formData.append('UI_About', userInfo.uiAbout);
       }
 
-      // const response = await editPage({
-      //   UI_ID: userId,
-      //   formData,
-      // }).unwrap();
+      if (isAdmin && !isSameUser) {
+        const response = await editRoleAndStatus({
+          UI_ID: userId,
+          UI_Role: Number(userInfo.uiRole),
+          UI_Status: Number(userInfo.uiStatus),
+        }).unwrap();
 
-      formData.forEach((value, key) => {
-        console.log(`${key}: ${value}`);
-      });
+        notify(
+          'Success',
+          response.message ||
+            'The user information has been successfully updated.',
+          'success'
+        );
+      } else if (isSameUser) {
+        const response = await editPage({
+          UI_ID: userId,
+          formData,
+        }).unwrap();
 
-      // userProfileRefetch();
-      // notify(
-      //   'Success',
-      //   response.message ||
-      //     'The user information has been successfully updated.',
-      //   'success'
-      // );
+        userProfileRefetch();
+        notify(
+          'Success',
+          response.message ||
+            'The user information has been successfully updated.',
+          'success'
+        );
+      }
     } catch (error: any) {
       console.error('Error editing user:', error);
 
@@ -124,7 +142,7 @@ const useUserInfo = () => {
 
   return {
     handleRemoveUser,
-    handleEditUser,
+    submitEditUser,
   };
 };
 

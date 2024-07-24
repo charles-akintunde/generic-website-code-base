@@ -24,13 +24,16 @@ class UserCRUD:
             db.refresh(user)
         return user
     
-    def update_user_role(self,db: Session, user_id: str, new_role: E_UserRole):
+    def update_user_role_status(self,db: Session, user_id: str, update_data: dict):
         """
         Update the user's role.
         """
         user = db.query(T_UserInfo).filter(T_UserInfo.UI_ID == user_id).first()
         if user:
-            user.UI_Role = new_role # type: ignore
+            for key, value in update_data.items():
+                if value is None:
+                    continue
+                setattr(user, key, value)
             db.commit()
             db.refresh(user)
         return user

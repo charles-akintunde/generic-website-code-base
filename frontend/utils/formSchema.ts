@@ -1,9 +1,9 @@
 import { EPageType, EUserRole } from '@/types/enums';
 import { TElement } from '@udecode/plate-common';
 import { z } from 'zod';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import { getCountries } from 'country-list';
-import { validate as validatePostalCode } from 'postcode-validator';
+// import { parsePhoneNumberFromString } from 'libphonenumber-js';
+// import { getCountries } from 'country-list';
+// import { validate as validatePostalCode } from 'postcode-validator';
 
 const passwordSchema = () =>
   z
@@ -146,7 +146,7 @@ const docFileSchema = z.instanceof(File).superRefine((file, ctx) => {
   }
 });
 
-const urlSchema = z.string().url();
+const urlSchema = z.union([z.string(), z.string().url()]);
 
 const imageSchema = z.union([imageFileSchema, urlSchema]);
 const fileSchema = z.union([docFileSchema, urlSchema]);
@@ -166,26 +166,26 @@ export const optionalImagePageContentSchema = z.object({
   isPageContentHidden: z.boolean().default(false),
 });
 
-const phoneNumberSchema = z.string().refine(
-  (value, context) => {
-    const countryCode = context.parent.uiCountry;
-    const phoneNumber = parsePhoneNumberFromString(value, countryCode);
-    return phoneNumber?.isValid();
-  },
-  {
-    message: 'Invalid phone number',
-  }
-);
+// const phoneNumberSchema = z.string().refine(
+//   (value, context) => {
+//     const countryCode = context.parent.uiCountry;
+//     const phoneNumber = parsePhoneNumberFromString(value, countryCode);
+//     return phoneNumber?.isValid();
+//   },
+//   {
+//     message: 'Invalid phone number',
+//   }
+// );
 
-const postalCodeSchema = z.string().refine(
-  (value, context) => {
-    const countryCode = context.parent.uiCountry;
-    return validatePostalCode(value, countryCode);
-  },
-  {
-    message: 'Invalid postal code',
-  }
-);
+// const postalCodeSchema = z.string().refine(
+//   (value, context) => {
+//     const countryCode = context.parent.uiCountry;
+//     return validatePostalCode(value, countryCode);
+//   },
+//   {
+//     message: 'Invalid postal code',
+//   }
+// );
 
 export const userProfileSchema = z.object({
   uiFirstName: requiredTextSchema('First Name'),

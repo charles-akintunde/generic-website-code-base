@@ -6,7 +6,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.crud.user_info import user_crud
-from app.schemas.user_info import UserPartial, UserRoleUpdate, UserProfileUpdate, UserDelete, UserStatusUpdate, UsersResponse
+from app.schemas.user_info import UserPartial, UserRoleStatusUpdate, UserProfileUpdate, UserDelete, UserStatusUpdate, UsersResponse
 from app.models.user_info import T_UserInfo
 from app.config import settings
 from app.utils.file_utils import delete_and_save_file, delete_file, extract_path_from_url, save_file
@@ -31,18 +31,21 @@ def update_user_status(db: Session, user_status_update: UserStatusUpdate, curren
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
 
-def update_user_role(db: Session, user_role_update: UserRoleUpdate, current_user: T_UserInfo):
+def update_user_role_status(db: Session, user_role_status_update: UserRoleStatusUpdate, current_user: T_UserInfo):
     """
     Update a user's role.
     """
 
-    if user_role_update.UI_ID == current_user.UI_ID:
+    if user_role_status_update.UI_ID == current_user.UI_ID:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You cannot update your own role!")
 
-    user = user_crud.update_user_role(
+    update_data = user_role_status_update.model_dump(exclude_unset=True)
+    update_data = {k: v for k, v in update_data.items() if v is not None}
+    
+    user = user_crud.update_user_role_status(
         db, 
-        user_role_update.UI_ID, 
-        user_role_update.UI_Role)
+        user_role_status_update.UI_ID, 
+        update_data)
     
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")

@@ -55,6 +55,20 @@ export const userStatusLabels: { [key in EUserStatus]: string } = {
   [EUserStatus.Disabled]: 'Disabled',
 };
 
+export const roleColors: { [key in EUserRole]: string } = {
+  [EUserRole.SuperAdmin]: 'red',
+  [EUserRole.Admin]: 'blue',
+  [EUserRole.Member]: 'green',
+  [EUserRole.User]: 'yellow',
+  [EUserRole.Public]: 'gray',
+};
+
+export const statusColors: { [key in EUserStatus]: string } = {
+  [EUserStatus.Active]: 'green',
+  [EUserStatus.Unauthenticated]: 'orange',
+  [EUserStatus.Disabled]: 'red',
+};
+
 export interface DecodedToken {
   sub: string;
   firstname: string;
@@ -203,10 +217,10 @@ export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
     uiFirstName: data.UI_FirstName,
     uiLastName: data.UI_LastName,
     uiEmail: data.UI_Email,
-    uiRole: userRoleLabels[data.UI_Role],
-    uiStatus: userStatusLabels[data.UI_Status],
+    uiRole: data.UI_Role,
+    uiStatus: data.UI_Status,
     uiRegDate: data.UI_RegDate,
-    uiPhotoUrl: data.UI_PhotoURL,
+    uiPhoto: data.UI_PhotoURL,
     uiCity: data.UI_City,
     uiProvince: data.UI_Province,
     uiCountry: data.UI_Country,
@@ -352,3 +366,17 @@ export function transformUserInfoToEditUserRequest(
 
   return formData;
 }
+
+export const ROLE_OPTIONS = [
+  { label: 'Super Admin', value: EUserRole.SuperAdmin },
+  { label: 'Admin', value: EUserRole.Admin },
+  { label: 'Member', value: EUserRole.Member },
+  { label: 'User', value: EUserRole.User },
+  { label: 'Public', value: EUserRole.Public },
+];
+
+export const STATUS_OPTIONS = [
+  { label: 'Active', value: EUserStatus.Active },
+  { label: 'Unauthenticated', value: EUserStatus.Unauthenticated },
+  { label: 'Disabled', value: EUserStatus.Disabled },
+];

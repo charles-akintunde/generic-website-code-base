@@ -145,7 +145,11 @@ const FormField: React.FC<IFormField> = ({
                 />
               )}
               {type == 'textarea' && (
-                <Textarea placeholder="Type your message here." />
+                <Textarea
+                  className="h-48"
+                  {...field}
+                  placeholder={placeholder}
+                />
               )}
 
               {type === 'rich-text-editor' && (

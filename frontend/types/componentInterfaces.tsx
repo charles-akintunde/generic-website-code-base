@@ -29,7 +29,7 @@ export interface IUserBase {
   uiRole: string;
   uiStatus: string;
   uiRegDate: string;
-  uiPhotoUrl: string;
+  uiPhoto: string | File;
 }
 
 export interface IUserInfo extends IUserBase {

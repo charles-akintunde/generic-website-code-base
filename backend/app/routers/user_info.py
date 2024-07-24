@@ -9,10 +9,10 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.core.auth import get_current_user
 from app.schemas.response import StandardResponse
-from app.schemas.user_info import UserDelete, UserProfileUpdate, UserRoleUpdate, UserStatusUpdate
+from app.schemas.user_info import UserDelete, UserProfileUpdate, UserRoleStatusUpdate, UserStatusUpdate
 from app.utils.utils import is_super_admin
 from app.models.user_info import T_UserInfo
-from app.services.user_info import delete_user, get_user_by_id, get_users, update_user_profile, update_user_role, update_user_status
+from app.services.user_info import delete_user, get_user_by_id, get_users, update_user_profile, update_user_role_status, update_user_status
 from app.utils.response import error_response, success_response
 
 
@@ -44,9 +44,9 @@ async def update_user_status_endpoint(
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
 
-@router.put("/role", response_model=StandardResponse)
-async def update_user_role_endpoint(
-    user_role_update: UserRoleUpdate, 
+@router.put("/role-status", response_model=StandardResponse)
+async def update_user_role_status_endpoint(
+    user_role_status_update: UserRoleStatusUpdate, 
     db: Session = Depends(get_db), 
     current_user: T_UserInfo = Depends(get_current_user)):
     """
@@ -64,7 +64,7 @@ async def update_user_role_endpoint(
 
     is_super_admin(current_user)
     try:
-        update_user_role(db=db,user_role_update=user_role_update,current_user=current_user)
+        update_user_role_status(db=db,user_role_status_update=user_role_status_update,current_user=current_user)
         return success_response("User role update successfully")
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
