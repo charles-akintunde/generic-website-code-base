@@ -14,9 +14,42 @@ import Logo from '@/components/common/logo';
 import { Button } from '@/components/ui/button';
 import { Avatar, Space } from 'antd';
 import { containerPaddingStyles } from '@/styles/globals';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Cloud,
+  CreditCard,
+  Github,
+  Keyboard,
+  LifeBuoy,
+  LogOut,
+  Mail,
+  MessageSquare,
+  Plus,
+  PlusCircle,
+  Settings,
+  User,
+  UserPlus,
+  Users,
+} from 'lucide-react';
+import useUserLogin from '@/hooks/api-hooks/use-user-login';
+import Link from 'next/link';
 
 const UserProfile = () => {
   const [loggedIn, setLoggedIn] = useState(false);
+  const { currentUser } = useUserLogin();
 
   const handleLoginLogout = () => {
     setLoggedIn(!loggedIn);
@@ -34,9 +67,29 @@ const UserProfile = () => {
   );
 
   return (
-    <Dropdown overlay={menu} trigger={['click']}>
-      <Avatar icon={<UserOutlined />} />
-    </Dropdown>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Avatar style={{ cursor: 'pointer' }} src={''}>
+          USER
+        </Avatar>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56 hidden lg:block">
+        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <Link href={`/user-profile/${currentUser?.Id}`}>
+            <DropdownMenuItem className="cursor-pointer">
+              <User className="mr-2 h-4 w-4" />
+              Profile
+            </DropdownMenuItem>
+          </Link>
+        </DropdownMenuGroup>
+        <DropdownMenuItem className="cursor-pointer">
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

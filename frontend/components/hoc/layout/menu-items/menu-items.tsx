@@ -2,6 +2,17 @@ import React, { useEffect, useState } from 'react';
 import MenuItem from './menu-item';
 import { IPageMenuItem } from '@/types/componentInterfaces';
 import usePage from '@/hooks/api-hooks/use-page';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button, Flex, Tooltip } from 'antd';
+import { MoreOutlined } from '@ant-design/icons';
+import Link from 'next/link';
 
 export const MobileMenuItems = () => {
   const { menuItems } = usePage();
@@ -44,7 +55,7 @@ export const MenuItems = () => {
       const containerWidth =
         document.querySelector('.menu-container')?.clientWidth ||
         window.innerWidth;
-      const itemWidth = 120; // Approximate width of each item including margins
+      const itemWidth = 100; // Approximate width of each item including margins
 
       const maxVisibleItems = Math.floor(containerWidth / itemWidth);
       const visible = items.slice(0, maxVisibleItems);
@@ -70,18 +81,30 @@ export const MenuItems = () => {
         />
       ))}
       {remainingItems.length > 0 && (
-        <div className="flex flex-wrap space-x-6 mt-2">
-          {remainingItems.map((menuItem: IPageMenuItem, index: number) => (
-            <MenuItem
-              key={index}
-              pageName={menuItem.pageName}
-              href={menuItem.href}
-              isHidden={menuItem.isHidden}
-              pagePermission={menuItem.pagePermission}
-              pageType={menuItem.pageType}
-            />
-          ))}
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Tooltip title="More Pages">
+              <Button
+                // style={{ outline: 'none', border: 'none' }}
+                shape="circle"
+                icon={<MoreOutlined />}
+              />
+            </Tooltip>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="hidden lg:block">
+            <DropdownMenuLabel>More Pages</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {remainingItems.map((menuItem: IPageMenuItem, index: number) => (
+              <>
+                {!menuItem.isHidden && (
+                  <DropdownMenuItem key={index}>
+                    <a href={menuItem.href}>{menuItem.pageName}</a>
+                  </DropdownMenuItem>
+                )}
+              </>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
     </div>
   );

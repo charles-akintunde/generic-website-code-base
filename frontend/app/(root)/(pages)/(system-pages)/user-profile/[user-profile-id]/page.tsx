@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import UserProfileDialog from '@/components/common/form/user-profile-form';
+import { UserProfileDialog } from '@/components/common/form/user-profile-form';
 import {
   UserOutlined,
   MailOutlined,
@@ -16,11 +16,11 @@ import {
 import { format } from 'date-fns';
 import { Avatar, Divider, Switch, Tooltip } from 'antd';
 import ActionsButtons from '@/components/common/action-buttons';
-import UserProfileFormDialog from '@/components/common/form/user-profile-form';
 import { Badge } from 'antd';
 import { useGetUserQuery } from '@/api/userApi';
 import {
   formatDate,
+  isValidUUID,
   roleColors,
   statusColors,
   transformToUserInfo,
@@ -29,6 +29,9 @@ import {
 } from '@/utils/helper';
 import { IUserInfo } from '@/types/componentInterfaces';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import AppLoading from '@/components/common/app-loading';
 
 export function sanitizeAndCompare(str1: string, str2: string) {
   if (!str1 || !str2) return false;
@@ -36,16 +39,34 @@ export function sanitizeAndCompare(str1: string, str2: string) {
 }
 
 const UserProfilePage = () => {
-  // 4f98b31c-ae78-4e17-b6c2-883e11654446 75b3f2b5-fb3b-4b8c-b5a9-6684916030f3
+  const router = useRouter();
   const { isAdmin, currentUser } = useUserLogin();
+  const pathname = usePathname();
+  const userId = pathname.split('/')[2];
+  console.log(pathname, userId, 'PATHNAME');
+
   const [isEditing, setIsEditing] = useState(false);
+  const userQueryResult =
+    userId && isValidUUID(userId)
+      ? useGetUserQuery(userId)
+      : {
+          data: undefined,
+          isError: true,
+          isSuccess: false,
+          isLoading: false,
+          refetch: () => {},
+          error: null,
+        };
+
   const {
     data: userData,
     isError: hasUserFetchError,
     isSuccess: isUserFetchSuccess,
     isLoading: isUserFetchLoading,
     refetch: userProfileRefetch,
-  } = useGetUserQuery('4f98b31c-ae78-4e17-b6c2-883e11654446');
+    error: userFetchError,
+  } = userQueryResult;
+
   const [userInfo, setUserInfo] = useState<IUserInfo>();
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -67,6 +88,18 @@ const UserProfilePage = () => {
       setIsSameUser(isSameUser);
     }
   }, [userData]);
+
+  console.log(hasUserFetchError, 'hasUserFetchError');
+
+  useEffect(() => {
+    if (hasUserFetchError) {
+      router.replace('/404');
+    }
+  }, [hasUserFetchError, router]);
+
+  if (isUserFetchLoading) {
+    return <AppLoading />;
+  }
 
   return (
     <>
@@ -95,7 +128,7 @@ const UserProfilePage = () => {
                     </h1>
                   </Tooltip>
                   <div className="flex items-center">
-                    {(isAdmin || isSameUser) && (
+                    {isSameUser && (
                       <UserProfileDialog
                         userProfileRefetch={userProfileRefetch}
                         userInfo={userInfo}
@@ -148,20 +181,25 @@ const UserProfilePage = () => {
                     <span className="font-semibold text-gray-700">
                       Organization:
                     </span>{' '}
-                    {userInfo.uiOrganization}
+                    <span className="capitalize">
+                      {userInfo.uiOrganization}
+                    </span>
                   </p>
                 </div>
               </div>
             </div>
-            <Divider className="my-6" />
+
             <div>
               <>
                 <h2 className="text-xl font-semibold text-gray-900">
                   About Me
                 </h2>
+                <Divider className="my-6" />
                 <div className="mt-4">
                   {/* UserProfileForm component should be here */}
-                  <p className="mt-2 text-gray-700">{userInfo.uiAbout}</p>
+                  <p className="mt-2 	leading-relaxed text-gray-700">
+                    {userInfo.uiAbout}
+                  </p>
                 </div>
               </>
             </div>

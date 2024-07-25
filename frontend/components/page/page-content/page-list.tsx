@@ -280,9 +280,11 @@ const EditPageContent = () => {
     }
   };
 
-  if (hasPageContentFetchError && pageContentFetchError) {
-    router.replace('/404');
-  }
+  useEffect(() => {
+    if (hasPageContentFetchError && pageContentFetchError) {
+      router.replace('/404');
+    }
+  }, [hasPageContentFetchError, pageContentFetchError, router]);
 
   if (isPageContentFetchLoading) {
     return <AppLoading />;

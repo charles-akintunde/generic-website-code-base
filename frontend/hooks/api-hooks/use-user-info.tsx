@@ -11,6 +11,8 @@ import { ExceptionMap } from 'antd/es/result';
 import useUserLogin from './use-user-login';
 import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-profile/[user-profile-id]/page';
 import { useState } from 'react';
+import { useAppDispatch } from '../redux-hooks';
+import { toggleCreateUserDialog } from '@/store/slice/userSlice';
 
 export interface GetUsersRequest {
   page: number;
@@ -37,6 +39,7 @@ const useUserInfo = () => {
   ] = useEditUserMutation();
   const { isAdmin, currentUser } = useUserLogin();
   const { notify } = useNotification();
+  const dispatch = useAppDispatch();
 
   const handleRemoveUser = async (uiId: string) => {
     try {
@@ -57,10 +60,52 @@ const useUserInfo = () => {
     }
   };
 
+  // const submitEditRoleStatus = async ({
+  //   userId: string,
+  //   userInfo: IUserBase,
+  //   userProfileRefetch?: () => {}
+  // }) => {
+
+  // }
+
+  const submitEditRoleStatus = async (userId: string, userInfo: IUserBase) => {
+    try {
+      console.log(userInfo, 'USERINFO');
+      const isSameUser = sanitizeAndCompare(
+        currentUser?.Id as string,
+        userInfo?.id as string
+      );
+      if (isAdmin && !isSameUser) {
+        const response = await editRoleAndStatus({
+          UI_ID: userId,
+          UI_Role: Number(userInfo.uiRole),
+          UI_Status: Number(userInfo.uiStatus),
+        }).unwrap();
+
+        dispatch(toggleCreateUserDialog());
+
+        notify(
+          'Success',
+          response.message ||
+            'The user information has been successfully updated.',
+          'success'
+        );
+      }
+    } catch (error: any) {
+      console.error('Error editing user:', error);
+
+      const errorMessage =
+        error.data?.message ||
+        error.data?.detail ||
+        'Failed to update the user information. Please try again later.';
+      notify('Error', errorMessage, 'error');
+    }
+  };
+
   const submitEditUser = async (
     userId: string,
     userInfo: IUserInfo,
-    userProfileRefetch: () => {}
+    userProfileRefetch?: () => {}
   ) => {
     try {
       userInfo['id'] = userId;
@@ -102,26 +147,16 @@ const useUserInfo = () => {
         formData.append('UI_About', userInfo.uiAbout);
       }
 
-      if (isAdmin && !isSameUser) {
-        const response = await editRoleAndStatus({
-          UI_ID: userId,
-          UI_Role: Number(userInfo.uiRole),
-          UI_Status: Number(userInfo.uiStatus),
-        }).unwrap();
-
-        notify(
-          'Success',
-          response.message ||
-            'The user information has been successfully updated.',
-          'success'
-        );
-      } else if (isSameUser) {
+      if (isSameUser) {
         const response = await editPage({
           UI_ID: userId,
           formData,
         }).unwrap();
 
-        userProfileRefetch();
+        if (userProfileRefetch) {
+          userProfileRefetch();
+        }
+
         notify(
           'Success',
           response.message ||
@@ -143,6 +178,7 @@ const useUserInfo = () => {
   return {
     handleRemoveUser,
     submitEditUser,
+    submitEditRoleStatus,
   };
 };
 

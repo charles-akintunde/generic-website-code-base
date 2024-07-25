@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import layoutReducer from './slice/layoutSlice';
 import pageSlice from './slice/pageSlice';
+import userSlice from './slice/userSlice';
 import { menuApi } from '@/api/menuApi';
 import { authApi } from '@/api/authApi';
 import { pageApi } from '@/api/pageApi';
@@ -12,6 +13,7 @@ const store = configureStore({
   reducer: {
     layout: layoutReducer,
     page: pageSlice,
+    userSlice: userSlice,
     [menuApi.reducerPath]: menuApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [pageApi.reducerPath]: pageApi.reducer,

@@ -13,10 +13,10 @@ import {
   pageNormalizer,
   toKebabCase,
 } from '@/utils/helper';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { PlateEditor } from '@/components/plate/plate';
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, Router } from 'lucide-react';
 import AppButton from '@/components/common/button/app-button';
 import LoadingButton from '@/components/common/button/loading-button';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
@@ -37,6 +37,7 @@ import { Page } from '@/types/backendResponseInterfaces';
 import { boolean } from 'zod';
 
 const SinglePage = () => {
+  const router = useRouter();
   const pathname = usePathname();
   const { notify } = useNotification();
   const [pageName, setPageName] = useState(
@@ -183,6 +184,12 @@ const SinglePage = () => {
   if (isPageFetchLoading) {
     return <AppLoading />;
   }
+
+  useEffect(() => {
+    if (hasPageFetchError) {
+      router.push('/404');
+    }
+  });
 
   return (
     <>

@@ -59,6 +59,48 @@ export const systemMenuItems: IPageMenuItem[] = [
     pagePermission: ['0', '1', '2', '3', '4'],
     pageType: '3',
   },
+  {
+    pageName: 'Terms and Services',
+    href: '/terms-and-services',
+    isHidden: true,
+    pagePermission: ['0', '1', '2'],
+    pageType: '3',
+  },
+  {
+    pageName: 'User Profile',
+    href: '/user-profile',
+    isHidden: true,
+    pagePermission: ['0', '1', '2', '3', '4'],
+    pageType: '3',
+  },
+  {
+    pageName: 'Access Denied',
+    href: '/access-denied',
+    isHidden: false,
+    pagePermission: ['0', '1', '2', '3', '4'],
+    pageType: '3',
+  },
+  {
+    pageName: 'Terms and Services',
+    href: '/terms-and-services',
+    isHidden: false,
+    pagePermission: ['0', '1', '2'],
+    pageType: '3',
+  },
+  {
+    pageName: 'User Profile',
+    href: '/user-profile',
+    isHidden: true,
+    pagePermission: ['0', '1', '2', '3', '4'],
+    pageType: '3',
+  },
+  {
+    pageName: 'Access Denied',
+    href: '/access-denied',
+    isHidden: false,
+    pagePermission: ['0', '1', '2', '3', '4'],
+    pageType: '3',
+  },
 ];
 
 export const routes = [

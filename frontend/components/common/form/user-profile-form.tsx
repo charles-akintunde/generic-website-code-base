@@ -4,13 +4,14 @@ import { Form } from '@/components/ui/form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { userProfileSchema } from '@/utils/formSchema';
+import { userProfileSchema, userRoleStatusSchema } from '@/utils/formSchema';
 import FormField from '../form-field';
 import { getNames } from 'country-list';
 import LoadingButton from '../button/loading-button';
-import { IUserInfo } from '@/types/componentInterfaces';
+import { IUserBase, IUserInfo } from '@/types/componentInterfaces';
 import useUserInfo from '@/hooks/api-hooks/use-user-info';
 import { EditOutlined } from '@ant-design/icons';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 import {
   getChangedFields,
@@ -29,11 +30,12 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/plate-ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import AppButton from '../button/app-button';
 import { primarySolidButtonStyles } from '@/styles/globals';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-profile/[user-profile-id]/page';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
+import { toggleCreateUserDialog } from '@/store/slice/userSlice';
 
 interface UserProfileFormProps {
   userInfo: IUserInfo;
@@ -67,8 +69,6 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
       uiPostalCode: '',
       uiPhoneNumber: '',
       uiOrganization: '',
-      uiRole: '',
-      uiStatus: '',
       uiAbout: '',
     },
   });
@@ -99,109 +99,93 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
 
   return (
     <Form {...form}>
-      <form className="space-y-6 w-full" onSubmit={form.handleSubmit(onSubmit)}>
-        {isSameUser && (
-          <>
-            <FormField
-              control={form.control}
-              name="uiFirstName"
-              label="First Name"
-              placeholder="Your First Name"
-            />
-            <FormField
-              control={form.control}
-              name="uiLastName"
-              label="Last Name"
-              placeholder="Your Last Name"
-            />
-            <FormField
-              control={form.control}
-              name="uiCountry"
-              label="Country"
-              placeholder="Select Your Country"
-              type="select"
-              options={countries.map((country: string) => ({
-                value: country,
-                label: country,
-              }))}
-            />
-            <FormField
-              control={form.control}
-              name="uiCity"
-              label="City"
-              placeholder="Your City"
-            />
-            <FormField
-              control={form.control}
-              name="uiProvince"
-              label="Province"
-              placeholder="Your Province"
-            />
-            <FormField
-              control={form.control}
-              name="uiPostalCode"
-              label="Postal Code"
-              placeholder="Your Postal Code"
-            />
-            <FormField
-              control={form.control}
-              name="uiPhoneNumber"
-              label="Phone Number"
-              placeholder="Your Phone Number"
-            />
-            <FormField
-              control={form.control}
-              name="uiOrganization"
-              label="Organization"
-              placeholder="Your Organization"
-            />
-            <FormField
-              type="picture"
-              control={form.control}
-              name="uiPhoto"
-              label="Profile Picture"
-              placeholder="Your Status"
-            />
-            <FormField
-              type="textarea"
-              control={form.control}
-              name="uiAbout"
-              label="About"
-              placeholder="Enter a short description about you."
-            />
-          </>
-        )}
+      <div className="max-h-[calc(60vh-80px)] ">
+        <form
+          className="space-y-6 w-full h-full overflow-y-auto pb-20"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          {isSameUser && (
+            <>
+              <FormField
+                control={form.control}
+                name="uiFirstName"
+                label="First Name"
+                placeholder="Your First Name"
+              />
+              <FormField
+                control={form.control}
+                name="uiLastName"
+                label="Last Name"
+                placeholder="Your Last Name"
+              />
+              <FormField
+                control={form.control}
+                name="uiCountry"
+                label="Country"
+                placeholder="Select Your Country"
+                type="select"
+                options={countries.map((country: string) => ({
+                  value: country,
+                  label: country,
+                }))}
+              />
+              <FormField
+                control={form.control}
+                name="uiCity"
+                label="City"
+                placeholder="Your City"
+              />
+              <FormField
+                control={form.control}
+                name="uiProvince"
+                label="Province"
+                placeholder="Your Province"
+              />
+              <FormField
+                control={form.control}
+                name="uiPostalCode"
+                label="Postal Code"
+                placeholder="Your Postal Code"
+              />
+              <FormField
+                control={form.control}
+                name="uiPhoneNumber"
+                label="Phone Number"
+                placeholder="Your Phone Number"
+              />
+              <FormField
+                control={form.control}
+                name="uiOrganization"
+                label="Organization"
+                placeholder="Your Organization"
+              />
+              <FormField
+                type="picture"
+                control={form.control}
+                name="uiPhoto"
+                label="Profile Picture"
+                placeholder="Your Status"
+              />
+              <FormField
+                type="textarea"
+                control={form.control}
+                name="uiAbout"
+                label="About"
+                placeholder="Enter a short description about you."
+              />
+            </>
+          )}
+        </form>
+      </div>
 
-        {isAdmin && !isSameUser && (
-          <>
-            <FormField
-              control={form.control}
-              name="uiRole"
-              label="Role"
-              placeholder="User Role"
-              type="select"
-              options={ROLE_OPTIONS}
-            />
-            <FormField
-              control={form.control}
-              name="uiStatus"
-              label="Status"
-              placeholder="User Status"
-              type="select"
-              options={STATUS_OPTIONS}
-            />
-          </>
-        )}
-
-        <div className="flex items-center sticky bg-white h-20 bottom-0">
-          <LoadingButton loading={false} buttonText={'Save changes'} />
-        </div>
-      </form>
+      <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4 flex justify-center">
+        <LoadingButton loading={false} buttonText={'Save changes'} />
+      </div>
     </Form>
   );
 };
 
-const UserProfileDialog: React.FC<UserProfileFormProps> = ({
+export const UserProfileDialog: React.FC<UserProfileFormProps> = ({
   userInfo,
   userProfileRefetch,
 }) => {
@@ -211,31 +195,24 @@ const UserProfileDialog: React.FC<UserProfileFormProps> = ({
     setDialogOpen(open);
   };
 
-  // const handleSubmit = () => {
-  //   // Logic for handling form submission
-  //   // After submission, close the dialog
-  //   setDialogOpen(false);
-  // };
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        {/* <Button variant="outline">Edit Profile</Button> */}
         <AppButton
-          // isRightPosition={true}
           Icon={EditOutlined}
           buttonText={'Edit Profile'}
           classNames={`${primarySolidButtonStyles}`}
         />
       </DialogTrigger>
-      <DialogContent className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl">
+      <DialogContent className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit profile</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            Make changes to the profile here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <ScrollArea className="h-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] w-full rounded-md border p-4">
+        <div className="py-4 ">
+          <ScrollArea className="max-h-[70vh] rounded-md border p-4">
             <UserProfileForm
               userProfileRefetch={userProfileRefetch}
               userInfo={userInfo}
@@ -248,4 +225,93 @@ const UserProfileDialog: React.FC<UserProfileFormProps> = ({
   );
 };
 
-export default UserProfileDialog;
+type UserRoleStatusFormData = z.infer<typeof userRoleStatusSchema>;
+
+export const UserRoleStatusDialog = () => {
+  const { isAdmin, currentUser } = useUserLogin();
+  const { submitEditRoleStatus } = useUserInfo();
+  const dispatch = useAppDispatch();
+  const isDialogOpen = useAppSelector((state) => state.userSlice.isDialogOpen);
+  const userInfo = useAppSelector((state) => state.userSlice.editingUser);
+  const [isSameUser, setIsSameUser] = useState(
+    sanitizeAndCompare(currentUser?.Id as string, userInfo?.id as string)
+  );
+  const { notify } = useNotification();
+
+  const form = useForm<UserRoleStatusFormData>({
+    resolver: zodResolver(userRoleStatusSchema),
+    defaultValues: userInfo || {
+      uiRole: '',
+      uiStatus: '',
+    },
+  });
+
+  useEffect(() => {
+    if (userInfo) {
+      form.reset(userInfo);
+    }
+  }, [userInfo, form]);
+
+  const onSubmit = async (
+    data: IUserBase,
+    event: { preventDefault: () => void }
+  ) => {
+    event.preventDefault();
+    const changedFields = getChangedFields(userInfo, data);
+    if (userInfo && Object.keys(changedFields).length > 0) {
+      await submitEditRoleStatus(userInfo.id, changedFields);
+    } else {
+      notifyNoChangesMade(notify);
+      return;
+    }
+  };
+
+  const handleOpenChange = () => {
+    dispatch(toggleCreateUserDialog());
+  };
+
+  return (
+    <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
+      <DialogContent className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle>Edit profile</DialogTitle>
+        </DialogHeader>
+        <div className="py-4 ">
+          <Form {...form}>
+            <form
+              className="space-y-6 w-full h-full overflow-y-auto pb-20"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              {isAdmin && !isSameUser && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="uiRole"
+                    label="Role"
+                    placeholder="User Role"
+                    type="select"
+                    options={ROLE_OPTIONS}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="uiStatus"
+                    label="Status"
+                    placeholder="User Status"
+                    type="select"
+                    options={STATUS_OPTIONS}
+                  />
+                  <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4  flex justify-center">
+                    <LoadingButton
+                      loading={false}
+                      buttonText={'Save changes'}
+                    />
+                  </div>
+                </>
+              )}
+            </form>
+          </Form>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};

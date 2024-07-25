@@ -59,14 +59,36 @@ export const roleColors: { [key in EUserRole]: string } = {
   [EUserRole.SuperAdmin]: 'red',
   [EUserRole.Admin]: 'blue',
   [EUserRole.Member]: 'green',
-  [EUserRole.User]: 'yellow',
+  [EUserRole.User]: 'teal',
   [EUserRole.Public]: 'gray',
 };
 
 export const statusColors: { [key in EUserStatus]: string } = {
   [EUserStatus.Active]: 'green',
-  [EUserStatus.Unauthenticated]: 'orange',
+  [EUserStatus.Unauthenticated]: 'gray',
   [EUserStatus.Disabled]: 'red',
+};
+
+export const roleBadgeClasses: { [key in EUserRole]: string } = {
+  [EUserRole.SuperAdmin]:
+    'bg-red-200 text-red-500 hover:bg-red-200 rounded-full px-3 py-1 border border-red-200 bg-opacity-50 hover:bg-opacity-5',
+  [EUserRole.Admin]:
+    'bg-yellow-200 text-yellow-500 hover:bg-yellow-300 rounded-full px-3 py-1 border border-yellow-300 bg-opacity-50 hover:bg-opacity-5',
+  [EUserRole.Member]:
+    'bg-green-200 text-green-500 hover:bg-green-200 rounded-full px-3 py-1 border border-green-300 bg-opacity-50 hover:bg-opacity-5',
+  [EUserRole.User]:
+    'bg-blue-200 text-blue-400 hover:bg-blue-200 rounded-full px-3 py-1 border border-blue-100 bg-opacity-50 hover:bg-opacity-50 bg-opacity-50 hover:bg-opacity-5',
+  [EUserRole.Public]:
+    'bg-gray-200 text-gray-500 hover:bg-gray-200 rounded-full px-3 py-1 border border-gray-200 bg-opacity-50 hover:bg-opacity-5',
+};
+
+export const statusBadgeClasses: { [key in EUserStatus]: string } = {
+  [EUserStatus.Active]:
+    'bg-green-200 text-green-500 hover:bg-green-300 rounded-full px-3 py-1 border border-green-300 bg-opacity-50 hover:bg-opacity-5',
+  [EUserStatus.Unauthenticated]:
+    'bg-yellow-200 text-yellow-500 hover:bg-yellow-300 rounded-full px-3 py-1 border border-yellow-300 bg-opacity-50 hover:bg-opacity-5',
+  [EUserStatus.Disabled]:
+    'bg-red-200 text-red-500 hover:bg-red-300 rounded-full px-3 py-1 border border-red-300 bg-opacity-50 hover:bg-opacity-5',
 };
 
 export interface DecodedToken {
@@ -380,3 +402,9 @@ export const STATUS_OPTIONS = [
   { label: 'Unauthenticated', value: EUserStatus.Unauthenticated },
   { label: 'Disabled', value: EUserStatus.Disabled },
 ];
+
+export const isValidUUID = (id: string): boolean => {
+  const uuidRegex =
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  return uuidRegex.test(id);
+};

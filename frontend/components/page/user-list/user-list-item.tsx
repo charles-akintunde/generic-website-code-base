@@ -10,12 +10,23 @@ import { useGetUsersQuery } from '@/api/userApi';
 import {
   formatDate,
   mapToIIUserList,
+  roleBadgeClasses,
+  roleColors,
+  statusBadgeClasses,
+  statusColors,
   userRoleLabels,
   userStatusLabels,
 } from '@/utils/helper';
 
 import { userColumns } from '@/utils/tableColumns';
 import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { useAppDispatch } from '@/hooks/redux-hooks';
+import {
+  setEditingUser,
+  toggleCreateUserDialog,
+} from '@/store/slice/userSlice';
+import { UserRoleStatusDialog } from '@/components/common/form/user-profile-form';
+import { routeModule } from 'next/dist/build/templates/app-page';
 
 const UserListItem = () => {
   const [pagination, setPagination] = useState({
@@ -25,13 +36,17 @@ const UserListItem = () => {
   const [fetchParams, setFetchParams] = useState(pagination);
   const [totalUserCount, setTotalUserCount] = useState<number>();
   const { handleRemoveUser } = useUserInfo();
-  const { data: usersResponseData, isLoading: isUsersFetchLoading } =
-    useGetUsersQuery({
-      page: fetchParams.current,
-      limit: fetchParams.pageSize,
-    });
+  const {
+    data: usersResponseData,
+    isLoading: isUsersFetchLoading,
+    refetch: refetchUsersList,
+  } = useGetUsersQuery({
+    page: fetchParams.current,
+    limit: fetchParams.pageSize,
+  });
 
   const [users, setUsers] = useState<IUserBase[]>();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (usersResponseData && usersResponseData.data) {
@@ -63,6 +78,11 @@ const UserListItem = () => {
     }));
   };
 
+  const handleEditButtonClick = (record: IUserBase) => {
+    dispatch(setEditingUser(record));
+    dispatch(toggleCreateUserDialog());
+  };
+
   const userColumns = [
     {
       title: 'Name',
@@ -70,9 +90,9 @@ const UserListItem = () => {
       key: 'userName',
       render: (_: any, record: IUserBase) => (
         <div className="flex space-x-2 justify-start items-center">
-          <Avatar src={<img src={record.uiPhotoUrl} alt="avatar" />} />
+          <Avatar src={<img src={record.uiPhoto as string} alt="avatar" />} />
           <a
-            href={''}
+            href={`/user-profile/${record.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline flex items-center"
@@ -89,14 +109,13 @@ const UserListItem = () => {
       dataIndex: 'uiEmail',
       key: 'email',
     },
-
     {
       title: 'Role',
       dataIndex: 'uiRole',
       key: 'role',
       render: (role: EUserRole) => (
         <Badge
-          className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-indigo-200 bg-opacity-50 text-indigo-500 px-2 py-1 hover:bg-indigo-200 hover:bg-opacity-50"
+          className={`mr-2 mb-2 lg:mr-4 lg:mb-0  bg-${roleColors[role]}-200 bg-opacity-50 text-${roleColors[role]}-500 px-2 py-1 hover:bg-${roleColors[role]}-200 hover:bg-opacity-50}`}
           variant="secondary"
         >
           {userRoleLabels[role]}
@@ -109,7 +128,7 @@ const UserListItem = () => {
       key: 'status',
       render: (status: EUserStatus) => (
         <Badge
-          className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-blue-200 bg-opacity-50 text-blue-500 px-2 py-1 hover:bg-blue-200 hover:bg-opacity-50"
+          className={`mr-2  rounded-full mb-2 lg:mr-4 lg:mb-0 bg-${statusColors[status]}-200 bg-opacity-50 text-${statusColors[status]}-500 px-2 py-1 hover:bg-${statusColors[status]}-200 hover:bg-opacity-50}`}
           variant="secondary"
         >
           {userStatusLabels[status]}
@@ -128,7 +147,7 @@ const UserListItem = () => {
       render: (_: any, record: IUserBase) => (
         <ActionsButtons
           entity="user"
-          handleEditButtonClick={() => {}}
+          handleEditButtonClick={() => handleEditButtonClick(record)}
           handleRemove={handleRemoveUser}
           record={record}
         />
@@ -136,22 +155,23 @@ const UserListItem = () => {
     },
   ];
 
-  console.log(users, 'USERS');
-
   return (
     <div className="p-4">
       {users && (
-        <Table
-          columns={userColumns}
-          dataSource={users && users}
-          pagination={{
-            pageSize: pagination.pageSize,
-            total: totalUserCount || 0,
-          }}
-          loading={isUsersFetchLoading}
-          onChange={handleTableChange}
-          rowKey="uiId"
-        />
+        <>
+          <Table
+            columns={userColumns}
+            dataSource={users && users}
+            pagination={{
+              pageSize: pagination.pageSize,
+              total: totalUserCount || 0,
+            }}
+            loading={isUsersFetchLoading}
+            onChange={handleTableChange}
+            rowKey="uiId"
+          />
+          <UserRoleStatusDialog />
+        </>
       )}
     </div>
   );

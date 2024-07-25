@@ -196,8 +196,11 @@ export const userProfileSchema = z.object({
   uiPostalCode: z.string().optional(),
   uiPhoneNumber: z.string().optional(),
   uiOrganization: z.string().optional(),
-  uiRole: z.string().optional(),
-  uiStatus: z.string().optional(),
   uiPhoto: imageSchema.optional(),
   uiAbout: z.string().optional(),
+});
+
+export const userRoleStatusSchema = z.object({
+  uiRole: z.string().optional(),
+  uiStatus: z.string().optional(),
 });

@@ -64,7 +64,7 @@ export const userApi = createApi({
         body: statusRoleUpdate,
       }),
       invalidatesTags: (result, error, { UI_ID }) => [
-        { type: 'User', id: UI_ID },
+        { type: 'Users', id: UI_ID },
       ],
     }),
     deleteUser: builder.mutation<IGenericResponse, string>({
