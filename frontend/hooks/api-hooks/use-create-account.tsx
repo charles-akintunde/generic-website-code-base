@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useCreateAccountMutation } from '@/api/authApi';
-import { useNotification } from '@/components/hoc/NotificationProvider';
+import { useNotification } from '@/components/hoc/notification-provider';
 import { ICreatAccountRequest } from '@/types/requestInterfaces';
 import { ICreatAccount } from '@/types/componentInterfaces';
 

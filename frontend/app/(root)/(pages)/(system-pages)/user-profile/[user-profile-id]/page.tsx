@@ -104,9 +104,9 @@ const UserProfilePage = () => {
   return (
     <>
       {userInfo && (
-        <div className="pt-10 text-sm px-6 min-h-screen">
+        <div className="pt-10 text-sm bg-pg px-6 min-h-screen">
           <div
-            className={`${userProfilePaddingStyles} p-6 bg-white rounded-lg shadow-sm transition-all duration-300`}
+            className={`${userProfilePaddingStyles} p-10 bg-white shadow-md rounded-lg shadow-sm transition-all duration-300`}
           >
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="col-span-1 flex justify-center md:justify-start">

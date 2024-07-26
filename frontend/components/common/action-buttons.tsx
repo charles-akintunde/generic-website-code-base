@@ -28,6 +28,8 @@ const ActionsButtons: React.FC<IActionProps> = ({
   if (!canEdit && !hasAccess) {
     return <></>;
   }
+
+  console.log(record, 'RECORD');
   return (
     <div className="flex gap-1 items-center">
       <Popover>
@@ -66,7 +68,7 @@ const ActionsButtons: React.FC<IActionProps> = ({
             </Button>
             <AppPopconfirm
               entity={entity}
-              onDelete={() => handleRemove(record.id)}
+              onDelete={() => handleRemove(record)}
             >
               <Button
                 size="sm"

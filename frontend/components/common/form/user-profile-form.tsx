@@ -36,6 +36,7 @@ import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-profile/[user-profile-id]/page';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { toggleCreateUserDialog } from '@/store/slice/userSlice';
+import { Tooltip } from 'antd';
 
 interface UserProfileFormProps {
   userInfo: IUserInfo;
@@ -198,11 +199,9 @@ export const UserProfileDialog: React.FC<UserProfileFormProps> = ({
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <AppButton
-          Icon={EditOutlined}
-          buttonText={'Edit Profile'}
-          classNames={`${primarySolidButtonStyles}`}
-        />
+        <Button size="icon">
+          <EditOutlined className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl max-h-[90vh]">
         <DialogHeader>

@@ -227,6 +227,7 @@ const usePage = (pageName?: string) => {
 
   const handleRemovePage = async (page: IPageMain) => {
     try {
+      console.log(page, 'page');
       const response = await deletePage(page.pageId).unwrap();
       notify(
         'Success',
@@ -234,9 +235,11 @@ const usePage = (pageName?: string) => {
         'success'
       );
     } catch (error: any) {
+      console.log(error, 'ERROS');
       notify(
         'Error',
-        error.data.message ||
+        error?.data?.message ||
+          error?.data?.detail ||
           'Failed to delete the page. Please try again later.',
         'error'
       );

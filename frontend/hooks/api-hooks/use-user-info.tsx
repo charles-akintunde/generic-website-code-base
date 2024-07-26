@@ -13,6 +13,7 @@ import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-pro
 import { useState } from 'react';
 import { useAppDispatch } from '../redux-hooks';
 import { toggleCreateUserDialog } from '@/store/slice/userSlice';
+import { useResetPasswordWithEmailMutation } from '@/api/authApi';
 
 export interface GetUsersRequest {
   page: number;
@@ -21,6 +22,14 @@ export interface GetUsersRequest {
 
 const useUserInfo = () => {
   const [deleteUser] = useDeleteUserMutation();
+  const [
+    resetPasswordWithEmail,
+    {
+      isError: hasResetPasswordWithError,
+      isSuccess: isResetPasswordWithSuccess,
+      isLoading: isResetPasswordWithLoading,
+    },
+  ] = useResetPasswordWithEmailMutation();
   const [
     editRoleAndStatus,
     {
@@ -40,10 +49,12 @@ const useUserInfo = () => {
   const { isAdmin, currentUser } = useUserLogin();
   const { notify } = useNotification();
   const dispatch = useAppDispatch();
+  const [resetPasswordSuccessMessage, setResetPasswordSuccessMessage] =
+    useState<string>();
 
-  const handleRemoveUser = async (uiId: string) => {
+  const handleRemoveUser = async (user: IUserBase) => {
     try {
-      const response = await deleteUser(uiId).unwrap();
+      const response = await deleteUser(user.id).unwrap();
       notify(
         'Success',
         response.message || 'The page has been successfully deleted.',
@@ -60,13 +71,28 @@ const useUserInfo = () => {
     }
   };
 
-  // const submitEditRoleStatus = async ({
-  //   userId: string,
-  //   userInfo: IUserBase,
-  //   userProfileRefetch?: () => {}
-  // }) => {
+  const submitEmailForPasswordReset = async (email: string) => {
+    try {
+      const response = await resetPasswordWithEmail({
+        UI_Email: email,
+      }).unwrap();
+      setResetPasswordSuccessMessage(response.message);
+      notify(
+        'Success',
+        response.message ||
+          'The user information has been successfully updated.',
+        'success'
+      );
+    } catch (error: any) {
+      console.error('Error editing user:', error);
 
-  // }
+      const errorMessage =
+        error.data?.message ||
+        error.data?.detail ||
+        'Failed to reset password. Please try again later.';
+      notify('Error', errorMessage, 'error');
+    }
+  };
 
   const submitEditRoleStatus = async (userId: string, userInfo: IUserBase) => {
     try {
@@ -179,6 +205,11 @@ const useUserInfo = () => {
     handleRemoveUser,
     submitEditUser,
     submitEditRoleStatus,
+    submitEmailForPasswordReset,
+    isResetPasswordWithLoading,
+    isResetPasswordWithSuccess,
+    hasResetPasswordWithError,
+    resetPasswordSuccessMessage,
   };
 };
 

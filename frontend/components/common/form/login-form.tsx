@@ -36,7 +36,7 @@ export function LoginForm() {
   return (
     <>
       <div className="max-w-md mx-auto">
-        <h2 className="text-xl font-bold mb-3  text-gray-800">Login</h2>
+        <h2 className="text-md font-bold mb-3  text-gray-800">Login</h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField

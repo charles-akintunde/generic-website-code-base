@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/dialog';
 import { closeDrawer } from '@/store/slice/layoutSlice';
 import AppButton from './app-button';
-import { LogOutIcon } from 'lucide-react';
 import { useAppDispatch } from '@/hooks/redux-hooks';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,7 +19,11 @@ import {
 } from '@/styles/globals';
 import useLogout from '@/hooks/api-hooks/use-logout';
 
-const LogoutButton = () => {
+interface ILogoutProps {
+  trigger: React.ReactNode;
+}
+
+const LogoutButton: React.FC<ILogoutProps> = ({ trigger }) => {
   const dispatch = useAppDispatch();
   const { sendLogoutRequest } = useLogout();
 
@@ -30,15 +33,7 @@ const LogoutButton = () => {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <AppButton
-          buttonText="Logout"
-          Icon={LogOutIcon}
-          isRightPosition={false}
-          classNames={outlinedButtonStyles}
-          //onClick={sendLogoutRequest(handleCloseDrawer)}
-        />
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px] p-6 bg-white rounded-lg shadow-lg">
         <DialogHeader className="flex flex-col items-center space-y-4">
           {/* <LogOutIcon className="h-16 w-16 text-red-500" /> */}
@@ -61,13 +56,6 @@ const LogoutButton = () => {
             onClick={() => sendLogoutRequest(handleCloseDrawer)}
             classNames={destructiveSolidButtonStyles}
           />
-          {/* <AppButton
-            buttonText="Logout"
-            Icon={LogOutIcon}
-            isRightPosition={false}
-            classNames={destructiveSolidButtonStyles}
-            onClick={sendLogoutRequest(handleCloseDrawer)}
-          /> */}
         </DialogFooter>
       </DialogContent>
     </Dialog>

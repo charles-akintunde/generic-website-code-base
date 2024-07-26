@@ -152,6 +152,15 @@ export interface IButton {
   buttonText: string;
   onClick?: () => void | Promise<void>;
   classNames?: string;
+  variant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link'
+    | null
+    | undefined;
 }
 
 export type Notify = (

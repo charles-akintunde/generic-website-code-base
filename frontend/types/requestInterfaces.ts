@@ -69,3 +69,7 @@ export interface IEditUserRoleStatusRequest {
   UI_Role: Number;
   UI_Status: Number;
 }
+
+export interface IPasswordResetRequest {
+  UI_Email: string;
+}

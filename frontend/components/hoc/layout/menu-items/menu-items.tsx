@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import MenuItem from './menu-item';
 import { IPageMenuItem } from '@/types/componentInterfaces';
 import usePage from '@/hooks/api-hooks/use-page';
@@ -39,34 +39,28 @@ export const MenuItems = () => {
   const [remainingItems, setRemainingItems] = useState<IPageMenuItem[]>([]);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
-    };
 
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Call immediately on initial render
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    const calculateVisibleItems = (items: IPageMenuItem[]) => {
       const containerWidth =
         document.querySelector('.menu-container')?.clientWidth ||
         window.innerWidth;
       const itemWidth = 100; // Approximate width of each item including margins
 
       const maxVisibleItems = Math.floor(containerWidth / itemWidth);
-      const visible = items.slice(0, maxVisibleItems);
-      const remaining = items.slice(maxVisibleItems);
+      const visible = menuItems.slice(0, maxVisibleItems);
+      const remaining = menuItems.slice(maxVisibleItems);
 
       setVisibleItems(visible);
       setRemainingItems(remaining);
     };
 
-    calculateVisibleItems(menuItems);
-  }, [menuItems, windowWidth]);
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Call immediately on initial render
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, [menuItems]);
 
   return (
     <div className="menu-container flex flex-col lg:flex-row flex-wrap lg:flex-nowrap space-y-2 lg:space-y-0 lg:space-x-6">
@@ -84,25 +78,20 @@ export const MenuItems = () => {
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Tooltip title="More Pages">
-              <Button
-                // style={{ outline: 'none', border: 'none' }}
-                shape="circle"
-                icon={<MoreOutlined />}
-              />
+              <Button shape="circle" icon={<MoreOutlined />} />
             </Tooltip>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="hidden lg:block">
             <DropdownMenuLabel>More Pages</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {remainingItems.map((menuItem: IPageMenuItem, index: number) => (
-              <>
-                {!menuItem.isHidden && (
+            {remainingItems.map(
+              (menuItem: IPageMenuItem, index: number) =>
+                !menuItem.isHidden && (
                   <DropdownMenuItem key={index}>
-                    <a href={menuItem.href}>{menuItem.pageName}</a>
+                    <Link href={menuItem.href}>{menuItem.pageName}</Link>
                   </DropdownMenuItem>
-                )}
-              </>
-            ))}
+                )
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       )}

@@ -2,9 +2,15 @@ import React from 'react';
 import Image from 'next/image';
 import appLogo from '@/assets/icons/gw-logo.png';
 import Link from 'next/link';
-const Logo = () => {
+
+interface ILogoProps {
+  width?: number;
+  height?: number;
+}
+
+const Logo: React.FC<ILogoProps> = ({ width = 500, height = 80 }) => {
   return (
-    <div className="flex cursor-pointer items-center">
+    <div className="flex cursor-pointer justify-center  items-center">
       <Link href="/">
         <Image
           src={appLogo}
@@ -12,8 +18,8 @@ const Logo = () => {
           style={{
             height: 'auto',
             width: 'auto',
-            maxHeight: '80px',
-            maxWidth: '500px',
+            maxHeight: `${height}px`,
+            maxWidth: `${width}px`,
           }} // Ensures responsive scaling
         />
       </Link>

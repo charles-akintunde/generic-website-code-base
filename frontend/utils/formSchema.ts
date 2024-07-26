@@ -62,6 +62,10 @@ export const passwordResetSchema = z
     path: ['confirmPassword'],
   });
 
+export const resetPasswordWithEmailSchema = z.object({
+  email: emailSchema(),
+});
+
 export const createPageSchema = z.object({
   pageName: requiredTextSchema('Page name'),
   pageType: z.nativeEnum(EPageType),

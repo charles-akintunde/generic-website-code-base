@@ -10,13 +10,19 @@ const AppButton: React.FC<IButton> = ({
   buttonText,
   onClick,
   classNames,
+  variant,
 }) => {
   return (
-    <Button onClick={onClick} variant="outline" className={classNames} asChild>
+    <Button
+      onClick={onClick}
+      variant={variant ? variant : 'outline'}
+      className={classNames}
+      asChild
+    >
       <Link href={href ? href : ''}>
-        {!isRightPosition && Icon && <Icon className="mr-2 h-5 w-5" />}{' '}
+        {!isRightPosition && Icon && <Icon className="mr-2 h-4 w-4" />}{' '}
         {buttonText}{' '}
-        {isRightPosition && Icon && <Icon className="ml-2 h-5 w-5" />}
+        {isRightPosition && Icon && <Icon className="ml-2 h-4 w-4" />}
       </Link>
     </Button>
   );

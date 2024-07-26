@@ -47,7 +47,7 @@ const CreateAccountForm = () => {
 
   return (
     <div className="max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-3  text-gray-800">Create Account</h2>
+      <h2 className="font-bold mb-3 text-md  text-gray-800">Create Account</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="flex justify-center space-x-4">
@@ -71,22 +71,22 @@ const CreateAccountForm = () => {
             label="Email"
             placeholder="example@genericapp.com"
           />
-          <div className="flex justify-center space-x-4">
-            <FormField
-              control={form.control}
-              name="password"
-              label="Password"
-              placeholder="******"
-              type="password"
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              label="Confirm Password"
-              placeholder="******"
-              type="password"
-            />
-          </div>
+          {/* <div className="flex justify-center space-x-4"> */}
+          <FormField
+            control={form.control}
+            name="password"
+            label="Password"
+            placeholder="******"
+            type="password"
+          />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            label="Confirm Password"
+            placeholder="******"
+            type="password"
+          />
+          {/* </div> */}
 
           <LoadingButton
             buttonText="Create Account"
