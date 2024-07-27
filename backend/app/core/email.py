@@ -140,7 +140,15 @@ async def send_password_reset_email(email: str, token: str):
     message = MessageSchema(
         subject="Password Reset Request",
         recipients=[email],
-        body=f"Please use the following link to reset your password: {reset_url}",
+        body = email_html_content(
+        message="We received a request to reset your password. If you did not make this request, please ignore this email. Otherwise, you can reset your password by clicking the button below:",
+        confirmation_link=reset_url,
+        button_text="Reset Password",
+        company_name=COMPANY_NAME,
+        frontend_url=FRONTEND_URL,
+        logo='app/assets/logo-white.png'
+    )
+,
         subtype="html"
     )
     await fm.send_message(message=message)

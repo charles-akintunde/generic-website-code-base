@@ -58,10 +58,10 @@ async def confirm_password_reset_endpoint(confirm: PasswordResetConfirm, db: Ses
     try: 
         confirm_password_reset(
             db=db, 
-            token=confirm.token, 
-            new_password=confirm.new_password)
+            token=confirm.UI_Token, 
+            new_password=confirm.UI_NewPassword)
         return success_response(
-            message="Password updated successfully")
+            message="Password has been successfully reset.")
     except HTTPException as e:
         return error_response(
             message=e.detail, 

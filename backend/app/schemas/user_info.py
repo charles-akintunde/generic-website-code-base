@@ -148,8 +148,9 @@ class PasswordResetRequest(BaseModel):
 class BaseToken(BaseModel):
     token: str
 
-class PasswordResetConfirm(BaseToken):
-    new_password: str
+class PasswordResetConfirm(BaseModel):
+    UI_NewPassword: str
+    UI_Token: str
 
 class LogoutRequest(BaseModel):
     refresh_token: str
