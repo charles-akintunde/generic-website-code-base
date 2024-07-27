@@ -194,6 +194,7 @@ const SinglePage = () => {
   return (
     <>
       <PageLayout
+        type="singlePage"
         title={`${!isSinglePageCreated ? 'Edit' : ''} ${fromKebabCase(pageName)}`}
       >
         <div

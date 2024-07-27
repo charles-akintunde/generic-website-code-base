@@ -13,7 +13,11 @@ import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-pro
 import { useState } from 'react';
 import { useAppDispatch } from '../redux-hooks';
 import { toggleCreateUserDialog } from '@/store/slice/userSlice';
-import { useResetPasswordWithEmailMutation } from '@/api/authApi';
+import {
+  useResetPasswordWithEmailMutation,
+  useResetPasswordWithTokenMutation,
+} from '@/api/authApi';
+import { useRouter } from 'next/navigation';
 
 export interface GetUsersRequest {
   page: number;
@@ -30,6 +34,16 @@ const useUserInfo = () => {
       isLoading: isResetPasswordWithLoading,
     },
   ] = useResetPasswordWithEmailMutation();
+
+  const [
+    resetPasswordWithToken,
+    {
+      isError: hasResetPasswordTokenWithError,
+      isSuccess: isResetPasswordWithTokenSuccess,
+      isLoading: isResetPasswordWithTokenLoading,
+    },
+  ] = useResetPasswordWithTokenMutation();
+
   const [
     editRoleAndStatus,
     {
@@ -51,6 +65,7 @@ const useUserInfo = () => {
   const dispatch = useAppDispatch();
   const [resetPasswordSuccessMessage, setResetPasswordSuccessMessage] =
     useState<string>();
+  const router = useRouter();
 
   const handleRemoveUser = async (user: IUserBase) => {
     try {
@@ -91,6 +106,34 @@ const useUserInfo = () => {
         error.data?.detail ||
         'Failed to reset password. Please try again later.';
       notify('Error', errorMessage, 'error');
+    }
+  };
+
+  const submitPasswordResetWithToken = async (data: any) => {
+    try {
+      const response = await resetPasswordWithToken({
+        UI_Token: data.token,
+        UI_NewPassword: data.newPassword,
+      }).unwrap();
+
+      console.log(response, 'RESONSE');
+
+      setResetPasswordSuccessMessage(response.message);
+      notify(
+        'Success',
+        response.message || 'Password has been successfully reset.',
+        'success'
+      );
+      router.replace('/sign-in');
+    } catch (error: any) {
+      const defaultErrorMessage =
+        'Failed to reset password. Please try again later.';
+
+      console.log(error, 'ERROR ');
+
+      // const errorMessage =
+      //   error.data?.message || error.data?.detail || defaultErrorMessage;
+      // notify('Error', errorMessage, 'error');
     }
   };
 
@@ -210,6 +253,7 @@ const useUserInfo = () => {
     isResetPasswordWithSuccess,
     hasResetPasswordWithError,
     resetPasswordSuccessMessage,
+    submitPasswordResetWithToken,
   };
 };
 

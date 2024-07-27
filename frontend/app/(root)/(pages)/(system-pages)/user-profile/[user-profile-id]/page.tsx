@@ -3,20 +3,15 @@ import React, { useEffect, useState } from 'react';
 import { UserProfileDialog } from '@/components/common/form/user-profile-form';
 import {
   UserOutlined,
-  MailOutlined,
-  PhoneOutlined,
   HomeOutlined,
   BankOutlined,
   CalendarOutlined,
+  PhoneOutlined,
+  MailOutlined,
 } from '@ant-design/icons';
-import {
-  pageContentPaddingStyles,
-  userProfilePaddingStyles,
-} from '@/styles/globals';
 import { format } from 'date-fns';
-import { Avatar, Divider, Switch, Tooltip } from 'antd';
+import { Avatar, Divider, Badge, Tooltip } from 'antd';
 import ActionsButtons from '@/components/common/action-buttons';
-import { Badge } from 'antd';
 import { useGetUserQuery } from '@/api/userApi';
 import {
   formatDate,
@@ -29,8 +24,7 @@ import {
 } from '@/utils/helper';
 import { IUserInfo } from '@/types/componentInterfaces';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
-import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import AppLoading from '@/components/common/app-loading';
 
 export function sanitizeAndCompare(str1: string, str2: string) {
@@ -105,27 +99,23 @@ const UserProfilePage = () => {
     <>
       {userInfo && (
         <div className="pt-10 text-sm bg-pg px-6 min-h-screen">
-          <div
-            className={`${userProfilePaddingStyles} p-10 bg-white shadow-md rounded-lg shadow-sm transition-all duration-300`}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="col-span-1 flex justify-center md:justify-start">
                 <Avatar
                   size={200}
                   src={userInfo.uiPhoto as string}
                   alt={`${userInfo.uiFirstName} ${userInfo.uiLastName}`}
                   icon={!userInfo.uiPhoto && <UserOutlined />}
-                  className="shadow-md"
+                  className="shadow-lg"
                 />
               </div>
               <div className="col-span-3">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-6">
                   <Tooltip
                     title={`${userInfo.uiFirstName} ${userInfo.uiLastName}`}
                   >
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 ">
-                      {`${userInfo.uiFirstName} ${userInfo.uiLastName}`}
-                    </h1>
+                    <h1 className="text-3xl font-bold text-gray-900">{`${userInfo.uiFirstName} ${userInfo.uiLastName}`}</h1>
                   </Tooltip>
                   <div className="flex items-center">
                     {isSameUser && (
@@ -136,8 +126,9 @@ const UserProfilePage = () => {
                     )}
                   </div>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <p className="text-gray-600 flex items-center">
+                    <MailOutlined className="mr-2 text-primary" />
                     {userInfo.uiEmail}
                   </p>
                   {(isAdmin || isSameUser) && (
@@ -151,17 +142,15 @@ const UserProfilePage = () => {
                         text={userStatusLabels[userInfo.uiStatus]}
                         color={statusColors[userInfo.uiStatus]}
                         className="mr-2"
-                      />{' '}
+                      />
                     </div>
                   )}
-
-                  <p className="flex  items-center">
+                  <p className="flex items-center">
                     <HomeOutlined className="mr-2 text-primary" />
                     {userInfo.uiCity ? `${userInfo.uiCity}, ` : ''}
                     {userInfo.uiProvince ? `${userInfo.uiProvince}, ` : ''}
                     {userInfo.uiCountry}
                   </p>
-
                   <p className="flex items-center">
                     <PhoneOutlined className="mr-2 text-primary" />
                     {userInfo.uiPhoneNumber}
@@ -171,16 +160,15 @@ const UserProfilePage = () => {
                       <CalendarOutlined className="mr-2 text-primary" />
                       <span className="font-semibold text-gray-700">
                         Registered:
-                      </span>{' '}
+                      </span>
                       {formatDate(userInfo.uiRegDate)}
                     </p>
                   )}
-
                   <p className="flex items-center">
                     <BankOutlined className="mr-2 text-primary" />
                     <span className="font-semibold text-gray-700">
                       Organization:
-                    </span>{' '}
+                    </span>
                     <span className="capitalize">
                       {userInfo.uiOrganization}
                     </span>
@@ -188,20 +176,15 @@ const UserProfilePage = () => {
                 </div>
               </div>
             </div>
-
-            <div>
-              <>
-                <h2 className="text-xl font-semibold text-gray-900">
-                  About Me
-                </h2>
-                <Divider className="my-6" />
-                <div className="mt-4">
-                  {/* UserProfileForm component should be here */}
-                  <p className="mt-2 	leading-relaxed text-gray-700">
-                    {userInfo.uiAbout}
-                  </p>
-                </div>
-              </>
+            <div className="mt-10">
+              <h2 className="text-2xl font-semibold text-gray-900">About Me</h2>
+              <Divider className="my-6" />
+              <div className="mt-4">
+                {/* UserProfileForm component should be here */}
+                <p className="mt-2 leading-relaxed text-gray-700">
+                  {userInfo.uiAbout}
+                </p>
+              </div>
             </div>
           </div>
         </div>

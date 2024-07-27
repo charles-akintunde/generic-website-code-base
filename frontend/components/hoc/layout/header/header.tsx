@@ -7,8 +7,7 @@ import { toggleDrawer } from '@/store/slice/layoutSlice';
 import Drawer from '../drawer/drawer';
 import Image from 'next/image';
 import { MenuItems } from '../menu-items/menu-items';
-import { Menu, Dropdown } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { Menu, Dropdown, Tooltip } from 'antd';
 import Logo from '@/components/common/logo';
 import { Button } from '@/components/ui/button';
 import { Avatar, Space } from 'antd';
@@ -22,12 +21,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User, RefreshCw } from 'lucide-react';
+import { User, RefreshCw, LogOut } from 'lucide-react';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
 import LogoutButton from '@/components/common/button/logout-button';
 import AppButton from '@/components/common/button/app-button';
+import { DecodedToken } from '@/utils/helper';
+import { Separator } from '@/components/ui/separator';
 
 export const UserProfile = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -48,63 +49,88 @@ export const UserProfile = () => {
     );
   }
 
-  const firstName = currentUser.firstname;
-  const lastName = currentUser.lastname;
-  const fullName = firstName + ' ' + lastName;
-  const initails = firstName[0] + lastName[0];
+  interface UserProfileDropDownProps {
+    currentUser: DecodedToken;
+  }
 
-  console.log(initails, 'initails');
+  const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
+    currentUser,
+  }) => {
+    const firstName = currentUser.firstname;
+    const lastName = currentUser.lastname;
+    const fullName = firstName + ' ' + lastName;
+    const initails = firstName && lastName && firstName[0] + lastName[0];
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <div>
+            <Tooltip title="Your Profile">
+              <span className="flex items-center cursor-pointer p-2 px-4 rounded-sm space-x-2 text-sm hover:bg-zinc-100 transition duration-300 ease-in-out hover:text-primary">
+                <Avatar
+                  style={{
+                    cursor: 'pointer',
+                    textTransform: 'uppercase',
+                    backgroundColor: '#69b1ff',
+                    transition: 'background-color 0.3s ease-in-out',
+                  }}
+                >
+                  {initails}
+                </Avatar>
+
+                <ChevronDown className="h-3 w-3" />
+              </span>
+            </Tooltip>
+          </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56 hidden lg:block">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <Link href={`/user-profile/${currentUser?.Id}`}>
+              <DropdownMenuItem className="cursor-pointer">
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </DropdownMenuItem>
+            </Link>
+            <Link href={`/reset-password`}>
+              <DropdownMenuItem className="cursor-pointer">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Reset Password
+              </DropdownMenuItem>
+            </Link>
+          </DropdownMenuGroup>
+          {/* <DropdownMenuSeparator /> */}
+          {/* <DropdownMenuItem className="cursor-pointer">
+      
+            <LogoutButton
+              trigger={
+                <>
+                  <LogOut className="mr-2 h-4 w-4" /> Logout
+                </>
+              }
+            />
+          </DropdownMenuItem> */}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <span className="flex items-center cursor-pointer p-2 px-4 rounded-sm space-x-2 text-sm hover:bg-slate-200 transition duration-300 ease-in-out">
-          <Avatar
-            style={{
-              cursor: 'pointer',
-              textTransform: 'uppercase',
-              backgroundColor: '#69b1ff',
-              transition: 'background-color 0.3s ease-in-out',
-            }}
-            // size={40}
-            // src={''}
-          >
-            {initails}
-          </Avatar>
-
-          <DownOutlined style={{ fontSize: '10px' }} />
-        </span>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 hidden lg:block">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <Link href={`/user-profile/${currentUser?.Id}`}>
-            <DropdownMenuItem className="cursor-pointer">
-              <User className="mr-2 h-4 w-4" />
-              Profile
-            </DropdownMenuItem>
-          </Link>
-          <Link href={`/reset-password`}>
-            <DropdownMenuItem className="cursor-pointer">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Reset Password
-            </DropdownMenuItem>
-          </Link>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
-          {/* <LogOut className="mr-2 h-4 w-4" /> */}
-          <LogoutButton
-            trigger={
-              <>
-                <User className="mr-2 h-4 w-4" /> Logout
-              </>
-            }
-          />
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center space-x-1">
+      <LogoutButton
+        trigger={
+          <div>
+            <Tooltip title="Logout">
+              <div className="text-sm cursor-pointer rounded-sm hover:bg-zinc-100 p-4 px-4 flex items-center hover:text-primary transition duration-300 ease-in-out">
+                <LogOut className="mr-2 h-4 w-4" />
+              </div>
+            </Tooltip>
+          </div>
+        }
+      />
+      <Separator orientation="vertical" />
+      <UserProfileDropDown currentUser={currentUser} />{' '}
+    </div>
   );
 };
 

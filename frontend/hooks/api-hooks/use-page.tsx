@@ -75,6 +75,7 @@ const usePage = (pageName?: string) => {
         isError: false,
         isSuccess: false,
         isLoading: false,
+        error: null,
         refetch: () => {},
       };
 
@@ -83,6 +84,7 @@ const usePage = (pageName?: string) => {
     isError: hasPageFetchError,
     isSuccess: isPageFetchSuccess,
     isLoading: isPageFetchLoading,
+    error: pageFetchError,
     refetch: pageRefetch,
   } = pageQueryResult;
 
@@ -272,6 +274,10 @@ const usePage = (pageName?: string) => {
     currentPage,
     getCurrentPage,
     pageRefetch,
+    hasPagesFetchError,
+    hasPageFetchError,
+    pageFetchError,
+    isPageFetchLoading,
   };
 };
 

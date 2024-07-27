@@ -10,11 +10,16 @@ interface LayoutProps {
   children: React.ReactNode;
   title: string;
   titleImgUrl?: string;
+  type?: 'singlePage' | 'pageList';
 }
 
-const PageLayout: React.FC<LayoutProps> = ({ children, title }) => {
+const PageLayout: React.FC<LayoutProps> = ({
+  children,
+  title,
+  type = 'pageList',
+}) => {
   return (
-    <div className="pg-bg">
+    <div className={type == 'singlePage' ? 'bg-white' : 'bg-pg'}>
       <div
         className={` flex flex-col items-center justify-center min-h-screen `}
       >

@@ -12,6 +12,7 @@ import Link from 'next/link';
 import LoadingButton from '../button/loading-button';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { IUserLogin } from '@/types/componentInterfaces';
+import TermsAndService from '../dialog/terms-and-service-dialog';
 
 export function LoginForm() {
   const { sendLoginRequest, isSuccess, isLoading } = useUserLogin();
@@ -69,12 +70,7 @@ export function LoginForm() {
             </Link>
           </p>
           <p className="text-gray-500 text-sm mt-2">
-            By clicking you agree to our{' '}
-            <Link href="/terms-and-services" legacyBehavior passHref>
-              <a className="text-blue-500 font-medium hover:underline">
-                Terms and Services
-              </a>
-            </Link>
+            By clicking you agree to our <TermsAndService />
           </p>
         </div>
       </div>

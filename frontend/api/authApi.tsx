@@ -2,6 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { IGenericResponse } from '@/types/backendResponseInterfaces';
 import {
   ICreatAccountRequest,
+  IPasswordResetConfirmationRequest,
   IPasswordResetRequest,
   IToken,
   IUserLoginRequest,
@@ -54,6 +55,14 @@ export const authApi = createApi({
         credentials: 'include',
       }),
     }),
+    resetPasswordWithToken: builder.mutation<IGenericResponse, any>({
+      query: (passwordReset: IPasswordResetConfirmationRequest) => ({
+        url: `${commonUrl}/password-reset/confirm`,
+        method: 'POST',
+        body: passwordReset,
+        credentials: 'include',
+      }),
+    }),
   }),
 });
 
@@ -63,4 +72,5 @@ export const {
   useUserLoginMutation,
   useUserLogoutMutation,
   useResetPasswordWithEmailMutation,
+  useResetPasswordWithTokenMutation,
 } = authApi;

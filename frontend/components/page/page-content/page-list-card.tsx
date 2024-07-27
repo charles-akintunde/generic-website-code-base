@@ -44,7 +44,7 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
   };
 
   return (
-    <Card className="bg-white flex flex-col h-full">
+    <Card className="bg-white flex flex-col h-full transition-shadow duration-300 hover:shadow-md">
       <CardHeader>
         <Link onClick={handleEditButtonClick} href={href}>
           <img

@@ -19,36 +19,30 @@ import useUserInfo from '@/hooks/api-hooks/use-user-info';
 import AppRequestResult from '../app-request-result';
 import { Button } from '@/components/ui/button';
 
-const PassowordResetForm = () => {
+interface PasswordResetFormProps {
+  token: string;
+}
+
+const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ token }) => {
   const form = useForm<z.infer<typeof passwordResetSchema>>({
     resolver: zodResolver(passwordResetSchema),
     defaultValues: {
-      email: '',
+      token: token,
       newPassword: '',
       confirmPassword: '',
     },
   });
   const [loading, setLoading] = useState(false);
+  const { submitPasswordResetWithToken } = useUserInfo();
 
   const onSubmit = async (data: any) => {
-    setLoading(true);
-    try {
-      // handle password change submission
-    } finally {
-      setLoading(false);
-    }
+    await submitPasswordResetWithToken(data);
   };
   return (
     <div className="max-w-md mx-auto">
       <h2 className="font-bold mb-3 text-md text-gray-800">Reset Password</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="email"
-            label="Email"
-            placeholder="user@genericapp.com"
-          />
           <FormField
             control={form.control}
             name="newPassword"
@@ -125,4 +119,4 @@ const ResetPasswordWithEmailForm = () => {
   );
 };
 
-export { ResetPasswordWithEmailForm, PassowordResetForm };
+export { ResetPasswordWithEmailForm, PasswordResetForm };

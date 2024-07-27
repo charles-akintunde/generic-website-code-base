@@ -1,4 +1,5 @@
 import { TElement } from '@udecode/plate-common';
+import { StyledString } from 'next/dist/build/swc';
 
 export interface ICreatAccountRequest {
   UI_FirstName: string;
@@ -72,4 +73,9 @@ export interface IEditUserRoleStatusRequest {
 
 export interface IPasswordResetRequest {
   UI_Email: string;
+}
+
+export interface IPasswordResetConfirmationRequest {
+  UI_NewPassword: string;
+  UI_Token: string;
 }

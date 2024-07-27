@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PageListCard from './page-list-card';
 import { fromKebabCase, toKebabCase } from '@/utils/helper';
 import { IPageContentMain, IPageMain } from '@/types/componentInterfaces';
@@ -7,14 +7,23 @@ import usePage from '@/hooks/api-hooks/use-page';
 import { usePathname } from 'next/navigation';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import ContentList from '@/components/common/content-list/content-list';
+import AppLoading from '@/components/common/app-loading';
+import { useRouter } from 'next/router';
 
 const PageLists = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [pageName, setPageName] = useState(
     fromKebabCase(pathname.split('/')['1'])
   );
   const { canEdit } = useUserLogin();
-  const { currentPage, getCurrentPageContents } = usePage(pageName);
+  const {
+    currentPage,
+    getCurrentPageContents,
+    hasPageFetchError,
+    pageFetchError,
+    isPageFetchLoading,
+  } = usePage(pageName);
   const page = currentPage;
   const pageType = (page && page?.pageType) ?? '';
   const createPageHref = (pageNameKebab: string, queryString: string) =>
@@ -30,6 +39,19 @@ const PageLists = () => {
     pageId: pageId,
   };
   const queryString = new URLSearchParams(queryParams).toString();
+
+  console.log(pageFetchError, hasPageFetchError, 'hasPageFetchError');
+
+  useEffect(() => {
+    if (hasPageFetchError && pageFetchError) {
+      router.replace('/404');
+    }
+  }, [hasPageFetchError, pageFetchError, router]);
+
+  if (isPageFetchLoading) {
+    return <AppLoading />;
+  }
+
   return (
     <ContentList
       pageName={page?.pageName ?? ''}

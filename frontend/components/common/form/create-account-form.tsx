@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { useCreateAccount } from '@/hooks/api-hooks/use-create-account';
 import { ICreatAccount } from '@/types/componentInterfaces';
 import AppRequestResult from '../app-request-result';
+import TermsAndService from '../dialog/terms-and-service-dialog';
 
 const CreateAccountForm = () => {
   const { submitCreateAccount, isLoading, isError, isSuccess, successMessage } =
@@ -103,12 +104,7 @@ const CreateAccountForm = () => {
           </Link>
         </p>
         <p className="text-gray-500 text-sm mt-2">
-          By clicking you agree to our{' '}
-          <Link href="/terms-and-services" legacyBehavior passHref>
-            <a className="text-blue-500 font-medium hover:underline">
-              Terms and Services
-            </a>
-          </Link>
+          By clicking you agree to our <TermsAndService />
         </p>
       </div>
     </div>

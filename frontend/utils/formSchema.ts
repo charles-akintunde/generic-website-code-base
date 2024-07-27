@@ -53,7 +53,7 @@ export const accountCreationSchema = z
 
 export const passwordResetSchema = z
   .object({
-    email: emailSchema(),
+    token: requiredTextSchema('Token'),
     newPassword: passwordSchema(),
     confirmPassword: passwordSchema(),
   })
