@@ -31,6 +31,9 @@ export const userApi = createApi({
             ]
           : [{ type: 'Users', id: 'LIST' }],
     }),
+    getUsersAssignedPositions: builder.query<IUserResponseWrapper, void>({
+      query: () => `${url}/member`,
+    }),
     getUser: builder.query<ICompleteUserResponseWrapper, string>({
       query: (UI_ID) => `${url}/${UI_ID}`,
       providesTags: (result) =>
@@ -83,4 +86,5 @@ export const {
   useGetUserQuery,
   useEditRoleAndStatusMutation,
   useEditUserMutation,
+  useGetUsersAssignedPositionsQuery,
 } = userApi;

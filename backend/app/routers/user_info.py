@@ -12,7 +12,7 @@ from app.schemas.response import StandardResponse
 from app.schemas.user_info import UserDelete, UserProfileUpdate, UserRoleStatusUpdate, UserStatusUpdate
 from app.utils.utils import is_super_admin
 from app.models.user_info import T_UserInfo
-from app.services.user_info import delete_user, get_user_by_id, get_users, update_user_profile, update_user_role_status, update_user_status
+from app.services.user_info import delete_user, get_user_by_id, get_users, get_users_assigned_with_positions, update_user_profile, update_user_role_status, update_user_status
 from app.utils.response import error_response, success_response
 
 
@@ -162,6 +162,15 @@ async def get_users_endpoint(
     db: Session = Depends(get_db)):
     try: 
         users_response = get_users(db=db, page=page, limit=limit)
+        return success_response(data = users_response.model_dump(), message='Users fetched successfully')
+    except HTTPException as e:
+        return error_response(message=e.detail, status_code=e.status_code)
+    
+@router.get('/members', response_model=StandardResponse)
+async def get_member_users_endpoint(
+    db: Session = Depends(get_db)):
+    try:
+        users_response = get_users_assigned_with_positions(db=db)
         return success_response(data = users_response.model_dump(), message='Users fetched successfully')
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)

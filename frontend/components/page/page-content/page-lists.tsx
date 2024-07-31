@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import ContentList from '@/components/common/content-list/content-list';
 import AppLoading from '@/components/common/app-loading';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 const PageLists = () => {
   const pathname = usePathname();
@@ -42,15 +42,15 @@ const PageLists = () => {
 
   console.log(pageFetchError, hasPageFetchError, 'hasPageFetchError');
 
-  useEffect(() => {
-    if (hasPageFetchError && pageFetchError) {
-      router.replace('/404');
-    }
-  }, [hasPageFetchError, pageFetchError, router]);
+  // useEffect(() => {
+  //   if (hasPageFetchError && pageFetchError) {
+  //     router.replace('/404');
+  //   }
+  // }, [hasPageFetchError, pageFetchError, router]);
 
-  if (isPageFetchLoading) {
-    return <AppLoading />;
-  }
+  // if (isPageFetchLoading) {
+  //   return <AppLoading />;
+  // }
 
   return (
     <ContentList

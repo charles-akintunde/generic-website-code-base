@@ -6,6 +6,7 @@ import { estimateReadingTime, formatDate } from '@/utils/helper';
 import { pageContentPaddingStyles } from '@/styles/globals';
 import { EPageType } from '@/types/enums';
 import { FloatButton } from 'antd';
+import { Divider } from 'antd';
 interface PageListLayoutProps {
   children: ReactNode;
   pageContent: IPageContentMain;
@@ -50,7 +51,7 @@ const PageListLayout: React.FC<PageListLayoutProps> = ({
           </div>
         )}
       </header>
-
+      <Divider />
       <div>{children}</div>
       <FloatButton.BackTop visibilityHeight={400} />
     </div>

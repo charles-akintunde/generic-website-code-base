@@ -92,8 +92,8 @@ def create_user_response(user: T_UserInfo)  -> UserResponse:
     UI_FirstName=str(user.UI_FirstName),
     UI_LastName=str(user.UI_LastName),
     UI_Email=str(user.UI_Email),
-    UI_Role=str(user.UI_Role.value),
-    UI_Status=str(user.UI_Status.value),
+    UI_Role=user.UI_Role.value,
+    UI_Status=user.UI_Status.value,
     UI_RegDate=str(user.UI_RegDate),
     UI_PhotoURL=str(user.UI_PhotoURL),
     UI_City=str(user.UI_City),
@@ -102,5 +102,6 @@ def create_user_response(user: T_UserInfo)  -> UserResponse:
     UI_Country=str(user.UI_Country),
     UI_Province=str(user.UI_Province),
     UI_Organization=str(user.UI_Organization),
-    UI_About= str(user.UI_About)
+    UI_About= str(user.UI_About),
+    UI_MemberPosition= user.UI_MemberPosition.value
     )

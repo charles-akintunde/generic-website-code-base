@@ -8,7 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from typing import Optional, List
 
 from app.types.user_info import UserInfoTypeAnnotations
-from .enums import E_Status, E_UserRole
+from .enums import E_MemberPosition, E_Status, E_UserRole
 from . import Base 
 
 class T_UserInfo(Base):
@@ -34,6 +34,7 @@ class T_UserInfo(Base):
     UI_RegDate = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     UI_Other = Column(String(255))
     UI_About = Column(Text)
+    UI_MemberPosition = Column(Enum(E_MemberPosition), nullable=True)
 
 
     UI_PageContents = relationship("T_PageContent", back_populates="PC_UserInfo")

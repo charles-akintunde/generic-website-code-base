@@ -149,6 +149,9 @@ const useUserInfo = () => {
           UI_ID: userId,
           UI_Role: Number(userInfo.uiRole),
           UI_Status: Number(userInfo.uiStatus),
+          UI_MemberPosition: userInfo.uiMemberPosition
+            ? Number(userInfo.uiMemberPosition)
+            : undefined,
         }).unwrap();
 
         dispatch(toggleCreateUserDialog());

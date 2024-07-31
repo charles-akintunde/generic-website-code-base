@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Form } from '@/components/ui/form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { userProfileSchema, userRoleStatusSchema } from '@/utils/formSchema';
 import FormField from '../form-field';
 import { getNames } from 'country-list';
@@ -15,6 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 import {
   getChangedFields,
+  MEMBERPOSITION_OPTIONS,
   notifyNoChangesMade,
   ROLE_OPTIONS,
   STATUS_OPTIONS,
@@ -37,6 +38,7 @@ import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-pro
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { toggleCreateUserDialog } from '@/store/slice/userSlice';
 import { Tooltip } from 'antd';
+import { EMemberPosition, EUserRole } from '@/types/enums';
 
 interface UserProfileFormProps {
   userInfo: IUserInfo;
@@ -242,9 +244,11 @@ export const UserRoleStatusDialog = () => {
     defaultValues: userInfo || {
       uiRole: '',
       uiStatus: '',
+      // uiMemberPosition
     },
   });
 
+  console.log(userInfo, 'userInfo');
   useEffect(() => {
     if (userInfo) {
       form.reset(userInfo);
@@ -265,13 +269,16 @@ export const UserRoleStatusDialog = () => {
     }
   };
 
+  const { watch } = form;
+  const uiRole = watch('uiRole');
+
   const handleOpenChange = () => {
     dispatch(toggleCreateUserDialog());
   };
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl max-h-[90vh]">
+      <DialogContent className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-md xl:max-w-md max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit profile</DialogTitle>
         </DialogHeader>
@@ -285,20 +292,33 @@ export const UserRoleStatusDialog = () => {
                 <>
                   <FormField
                     control={form.control}
-                    name="uiRole"
-                    label="Role"
-                    placeholder="User Role"
-                    type="select"
-                    options={ROLE_OPTIONS}
-                  />
-                  <FormField
-                    control={form.control}
                     name="uiStatus"
                     label="Status"
                     placeholder="User Status"
                     type="select"
                     options={STATUS_OPTIONS}
                   />
+                  <FormField
+                    control={form.control}
+                    name="uiRole"
+                    label="Role"
+                    placeholder="User Role"
+                    type="select"
+                    options={ROLE_OPTIONS}
+                  />
+                  {(uiRole == EUserRole.SuperAdmin ||
+                    uiRole == EUserRole.Admin ||
+                    uiRole == EUserRole.Member) && (
+                    <FormField
+                      control={form.control}
+                      name="uiMemberPosition"
+                      label="Member Position"
+                      placeholder="Select Member Position"
+                      type="select"
+                      options={MEMBERPOSITION_OPTIONS}
+                    />
+                  )}
+
                   <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4  flex justify-center">
                     <LoadingButton
                       loading={false}

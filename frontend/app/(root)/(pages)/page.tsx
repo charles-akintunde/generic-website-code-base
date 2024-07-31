@@ -1,58 +1,19 @@
-import Image from 'next/image';
-
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-pg p-4">
-      <header className="w-full max-w-6xl mx-auto text-center mb-12">
-        <h1 className="text-5xl font-bold text-gray-800 mb-4">
-          Generic Code Base
+    <main className="relative min-h-screen overflow-hidden flex items-center justify-center">
+      <video
+        src="/videos/home-bg-vid.mp4"
+        autoPlay
+        loop
+        muted
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-black opacity-30" />
+      {/* <div className="relative z-10 px-4 py-8 bg-black bg-opacity-40 rounded-lg shadow-lg text-center text-white">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4">
+          CLISA
         </h1>
-        <p className="text-xl text-gray-600">
-          Quickly customizable templates for faster website development.
-        </p>
-      </header>
-      <section className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-            Customizable Templates
-          </h2>
-          <p className="text-gray-600">
-            Choose from a variety of templates that can be easily tailored to
-            your needs.
-          </p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-            Fast Implementation
-          </h2>
-          <p className="text-gray-600">
-            Implement your website quickly with pre-built components and
-            modules.
-          </p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-            Comprehensive Documentation
-          </h2>
-          <p className="text-gray-600">
-            Access detailed guides and references to help you customize your
-            website.
-          </p>
-        </div>
-      </section>
-      <section className="w-full max-w-6xl mx-auto mt-12 text-center">
-        <h2 className="text-3xl font-semibold text-gray-800 mb-6">
-          Get Started in Minutes
-        </h2>
-        <button className="bg-gray-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-gray-700 transition">
-          Start Building
-        </button>
-      </section>
-      <footer className="w-full max-w-6xl mx-auto text-center mt-12">
-        <p className="text-gray-600">
-          &copy; 2024 Generic Code Base. All rights reserved.
-        </p>
-      </footer>
+      </div> */}
     </main>
   );
 }

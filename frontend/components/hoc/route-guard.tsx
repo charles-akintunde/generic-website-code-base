@@ -36,12 +36,6 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       item.href.startsWith(`/${pathname.split('/')[1]}`)
   );
 
-  console.log(
-    pathname.split('/')[1],
-    pathname.split('/')[1].startsWith('users'),
-    "pathname.split('/')[1].startsWith('user-profile')"
-  );
-
   useEffect(() => {
     if (allAppRoutes && allAppRoutes.length > 0) {
       const isValidRoute =
@@ -56,7 +50,6 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       if (!isValidRoute) {
         router.replace('/404');
       } else {
-        console.log(currentPage, 'currentPage');
         if (
           !hasPermission(
             currentUserRole,

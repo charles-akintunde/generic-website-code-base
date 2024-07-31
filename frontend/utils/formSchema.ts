@@ -204,7 +204,21 @@ export const userProfileSchema = z.object({
   uiAbout: z.string().optional(),
 });
 
-export const userRoleStatusSchema = z.object({
-  uiRole: z.string().optional(),
-  uiStatus: z.string().optional(),
-});
+export const userRoleStatusSchema = z
+  .object({
+    uiRole: z.string().optional(),
+    uiStatus: z.string().optional(),
+    uiMemberPosition: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.uiRole === EUserRole.Member && !data.uiMemberPosition) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: 'When uiRole is "Member", uiMemberPosition is required.',
+      path: ['uiMemberPosition'],
+    }
+  );

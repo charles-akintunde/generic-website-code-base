@@ -104,6 +104,31 @@ class UserCRUD:
         """
         return db.query(T_UserInfo).filter(T_UserInfo.UI_ID == user_id).first()
     
+    def get_users_with_assigned_positions(self, db: Session) -> List[UserPartial]:
+        """
+        Get users with assigned member positions.
+
+        Args:
+            db (Session): Database session.
+
+        Returns:
+            list: List of User objects with assigned member positions.
+        """
+        users = db.query(T_UserInfo).filter(T_UserInfo.UI_MemberPosition.isnot(None)).all()
+        return [UserPartial(
+            UI_ID=str(row.UI_ID),
+            UI_FirstName=str(row.UI_FirstName),
+            UI_LastName=str(row.UI_LastName),
+            UI_Email=str(row.UI_Email),
+            UI_Role=str(row.UI_Role.value), 
+            UI_Status=str(row.UI_Status.value),
+            UI_RegDate=row.UI_RegDate.isoformat(),
+            UI_PhotoURL=str(row.UI_PhotoURL),
+            UI_MemberPosition=str(row.UI_MemberPosition.value) if row.UI_MemberPosition else None # type: ignore
+
+        ) for row in users]
+
+    
     def get_total_user_count(self, db: Session) -> int:
             """
             Get the total count of users.
@@ -183,7 +208,8 @@ class UserCRUD:
             T_UserInfo.UI_Role,
             T_UserInfo.UI_Status,
             T_UserInfo.UI_RegDate,
-            T_UserInfo.UI_PhotoURL
+            T_UserInfo.UI_PhotoURL,
+            T_UserInfo.UI_MemberPosition
         )
 
         results = query.order_by(T_UserInfo.UI_FirstName, T_UserInfo.UI_LastName, T_UserInfo.UI_ID)\
@@ -199,7 +225,9 @@ class UserCRUD:
             UI_Role=row.UI_Role, 
             UI_Status=row.UI_Status,
             UI_RegDate=row.UI_RegDate.isoformat(),
-            UI_PhotoURL=row.UI_PhotoURL
+            UI_PhotoURL=row.UI_PhotoURL,
+            UI_MemberPosition=row.UI_MemberPosition if row.UI_MemberPosition else row.UI_MemberPosition
+
         ) for row in results]
     
 user_crud = UserCRUD()

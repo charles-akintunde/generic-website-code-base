@@ -143,7 +143,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 backdrop-blur bg-white border-b border-glassmorphism h-20 shadow-sm">
+      <header className="sticky top-0 z-40   h-20 shadow-sm w-full bg-white">
         <div className={`${containerPaddingStyles}`}>
           <div className="flex items-center space-x-4">
             <div className="flex items-center">

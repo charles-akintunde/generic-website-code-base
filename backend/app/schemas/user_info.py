@@ -9,7 +9,7 @@ from typing import Any, List, Optional
 import uuid
 
 from sqlalchemy import UUID
-from app.models.enums import E_Status, E_UserRole
+from app.models.enums import E_MemberPosition, E_Status, E_UserRole
 
 class UserBase(BaseModel):
     """
@@ -35,6 +35,8 @@ class UserPartial(BaseModel):
     UI_Status: str
     UI_RegDate: str
     UI_PhotoURL: Optional[str] = None
+    UI_MemberPosition: Optional[str] = None
+    
 
     class Config:
         orm_mode = True
@@ -42,7 +44,7 @@ class UserPartial(BaseModel):
 
 class UsersResponse(BaseModel):
     users: List[UserPartial]
-    total_users_count : int
+    total_users_count : Optional[int] = None
     last_first_name: Optional[str] = None
     last_last_name: Optional[str] = None
     last_uuid: Optional[str] = None
@@ -50,10 +52,11 @@ class UsersResponse(BaseModel):
 class UserResponse(UserBase):
     UI_ID: str
     UI_Email: str
-    UI_Role: str
-    UI_Status: str
+    UI_Role: int
+    UI_Status: int
     UI_RegDate: str
     UI_About: str
+    UI_MemberPosition: Optional[int] = None
 
 
 class UserDelete(BaseModel):
@@ -71,6 +74,7 @@ class UserRoleStatusUpdate(BaseModel):
     UI_ID: str
     UI_Role: Optional[E_UserRole] = None
     UI_Status: Optional[E_Status] = None
+    UI_MemberPosition: Optional[E_MemberPosition] = None
 
 class UserStatusUpdate(BaseModel):
     UI_ID: str

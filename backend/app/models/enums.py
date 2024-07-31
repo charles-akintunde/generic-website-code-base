@@ -32,3 +32,15 @@ class E_PageType(enum.Enum):
     SinglePage = 0
     PageList = 1
     ResList = 2
+
+class E_MemberPosition(enum.Enum):
+    """
+    Enumeration for app memeber type.
+    """
+    DIRECTOR = 0
+    POSTDOC = 1
+    PHD = 2
+    MASTER = 3
+    UNDERGRAD = 4
+
+

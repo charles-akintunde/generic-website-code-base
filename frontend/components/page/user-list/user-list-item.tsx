@@ -1,7 +1,7 @@
 'use-client';
 import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { EUserRole, EUserStatus } from '@/types/enums';
+import { EMemberPosition, EUserRole, EUserStatus } from '@/types/enums';
 import { Avatar } from 'antd';
 import ActionsButtons from '@/components/common/action-buttons';
 import { Table } from 'antd';
@@ -10,6 +10,8 @@ import { useGetUsersQuery } from '@/api/userApi';
 import {
   formatDate,
   mapToIIUserList,
+  memberPositionLabels,
+  positionColors,
   roleBadgeClasses,
   roleColors,
   statusBadgeClasses,
@@ -51,6 +53,8 @@ const UserListItem = () => {
   useEffect(() => {
     if (usersResponseData && usersResponseData.data) {
       const { data } = usersResponseData;
+
+      console.log(usersResponseData.data, 'usersResponseData.data');
       const usersData: IUserList = mapToIIUserList(usersResponseData.data);
 
       if (usersData.users) {
@@ -132,6 +136,19 @@ const UserListItem = () => {
           variant="secondary"
         >
           {userStatusLabels[status]}
+        </Badge>
+      ),
+    },
+    {
+      title: 'Position',
+      dataIndex: 'uiMemberPosition',
+      key: 'memberPosition',
+      render: (position: EMemberPosition) => (
+        <Badge
+          className={`mr-2 rounded-full mb-2 lg:mr-4 lg:mb-0 bg-${positionColors[position]}-200 bg-opacity-50 text-${positionColors[position]}-500 px-2 py-1 hover:bg-${positionColors[position]}-200 hover:bg-opacity-50}`}
+          variant="secondary"
+        >
+          {memberPositionLabels[position]}
         </Badge>
       ),
     },

@@ -18,3 +18,11 @@ export enum EPageType {
   ResList = '2',
   System = '3',
 }
+
+export enum EMemberPosition {
+  DIRECTOR = '0',
+  POSTDOC = '1',
+  PHD = '2',
+  MASTER = '3',
+  UNDERGRAD = '4',
+}

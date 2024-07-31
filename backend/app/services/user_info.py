@@ -11,6 +11,7 @@ from app.models.user_info import T_UserInfo
 from app.config import settings
 from app.utils.file_utils import delete_and_save_file, delete_file, extract_path_from_url, save_file
 from app.utils.response_json import create_user_response, create_users_response
+from app.models.enums import E_UserRole
 
 
 
@@ -35,6 +36,12 @@ def update_user_role_status(db: Session, user_role_status_update: UserRoleStatus
     """
     Update a user's role.
     """
+
+    if user_role_status_update.UI_Role == E_UserRole.Member and not user_role_status_update.UI_MemberPosition:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="A position must be assigned to a member user."
+        )
 
     if user_role_status_update.UI_ID == current_user.UI_ID:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You cannot update your own role!")
@@ -152,6 +159,17 @@ def get_users(db: Session, page: int = 1, limit: int = 10):
     users = user_crud.get_users(db, page, limit)
     users_response = create_users_response(users, total_user_count,None)
     return users_response
+
+def get_users_assigned_with_positions(db: Session):
+    """
+        Retrieve users that have been assigned a member position.
+    """
+
+    users = user_crud.get_users_with_assigned_positions(db=db)
+    total_user_count = len(users)
+
+    return create_users_response(users=users, total_users_count=total_user_count,new_last_key=None)
+
 
 
 def get_user_by_id(db: Session, user_id):

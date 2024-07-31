@@ -15,7 +15,12 @@ import {
   IUserInfo,
   Notify,
 } from '@/types/componentInterfaces';
-import { EPageType, EUserRole, EUserStatus } from '@/types/enums';
+import {
+  EMemberPosition,
+  EPageType,
+  EUserRole,
+  EUserStatus,
+} from '@/types/enums';
 import { IEditUserRequest } from '@/types/requestInterfaces';
 import { TElement } from '@udecode/plate-common';
 import { jwtDecode } from 'jwt-decode';
@@ -55,6 +60,14 @@ export const userStatusLabels: { [key in EUserStatus]: string } = {
   [EUserStatus.Disabled]: 'Disabled',
 };
 
+export const memberPositionLabels: { [key in EMemberPosition]: string } = {
+  [EMemberPosition.DIRECTOR]: 'Director',
+  [EMemberPosition.POSTDOC]: 'Postdoc',
+  [EMemberPosition.PHD]: 'PhD',
+  [EMemberPosition.MASTER]: 'Masters',
+  [EMemberPosition.UNDERGRAD]: 'Undergrad',
+};
+
 export const roleColors: { [key in EUserRole]: string } = {
   [EUserRole.SuperAdmin]: 'red',
   [EUserRole.Admin]: 'blue',
@@ -67,6 +80,19 @@ export const statusColors: { [key in EUserStatus]: string } = {
   [EUserStatus.Active]: 'green',
   [EUserStatus.Unauthenticated]: 'gray',
   [EUserStatus.Disabled]: 'red',
+};
+
+export const positionColors: { [key in EMemberPosition]: string } = {
+  [EMemberPosition.DIRECTOR]:
+    'bg-purple-200 text-purple-500 hover:bg-purple-200 rounded-full px-3 py-1 border border-purple-200 bg-opacity-50 hover:bg-opacity-5',
+  [EMemberPosition.POSTDOC]:
+    'bg-indigo-200 text-indigo-500 hover:bg-indigo-200 rounded-full px-3 py-1 border border-indigo-200 bg-opacity-50 hover:bg-opacity-5',
+  [EMemberPosition.PHD]:
+    'bg-blue-200 text-blue-500 hover:bg-blue-200 rounded-full px-3 py-1 border border-blue-200 bg-opacity-50 hover:bg-opacity-5',
+  [EMemberPosition.MASTER]:
+    'bg-green-200 text-green-500 hover:bg-green-200 rounded-full px-3 py-1 border border-green-200 bg-opacity-50 hover:bg-opacity-5',
+  [EMemberPosition.UNDERGRAD]:
+    'bg-yellow-200 text-yellow-500 hover:bg-yellow-200 rounded-full px-3 py-1 border border-yellow-200 bg-opacity-50 hover:bg-opacity-5',
 };
 
 export const roleBadgeClasses: { [key in EUserRole]: string } = {
@@ -338,6 +364,7 @@ export const mapToIIUserList = (data: IUserResponseData): IUserList => {
     uiStatus: user.UI_Status,
     uiRegDate: user.UI_RegDate,
     uiPhotoUrl: user.UI_PhotoURL,
+    uiMemberPosition: user.UI_MemberPosition,
   }));
   return {
     users: users,
@@ -395,6 +422,14 @@ export const ROLE_OPTIONS = [
   { label: 'Member', value: EUserRole.Member },
   { label: 'User', value: EUserRole.User },
   { label: 'Public', value: EUserRole.Public },
+];
+
+export const MEMBERPOSITION_OPTIONS = [
+  { label: 'Director', value: EMemberPosition.DIRECTOR },
+  { label: 'Post Doc Fellow', value: EMemberPosition.POSTDOC },
+  { label: 'PhD', value: EMemberPosition.PHD },
+  { label: 'Master', value: EMemberPosition.MASTER },
+  { label: 'Undergraduate', value: EMemberPosition.UNDERGRAD },
 ];
 
 export const STATUS_OPTIONS = [

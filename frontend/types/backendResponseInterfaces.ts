@@ -37,6 +37,7 @@ export interface UserResponse {
   UI_City: string | null;
   UI_RegDate: string;
   UI_PhotoURL: string;
+  UI_MemberPosition: string;
 }
 
 export interface ICompleteUserResponse extends UserResponse {

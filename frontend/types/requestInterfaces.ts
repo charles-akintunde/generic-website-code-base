@@ -69,6 +69,7 @@ export interface IEditUserRoleStatusRequest {
   UI_ID: string;
   UI_Role: Number;
   UI_Status: Number;
+  UI_MemberPosition: Number;
 }
 
 export interface IPasswordResetRequest {
