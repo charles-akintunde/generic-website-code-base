@@ -18,3 +18,5 @@ export const glassmorphismSytles =
 
 export const userProfilePaddingStyles =
   'container items-center max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8';
+
+export const transitionStyles = 'transition duration-300 ease-in-out ';

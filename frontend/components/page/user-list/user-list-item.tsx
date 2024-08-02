@@ -19,6 +19,7 @@ import {
   userRoleLabels,
   userStatusLabels,
 } from '@/utils/helper';
+import { UserOutlined } from '@ant-design/icons';
 
 import { userColumns } from '@/utils/tableColumns';
 import useUserInfo from '@/hooks/api-hooks/use-user-info';
@@ -29,6 +30,7 @@ import {
 } from '@/store/slice/userSlice';
 import { UserRoleStatusDialog } from '@/components/common/form/user-profile-form';
 import { routeModule } from 'next/dist/build/templates/app-page';
+import useUserLogin from '@/hooks/api-hooks/use-user-login';
 
 const UserListItem = () => {
   const [pagination, setPagination] = useState({
@@ -46,7 +48,7 @@ const UserListItem = () => {
     page: fetchParams.current,
     limit: fetchParams.pageSize,
   });
-
+  const { currentUser, initails } = useUserLogin();
   const [users, setUsers] = useState<IUserBase[]>();
   const dispatch = useAppDispatch();
 
@@ -93,13 +95,22 @@ const UserListItem = () => {
       dataIndex: 'uiFirstName',
       key: 'userName',
       render: (_: any, record: IUserBase) => (
-        <div className="flex space-x-2 justify-start items-center">
-          <Avatar src={<img src={record.uiPhoto as string} alt="avatar" />} />
+        <div className="flex space-x-2 justify-start text-left items-center">
+          <Avatar
+            // size={avatarSize}
+            src={record.uiPhotoUrl}
+            // icon={<UserOutlined />}
+            className=""
+            style={{ backgroundColor: '#67B0FD' }}
+          >
+            {record.uiFirstName[0]}
+            {record.uiLastName[0]}
+          </Avatar>
           <a
             href={`/user-profile/${record.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:underline flex items-center"
+            className="text-blue-500 hover:underline  text-left flex items-center"
           >
             <span className="font-medium">
               {record.uiFirstName} {record.uiLastName}
@@ -118,10 +129,7 @@ const UserListItem = () => {
       dataIndex: 'uiRole',
       key: 'role',
       render: (role: EUserRole) => (
-        <Badge
-          className={`mr-2 mb-2 lg:mr-4 lg:mb-0  bg-${roleColors[role]}-200 bg-opacity-50 text-${roleColors[role]}-500 px-2 py-1 hover:bg-${roleColors[role]}-200 hover:bg-opacity-50}`}
-          variant="secondary"
-        >
+        <Badge className={roleColors[role]} variant="secondary">
           {userRoleLabels[role]}
         </Badge>
       ),
@@ -144,10 +152,7 @@ const UserListItem = () => {
       dataIndex: 'uiMemberPosition',
       key: 'memberPosition',
       render: (position: EMemberPosition) => (
-        <Badge
-          className={`mr-2 rounded-full mb-2 lg:mr-4 lg:mb-0 bg-${positionColors[position]}-200 bg-opacity-50 text-${positionColors[position]}-500 px-2 py-1 hover:bg-${positionColors[position]}-200 hover:bg-opacity-50}`}
-          variant="secondary"
-        >
+        <Badge className={positionColors[position]} variant="secondary">
           {memberPositionLabels[position]}
         </Badge>
       ),

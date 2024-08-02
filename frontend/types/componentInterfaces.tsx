@@ -31,6 +31,7 @@ export interface IUserBase {
   uiRegDate: string;
   uiPhoto: string | File;
   uiMemberPosition?: string | null;
+  uiCountry?: string | null | undefined;
 }
 
 export interface IUserInfo extends IUserBase {

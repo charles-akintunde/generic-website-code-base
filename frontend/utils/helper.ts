@@ -69,17 +69,25 @@ export const memberPositionLabels: { [key in EMemberPosition]: string } = {
 };
 
 export const roleColors: { [key in EUserRole]: string } = {
-  [EUserRole.SuperAdmin]: 'red',
-  [EUserRole.Admin]: 'blue',
-  [EUserRole.Member]: 'green',
-  [EUserRole.User]: 'teal',
-  [EUserRole.Public]: 'gray',
+  [EUserRole.SuperAdmin]:
+    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-red-200 bg-opacity-50 text-red-500 px-2 py-1 hover:bg-red-200 hover:bg-opacity-50',
+  [EUserRole.Admin]:
+    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-blue-200 bg-opacity-50 text-blue-500 px-2 py-1 hover:bg-blue-200 hover:bg-opacity-50',
+  [EUserRole.Member]:
+    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-green-200 bg-opacity-50 text-green-500 px-2 py-1 hover:bg-green-200 hover:bg-opacity-50',
+  [EUserRole.User]:
+    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-teal-200 bg-opacity-50 text-teal-500 px-2 py-1 hover:bg-teal-200 hover:bg-opacity-50',
+  [EUserRole.Public]:
+    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-gray-200 bg-opacity-50 text-gray-500 px-2 py-1 hover:bg-gray-200 hover:bg-opacity-50',
 };
 
 export const statusColors: { [key in EUserStatus]: string } = {
-  [EUserStatus.Active]: 'green',
-  [EUserStatus.Unauthenticated]: 'gray',
-  [EUserStatus.Disabled]: 'red',
+  [EUserStatus.Active]:
+    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-green-200 bg-opacity-50 text-green-500 px-2 py-1 hover:bg-green-200 hover:bg-opacity-50',
+  [EUserStatus.Unauthenticated]:
+    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-gray-200 bg-opacity-50 text-gray-500 px-2 py-1 hover:bg-gray-200 hover:bg-opacity-50',
+  [EUserStatus.Disabled]:
+    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-red-200 bg-opacity-50 text-red-500 px-2 py-1 hover:bg-red-200 hover:bg-opacity-50',
 };
 
 export const positionColors: { [key in EMemberPosition]: string } = {
@@ -355,6 +363,7 @@ export const normalizeMultiContentPage = (
 };
 
 export const mapToIIUserList = (data: IUserResponseData): IUserList => {
+  console.log(data, 'DATA');
   const users: IUserBase[] = data.users.map((user: UserResponse) => ({
     id: user.UI_ID,
     uiFirstName: user.UI_FirstName,
@@ -365,6 +374,7 @@ export const mapToIIUserList = (data: IUserResponseData): IUserList => {
     uiRegDate: user.UI_RegDate,
     uiPhotoUrl: user.UI_PhotoURL,
     uiMemberPosition: user.UI_MemberPosition,
+    uiCountry: user.UI_Country,
   }));
   return {
     users: users,

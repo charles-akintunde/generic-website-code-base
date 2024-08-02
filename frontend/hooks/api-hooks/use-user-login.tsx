@@ -40,6 +40,12 @@ const useUserLogin = () => {
   const canEdit =
     currentUserRole == '0' || currentUserRole == '1' ? true : false;
   const isAdmin = currentUserRole == '0' ? true : false;
+  const firstName = currentUser && currentUser.firstname;
+  const lastName = currentUser && currentUser.lastname;
+  const fullName = firstName + ' ' + lastName;
+  const initails = firstName && lastName && firstName[0] + lastName[0];
+
+  console.log(initails, 'GGGGGGGGGGGGGGGGG');
 
   return {
     isSuccess,
@@ -52,6 +58,7 @@ const useUserLogin = () => {
     currentUserRole,
     canEdit,
     isAdmin,
+    initails,
   };
 };
 

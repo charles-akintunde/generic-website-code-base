@@ -18,7 +18,7 @@ import appLogo from '@/assets/icons/gw-logo.png';
 import Image from 'next/image';
 import Logo from '@/components/common/logo';
 import Link from 'next/link';
-import { LogOut, LogOutIcon } from 'lucide-react';
+import { ChevronDown, LogOut, LogOutIcon } from 'lucide-react';
 import OutlinedButton from '@/components/common/button/app-button';
 import LoadingButton from '@/components/common/button/loading-button';
 import LogoutButton from '@/components/common/button/logout-button';
@@ -27,6 +27,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { UserProfile } from '../header/header';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { Avatar } from 'antd';
+import HoverableCard from '@/components/common/hover-card';
+import type { MenuProps } from 'antd';
+import { Dropdown } from 'antd';
+import { transitionStyles } from '@/styles/globals';
 
 const Drawer: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -41,9 +45,36 @@ const Drawer: React.FC = () => {
     dispatch(closeDrawer());
   };
 
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.antgroup.com"
+        >
+          1st menu item
+        </a>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.aliyun.com"
+        >
+          2nd menu item
+        </a>
+      ),
+    },
+  ];
+
   return (
     <Sheet open={isDrawerOpen} onOpenChange={handleClose}>
-      <SheetContent side={'left'}>
+      <SheetContent className="min-h-screen" side={'left'}>
         <SheetHeader>
           <div className="flex items-center pl-6">
             <Logo />
@@ -54,7 +85,7 @@ const Drawer: React.FC = () => {
           <MobileMenuItems />
         </ScrollArea>
 
-        <SheetFooter className="w-full bg-white z-20">
+        <footer className="w-full absolute bottom-5 bg-white z-20">
           {/* Aligns the footer content to the left */}
           {currentUser && (
             <div className="flex w-full items-center justify-between px-6">
@@ -65,13 +96,18 @@ const Drawer: React.FC = () => {
                     Icon={LogOut}
                     isRightPosition={false}
                     variant={'ghost'}
-                    classNames="text-primary hover:bg-white hover:text-primary"
+                    classNames={`${transitionStyles} p-0 hover:bg-white hover:text-primary`}
                     //onClick={sendLogoutRequest(handleCloseDrawer)}
                   />
                 }
               />
-              <SheetClose>
-                <Link href={`user-profile/${currentUser.Id}`}>
+              <Link
+                onClick={handleClose}
+                href={`/user-profile/${currentUser.Id}`}
+              >
+                <HoverableCard
+                  classNames={`flex items-center cursor-pointer space-x-2`}
+                >
                   <Avatar
                     style={{
                       cursor: 'pointer',
@@ -81,12 +117,16 @@ const Drawer: React.FC = () => {
                     }}
                   >
                     {initails}
-                  </Avatar>
-                </Link>
-              </SheetClose>
+                  </Avatar>{' '}
+                  <p className="text-xs">
+                    {firstName} {lastName}
+                  </p>
+                  {/* <ChevronDown className="h-3 w-3" /> */}
+                </HoverableCard>
+              </Link>
             </div>
           )}
-        </SheetFooter>
+        </footer>
       </SheetContent>
     </Sheet>
   );

@@ -32,7 +32,7 @@ export const userApi = createApi({
           : [{ type: 'Users', id: 'LIST' }],
     }),
     getUsersAssignedPositions: builder.query<IUserResponseWrapper, void>({
-      query: () => `${url}/member`,
+      query: () => `${url}/members`,
     }),
     getUser: builder.query<ICompleteUserResponseWrapper, string>({
       query: (UI_ID) => `${url}/${UI_ID}`,

@@ -29,6 +29,59 @@ import LogoutButton from '@/components/common/button/logout-button';
 import AppButton from '@/components/common/button/app-button';
 import { DecodedToken } from '@/utils/helper';
 import { Separator } from '@/components/ui/separator';
+import HoverableCard from '@/components/common/hover-card';
+import { IToken } from '@/types/requestInterfaces';
+
+interface UserProfileDropDownProps {
+  currentUser: DecodedToken;
+  trigger: React.ReactNode;
+}
+
+export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
+  currentUser,
+  trigger,
+}) => {
+  const firstName = currentUser.firstname;
+  const lastName = currentUser.lastname;
+  const fullName = firstName + ' ' + lastName;
+  const initails = firstName && lastName && firstName[0] + lastName[0];
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <div>{trigger}</div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56 hidden lg:block">
+        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <Link href={`/user-profile/${currentUser?.Id}`}>
+            <DropdownMenuItem className="cursor-pointer">
+              <User className="mr-2 h-4 w-4" />
+              Profile
+            </DropdownMenuItem>
+          </Link>
+          <Link href={`/reset-password`}>
+            <DropdownMenuItem className="cursor-pointer">
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Reset Password
+            </DropdownMenuItem>
+          </Link>
+        </DropdownMenuGroup>
+        {/* <DropdownMenuSeparator /> */}
+        {/* <DropdownMenuItem className="cursor-pointer">
+    
+          <LogoutButton
+            trigger={
+              <>
+                <LogOut className="mr-2 h-4 w-4" /> Logout
+              </>
+            }
+          />
+        </DropdownMenuItem> */}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 export const UserProfile = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -49,23 +102,36 @@ export const UserProfile = () => {
     );
   }
 
+  const firstName = currentUser.firstname;
+  const lastName = currentUser.lastname;
+  const fullName = firstName + ' ' + lastName;
+  const initails = firstName && lastName && firstName[0] + lastName[0];
+
   interface UserProfileDropDownProps {
     currentUser: DecodedToken;
   }
 
-  const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
-    currentUser,
-  }) => {
-    const firstName = currentUser.firstname;
-    const lastName = currentUser.lastname;
-    const fullName = firstName + ' ' + lastName;
-    const initails = firstName && lastName && firstName[0] + lastName[0];
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div>
+  return (
+    <div className="flex items-center space-x-1">
+      <HoverableCard>
+        <LogoutButton
+          trigger={
+            <div>
+              <Tooltip title="Logout">
+                <div className="">
+                  <LogOut className="mr-2 h-4 w-4" />
+                </div>
+              </Tooltip>
+            </div>
+          }
+        />
+      </HoverableCard>
+      <Separator orientation="vertical" />
+      <HoverableCard>
+        <UserProfileDropDown
+          trigger={
             <Tooltip title="Your Profile">
-              <span className="flex items-center cursor-pointer p-2 px-4 rounded-sm space-x-2 text-sm hover:bg-zinc-100 transition duration-300 ease-in-out hover:text-primary">
+              <span className="flex space-x-2 items-center">
                 <Avatar
                   style={{
                     cursor: 'pointer',
@@ -80,56 +146,10 @@ export const UserProfile = () => {
                 <ChevronDown className="h-3 w-3" />
               </span>
             </Tooltip>
-          </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56 hidden lg:block">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <Link href={`/user-profile/${currentUser?.Id}`}>
-              <DropdownMenuItem className="cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
-                Profile
-              </DropdownMenuItem>
-            </Link>
-            <Link href={`/reset-password`}>
-              <DropdownMenuItem className="cursor-pointer">
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Reset Password
-              </DropdownMenuItem>
-            </Link>
-          </DropdownMenuGroup>
-          {/* <DropdownMenuSeparator /> */}
-          {/* <DropdownMenuItem className="cursor-pointer">
-      
-            <LogoutButton
-              trigger={
-                <>
-                  <LogOut className="mr-2 h-4 w-4" /> Logout
-                </>
-              }
-            />
-          </DropdownMenuItem> */}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  };
-
-  return (
-    <div className="flex items-center space-x-1">
-      <LogoutButton
-        trigger={
-          <div>
-            <Tooltip title="Logout">
-              <div className="text-sm cursor-pointer rounded-sm hover:bg-zinc-100 p-4 px-4 flex items-center hover:text-primary transition duration-300 ease-in-out">
-                <LogOut className="mr-2 h-4 w-4" />
-              </div>
-            </Tooltip>
-          </div>
-        }
-      />
-      <Separator orientation="vertical" />
-      <UserProfileDropDown currentUser={currentUser} />{' '}
+          }
+          currentUser={currentUser}
+        />
+      </HoverableCard>
     </div>
   );
 };

@@ -38,6 +38,7 @@ export interface UserResponse {
   UI_RegDate: string;
   UI_PhotoURL: string;
   UI_MemberPosition: string;
+  UI_Country?: string | null | undefined;
 }
 
 export interface ICompleteUserResponse extends UserResponse {

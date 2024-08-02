@@ -115,6 +115,8 @@ class UserCRUD:
             list: List of User objects with assigned member positions.
         """
         users = db.query(T_UserInfo).filter(T_UserInfo.UI_MemberPosition.isnot(None)).all()
+
+    
         return [UserPartial(
             UI_ID=str(row.UI_ID),
             UI_FirstName=str(row.UI_FirstName),
@@ -123,8 +125,9 @@ class UserCRUD:
             UI_Role=str(row.UI_Role.value), 
             UI_Status=str(row.UI_Status.value),
             UI_RegDate=row.UI_RegDate.isoformat(),
-            UI_PhotoURL=str(row.UI_PhotoURL),
-            UI_MemberPosition=str(row.UI_MemberPosition.value) if row.UI_MemberPosition else None # type: ignore
+            UI_PhotoURL=str(row.UI_PhotoURL) if row.UI_PhotoURL else None, # type: ignore
+            UI_MemberPosition=str(row.UI_MemberPosition.value) if row.UI_MemberPosition else None, # type: ignore
+            UI_Country = str(row.UI_Country) if row.UI_Country else None # type: ignore
 
         ) for row in users]
 

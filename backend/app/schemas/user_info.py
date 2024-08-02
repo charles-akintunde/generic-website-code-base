@@ -36,6 +36,7 @@ class UserPartial(BaseModel):
     UI_RegDate: str
     UI_PhotoURL: Optional[str] = None
     UI_MemberPosition: Optional[str] = None
+    UI_Country: Optional[str] = None
     
 
     class Config:
