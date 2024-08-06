@@ -68,6 +68,9 @@ export interface ICompleteUserResponseWrapper {
 
 export interface PagesData {
   Pages: Page[];
+  totalPageCount?: number | undefined;
+  PG_PageCount?: number | undefined;
+  PG_Pages: Page[];
 }
 
 export interface PageData {
@@ -93,7 +96,6 @@ export interface PageMenuApiResponse extends IGenericResponse {
 }
 
 export interface IPageResponse extends IGenericResponse {
-  [x: string]: any;
   data: PagesData;
 }
 
@@ -103,4 +105,9 @@ export interface IPageContentGetResponse extends IGenericResponse {
 
 export interface ISinglePageResponse extends IGenericResponse {
   data: Page;
+}
+
+export interface IGetPagesWithOffsetRequest {
+  PG_Number: number;
+  PG_Limit: number;
 }

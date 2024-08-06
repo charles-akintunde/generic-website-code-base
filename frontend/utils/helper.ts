@@ -4,6 +4,7 @@ import {
   IPageContentResponse,
   IUserResponseData,
   Page,
+  PagesData,
   UserResponse,
 } from '@/types/backendResponseInterfaces';
 import {
@@ -14,6 +15,7 @@ import {
   IUserList,
   IUserInfo,
   Notify,
+  IPageList,
 } from '@/types/componentInterfaces';
 import {
   EMemberPosition,
@@ -25,6 +27,7 @@ import { IEditUserRequest } from '@/types/requestInterfaces';
 import { TElement } from '@udecode/plate-common';
 import { jwtDecode } from 'jwt-decode';
 import _ from 'lodash';
+import nookies from 'nookies';
 
 export const toKebabCase = (str: string): string => {
   str = str.toLowerCase();
@@ -69,60 +72,39 @@ export const memberPositionLabels: { [key in EMemberPosition]: string } = {
 };
 
 export const roleColors: { [key in EUserRole]: string } = {
-  [EUserRole.SuperAdmin]:
-    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-red-200 bg-opacity-50 text-red-500 px-2 py-1 hover:bg-red-200 hover:bg-opacity-50',
-  [EUserRole.Admin]:
-    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-blue-200 bg-opacity-50 text-blue-500 px-2 py-1 hover:bg-blue-200 hover:bg-opacity-50',
-  [EUserRole.Member]:
-    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-green-200 bg-opacity-50 text-green-500 px-2 py-1 hover:bg-green-200 hover:bg-opacity-50',
-  [EUserRole.User]:
-    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-teal-200 bg-opacity-50 text-teal-500 px-2 py-1 hover:bg-teal-200 hover:bg-opacity-50',
-  [EUserRole.Public]:
-    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-gray-200 bg-opacity-50 text-gray-500 px-2 py-1 hover:bg-gray-200 hover:bg-opacity-50',
+  [EUserRole.SuperAdmin]: 'superadmin-badge',
+  [EUserRole.Admin]: 'admin-badge',
+  [EUserRole.Member]: 'user-badge',
+  [EUserRole.User]: 'user-badge',
+  [EUserRole.Public]: 'public-badge',
 };
 
 export const statusColors: { [key in EUserStatus]: string } = {
-  [EUserStatus.Active]:
-    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-green-200 bg-opacity-50 text-green-500 px-2 py-1 hover:bg-green-200 hover:bg-opacity-50',
-  [EUserStatus.Unauthenticated]:
-    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-gray-200 bg-opacity-50 text-gray-500 px-2 py-1 hover:bg-gray-200 hover:bg-opacity-50',
-  [EUserStatus.Disabled]:
-    'mr-2 mb-2 lg:mr-4 lg:mb-0  bg-red-200 bg-opacity-50 text-red-500 px-2 py-1 hover:bg-red-200 hover:bg-opacity-50',
+  [EUserStatus.Active]: 'active-status',
+  [EUserStatus.Unauthenticated]: 'unauthenticated-status',
+  [EUserStatus.Disabled]: 'disabled-status',
 };
 
 export const positionColors: { [key in EMemberPosition]: string } = {
-  [EMemberPosition.DIRECTOR]:
-    'bg-purple-200 text-purple-500 hover:bg-purple-200 rounded-full px-3 py-1 border border-purple-200 bg-opacity-50 hover:bg-opacity-5',
-  [EMemberPosition.POSTDOC]:
-    'bg-indigo-200 text-indigo-500 hover:bg-indigo-200 rounded-full px-3 py-1 border border-indigo-200 bg-opacity-50 hover:bg-opacity-5',
-  [EMemberPosition.PHD]:
-    'bg-blue-200 text-blue-500 hover:bg-blue-200 rounded-full px-3 py-1 border border-blue-200 bg-opacity-50 hover:bg-opacity-5',
-  [EMemberPosition.MASTER]:
-    'bg-green-200 text-green-500 hover:bg-green-200 rounded-full px-3 py-1 border border-green-200 bg-opacity-50 hover:bg-opacity-5',
-  [EMemberPosition.UNDERGRAD]:
-    'bg-yellow-200 text-yellow-500 hover:bg-yellow-200 rounded-full px-3 py-1 border border-yellow-200 bg-opacity-50 hover:bg-opacity-5',
+  [EMemberPosition.DIRECTOR]: 'director-position',
+  [EMemberPosition.POSTDOC]: 'postdoc-position',
+  [EMemberPosition.PHD]: 'postdoc-position',
+  [EMemberPosition.MASTER]: 'postdoc-position',
+  [EMemberPosition.UNDERGRAD]: 'postdoc-position',
 };
 
 export const roleBadgeClasses: { [key in EUserRole]: string } = {
-  [EUserRole.SuperAdmin]:
-    'bg-red-200 text-red-500 hover:bg-red-200 rounded-full px-3 py-1 border border-red-200 bg-opacity-50 hover:bg-opacity-5',
-  [EUserRole.Admin]:
-    'bg-yellow-200 text-yellow-500 hover:bg-yellow-300 rounded-full px-3 py-1 border border-yellow-300 bg-opacity-50 hover:bg-opacity-5',
-  [EUserRole.Member]:
-    'bg-green-200 text-green-500 hover:bg-green-200 rounded-full px-3 py-1 border border-green-300 bg-opacity-50 hover:bg-opacity-5',
-  [EUserRole.User]:
-    'bg-blue-200 text-blue-400 hover:bg-blue-200 rounded-full px-3 py-1 border border-blue-100 bg-opacity-50 hover:bg-opacity-50 bg-opacity-50 hover:bg-opacity-5',
-  [EUserRole.Public]:
-    'bg-gray-200 text-gray-500 hover:bg-gray-200 rounded-full px-3 py-1 border border-gray-200 bg-opacity-50 hover:bg-opacity-5',
+  [EUserRole.SuperAdmin]: 'red',
+  [EUserRole.Admin]: 'green',
+  [EUserRole.Member]: 'blue',
+  [EUserRole.User]: 'blue',
+  [EUserRole.Public]: 'gray',
 };
 
 export const statusBadgeClasses: { [key in EUserStatus]: string } = {
-  [EUserStatus.Active]:
-    'bg-green-200 text-green-500 hover:bg-green-300 rounded-full px-3 py-1 border border-green-300 bg-opacity-50 hover:bg-opacity-5',
-  [EUserStatus.Unauthenticated]:
-    'bg-yellow-200 text-yellow-500 hover:bg-yellow-300 rounded-full px-3 py-1 border border-yellow-300 bg-opacity-50 hover:bg-opacity-5',
-  [EUserStatus.Disabled]:
-    'bg-red-200 text-red-500 hover:bg-red-300 rounded-full px-3 py-1 border border-red-300 bg-opacity-50 hover:bg-opacity-5',
+  [EUserStatus.Active]: 'green',
+  [EUserStatus.Unauthenticated]: 'gray',
+  [EUserStatus.Disabled]: 'red',
 };
 
 export interface DecodedToken {
@@ -362,6 +344,22 @@ export const normalizeMultiContentPage = (
   };
 };
 
+export const mapPageToIPageMain = (pagesData: PagesData): IPageList => {
+  const pages = pagesData.PG_Pages.map((page) => ({
+    pageId: page.PG_ID,
+    pageName: page.PG_Name,
+    pagePermission: page.PG_Permission.map((permission) => String(permission)),
+    pageType: String(page.PG_Type),
+    isHidden: false,
+    href: `/${toKebabCase(page.PG_Name)}`,
+  }));
+
+  return {
+    pages: pages,
+    pgTotalPageCount: pagesData.PG_PageCount,
+  };
+};
+
 export const mapToIIUserList = (data: IUserResponseData): IUserList => {
   console.log(data, 'DATA');
   const users: IUserBase[] = data.users.map((user: UserResponse) => ({
@@ -452,4 +450,9 @@ export const isValidUUID = (id: string): boolean => {
   const uuidRegex =
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
   return uuidRegex.test(id);
+};
+
+export const getCookies = () => {
+  const cookies = nookies.get();
+  return cookies;
 };

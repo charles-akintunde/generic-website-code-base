@@ -2,6 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import publicRouteBaseQuery from './publicRouteBaseQuery';
 import {
   IGenericResponse,
+  IGetPagesWithOffsetRequest,
   IPageResponse,
   ISinglePageResponse,
   Page,
@@ -21,6 +22,23 @@ export const pageApi = createApi({
   endpoints: (builder) => ({
     getPages: builder.query<IPageResponse, void>({
       query: () => url,
+      providesTags: (result) =>
+        result?.data?.Pages
+          ? [
+              ...result.data.Pages.map((page) => ({
+                type: 'Pages' as const,
+                id: page.PG_ID,
+              })),
+              { type: 'Pages', id: 'LIST' },
+            ]
+          : [{ type: 'Pages', id: 'LIST' }],
+    }),
+    getPagesWithOffset: builder.query<
+      IPageResponse,
+      IGetPagesWithOffsetRequest
+    >({
+      query: ({ PG_Number, PG_Limit }) =>
+        `${url}/?pg_page_number=${PG_Number}&pg_page_limit=${PG_Limit}`,
       providesTags: (result) =>
         result?.data?.Pages
           ? [
@@ -85,4 +103,5 @@ export const {
   useEditPageMutation,
   useDeletePageMutation,
   useGetPageQuery,
+  useGetPagesWithOffsetQuery,
 } = pageApi;

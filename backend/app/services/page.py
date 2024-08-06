@@ -14,7 +14,7 @@ from app.models.page import T_Page
 from app.core.auth import get_current_user_without_exception
 from app.utils.utils import check_page_permission, is_admin
 from app.models.user_info import T_UserInfo
-from app.utils.response_json import build_page_content_json, build_multiple_page_response
+from app.utils.response_json import build_page_content_json, build_multiple_page_response, create_page_with_offset_response
 
 def create_new_page(db: Session, page: PageCreate):
     """
@@ -39,6 +39,20 @@ def create_new_page(db: Session, page: PageCreate):
         )
 
     return new_page
+
+
+def get_pages_with_offset(db: Session, pg_page_number: int = 1, pg_page_limit: int = 5):
+    total_page_count = page_crud.get_total_pages_count(db=db)
+    total_pages = (total_page_count + pg_page_limit - 1) // pg_page_limit
+    if pg_page_number > total_pages:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid page number: {pg_page_number}. There are only {total_pages} pages available."
+        )
+    
+    pages = page_crud.get_pages_with_offset(db, pg_page_number, pg_page_limit)
+    pages_response = create_page_with_offset_response(pages=pages,total_page_count=total_page_count )
+    return pages_response
 
 def get_pages(db: Session) -> PagesResponse:
     """
@@ -79,8 +93,9 @@ def get_page(
     if not existing_page:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Page with page name and id ({page_name}) does not exist."
+            detail=f"Page with name '{page_name}' was not found."
         )
+
 
     page_is_accessible_to: List[E_UserRole] = existing_page.PG_Permission  # type: ignore
 

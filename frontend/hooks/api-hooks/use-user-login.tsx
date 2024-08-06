@@ -27,7 +27,7 @@ const useUserLogin = () => {
       localStorage.setItem('access_token', response.data.access_token);
       localStorage.setItem('refresh_token', response.data.access_token);
       notify('Success', response.message || successMessage, 'success');
-      router.replace('/');
+      // router.replace('/');
     } catch (error: any) {
       notify('Error', error.data.message, 'error');
     }
@@ -44,8 +44,6 @@ const useUserLogin = () => {
   const lastName = currentUser && currentUser.lastname;
   const fullName = firstName + ' ' + lastName;
   const initails = firstName && lastName && firstName[0] + lastName[0];
-
-  console.log(initails, 'GGGGGGGGGGGGGGGGG');
 
   return {
     isSuccess,

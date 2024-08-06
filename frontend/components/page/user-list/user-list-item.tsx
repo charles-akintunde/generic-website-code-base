@@ -19,7 +19,7 @@ import {
   userRoleLabels,
   userStatusLabels,
 } from '@/utils/helper';
-import { UserOutlined } from '@ant-design/icons';
+import classNames from 'classnames';
 
 import { userColumns } from '@/utils/tableColumns';
 import useUserInfo from '@/hooks/api-hooks/use-user-info';
@@ -55,8 +55,6 @@ const UserListItem = () => {
   useEffect(() => {
     if (usersResponseData && usersResponseData.data) {
       const { data } = usersResponseData;
-
-      console.log(usersResponseData.data, 'usersResponseData.data');
       const usersData: IUserList = mapToIIUserList(usersResponseData.data);
 
       if (usersData.users) {
@@ -69,7 +67,7 @@ const UserListItem = () => {
     }
   }, [usersResponseData]);
 
-  const handleTableChange = (tablePagination) => {
+  const handleTableChange = (tablePagination: any) => {
     const { current, pageSize } = tablePagination;
     setFetchParams((prev) => ({
       ...prev,
@@ -98,7 +96,7 @@ const UserListItem = () => {
         <div className="flex space-x-2 justify-start text-left items-center">
           <Avatar
             // size={avatarSize}
-            src={record.uiPhotoUrl}
+            src={record.uiPhoto}
             // icon={<UserOutlined />}
             className=""
             style={{ backgroundColor: '#67B0FD' }}
@@ -129,9 +127,11 @@ const UserListItem = () => {
       dataIndex: 'uiRole',
       key: 'role',
       render: (role: EUserRole) => (
-        <Badge className={roleColors[role]} variant="secondary">
-          {userRoleLabels[role]}
-        </Badge>
+        <>
+          <Badge className={classNames(roleColors[role])}>
+            {userRoleLabels[role]}
+          </Badge>
+        </>
       ),
     },
     {
@@ -139,10 +139,7 @@ const UserListItem = () => {
       dataIndex: 'uiStatus',
       key: 'status',
       render: (status: EUserStatus) => (
-        <Badge
-          className={`mr-2  rounded-full mb-2 lg:mr-4 lg:mb-0 bg-${statusColors[status]}-200 bg-opacity-50 text-${statusColors[status]}-500 px-2 py-1 hover:bg-${statusColors[status]}-200 hover:bg-opacity-50}`}
-          variant="secondary"
-        >
+        <Badge className={classNames(statusColors[status])}>
           {userStatusLabels[status]}
         </Badge>
       ),
@@ -152,7 +149,7 @@ const UserListItem = () => {
       dataIndex: 'uiMemberPosition',
       key: 'memberPosition',
       render: (position: EMemberPosition) => (
-        <Badge className={positionColors[position]} variant="secondary">
+        <Badge className={classNames(positionColors[position])}>
           {memberPositionLabels[position]}
         </Badge>
       ),
@@ -177,6 +174,8 @@ const UserListItem = () => {
     },
   ];
 
+  console.log(users, 'USERS');
+
   return (
     <div className="p-4">
       {users && (
@@ -187,6 +186,8 @@ const UserListItem = () => {
             pagination={{
               pageSize: pagination.pageSize,
               total: totalUserCount || 0,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '15'],
             }}
             loading={isUsersFetchLoading}
             onChange={handleTableChange}

@@ -2,6 +2,7 @@ import { fetchBaseQuery } from '@reduxjs/toolkit/query';
 
 const publicRouteBaseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+  credentials: 'include',
   prepareHeaders: (headers, { getState }) => {
     const shouldIncludeToken = true;
     if (shouldIncludeToken) {
@@ -17,6 +18,5 @@ const publicRouteBaseQuery = fetchBaseQuery({
     }
     return headers;
   },
-  credentials: 'include',
 });
 export default publicRouteBaseQuery;

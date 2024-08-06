@@ -16,7 +16,9 @@ import { useGetUserQuery } from '@/api/userApi';
 import {
   formatDate,
   isValidUUID,
+  roleBadgeClasses,
   roleColors,
+  statusBadgeClasses,
   statusColors,
   transformToUserInfo,
   userRoleLabels,
@@ -135,12 +137,12 @@ const UserProfilePage = () => {
                     <div className="flex space-x-2">
                       <Badge
                         text={userRoleLabels[userInfo.uiRole]}
-                        color={roleColors[userInfo.uiRole]}
+                        color={roleBadgeClasses[userInfo.uiRole]}
                         className="mr-2"
                       />
                       <Badge
                         text={userStatusLabels[userInfo.uiStatus]}
-                        color={statusColors[userInfo.uiStatus]}
+                        color={statusBadgeClasses[userInfo.uiStatus]}
                         className="mr-2"
                       />
                     </div>

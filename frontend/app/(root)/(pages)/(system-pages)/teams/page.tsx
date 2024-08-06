@@ -1,7 +1,7 @@
 'use client';
 import { useGetUsersAssignedPositionsQuery } from '@/api/userApi';
 import { IUserBase, IUserList } from '@/types/componentInterfaces';
-import { mapToIIUserList } from '@/utils/helper';
+import { getCookies, mapToIIUserList } from '@/utils/helper';
 import React, { useEffect, useState } from 'react';
 import { Card, Col, Row, Avatar, Typography, Divider, Tooltip } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
@@ -24,6 +24,8 @@ const Teams = () => {
     isLoading: isUsersFetchLoading,
     refetch: refetchUsersList,
   } = useGetUsersAssignedPositionsQuery();
+
+  console.log(getCookies(), 'JJJJJJJJJJJJJJJJJJJJJjjj');
 
   useEffect(() => {
     if (usersResponseData && usersResponseData.data) {

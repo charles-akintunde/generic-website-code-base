@@ -4,7 +4,7 @@ API endpoints for user profile updates.
 
 from typing import List, Optional, Tuple
 from uuid import UUID
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile, status
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.core.auth import get_current_user
@@ -168,7 +168,10 @@ async def get_users_endpoint(
     
 @router.get('/members', response_model=StandardResponse)
 async def get_member_users_endpoint(
+    request: Request,
     db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    print(token,"TOKENNNNNNNNNNNNNNNNNNnn")
     try:
         users_response = get_users_assigned_with_positions(db=db)
         return success_response(data = users_response.model_dump(), message='Users fetched successfully')

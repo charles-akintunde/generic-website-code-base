@@ -88,7 +88,7 @@ async def register_user_endpoint(user: UserCreate, db: Session = Depends(get_db)
     return success_response("Your account has been created. Go to you mail to complete verification.", {"user": new_user})
 
 @router.post("/login", response_model=Token)
-async def logi_endpoint(response: Response, user_login: UserLogin, db: Session = Depends(get_db)):
+async def login_endpoint(response: Response, user_login: UserLogin, db: Session = Depends(get_db)):
     """
     Authenticate a user and return a JWT token.
 
@@ -102,7 +102,16 @@ async def logi_endpoint(response: Response, user_login: UserLogin, db: Session =
 
     try:
         token = authenticate_user(db=db, email=user_login.UI_Email, password=user_login.UI_Password, response=response)
-        response.set_cookie('access',token.access_token)
+        response.set_cookie(
+            key='access_token', 
+            value=token.access_token, 
+            httponly=True, 
+            samesite='lax', 
+            secure=True,
+             expires=60 * 60 * 24,
+            domain='localhost'
+        )
+        print(response,"RESPONSE")
         return success_response("Login successful", data=token.dict())
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)

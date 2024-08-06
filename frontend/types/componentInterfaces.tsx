@@ -49,6 +49,11 @@ export interface IUserList {
   totalUserCount: number;
 }
 
+export interface IPageList {
+  pages: IPageMain[];
+  pgTotalPageCount: number;
+}
+
 export interface IPageListItem {
   pages: IPageMain[];
 }
@@ -83,6 +88,11 @@ export interface IPageContentItem extends IPageContentBase {
   pageName: string;
   userId: string;
   href: string;
+}
+
+export interface ITablePagination {
+  current: number;
+  pageSize: number;
 }
 
 export interface IPageMenuItem extends IPage {

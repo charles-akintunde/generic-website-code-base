@@ -1,3 +1,5 @@
+import { getCookies } from '@/utils/helper';
+
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-hidden flex items-center justify-center">

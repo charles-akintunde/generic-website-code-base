@@ -11,7 +11,7 @@ from app.models.user_info import T_UserInfo
 from app.schemas.page_content import PageContentResponse
 from app.models.page_content import T_PageContent
 from app.models.page import T_Page
-from app.schemas.page import PageResponse, PageSingleContent
+from app.schemas.page import PG_PagesResponse, PageResponse, PageSingleContent, Page
 from app.schemas.user_info import UserPartial, UserResponse, UsersResponse
 
 
@@ -29,7 +29,7 @@ def build_page_content_json(page_content : T_PageContent,user: T_UserInfo,page_n
     PG_Name=page_name,
     UI_FirstName=str(user.UI_FirstName),
     UI_LastName=str(user.UI_LastName),
-    PC_ResourceURL=str(page_content.PC_DisplayURL) if page_content.PC_DisplayURL else None,
+    PC_ResourceURL=str(page_content.PC_DisplayURL) if page_content.PC_DisplayURL else None, # type: ignore
     PC_ThumbImgURL=str(page_content.PC_ThumbImgURL) if page_content.PC_ThumbImgURL else None, # type: ignore
     PC_Content=page_content.PC_Content, # type: ignore
     PC_DisplayURL=str(page_content.PC_DisplayURL),
@@ -104,4 +104,11 @@ def create_user_response(user: T_UserInfo)  -> UserResponse:
     UI_Organization=str(user.UI_Organization),
     UI_About= str(user.UI_About),
     UI_MemberPosition= user.UI_MemberPosition.value
+    )
+
+
+def create_page_with_offset_response(pages: List[PageResponse], total_page_count: int) -> PG_PagesResponse:
+    return PG_PagesResponse(
+        PG_Pages=pages,
+        PG_PageCount=total_page_count
     )

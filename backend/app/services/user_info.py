@@ -184,4 +184,5 @@ def get_user_by_id(db: Session, user_id):
             detail=f'User with ID {user_id} not found.'
         )
     
+    
     return create_user_response(user=user)

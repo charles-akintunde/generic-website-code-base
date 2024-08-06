@@ -6,7 +6,7 @@ from typing import Any, List
 
 from fastapi import HTTPException, status
 from sqlalchemy import func
-from app.schemas.page import PageCreate
+from app.schemas.page import  Page, PageCreate, PageResponse
 from app.models.page import T_Page
 from sqlalchemy.orm import Session, load_only
 from app.crud.page_content import page_content_crud
@@ -70,7 +70,17 @@ class PageCRUD:
         """
         return db.query(T_Page).filter(T_Page.PG_ID == page_id).first()
     
+    def get_total_pages_count(self, db: Session) -> int:
+            """
+            Get the total count of pages.
 
+            Args:
+                db (Session): Database session.
+
+            Returns:
+                int: Total count of pages.
+            """
+            return db.query(T_Page).count()
 
     def get_pages(self, db: Session) -> List[T_Page]:
         """
@@ -78,6 +88,24 @@ class PageCRUD:
         """
         return db.query(T_Page).options(load_only(T_Page.PG_ID, T_Page.PG_Type, T_Page.PG_Name, T_Page.PG_Permission)).all() # type: ignore
 
+    def get_pages_with_offset(self, db: Session, pg_page_number: int = 1, pg_page_limit: int = 10) -> List[PageResponse]:
+        """
+        Get pages with offset.
+        """
+        offset = (pg_page_number - 1) * pg_page_limit
+        query = db.query(
+            T_Page.PG_ID,
+            T_Page.PG_Name,
+            T_Page.PG_Permission,
+            T_Page.PG_Type
+        )
+        page_rows = query.offset(offset).limit(pg_page_limit).all()
+        return [PageResponse(
+            PG_ID=str(row.PG_ID),
+            PG_Name=row.PG_Name ,
+            PG_Permission=[permission.value for permission in row.PG_Permission],
+            PG_Type=row.PG_Type.value
+        ) for row in page_rows]
 
     def remove_page_content(self, db: Session, page: T_Page):
         """

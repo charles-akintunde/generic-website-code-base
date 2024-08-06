@@ -121,6 +121,28 @@ const usePage = (pageName?: string) => {
     }
   }, [pagesData]);
 
+  // useEffect(() => {
+  //   if (pagesData && pagesData.data) {
+  //     const normalizedPages: IPageMain[] = pagesData?.data.Pages.map(
+  //       (page: Page) => ({
+  //         pageId: page.PG_ID,
+  //         pageName: page.PG_Name,
+  //         pagePermission: page.PG_Permission.map((permission) =>
+  //           String(permission)
+  //         ),
+  //         pageType: String(page.PG_Type),
+  //         isHidden: false,
+  //         href: `/${toKebabCase(page.PG_Name)}`,
+  //       })
+  //     );
+  //     const allRoutes = [...routes, ...normalizedPages];
+  //     const combinedMenuItems = [...systemMenuItems, ...normalizedPages];
+  //     setMenuItems(combinedMenuItems);
+  //     setAllAppRoutes(allRoutes);
+  //     dispatch(addPages(normalizedPages));
+  //   }
+  // }, [pagesData]);
+
   useEffect(() => {
     if (pageData && pageData.data) {
       let response: Page = pageData.data;
