@@ -1,5 +1,9 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { IGenericResponse } from '@/types/backendResponseInterfaces';
+import {
+  ICompleteUserResponse,
+  ICompleteUserResponseWrapper,
+  IGenericResponse,
+} from '@/types/backendResponseInterfaces';
 import {
   ICreatAccountRequest,
   IPasswordResetConfirmationRequest,
@@ -63,6 +67,12 @@ export const authApi = createApi({
         credentials: 'include',
       }),
     }),
+    getActiveUser: builder.query<ICompleteUserResponseWrapper, void>({
+      query: () => ({
+        url: `${commonUrl}/active-user`,
+        credentials: 'include',
+      }),
+    }),
   }),
 });
 
@@ -73,4 +83,5 @@ export const {
   useUserLogoutMutation,
   useResetPasswordWithEmailMutation,
   useResetPasswordWithTokenMutation,
+  useGetActiveUserQuery,
 } = authApi;

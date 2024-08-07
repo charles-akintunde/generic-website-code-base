@@ -1,25 +1,18 @@
 import usePage from '@/hooks/api-hooks/use-page';
-import {
-  containerNoFlexPaddingStyles,
-  pageContentPaddingStyles,
-  primarySolidButtonStyles,
-} from '@/styles/globals';
+import { pageContentPaddingStyles } from '@/styles/globals';
 import {
   createPageContentItem,
   fromKebabCase,
   getChangedFields,
+  handleRoutingOnError,
   normalizeMultiContentPage,
   notifyNoChangesMade,
-  pageNormalizer,
   toKebabCase,
 } from '@/utils/helper';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { PlateEditor } from '@/components/plate/plate';
-import { PlusIcon, Router } from 'lucide-react';
-import AppButton from '@/components/common/button/app-button';
 import LoadingButton from '@/components/common/button/loading-button';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import {
   IPageContentItem,
   IPageContentMain,
@@ -27,14 +20,13 @@ import {
 } from '@/types/componentInterfaces';
 import { useNotification } from '@/components/hoc/notification-provider';
 import usePageContent from '@/hooks/api-hooks/use-page-content';
-import { useGetPageContentQuery } from '@/api/pageContentApi';
-import { IPageContentGetRequest } from '@/types/requestInterfaces';
 import AppLoading from '@/components/common/app-loading';
 import PageLayout from '@/components/page/layout';
 import { TElement } from '@udecode/plate-common';
 import { useGetPageQuery } from '@/api/pageApi';
 import { Page } from '@/types/backendResponseInterfaces';
-import { boolean } from 'zod';
+import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { useAppSelector } from '@/hooks/redux-hooks';
 
 const SinglePage = () => {
   const router = useRouter();
@@ -43,25 +35,14 @@ const SinglePage = () => {
   const [pageName, setPageName] = useState(
     fromKebabCase(pathname.split('/')['1'])
   );
-  // const {
-  //   data: pageContentData,
-  //   isError: hasPageContentFetchError,
-  //   isSuccess: isPageContentFetchSuccess,
-  //   isLoading: isPageContentFetchLoading,
-  //   error: pageContentFetchError,
-  //   refetch: pageContentFetchRefetch,
-  // } = useGetPageContentQuery({
-  //   PC_Title: fromKebabCase(pageName),
-  //   PG_Name: fromKebabCase(pageName),
-  // } as IPageContentGetRequest);
   const {
     data: pageData,
     isError: hasPageFetchError,
+    error: pageFetchError,
     isSuccess: isPageFetchSuccess,
     isLoading: isPageFetchLoading,
     refetch: pageRefetch,
   } = useGetPageQuery(pageName);
-  const { currentUser, currentUserRole } = useUserLogin();
   const [page, setPage] = useState<IPageMain>();
   const [singlePageContent, setSinglePageContent] =
     useState<IPageContentMain>();
@@ -87,28 +68,20 @@ const SinglePage = () => {
   const [plateEditorKey, setPlateEditorKey] = useState<string>(
     JSON.stringify(plateEditor)
   );
-  const {
-    submitPageContent,
-    submitEditedPageContent,
-    isCreatePageContentSuccess,
-  } = usePageContent();
-  const { canEdit } = useUserLogin();
-
+  const { submitEditedPageContent } = usePageContent();
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+  const uiId = uiActiveUser.uiId;
   const [singlePage, setSinglePage] = useState<IPageMain>();
-  //const pageContentId: string = contentData!.pageContentId!;
 
   useEffect(() => {
     if (pageData && pageData.data) {
       let response: Page = pageData.data;
-      console.log(response, 'respppppppp');
-
       const normalizedPage = normalizeMultiContentPage(response, true);
       setSinglePage(normalizedPage);
       setPage(normalizedPage);
       const singlePageContent: IPageContentMain =
         normalizedPage.pageContents && normalizedPage.pageContents[0];
-      console.log(normalizedPage, 'normalizedPage');
-      console.log(singlePageContent, 'singlePageContent');
 
       if (singlePageContent) {
         setOriginalSinglePageData(singlePageContent.editorContent);
@@ -120,8 +93,6 @@ const SinglePage = () => {
           JSON.stringify(singlePageContent.editorContent || plateEditor)
         );
       }
-
-      //  setCurrentPage(normalizedPage);
     }
   }, [pageData]);
 
@@ -134,7 +105,7 @@ const SinglePage = () => {
       singlePageContent && singlePageContent.pageContentDisplayImage;
     const pageId = String(page?.pageId);
     const pageType = String(page?.pageType);
-    const userId = currentUser?.Id as string;
+    const userId = uiId as string;
     const kebabCasePageName = `/${toKebabCase(pageName)}`;
     const pageContent = createPageContentItem(
       {
@@ -173,7 +144,6 @@ const SinglePage = () => {
       } else {
         console.log(isSinglePageCreated, 'Create');
         console.log(pageContent, 'pageId');
-        // await submitPageContent(pageContent, pageRefetch);
       }
     } else {
       notifyNoChangesMade(notify);
@@ -186,10 +156,8 @@ const SinglePage = () => {
   }
 
   useEffect(() => {
-    if (hasPageFetchError) {
-      router.push('/404');
-    }
-  });
+    handleRoutingOnError(router, hasPageFetchError, pageFetchError);
+  }, [hasPageFetchError, router, pageFetchError]);
 
   return (
     <>

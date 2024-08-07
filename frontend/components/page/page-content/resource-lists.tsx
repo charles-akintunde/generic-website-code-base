@@ -1,24 +1,22 @@
 'use client';
 import React, { useState } from 'react';
-import PageListCard from './page-list-card';
 import { fromKebabCase, toKebabCase } from '@/utils/helper';
-import { IPageContentMain, IPageMain } from '@/types/componentInterfaces';
+import { IPageContentMain } from '@/types/componentInterfaces';
 import usePage from '@/hooks/api-hooks/use-page';
 import { usePathname } from 'next/navigation';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import ContentList from '@/components/common/content-list/content-list';
-import { Card, Button } from 'antd';
-import { Icon } from 'lucide-react';
-import ActionsButtons from '@/components/common/action-buttons';
 import ResourceListCard from './resource-list-card';
+import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { useAppSelector } from '@/hooks/redux-hooks';
 
 const ResourceLists = () => {
   const pathname = usePathname();
   const [pageName, setPageName] = useState(
     fromKebabCase(pathname.split('/')['1'])
   );
-  const { canEdit } = useUserLogin();
-  const { currentPage, getCurrentPageContents } = usePage(pageName);
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+  const { currentPage } = usePage(pageName);
   const page = currentPage;
   const pageType = (page && page?.pageType) ?? '';
   const createPageHref = (pageNameKebab: string, queryString: string) =>
@@ -33,8 +31,6 @@ const ResourceLists = () => {
     pageId: pageId,
   };
   const queryString = new URLSearchParams(queryParams).toString();
-
-  console.log(currentPage, 'PAGECONETENT');
 
   return (
     <ContentList

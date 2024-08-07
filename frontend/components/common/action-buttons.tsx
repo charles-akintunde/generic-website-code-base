@@ -3,9 +3,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
 import { EllipsisVertical } from 'lucide-react';
 import AppPopconfirm from './app-popup-confirm';
-import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
+import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { useAppSelector } from '@/hooks/redux-hooks';
 
 interface IActionProps {
   href?: string;
@@ -24,12 +25,13 @@ const ActionsButtons: React.FC<IActionProps> = ({
   handleRemove,
   hasAccess = true,
 }) => {
-  const { canEdit } = useUserLogin();
-  if (!canEdit && !hasAccess) {
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+
+  if (!(canEdit && hasAccess)) {
     return <></>;
   }
 
-  console.log(record, 'RECORD');
   return (
     <div className="flex gap-1 items-center">
       <Popover>

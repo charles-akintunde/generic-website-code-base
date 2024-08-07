@@ -15,6 +15,7 @@ import ActionsButtons from '@/components/common/action-buttons';
 import { useGetUserQuery } from '@/api/userApi';
 import {
   formatDate,
+  handleRoutingOnError,
   isValidUUID,
   roleBadgeClasses,
   roleColors,
@@ -28,6 +29,7 @@ import { IUserInfo } from '@/types/componentInterfaces';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { usePathname, useRouter } from 'next/navigation';
 import AppLoading from '@/components/common/app-loading';
+import { useAppSelector } from '@/hooks/redux-hooks';
 
 export function sanitizeAndCompare(str1: string, str2: string) {
   if (!str1 || !str2) return false;
@@ -36,10 +38,10 @@ export function sanitizeAndCompare(str1: string, str2: string) {
 
 const UserProfilePage = () => {
   const router = useRouter();
-  const { isAdmin, currentUser } = useUserLogin();
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const isAdmin = uiActiveUser ? uiActiveUser.uiIsAdmin : false;
   const pathname = usePathname();
   const userId = pathname.split('/')[2];
-  console.log(pathname, userId, 'PATHNAME');
 
   const [isEditing, setIsEditing] = useState(false);
   const userQueryResult =
@@ -68,30 +70,25 @@ const UserProfilePage = () => {
     setIsEditing(!isEditing);
   };
   const [isSameUser, setIsSameUser] = useState(
-    sanitizeAndCompare(currentUser?.Id as string, userInfo?.id as string)
+    sanitizeAndCompare(uiActiveUser?.uiId as string, userInfo?.id as string)
   );
 
   useEffect(() => {
-    console.log(userData, 'userData');
     if (userData?.data) {
       const userProfile: IUserInfo = transformToUserInfo(userData?.data);
       setUserInfo(userProfile);
 
       const isSameUser = sanitizeAndCompare(
-        currentUser?.Id as string,
+        uiActiveUser?.uiId as string,
         userProfile?.id
       );
       setIsSameUser(isSameUser);
     }
   }, [userData]);
 
-  console.log(hasUserFetchError, 'hasUserFetchError');
-
   useEffect(() => {
-    if (hasUserFetchError) {
-      router.replace('/404');
-    }
-  }, [hasUserFetchError, router]);
+    handleRoutingOnError(router, hasUserFetchError, userFetchError);
+  }, [hasUserFetchError, router, userFetchError]);
 
   if (isUserFetchLoading) {
     return <AppLoading />;

@@ -17,12 +17,16 @@ import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import ActionsButtons from '@/components/common/action-buttons';
 import { useGetPagesWithOffsetQuery } from '@/api/pageApi';
 import { useRouter } from 'next/navigation';
+import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { useAppSelector } from '@/hooks/redux-hooks';
 
 const PageListItem: React.FC = () => {
   const router = useRouter();
   const [viewContent, setViewContent] = useState<IPageMain | null>(null);
   const { handleEditButtonClick, handleRemovePage } = usePage();
-  const { currentUser, canEdit } = useUserLogin();
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+  const uiIsSuperAdmin = uiActiveUser.uiIsSuperAdmin;
   const [pages, setPages] = useState<IPageMain[]>();
   const [totalPageCount, setTotalPageCount] = useState<number>();
   const [pagination, setPagination] = useState({
@@ -114,7 +118,7 @@ const PageListItem: React.FC = () => {
       fixed: 'right',
       render: (_: any, record: IPageMain) => (
         <>
-          {canEdit && (
+          {canEdit && uiIsSuperAdmin && (
             <>
               <ActionsButtons
                 entity="page"

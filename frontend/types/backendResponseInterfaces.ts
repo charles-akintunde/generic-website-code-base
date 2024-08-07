@@ -36,7 +36,7 @@ export interface UserResponse {
   UI_Status: EUserStatus;
   UI_City: string | null;
   UI_RegDate: string;
-  UI_PhotoURL: string;
+  UI_PhotoURL: string | null;
   UI_MemberPosition: string;
   UI_Country?: string | null | undefined;
 }

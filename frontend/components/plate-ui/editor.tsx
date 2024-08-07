@@ -8,6 +8,8 @@ import { PlateContent } from '@udecode/plate-common';
 import { cva } from 'class-variance-authority';
 
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
+import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { useAppSelector } from '@/hooks/redux-hooks';
 
 const editorVariants = cva(
   cn(
@@ -63,7 +65,10 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
     },
     ref
   ) => {
-    const { canEdit } = useUserLogin();
+    const uiActiveUser = useAppSelector(
+      (state) => state.userSlice.uiActiveUser
+    );
+    const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
 
     // Determine the actual states based on canEdit
     const finalReadOnly = !canEdit || readOnly;

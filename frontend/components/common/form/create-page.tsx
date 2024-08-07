@@ -21,6 +21,7 @@ import { primarySolidButtonStyles } from '@/styles/globals';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import usePage from '@/hooks/api-hooks/use-page';
+import useUserInfo from '@/hooks/api-hooks/use-user-info';
 
 const CreatePage = () => {
   const {
@@ -100,15 +101,8 @@ const CreatePage = () => {
               label="Page Permission"
               type="multiple-select"
               options={OPTIONS}
-              multiple={true} // Enable multiple selections
+              multiple={true}
             />
-            {/* <FormField
-              control={form.control}
-              name="isHidden"
-              label=""
-              type="checkbox"
-              placeholder="Hide this page"
-            /> */}
             <LoadingButton
               buttonText="Submit"
               loading={editingPage ? isEditPageLoading : isCreatePageLoading}
@@ -122,16 +116,16 @@ const CreatePage = () => {
 };
 
 export const CreatePageDialog = () => {
-  const dispatch = useAppDispatch();
-  const {
-    submitCreatedPage,
-    pages,
-    editingPage,
-    handleToggleCreateFormDialog,
-  } = usePage();
+  const { editingPage, handleToggleCreateFormDialog } = usePage();
   const isDialogOpen = useAppSelector(
     (state) => state.page.isCreatePageDialogOpen
   );
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+
+  if (!canEdit) {
+    return <></>;
+  }
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleToggleCreateFormDialog}>

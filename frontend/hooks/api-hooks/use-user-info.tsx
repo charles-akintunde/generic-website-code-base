@@ -5,19 +5,30 @@ import {
   useEditRoleAndStatusMutation,
 } from '@/api/userApi';
 import { useNotification } from '@/components/hoc/notification-provider';
-import { IUserBase, IUserInfo } from '@/types/componentInterfaces';
-import { transformUserInfoToEditUserRequest } from '@/utils/helper';
-import { ExceptionMap } from 'antd/es/result';
-import useUserLogin from './use-user-login';
-import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-profile/[user-profile-id]/page';
-import { useState } from 'react';
-import { useAppDispatch } from '../redux-hooks';
-import { toggleCreateUserDialog } from '@/store/slice/userSlice';
 import {
+  IUIActiveUser,
+  IUserBase,
+  IUserInfo,
+} from '@/types/componentInterfaces';
+import {
+  transformToUserInfo,
+  transformUserInfoToEditUserRequest,
+} from '@/utils/helper';
+import { ExceptionMap } from 'antd/es/result';
+import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-profile/[user-profile-id]/page';
+import { useEffect, useState } from 'react';
+import { useAppDispatch } from '../redux-hooks';
+import {
+  setUIActiveUser,
+  toggleCreateUserDialog,
+} from '@/store/slice/userSlice';
+import {
+  useGetActiveUserQuery,
   useResetPasswordWithEmailMutation,
   useResetPasswordWithTokenMutation,
 } from '@/api/authApi';
 import { useRouter } from 'next/navigation';
+import { EUserRole } from '@/types/enums';
 
 export interface GetUsersRequest {
   page: number;
@@ -60,12 +71,49 @@ const useUserInfo = () => {
       isLoading: isEditPageLoading,
     },
   ] = useEditUserMutation();
-  const { isAdmin, currentUser } = useUserLogin();
+  const {
+    data: activeUserData,
+    isError: hasActiveUserFetchError,
+    isSuccess: isActiveUserFetchSuccess,
+    isLoading: isActiveUserFetchLoading,
+    refetch: activePageRefetch,
+  } = useGetActiveUserQuery();
+  const [uiActiveUser, setActiveUser] = useState<IUIActiveUser>({
+    uiId: null,
+    uiFullName: '',
+    uiInitials: '',
+    uiIsAdmin: false,
+    uiIsSuperAdmin: false,
+    uiCanEdit: false,
+    uiRole: EUserRole.Public,
+    uiPhotoURL: null,
+  });
+
   const { notify } = useNotification();
   const dispatch = useAppDispatch();
   const [resetPasswordSuccessMessage, setResetPasswordSuccessMessage] =
     useState<string>();
   const router = useRouter();
+
+  useEffect(() => {
+    if (activeUserData?.data) {
+      const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
+      dispatch(
+        setUIActiveUser({
+          uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+          uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+          uiIsAdmin: userProfile.uiRole == EUserRole.Admin,
+          uiIsSuperAdmin: userProfile.uiRole == EUserRole.SuperAdmin,
+          uiId: userProfile.id,
+          uiCanEdit:
+            userProfile.uiRole == EUserRole.Admin ||
+            userProfile.uiRole == EUserRole.SuperAdmin,
+          uiRole: userProfile.uiRole,
+          uiPhotoURL: userProfile.uiPhoto,
+        })
+      );
+    }
+  }, [activeUserData]);
 
   const handleRemoveUser = async (user: IUserBase) => {
     try {
@@ -139,12 +187,11 @@ const useUserInfo = () => {
 
   const submitEditRoleStatus = async (userId: string, userInfo: IUserBase) => {
     try {
-      console.log(userInfo, 'USERINFO');
       const isSameUser = sanitizeAndCompare(
-        currentUser?.Id as string,
+        uiActiveUser?.uiId as string,
         userInfo?.id as string
       );
-      if (isAdmin && !isSameUser) {
+      if (uiActiveUser.uiIsSuperAdmin && !isSameUser) {
         const response = await editRoleAndStatus({
           UI_ID: userId,
           UI_Role: Number(userInfo.uiRole),
@@ -182,7 +229,7 @@ const useUserInfo = () => {
     try {
       userInfo['id'] = userId;
       const isSameUser = sanitizeAndCompare(
-        currentUser?.Id as string,
+        uiActiveUser?.uiId as string,
         userInfo?.id as string
       );
       const formData = new FormData();
@@ -257,6 +304,8 @@ const useUserInfo = () => {
     hasResetPasswordWithError,
     resetPasswordSuccessMessage,
     submitPasswordResetWithToken,
+    uiActiveUser,
+    activePageRefetch,
   };
 };
 

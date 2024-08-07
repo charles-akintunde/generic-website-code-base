@@ -29,7 +29,7 @@ export interface IUserBase {
   uiRole: string;
   uiStatus: string;
   uiRegDate: string;
-  uiPhoto: string | File;
+  uiPhoto: string | File | null;
   uiMemberPosition?: string | null;
   uiCountry?: string | null | undefined;
 }
@@ -42,6 +42,17 @@ export interface IUserInfo extends IUserBase {
   uiPhoneNumber: string | null;
   uiOrganization: string | null;
   uiAbout: string | null;
+}
+
+export interface IUIActiveUser {
+  uiId: string | null;
+  uiFullName: string;
+  uiInitials: string;
+  uiIsAdmin: boolean;
+  uiIsSuperAdmin: boolean;
+  uiCanEdit: boolean;
+  uiRole: string;
+  uiPhotoURL: string | null | File;
 }
 
 export interface IUserList {

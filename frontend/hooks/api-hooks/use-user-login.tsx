@@ -1,15 +1,30 @@
 'use client';
 import { useNotification } from '@/components/hoc/notification-provider';
-import React, { useState } from 'react';
-import { useUserLoginMutation } from '@/api/authApi';
-import { IUserLogin } from '@/types/componentInterfaces';
+import React, { useEffect, useState } from 'react';
+import { useUserLoginMutation, useGetActiveUserQuery } from '@/api/authApi';
+import {
+  IUIActiveUser,
+  IUserInfo,
+  IUserLogin,
+} from '@/types/componentInterfaces';
 import { IUserLoginRequest } from '@/types/requestInterfaces';
 import { useRouter } from 'next/navigation';
-import { decodeJwt, getTokens } from '@/utils/helper';
+import { decodeJwt, getTokens, transformToUserInfo } from '@/utils/helper';
 import { EUserRole } from '@/types/enums';
+import { useAppSelector } from '../redux-hooks';
+import useUserInfo from './use-user-info';
+import { setUIActiveUser } from '@/store/slice/userSlice';
 
 const useUserLogin = () => {
   const { notify } = useNotification();
+  const {
+    data: activeUserData,
+    isError: hasActiveUserFetchError,
+    isSuccess: isActiveUserFetchSuccess,
+    isLoading: isActiveUserFetchLoading,
+    refetch: activePageRefetch,
+  } = useGetActiveUserQuery();
+
   const router = useRouter();
   const [userLogin, { isSuccess, isError, isLoading }] = useUserLoginMutation();
   const [successMessage, setSuccessMessage] = useState<string>(
@@ -24,14 +39,10 @@ const useUserLogin = () => {
         UI_Password: userLoginData.password,
       };
       const response = await userLogin(userLoginRequestData).unwrap();
-      localStorage.setItem('access_token', response.data.access_token);
-      localStorage.setItem('refresh_token', response.data.access_token);
-
-      console.log(response, 'RESPONSE');
+      activePageRefetch();
       notify('Success', response.message || successMessage, 'success');
       router.replace('/');
     } catch (error: any) {
-      console.log(error, 'ERRORS');
       notify('Error', error.data.message, 'error');
     }
   };
@@ -43,6 +54,27 @@ const useUserLogin = () => {
   const canEdit =
     currentUserRole == '0' || currentUserRole == '1' ? true : false;
   const isAdmin = currentUserRole == '0' ? true : false;
+
+  useEffect(() => {
+    if (activeUserData?.data) {
+      const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
+      dispatch(
+        setUIActiveUser({
+          uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+          uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+          uiIsAdmin: userProfile.uiRole == EUserRole.Admin,
+          uiIsSuperAdmin: userProfile.uiRole == EUserRole.SuperAdmin,
+          uiId: userProfile.id,
+          uiCanEdit:
+            userProfile.uiRole == EUserRole.Admin ||
+            userProfile.uiRole == EUserRole.SuperAdmin,
+          uiRole: userProfile.uiRole,
+          uiPhotoURL: userProfile.uiPhoto,
+        })
+      );
+    }
+  }, [activeUserData]);
+
   const firstName = currentUser && currentUser.firstname;
   const lastName = currentUser && currentUser.lastname;
   const fullName = firstName + ' ' + lastName;
@@ -64,3 +96,6 @@ const useUserLogin = () => {
 };
 
 export default useUserLogin;
+function dispatch(arg0: any) {
+  throw new Error('Function not implemented.');
+}

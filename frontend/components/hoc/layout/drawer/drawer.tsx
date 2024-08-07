@@ -2,75 +2,31 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { closeDrawer } from '@/store/slice/layoutSlice';
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
 import { MobileMenuItems } from '../menu-items/menu-items';
-import appLogo from '@/assets/icons/gw-logo.png';
-import Image from 'next/image';
 import Logo from '@/components/common/logo';
 import Link from 'next/link';
-import { ChevronDown, LogOut, LogOutIcon } from 'lucide-react';
-import OutlinedButton from '@/components/common/button/app-button';
-import LoadingButton from '@/components/common/button/loading-button';
+import { LogOut } from 'lucide-react';
 import LogoutButton from '@/components/common/button/logout-button';
 import AppButton from '@/components/common/button/app-button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { UserProfile } from '../header/header';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { Avatar } from 'antd';
 import HoverableCard from '@/components/common/hover-card';
-import type { MenuProps } from 'antd';
-import { Dropdown } from 'antd';
 import { transitionStyles } from '@/styles/globals';
+import useUserInfo from '@/hooks/api-hooks/use-user-info';
 
 const Drawer: React.FC = () => {
   const dispatch = useAppDispatch();
   const isDrawerOpen = useAppSelector((state) => state.layout.isDrawerOpen);
-  const { currentUser } = useUserLogin();
-  const firstName = currentUser && currentUser.firstname;
-  const lastName = currentUser && currentUser.lastname;
-  const fullName = firstName + ' ' + lastName;
-  const initails = firstName && lastName && firstName[0] + lastName[0];
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const uiFullName = uiActiveUser.uiFullName;
+  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+  const uiId = uiActiveUser.uiId;
+  const uiIntials = uiActiveUser.uiInitials;
 
   const handleClose = () => {
     dispatch(closeDrawer());
   };
-
-  const items: MenuProps['items'] = [
-    {
-      key: '1',
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.antgroup.com"
-        >
-          1st menu item
-        </a>
-      ),
-    },
-    {
-      key: '2',
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.aliyun.com"
-        >
-          2nd menu item
-        </a>
-      ),
-    },
-  ];
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={handleClose}>
@@ -81,13 +37,11 @@ const Drawer: React.FC = () => {
           </div>
         </SheetHeader>
         <ScrollArea className="overflow-y-auto max-h-[calc(100vh-10rem)] hide-scrollbar">
-          {/* Scrollable container */}
           <MobileMenuItems />
         </ScrollArea>
 
         <footer className="w-full absolute bottom-5 bg-white z-20">
-          {/* Aligns the footer content to the left */}
-          {currentUser && (
+          {uiId && (
             <div className="flex w-full items-center justify-between px-6">
               <LogoutButton
                 trigger={
@@ -97,14 +51,10 @@ const Drawer: React.FC = () => {
                     isRightPosition={false}
                     variant={'ghost'}
                     classNames={`${transitionStyles} p-0 hover:bg-white hover:text-primary`}
-                    //onClick={sendLogoutRequest(handleCloseDrawer)}
                   />
                 }
               />
-              <Link
-                onClick={handleClose}
-                href={`/user-profile/${currentUser.Id}`}
-              >
+              <Link onClick={handleClose} href={`/user-profile/${uiId}`}>
                 <HoverableCard
                   classNames={`flex items-center cursor-pointer space-x-2`}
                 >
@@ -116,12 +66,9 @@ const Drawer: React.FC = () => {
                       transition: 'background-color px-0 0.3s ease-in-out',
                     }}
                   >
-                    {initails}
+                    {uiIntials}
                   </Avatar>{' '}
-                  <p className="text-xs">
-                    {firstName} {lastName}
-                  </p>
-                  {/* <ChevronDown className="h-3 w-3" /> */}
+                  <p className="text-xs">{uiFullName}</p>
                 </HoverableCard>
               </Link>
             </div>

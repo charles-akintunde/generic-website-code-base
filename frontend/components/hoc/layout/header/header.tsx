@@ -1,16 +1,14 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import menuIcon from '@/assets/icons/menu.svg';
-import logo from '@/assets/icons/gw-logo.png';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { toggleDrawer } from '@/store/slice/layoutSlice';
 import Drawer from '../drawer/drawer';
 import Image from 'next/image';
 import { MenuItems } from '../menu-items/menu-items';
-import { Menu, Dropdown, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import Logo from '@/components/common/logo';
-import { Button } from '@/components/ui/button';
-import { Avatar, Space } from 'antd';
+import { Avatar } from 'antd';
 import { containerPaddingStyles } from '@/styles/globals';
 import {
   DropdownMenu,
@@ -22,29 +20,25 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { User, RefreshCw, LogOut } from 'lucide-react';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
 import LogoutButton from '@/components/common/button/logout-button';
-import AppButton from '@/components/common/button/app-button';
-import { DecodedToken } from '@/utils/helper';
 import { Separator } from '@/components/ui/separator';
 import HoverableCard from '@/components/common/hover-card';
-import { IToken } from '@/types/requestInterfaces';
+import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { IUIActiveUser } from '@/types/componentInterfaces';
 
 interface UserProfileDropDownProps {
-  currentUser: DecodedToken;
+  uiActiveUser: IUIActiveUser;
   trigger: React.ReactNode;
 }
 
 export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
-  currentUser,
+  uiActiveUser,
   trigger,
 }) => {
-  const firstName = currentUser.firstname;
-  const lastName = currentUser.lastname;
-  const fullName = firstName + ' ' + lastName;
-  const initails = firstName && lastName && firstName[0] + lastName[0];
+  const uiId = uiActiveUser.uiId;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -54,7 +48,7 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href={`/user-profile/${currentUser?.Id}`}>
+          <Link href={`/user-profile/${uiId}`}>
             <DropdownMenuItem className="cursor-pointer">
               <User className="mr-2 h-4 w-4" />
               Profile
@@ -67,31 +61,17 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
-        {/* <DropdownMenuSeparator /> */}
-        {/* <DropdownMenuItem className="cursor-pointer">
-    
-          <LogoutButton
-            trigger={
-              <>
-                <LogOut className="mr-2 h-4 w-4" /> Logout
-              </>
-            }
-          />
-        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
 
 export const UserProfile = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const { currentUser } = useUserLogin();
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+  const initails = uiActiveUser.uiInitials;
 
-  const handleLoginLogout = () => {
-    setLoggedIn(!loggedIn);
-  };
-
-  if (!currentUser) {
+  if (!uiActiveUser.uiId) {
     return (
       <Link
         href={'/sign-in'}
@@ -100,15 +80,6 @@ export const UserProfile = () => {
         Log in
       </Link>
     );
-  }
-
-  const firstName = currentUser.firstname;
-  const lastName = currentUser.lastname;
-  const fullName = firstName + ' ' + lastName;
-  const initails = firstName && lastName && firstName[0] + lastName[0];
-
-  interface UserProfileDropDownProps {
-    currentUser: DecodedToken;
   }
 
   return (
@@ -147,7 +118,7 @@ export const UserProfile = () => {
               </span>
             </Tooltip>
           }
-          currentUser={currentUser}
+          uiActiveUser={uiActiveUser}
         />
       </HoverableCard>
     </div>

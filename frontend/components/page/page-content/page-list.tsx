@@ -41,9 +41,13 @@ import { EPageType } from '@/types/enums';
 import AppLoading from '@/components/common/app-loading';
 import { FloatButton } from 'antd';
 import { useRouter } from 'next/navigation';
+import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { useAppSelector } from '@/hooks/redux-hooks';
 
 const CreatePageContent = () => {
-  const { currentUser, canEdit } = useUserLogin();
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+  const uiId = uiActiveUser.uiId;
   const [plateEditor, setPlateEditor] = useState<TElement[]>([
     {
       id: '1',
@@ -86,9 +90,8 @@ const CreatePageContent = () => {
       pageName: pageName,
       pageType: pageType ? pageType : '',
       href: `${toKebabCase(pageName)}/${toKebabCase(data.pageContentName)}`,
-      userId: (currentUser && currentUser.Id) as string,
+      userId: (uiId && uiId) as string,
     };
-    console.log(pageContent, 'EPageType.ResList');
 
     await submitPageContent(pageContent);
   };
@@ -165,7 +168,9 @@ const CreatePageContent = () => {
 
 const EditPageContent = () => {
   const router = useRouter();
-  const { currentUser, currentUserRole, canEdit } = useUserLogin();
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+  const uiId = uiActiveUser.uiId;
   const [contentData, setContentData] = useState<IPageContentMain>();
   const pathname = usePathname();
   const page = pathname.split('/');
@@ -252,7 +257,7 @@ const EditPageContent = () => {
       String(pageId),
       pageType,
       pageName,
-      String(currentUser?.Id),
+      String(uiId && uiId),
       `${toKebabCase(pageName)}/${toKebabCase(data.pageContentName)}`
     );
     const newDataWithContents = { ...data, editorContent: plateEditor };

@@ -163,3 +163,10 @@ class PasswordResetConfirm(BaseModel):
 class LogoutRequest(BaseModel):
     refresh_token: str
 
+# class UICurrentUser(BaseModel):
+#     UI_FirstName: str 
+#     UI_LastName: str 
+#     UI_Email: str
+#     UI_Role: int
+#     UI_Status: int
+#     UI_Photo: Optional[str] = None

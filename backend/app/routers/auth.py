@@ -13,11 +13,15 @@ from app.services.auth import authenticate_user, confirm_password_reset, logout_
 from app.database import get_db
 from app.crud.user_info import user_crud
 from app.utils.response import success_response, error_response
-from app.core.auth import create_access_token, create_refresh_token, verify_token
+from app.core.auth import create_access_token, create_refresh_token, get_current_user_without_exception, verify_token
 from app.models.enums import E_Status, E_UserRole
 from app.schemas.response import StandardResponse
+from app.utils.response_json import create_user_response
+from app.config import settings
 
 router = APIRouter()
+ACCESS_TOKEN_EXPIRE_SECONDS = settings.ACCESS_TOKEN_EXPIRE_SECONDS
+REFRESH_TOKEN_EXPIRE_SECONDS = settings.REFRESH_TOKEN_EXPIRE_SECONDS
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 @router.post("/password-reset", response_model=StandardResponse)
 async def request_password_reset_endpoint(
@@ -110,7 +114,7 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
             httponly=True,
             samesite='none',
             secure=True,
-            max_age=60 * 60 * 24,
+            max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
             domain=None
         )
         response.set_cookie(
@@ -119,7 +123,7 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
             httponly=True,
             samesite='none',
             secure=True,
-            max_age=60 * 60 * 24,
+            max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
             domain=None
         )
         print(response.headers,"HEADER")
@@ -151,7 +155,7 @@ async def refresh_token_endpoint(
                 httponly=True,
                 samesite='none',
                 secure=True,
-                max_age=60 * 60 * 1,
+                max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
                 domain=None
             )
 
@@ -201,13 +205,30 @@ async def resend_confirmation_endpoint(email: EmailStr, db: Session = Depends(ge
     Returns:
         JSONResponse: Confirmation message.
     """
-    print(EmailStr,"EmailStr")
     error = await resend_confirmation_token(db, email)
     if error:
         return error_response(error, status.HTTP_400_BAD_REQUEST) # type: ignore
     
     return success_response("Confirmation email resent successfully")
 
+@router.get('/active-user', response_model=StandardResponse)
+def get_active_user(active_user=Depends(get_current_user_without_exception)) -> JSONResponse:
+    """
+    Retrieve the currently logged in user.
+
+    Args:
+        active_user: The user currently authenticated
+        
+    Returns:
+        JSONResponse: Standardized response format.
+    """
+    try:
+        if active_user:
+            return success_response(message='User retrieved successfully', data=create_user_response(active_user).dict())
+        else:
+            return success_response(message='No user is currently logged in')
+    except HTTPException as e:
+        return error_response(message=e.detail, status_code=e.status_code)
 
 @router.post("/logout", response_model=StandardResponse)
 async def logout(

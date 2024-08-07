@@ -24,9 +24,9 @@ from app.schemas.user_info import Token, UIToken
 
 SECRET_KEY = settings.AUTH_SECRET_KEY
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_HOURS = 1
+ACCESS_TOKEN_EXPIRE_SECONDS = settings.ACCESS_TOKEN_EXPIRE_SECONDS
 CONFIRMATION_TOKEN_EXPIRY_DAYS = 10
-REFRESH_TOKEN_EXPIRE_DAYS = 2
+REFRESH_TOKEN_EXPIRE_SECONDS = settings.REFRESH_TOKEN_EXPIRE_SECONDS
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 oauth2_scheme_without_auto_error = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
@@ -52,8 +52,14 @@ def get_token_from_cookie(request: Request) -> str:
         )
     return token
 
+def get_token_from_cookies_without_exception(request: Request):
+    token = request.cookies.get('access_token')
+    if not token:
+        return None
+    return token
+
 def get_current_user_without_exception(
-        token: str = Depends(oauth2_scheme_without_auto_error), 
+        token= Depends(get_token_from_cookies_without_exception),
         db: Session = Depends(get_db)) -> Optional[T_UserInfo]:
     """
     Get the currently user making request.
@@ -67,9 +73,10 @@ def get_current_user_without_exception(
     """
     if not token:
         return None
-    
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = verify_token(token=token, db=db)
+        if not payload:
+            return None
         email = payload.get("sub")
         if email is None:
             return None
@@ -149,7 +156,7 @@ def create_refresh_token(data: dict, expires_delta: Optional[timedelta] = None) 
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+        expire = datetime.now(timezone.utc) + timedelta(seconds=REFRESH_TOKEN_EXPIRE_SECONDS)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -171,7 +178,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
+        expire = datetime.now(timezone.utc) + timedelta(seconds=ACCESS_TOKEN_EXPIRE_SECONDS)
     to_encode.update({"exp": expire})
     encode_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encode_jwt

@@ -258,7 +258,7 @@ export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
     uiRole: data.UI_Role,
     uiStatus: data.UI_Status,
     uiRegDate: data.UI_RegDate,
-    uiPhoto: data.UI_PhotoURL,
+    uiPhoto: data.UI_PhotoURL ? data.UI_PhotoURL : null,
     uiCity: data.UI_City,
     uiProvince: data.UI_Province,
     uiCountry: data.UI_Country,
