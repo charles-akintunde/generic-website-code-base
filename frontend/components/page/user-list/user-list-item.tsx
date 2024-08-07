@@ -9,6 +9,7 @@ import { IUserBase, IUserList } from '@/types/componentInterfaces';
 import { useGetUsersQuery } from '@/api/userApi';
 import {
   formatDate,
+  handleRoutingOnError,
   mapToIIUserList,
   memberPositionLabels,
   positionColors,
@@ -31,6 +32,7 @@ import {
 import { UserRoleStatusDialog } from '@/components/common/form/user-profile-form';
 import { routeModule } from 'next/dist/build/templates/app-page';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
+import { useRouter } from 'next/navigation';
 
 const UserListItem = () => {
   const [pagination, setPagination] = useState({
@@ -43,6 +45,8 @@ const UserListItem = () => {
   const {
     data: usersResponseData,
     isLoading: isUsersFetchLoading,
+    isError: hasUserFetchError,
+    error: userFetchError,
     refetch: refetchUsersList,
   } = useGetUsersQuery({
     page: fetchParams.current,
@@ -51,6 +55,7 @@ const UserListItem = () => {
   const { currentUser, initails } = useUserLogin();
   const [users, setUsers] = useState<IUserBase[]>();
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   useEffect(() => {
     if (usersResponseData && usersResponseData.data) {
@@ -91,6 +96,7 @@ const UserListItem = () => {
     {
       title: 'Name',
       dataIndex: 'uiFirstName',
+      fixed: 'left',
       key: 'userName',
       render: (_: any, record: IUserBase) => (
         <div className="flex space-x-2 justify-start text-left items-center">
@@ -163,6 +169,7 @@ const UserListItem = () => {
     {
       title: 'Actions',
       key: 'actions',
+      fixed: 'right',
       render: (_: any, record: IUserBase) => (
         <ActionsButtons
           entity="user"
@@ -174,13 +181,16 @@ const UserListItem = () => {
     },
   ];
 
-  console.log(users, 'USERS');
+  useEffect(() => {
+    handleRoutingOnError(router, hasUserFetchError, userFetchError);
+  }, [hasUserFetchError, userFetchError, router]);
 
   return (
     <div className="p-4">
       {users && (
         <>
           <Table
+            scroll={{ x: 1400 }}
             columns={userColumns}
             dataSource={users && users}
             pagination={{

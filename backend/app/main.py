@@ -43,12 +43,14 @@ def create_app() -> FastAPI:
 
     origins = [
         settings.FRONTEND_URL,  # Your Next.js frontend
-       'https://localhost:3000',
+       'https://localhost',
+       'https://127.0.0.1'
         # Add other origins as needed
     ]
 
     app.add_middleware(
     CORSMiddleware,
+    
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "HEAD", "OPTIONS", "PUT", "PATCH", "DELETE"],

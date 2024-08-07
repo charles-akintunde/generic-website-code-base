@@ -6,6 +6,7 @@ import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { Link2Icon } from '@radix-ui/react-icons';
 import { EPageType, EUserRole } from '@/types/enums';
 import {
+  handleRoutingOnError,
   mapPageToIPageMain,
   pageTypeLabels,
   userRoleLabels,
@@ -15,8 +16,10 @@ import usePage from '@/hooks/api-hooks/use-page';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import ActionsButtons from '@/components/common/action-buttons';
 import { useGetPagesWithOffsetQuery } from '@/api/pageApi';
+import { useRouter } from 'next/navigation';
 
 const PageListItem: React.FC = () => {
+  const router = useRouter();
   const [viewContent, setViewContent] = useState<IPageMain | null>(null);
   const { handleEditButtonClick, handleRemovePage } = usePage();
   const { currentUser, canEdit } = useUserLogin();
@@ -32,6 +35,7 @@ const PageListItem: React.FC = () => {
     isError: hasPagesFetchError,
     isSuccess: isPagesFetchSuccess,
     isLoading: isPagesFetchLoading,
+    error: pagesFetchError,
   } = useGetPagesWithOffsetQuery({
     PG_Limit: fetchParams.pageSize,
     PG_Number: fetchParams.current,
@@ -41,7 +45,6 @@ const PageListItem: React.FC = () => {
     if (pagesResponse && pagesResponse.data) {
       const { data } = pagesResponse;
       const pagesData: IPageList = mapPageToIPageMain(data);
-      console.log(pagesData, 'PAGEDATAQQQQQQQQ');
 
       if (pagesData && pagesData.pages && pagesData.pgTotalPageCount) {
         setPagination({
@@ -53,11 +56,16 @@ const PageListItem: React.FC = () => {
     }
   }, [pagesResponse]);
 
+  useEffect(() => {
+    handleRoutingOnError(router, hasPagesFetchError, pagesFetchError);
+  }, [hasPagesFetchError, pagesFetchError, router]);
+
   const columns = [
     {
       title: 'Page Name',
       dataIndex: 'pageName',
       key: 'pageName',
+      fixed: 'left',
       render: (text: string, record: IPageMain) => (
         <div className="flex items-center justify-between">
           <a
@@ -103,6 +111,7 @@ const PageListItem: React.FC = () => {
     {
       title: 'Actions',
       key: 'actions',
+      fixed: 'right',
       render: (_: any, record: IPageMain) => (
         <>
           {canEdit && (
@@ -139,6 +148,7 @@ const PageListItem: React.FC = () => {
     <div className=" space-y-4">
       <Table
         columns={columns}
+        scroll={{ x: 1200 }}
         loading={isPagesFetchLoading}
         dataSource={pages}
         rowKey="pageId"

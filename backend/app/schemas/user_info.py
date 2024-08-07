@@ -90,6 +90,9 @@ class Token(BaseModel):
     refresh_token : str
     #token_type: str
 
+class UIToken(BaseModel):
+    access_token: Optional[str] = None
+    refresh_token : Optional[str] = None
 
 class UserCreate(BaseModel):
     """

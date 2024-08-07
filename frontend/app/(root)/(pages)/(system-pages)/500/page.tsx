@@ -11,15 +11,15 @@ interface AccessDeniedProps {
   pagePermission: string[];
 }
 
-const AccessDenied: React.FC<AccessDeniedProps> = ({}) => {
+const InternalServerError: React.FC<AccessDeniedProps> = ({}) => {
   //   const router = useRouter();
 
   return (
     <div className="min-h-screen bg-pg">
       <Result
-        status="403"
-        title="Unauthorized"
-        subTitle="You do not have permission to access this page."
+        status="500"
+        title="Internal Server Error"
+        subTitle="Sorry, something went wrong on server."
         extra={
           <AppButton
             Icon={HomeOutlined}
@@ -33,4 +33,4 @@ const AccessDenied: React.FC<AccessDeniedProps> = ({}) => {
   );
 };
 
-export default AccessDenied;
+export default InternalServerError;

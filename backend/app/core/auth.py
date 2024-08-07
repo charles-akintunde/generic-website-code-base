@@ -6,7 +6,7 @@ import os
 from datetime import datetime, timedelta , timezone
 import stat
 from jose.exceptions import ExpiredSignatureError, JWTError
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from typing_extensions import deprecated
 from jose import JWTError, jwt
 from typing import Dict, Optional
@@ -19,18 +19,38 @@ from app.crud.user_info import user_crud
 from app.database import get_db
 from app.models.user_info import T_UserInfo
 from app.crud.blacklisted_token import blacklisted_token_crud
+from app.schemas.user_info import Token, UIToken
 
 
 SECRET_KEY = settings.AUTH_SECRET_KEY
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 10000
+ACCESS_TOKEN_EXPIRE_HOURS = 1
 CONFIRMATION_TOKEN_EXPIRY_DAYS = 10
-REFRESH_TOKEN_EXPIRE_DAYS = 7
+REFRESH_TOKEN_EXPIRE_DAYS = 2
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 oauth2_scheme_without_auto_error = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
+# def get_token_from_cookie(request: Request) -> UIToken:
+#     access_token = request.cookies.get('access_token')
+#     refresh_token = request.cookies.get('refresh_token')
+
+#     tokens = UIToken(access_token=access_token, refresh_token=refresh_token)
+
+#     return tokens
+
+
+def get_token_from_cookie(request: Request) -> str:
+    token = request.cookies.get('access_token')
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return token
 
 def get_current_user_without_exception(
         token: str = Depends(oauth2_scheme_without_auto_error), 
@@ -59,7 +79,7 @@ def get_current_user_without_exception(
         return None
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> T_UserInfo:
+def get_current_user(token: str = Depends(get_token_from_cookie), db: Session = Depends(get_db)) -> T_UserInfo:
     """
     Get the currently authenticated user.
 
@@ -151,7 +171,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(timezone.utc) + timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
     to_encode.update({"exp": expire})
     encode_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encode_jwt

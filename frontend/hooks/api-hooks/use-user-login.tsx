@@ -26,9 +26,12 @@ const useUserLogin = () => {
       const response = await userLogin(userLoginRequestData).unwrap();
       localStorage.setItem('access_token', response.data.access_token);
       localStorage.setItem('refresh_token', response.data.access_token);
+
+      console.log(response, 'RESPONSE');
       notify('Success', response.message || successMessage, 'success');
-      // router.replace('/');
+      router.replace('/');
     } catch (error: any) {
+      console.log(error, 'ERRORS');
       notify('Error', error.data.message, 'error');
     }
   };

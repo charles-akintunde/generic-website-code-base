@@ -2,13 +2,14 @@
 API endpoints for user authentication.
 """
 
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Header, Response, status
+from typing import Optional
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Header, Request, Response, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
 from app.schemas.user_info import BaseToken, PasswordResetConfirm, PasswordResetRequest, Token, UserCreate, User as UserSchema, UserLogin
-from app.services.auth import authenticate_user, confirm_password_reset, logout_user, register_user, request_password_reset, resend_confirmation_token
+from app.services.auth import authenticate_user, confirm_password_reset, logout_user, register_user, request_password_reset, resend_confirmation_token, use_refresh_token
 from app.database import get_db
 from app.crud.user_info import user_crud
 from app.utils.response import success_response, error_response
@@ -97,29 +98,40 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
         db (Session): Database session.
 
     Returns:
-        Token: JWT token.
+        Response: HTTP response with JWT token set in cookie.
     """
 
     try:
-        token = authenticate_user(db=db, email=user_login.UI_Email, password=user_login.UI_Password, response=response)
+        token = authenticate_user(db=db, email=user_login.UI_Email, password=user_login.UI_Password,response=response)
+        
         response.set_cookie(
-            key='access_token', 
-            value=token.access_token, 
-            httponly=True, 
-            samesite='lax', 
+            key='access_token',
+            value=token.access_token,
+            httponly=True,
+            samesite='none',
             secure=True,
-             expires=60 * 60 * 24,
-            domain='localhost'
+            max_age=60 * 60 * 24,
+            domain=None
         )
-        print(response,"RESPONSE")
-        return success_response("Login successful", data=token.dict())
+        response.set_cookie(
+            key='refresh_token',
+            value=token.refresh_token,
+            httponly=True,
+            samesite='none',
+            secure=True,
+            max_age=60 * 60 * 24,
+            domain=None
+        )
+        print(response.headers,"HEADER")
+        return success_response(message='Login Successful',data=token.dict(),status_code=200,headers=response.headers)
+    
     except HTTPException as e:
-        return error_response(message=e.detail, status_code=e.status_code)
+        return error_response(message=e.detail,status_code=e.status_code)
 
-@router.post("/refresh", response_model=Token)
+@router.post("/refresh-token", response_model=Token)
 async def refresh_token_endpoint(
     response:Response,
-    refresh_token: str, 
+    request: Request,
     db: Session = Depends(get_db)):
     """
     Refresh the JWT access token using a refresh token.
@@ -131,55 +143,21 @@ async def refresh_token_endpoint(
     Returns:
         Token: New JWT access and refresh tokens.
     """
+    try:
+        token = await use_refresh_token(request,db)
+        response.set_cookie(
+                key='access_token',
+                value=token,
+                httponly=True,
+                samesite='none',
+                secure=True,
+                max_age=60 * 60 * 1,
+                domain=None
+            )
 
-    payload = verify_token(token=refresh_token,db=db)
-    if payload is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    email = payload.get("sub")
-
-    if email is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    user=user_crud.get_user_by_email(db=db, email=email)
-
-    token_data = {
-        "sub": user.UI_Email,
-        "firstname": user.UI_FirstName,
-        "lastname": user.UI_LastName,
-        "role": user.UI_Role.value,
-        "status": user.UI_Status.value,
-        "Id": user.UI_ID
-    }
-
-    new_access_token = create_access_token(data=token_data)
-    new_refresh_token = create_refresh_token(data=token_data)
-
-    response.set_cookie(
-        key="access_token",
-        value=new_access_token,
-        httponly=True,
-        secure=True,  # Send over HTTPS only
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=new_refresh_token,
-        httponly=True,
-        secure=True,
-    )
-
-    return success_response("Token refreshed", data={
-        "access_token": new_access_token,
-        "refresh_token": new_refresh_token,
-        "token_type": "bearer"
-    })
+        return success_response(message='Token Refreshed Succesfully',status_code=200,headers=response.headers)
+    except HTTPException as e:
+        error_response(message=e.detail,status_code=e.status_code)
 
 @router.post("/account/confirm/", response_class=JSONResponse)
 def confirm_email_endpoint(token: BaseToken, db: Session = Depends(get_db)):
@@ -233,10 +211,9 @@ async def resend_confirmation_endpoint(email: EmailStr, db: Session = Depends(ge
 
 @router.post("/logout", response_model=StandardResponse)
 async def logout(
-    response: Response, 
-    db: Session = Depends(get_db), 
-    access_token: str = Depends(oauth2_scheme), 
-    refresh_token: str = Header(None, alias="x-refresh-token")
+    response: Response,
+    request: Request,
+    db: Session = Depends(get_db),
 ):
     """
     Logout the user by blacklisting the JWT tokens.
@@ -244,21 +221,40 @@ async def logout(
     Args:
         response (Response): FastAPI response object to clear cookies.
         db (Session): Database session.
-        access_token (str): JWT access token to be blacklisted.
-        refresh_token (str): JWT refresh token to be blacklisted.
 
     Returns:
         dict: Confirmation of logout.
     """
     try:
-        if not refresh_token and not access_token:
-            return error_response( message="Missing tokens",status_code=status.HTTP_400_BAD_REQUEST,)
-        
-        print(access_token,"access_toke",refresh_token,"efresh_token")
+        access_token = request.cookies.get('access_token')
+        refresh_token = request.cookies.get('refresh_token')
 
-        blacklisted_token = logout_user(access_token=access_token,refresh_token= refresh_token,db= db)
-        response.delete_cookie(key="access_token")
-        response.delete_cookie(key="refresh_token")
+        if not access_token and not refresh_token:
+            return error_response(
+                message="Already logged out.",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        if access_token:
+            response.delete_cookie(
+                key="access_token",
+                httponly=True,
+                samesite='none',
+                secure=True,
+                domain=None
+            )
+        if refresh_token:
+            response.delete_cookie(
+                key="refresh_token",
+                httponly=True,
+                samesite='none',
+                secure=True,
+                domain=None
+            )
+
+        if access_token and refresh_token:
+            blacklisted_token = logout_user(access_token=access_token,refresh_token= refresh_token,db= db)
+
         return success_response(message="Logout successful.")
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)

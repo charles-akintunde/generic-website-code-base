@@ -6,7 +6,7 @@ from typing import Any, Dict
 from fastapi import status
 from fastapi.responses import JSONResponse
 
-def success_response(message: str, data: Any = {}, status_code: int = status.HTTP_200_OK):
+def success_response(message: str, data: Any = {}, status_code: int = status.HTTP_200_OK, headers: Any = {}):
     """
     Create a standardized success response.
 
@@ -25,10 +25,10 @@ def success_response(message: str, data: Any = {}, status_code: int = status.HTT
     if data:
         response_content["data"] = data
 
-    return JSONResponse(content=response_content, status_code=status_code)
+    return JSONResponse(content=response_content, status_code=status_code, headers=headers)
 
 
-def error_response(message: str, status_code: int, detail: str = None) -> JSONResponse:  # type: ignore
+def error_response(message: str, status_code: int, detail: str = None, headers: Any = {}) -> JSONResponse:  # type: ignore
     """
     Create a standardized error response.
 
@@ -47,5 +47,5 @@ def error_response(message: str, status_code: int, detail: str = None) -> JSONRe
     if detail:
         response_content["detail"] = detail
 
-    return JSONResponse(content=response_content, status_code=status_code)
+    return JSONResponse(content=response_content, status_code=status_code, headers=headers)
      

@@ -159,7 +159,8 @@ async def delete_user_endpoint(
 async def get_users_endpoint(
     page: int = Query(1),
     limit: int = Query(5, gt=0),
-    db: Session = Depends(get_db)):
+    db: Session = Depends(get_db),
+    current_user: T_UserInfo = Depends(get_current_user)):
     try: 
         users_response = get_users(db=db, page=page, limit=limit)
         return success_response(data = users_response.model_dump(), message='Users fetched successfully')
@@ -170,8 +171,6 @@ async def get_users_endpoint(
 async def get_member_users_endpoint(
     request: Request,
     db: Session = Depends(get_db)):
-    token = request.cookies.get("access_token")
-    print(token,"TOKENNNNNNNNNNNNNNNNNNnn")
     try:
         users_response = get_users_assigned_with_positions(db=db)
         return success_response(data = users_response.model_dump(), message='Users fetched successfully')

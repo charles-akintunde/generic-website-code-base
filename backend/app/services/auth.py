@@ -3,7 +3,7 @@ User service for handling business logic related to users authentication.
 """
 
 from datetime import datetime, timezone
-from fastapi import HTTPException, status, Response
+from fastapi import Depends, HTTPException, Request, status, Response
 from fastapi.responses import JSONResponse
 from os import access
 from typing import Optional
@@ -19,6 +19,7 @@ from app.schemas.user_info import UserOut
 from app.models.enums import E_Status
 from app.schemas.blacklisted_token import BlackListedToken
 from app.crud.blacklisted_token import blacklisted_token_crud
+from app.database import get_db
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -108,10 +109,10 @@ def authenticate_user(db: Session, email: str, password: str, response: Response
     }
     access_token = create_access_token(data=token_data)
     refresh_token = create_refresh_token(data=token_data)
-    response.set_cookie(key="access_token", value=access_token, httponly=True, samesite="none")
-    response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, samesite="none")
+    # response.set_cookie(key="access_token", value=access_token, httponly=True, samesite="none")
+    # response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, samesite="none")
 
-    print(response.headers)
+    # print(response.headers)
 
     return Token(access_token=access_token, refresh_token=refresh_token)
 
@@ -171,6 +172,50 @@ async def  resend_confirmation_token(db: Session, email: EmailStr):
 
     await send_confirmation_email(email, confirmation_token)
     return None
+
+
+async def use_refresh_token(
+    request: Request,
+    db: Session = Depends(get_db)) -> str:
+
+    refresh_token: Optional[str]=request.cookies.get('refresh_token')
+
+    if refresh_token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    payload = verify_token(token=refresh_token,db=db)
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    email = payload.get("sub")
+
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    user=user_crud.get_user_by_email(db=db, email=email)
+
+    token_data = {
+        "sub": user.UI_Email,
+        "firstname": user.UI_FirstName,
+        "lastname": user.UI_LastName,
+        "role": user.UI_Role.value,
+        "status": user.UI_Status.value,
+        "Id": str(user.UI_ID)
+    }
+
+    access_token = create_access_token(data=token_data)
+    return access_token
+
 
 def logout_user(access_token: str, refresh_token: str, db: Session):
     """

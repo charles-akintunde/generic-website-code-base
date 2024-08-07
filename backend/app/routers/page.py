@@ -93,7 +93,8 @@ async def get_pages_endpoint(
 async def get_pages_with_offset_endpoint(
     pg_page_number: int = Query(1),
     pg_page_limit: int = Query(5, gt = 0),
-    db: Session = Depends(get_db)):
+    db: Session = Depends(get_db),
+    current_user: T_UserInfo = Depends(get_current_user)):
     """
     Get all pages using offset  to limit the number fetched
 

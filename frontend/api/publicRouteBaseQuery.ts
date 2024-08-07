@@ -1,22 +1,39 @@
-import { fetchBaseQuery } from '@reduxjs/toolkit/query';
+import {
+  BaseQueryFn,
+  FetchArgs,
+  fetchBaseQuery,
+  FetchBaseQueryError,
+} from '@reduxjs/toolkit/query';
 
-const publicRouteBaseQuery = fetchBaseQuery({
+const baseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
   credentials: 'include',
-  prepareHeaders: (headers, { getState }) => {
-    const shouldIncludeToken = true;
-    if (shouldIncludeToken) {
-      const accessToken = localStorage.getItem('access_token');
-      if (accessToken) {
-        headers.set('Authorization', `Bearer ${accessToken}`);
-      }
-
-      const refreshToken = localStorage.getItem('refresh_token');
-      if (refreshToken) {
-        headers.set('x-refresh-token', refreshToken);
-      }
-    }
-    return headers;
-  },
 });
-export default publicRouteBaseQuery;
+
+const customBaseQuery: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
+
+  if (result.error && result.error.status === 401) {
+    const refreshResult = await baseQuery(
+      {
+        url: 'auth/refresh-token',
+        method: 'POST',
+        credentials: 'include',
+      },
+      api,
+      extraOptions
+    );
+
+    if (refreshResult) {
+      result = await baseQuery(args, api, extraOptions);
+    }
+  }
+
+  return result;
+};
+
+export default customBaseQuery;

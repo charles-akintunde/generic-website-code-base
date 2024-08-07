@@ -456,3 +456,19 @@ export const getCookies = () => {
   const cookies = nookies.get();
   return cookies;
 };
+
+export const handleRoutingOnError = (
+  router: any,
+  hasError: boolean,
+  error: any
+) => {
+  if (hasError && error) {
+    if (error.status === 404) {
+      router.replace('/404');
+    } else if (error.status === 500) {
+      router.replace('/500');
+    } else {
+      router.replace('/access-denied');
+    }
+  }
+};
