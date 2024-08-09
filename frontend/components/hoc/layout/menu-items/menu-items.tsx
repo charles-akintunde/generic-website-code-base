@@ -18,30 +18,77 @@ import {
 import { Button, Flex, Tooltip } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import Link from 'next/link';
+import type { MenuProps } from 'antd';
+import { Menu } from 'antd';
+import { cx } from 'class-variance-authority';
+import { usePathname } from 'next/navigation';
+
+type MenuItem = Required<MenuProps>['items'][number];
 
 export const MobileMenuItems = () => {
+  const pathname = usePathname();
   const { menuItems } = usePage();
+  const [isActive, setIsActive] = useState(false);
+  const items: MenuItem[] = menuItems.map((menuItem: IPageMenuItem, index) => ({
+    label: (
+      <Link
+        className={cx({
+          hidden: menuItem.isHidden,
+        })}
+        href={`${menuItem.href}`}
+      >
+        {menuItem.pageName}
+      </Link>
+    ),
+    key: `${menuItem.pageName}`,
+  }));
 
-  return (
-    <div className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6">
-      {menuItems.map((menuItem: IPageMenuItem, index) => (
-        <MenuItem
-          key={index}
-          pageName={menuItem.pageName}
-          href={menuItem.href}
-          isHidden={menuItem.isHidden}
-          pagePermission={menuItem.pagePermission}
-          pageType={menuItem.pageType}
-        />
-      ))}
-    </div>
-  );
+  // useEffect(() => {
+  //   if (href === '/') {
+  //     setIsActive(pathname === href);
+  //   } else {
+  //     setIsActive(pathname.startsWith(href));
+  //   }
+  // }, [pathname, href]);
+
+  // return (
+  //   <div className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6">
+  //     {menuItems.map((menuItem: IPageMenuItem, index) => (
+  //       <MenuItem
+  //         key={index}
+  //         pageName={menuItem.pageName}
+  //         href={menuItem.href}
+  //         isHidden={menuItem.isHidden}
+  //         pagePermission={menuItem.pagePermission}
+  //         pageType={menuItem.pageType}
+  //       />
+  //     ))}
+  //   </div>
+  // );
+
+  return <Menu items={items} />;
 };
 
 export const MenuItems = () => {
   const { menuItems } = usePage();
   const [visibleItems, setVisibleItems] = useState<IPageMenuItem[]>([]);
   const [remainingItems, setRemainingItems] = useState<IPageMenuItem[]>([]);
+
+  const pathname = usePathname();
+  const [isActive, setIsActive] = useState(false);
+  const items: MenuItem[] = menuItems.map((menuItem: IPageMenuItem, index) => ({
+    label: (
+      <Link
+        className={cx({
+          hidden: menuItem.isHidden,
+        })}
+        href={`${menuItem.href}`}
+      >
+        {menuItem.pageName}
+      </Link>
+    ),
+    key: `${menuItem.pageName}`,
+  }));
 
   const handleResize = useCallback(() => {
     const containerWidth =

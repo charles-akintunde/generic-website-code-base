@@ -196,3 +196,13 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.custom-menu .ant-menu-horizontal > .ant-menu-item::after {
+  @apply absolute bottom-0 left-0 right-0 h-0.5 bg-primary;
+  content: '';
+  transition: all 0.3s ease-in-out;
+}
+
+.custom-menu .ant-menu-item-selected::after {
+  @apply bg-primary;
+}

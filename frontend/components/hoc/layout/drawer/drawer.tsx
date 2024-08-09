@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { closeDrawer } from '@/store/slice/layoutSlice';
 import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
@@ -10,23 +10,59 @@ import { LogOut } from 'lucide-react';
 import LogoutButton from '@/components/common/button/logout-button';
 import AppButton from '@/components/common/button/app-button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar } from 'antd';
+import { Avatar, Menu, MenuProps } from 'antd';
 import HoverableCard from '@/components/common/hover-card';
 import { transitionStyles } from '@/styles/globals';
 import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import usePage from '@/hooks/api-hooks/use-page';
+import { hasNavItems } from '@/utils/helper';
+import { usePathname } from 'next/navigation';
+import AppLoading from '@/components/common/app-loading';
+
+type MenuItem = Required<MenuProps>['items'][number];
 
 const Drawer: React.FC = () => {
   const dispatch = useAppDispatch();
+  const pathname = usePathname();
   const isDrawerOpen = useAppSelector((state) => state.layout.isDrawerOpen);
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const uiFullName = uiActiveUser.uiFullName;
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
   const uiId = uiActiveUser.uiId;
   const uiIntials = uiActiveUser.uiInitials;
+  const { navMenuItems } = usePage();
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeNavItem, setActiveNavItem] = useState(
+    hasNavItems(navMenuItems, pathname)
+  );
 
   const handleClose = () => {
     dispatch(closeDrawer());
   };
+
+  const onClickNavMenuItem: MenuProps['onClick'] = (e) => {
+    const keysNavItem = navMenuItems.map((item) => item?.key);
+    if (e.key === '/') {
+      setActiveNavItem(e.key);
+    } else if (keysNavItem.includes(e.key)) {
+      setActiveNavItem(e.key);
+    } else {
+      const key = hasNavItems(navMenuItems, pathname);
+
+      setActiveNavItem(key);
+    }
+    handleClose();
+  };
+
+  useEffect(() => {
+    const key = hasNavItems(navMenuItems, pathname);
+    setActiveNavItem(key);
+    setIsLoading(false);
+  }, [pathname, navMenuItems]);
+
+  if (isLoading) {
+    return <AppLoading />;
+  }
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={handleClose}>
@@ -37,7 +73,13 @@ const Drawer: React.FC = () => {
           </div>
         </SheetHeader>
         <ScrollArea className="overflow-y-auto max-h-[calc(100vh-10rem)] hide-scrollbar">
-          <MobileMenuItems />
+          <Menu
+            className="space-y-10"
+            onClick={onClickNavMenuItem}
+            selectedKeys={activeNavItem ? [activeNavItem] : []}
+            mode="inline"
+            items={navMenuItems}
+          />
         </ScrollArea>
 
         <footer className="w-full absolute bottom-5 bg-white z-20">

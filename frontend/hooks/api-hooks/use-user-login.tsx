@@ -2,20 +2,16 @@
 import { useNotification } from '@/components/hoc/notification-provider';
 import React, { useEffect, useState } from 'react';
 import { useUserLoginMutation, useGetActiveUserQuery } from '@/api/authApi';
-import {
-  IUIActiveUser,
-  IUserInfo,
-  IUserLogin,
-} from '@/types/componentInterfaces';
+import { IUserInfo, IUserLogin } from '@/types/componentInterfaces';
 import { IUserLoginRequest } from '@/types/requestInterfaces';
 import { useRouter } from 'next/navigation';
 import { decodeJwt, getTokens, transformToUserInfo } from '@/utils/helper';
 import { EUserRole } from '@/types/enums';
-import { useAppSelector } from '../redux-hooks';
-import useUserInfo from './use-user-info';
 import { setUIActiveUser } from '@/store/slice/userSlice';
+import { useAppDispatch } from '../redux-hooks';
 
 const useUserLogin = () => {
+  const dispatch = useAppDispatch();
   const { notify } = useNotification();
   const {
     data: activeUserData,
@@ -96,6 +92,3 @@ const useUserLogin = () => {
 };
 
 export default useUserLogin;
-function dispatch(arg0: any) {
-  throw new Error('Function not implemented.');
-}

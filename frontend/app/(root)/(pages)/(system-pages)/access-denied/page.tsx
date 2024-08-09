@@ -15,7 +15,7 @@ const AccessDenied: React.FC<AccessDeniedProps> = ({}) => {
   //   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-pg">
+    <div className="min-h-screen">
       <Result
         status="403"
         title="Unauthorized"

@@ -1,8 +1,12 @@
 import { useUserLogoutMutation } from '@/api/authApi';
 import { useNotification } from '@/components/hoc/notification-provider';
 import React, { useState } from 'react';
+import { useAppDispatch } from '../redux-hooks';
+import { setUIActiveUser } from '@/store/slice/userSlice';
+import { EUserRole } from '@/types/enums';
 
 const useLogout = () => {
+  const dispatch = useAppDispatch();
   const { notify } = useNotification();
   const [useLogout, { isSuccess, isLoading }] = useUserLogoutMutation();
   const [successMessage, setSuccessMessage] = useState<string>(
@@ -16,6 +20,18 @@ const useLogout = () => {
     try {
       const response = await useLogout().unwrap();
       notify('Success', response.message || successMessage, 'success');
+      dispatch(
+        setUIActiveUser({
+          uiId: null,
+          uiFullName: '',
+          uiInitials: '',
+          uiIsAdmin: false,
+          uiIsSuperAdmin: false,
+          uiCanEdit: false,
+          uiRole: EUserRole.Public,
+          uiPhotoURL: null,
+        })
+      );
       handleCloseDrawer();
     } catch (error: any) {
       console.log(error);
@@ -24,9 +40,6 @@ const useLogout = () => {
         error?.data?.message || error?.data?.detail || errorMessage,
         'error'
       );
-
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
     }
   };
   return { sendLogoutRequest, isLoading, isSuccess };

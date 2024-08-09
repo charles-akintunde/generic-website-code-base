@@ -29,7 +29,7 @@ const PageLayout: React.FC<LayoutProps> = ({
             alt="Header Background"
             layout="fill"
             objectFit="cover"
-            className="rounded-sm"
+            className="rounded-sm bg-pg"
           />
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-sm">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-center text-white">

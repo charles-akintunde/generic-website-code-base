@@ -25,9 +25,11 @@ import {
 } from '@/types/enums';
 import { IEditUserRequest } from '@/types/requestInterfaces';
 import { TElement } from '@udecode/plate-common';
+import { MenuProps } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import _ from 'lodash';
 import nookies from 'nookies';
+type MenuItem = Required<MenuProps>['items'][number];
 
 export const toKebabCase = (str: string): string => {
   str = str.toLowerCase();
@@ -255,7 +257,7 @@ export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
     uiFirstName: data.UI_FirstName,
     uiLastName: data.UI_LastName,
     uiEmail: data.UI_Email,
-    uiRole: data.UI_Role,
+    uiRole: String(data.UI_Role),
     uiStatus: data.UI_Status,
     uiRegDate: data.UI_RegDate,
     uiPhoto: data.UI_PhotoURL ? data.UI_PhotoURL : null,
@@ -464,11 +466,23 @@ export const handleRoutingOnError = (
 ) => {
   if (hasError && error) {
     if (error.status === 404) {
-      router.replace('/404');
+      // router.replace('/404');
     } else if (error.status === 500) {
-      router.replace('/500');
+      // router.replace('/500');
     } else {
-      router.replace('/access-denied');
+      // router.replace('/access-denied');
     }
   }
+};
+
+export const hasNavItems = (navMenuItems: MenuItem[], pathname: string) => {
+  if (!navMenuItems || !pathname) return null;
+
+  const currentNavItem = navMenuItems.find(
+    (item: MenuItem) =>
+      (item && item.key === `/${pathname.split('/')[1]}`) ||
+      (item && item.key.startsWith(`/${pathname.split('/')[1]}`))
+  );
+  console.log(currentNavItem, 'currentNavItem');
+  return currentNavItem ? currentNavItem.key : null;
 };

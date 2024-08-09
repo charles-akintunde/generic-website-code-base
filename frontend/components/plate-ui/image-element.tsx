@@ -12,6 +12,8 @@ import {
   ResizeHandle,
   mediaResizeHandleVariants,
 } from './resizable';
+import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { useAppSelector } from '@/hooks/redux-hooks';
 
 export const ImageElement = withHOC(
   ResizableProvider,
@@ -20,6 +22,10 @@ export const ImageElement = withHOC(
       const { align = 'center', focused, readOnly, selected } = useMediaState();
 
       const width = useResizableStore().get.width();
+      const uiActiveUser = useAppSelector(
+        (state) => state.userSlice.uiActiveUser
+      );
+      const canEdit = uiActiveUser.uiCanEdit;
 
       return (
         <MediaPopover pluginKey={ELEMENT_IMAGE}>
@@ -36,10 +42,13 @@ export const ImageElement = withHOC(
                   readOnly,
                 }}
               >
-                <ResizeHandle
-                  className={mediaResizeHandleVariants({ direction: 'left' })}
-                  options={{ direction: 'left' }}
-                />
+                {canEdit && (
+                  <ResizeHandle
+                    className={mediaResizeHandleVariants({ direction: 'left' })}
+                    options={{ direction: 'left' }}
+                  />
+                )}
+
                 <Image
                   alt=""
                   className={cn(
@@ -49,12 +58,14 @@ export const ImageElement = withHOC(
                   )}
                   {...nodeProps}
                 />
-                <ResizeHandle
-                  className={mediaResizeHandleVariants({
-                    direction: 'right',
-                  })}
-                  options={{ direction: 'right' }}
-                />
+                {canEdit && (
+                  <ResizeHandle
+                    className={mediaResizeHandleVariants({
+                      direction: 'right',
+                    })}
+                    options={{ direction: 'right' }}
+                  />
+                )}
               </Resizable>
 
               <Caption align={align} style={{ width }}>

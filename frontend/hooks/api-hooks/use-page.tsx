@@ -30,10 +30,14 @@ import { Page } from '@/types/backendResponseInterfaces';
 import { IPageRequest } from '@/types/requestInterfaces';
 import { useNotification } from '@/components/hoc/notification-provider';
 import { routes, systemMenuItems } from '@/components/hoc/layout/menu-items';
+import { MenuProps } from 'antd';
+import Link from 'next/link';
 
 interface usePageProps {
   pageName?: string;
 }
+
+type MenuItem = Required<MenuProps>['items'][number];
 
 const usePage = (pageName?: string) => {
   const {
@@ -93,11 +97,13 @@ const usePage = (pageName?: string) => {
   const currentPageContents = useAppSelector(
     (state) => state.page.currentPageContents
   );
+
   // const currentPage = useAppSelector((state) => state.page.currentPage);
   const [currentPage, setCurrentPage] = useState<IPageMain>();
   const editingPage = useAppSelector((state) => state.page.editingPage);
   const [menuItems, setMenuItems] = useState<IPageMenuItem[]>([]);
   const [allAppRoutes, setAllAppRoutes] = useState<IPageMenuItem[]>([]);
+  const [navMenuItems, setNavMenuItems] = useState<MenuItem[]>([]);
 
   useEffect(() => {
     if (pagesData && pagesData.data) {
@@ -115,6 +121,16 @@ const usePage = (pageName?: string) => {
       );
       const allRoutes = [...routes, ...normalizedPages];
       const combinedMenuItems = [...systemMenuItems, ...normalizedPages];
+      const visibleMenuItems = combinedMenuItems.filter(
+        (item) => item.isHidden == false
+      );
+      const navMenuItems: MenuItem[] = visibleMenuItems.map(
+        (menuItem: IPageMenuItem, index) => ({
+          label: <Link href={`${menuItem.href}`}>{menuItem.pageName}</Link>,
+          key: `${menuItem.href}`,
+        })
+      );
+      setNavMenuItems(navMenuItems);
       setMenuItems(combinedMenuItems);
       setAllAppRoutes(allRoutes);
       dispatch(addPages(normalizedPages));
@@ -300,6 +316,7 @@ const usePage = (pageName?: string) => {
     hasPageFetchError,
     pageFetchError,
     isPageFetchLoading,
+    navMenuItems,
   };
 };
 

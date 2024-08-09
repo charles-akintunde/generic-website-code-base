@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { PlateEditor } from '@/components/plate/plate';
 import PageLayout from '@/components/page/layout';
-import { z } from 'zod';
 import FormField from '@/components/common/form-field';
 import { Form } from '@/components/ui/form';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -25,8 +24,7 @@ import {
   pageNormalizer,
   toKebabCase,
 } from '@/utils/helper';
-import usePage from '@/hooks/api-hooks/use-page';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
+
 import { IPageContentGetRequest } from '@/types/requestInterfaces';
 import { useSearchParams } from 'next/navigation';
 import { Spin } from 'antd';
@@ -65,8 +63,6 @@ const CreatePageContent = () => {
   const page = pathname.split('/');
   const pageName = page[1];
   const { submitPageContent, isCreatePageContentSuccess } = usePageContent();
-
-  console.log(pageType, 'pageType');
 
   const form = useForm({
     resolver: zodResolver(pageContentSchema),
@@ -285,11 +281,11 @@ const EditPageContent = () => {
     }
   };
 
-  useEffect(() => {
-    if (hasPageContentFetchError && pageContentFetchError) {
-      router.replace('/404');
-    }
-  }, [hasPageContentFetchError, pageContentFetchError, router]);
+  useEffect(() => {}, [
+    hasPageContentFetchError,
+    pageContentFetchError,
+    router,
+  ]);
 
   if (isPageContentFetchLoading) {
     return <AppLoading />;

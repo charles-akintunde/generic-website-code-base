@@ -8,7 +8,7 @@ import { HomeOutlined } from '@ant-design/icons';
 
 const NotFoundPage = () => {
   return (
-    <div className="min-h-screen bg-pg">
+    <div className="min-h-screen">
       <Result
         status="404"
         title="404"

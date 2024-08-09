@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import usePage from '@/hooks/api-hooks/use-page';
 import { IPageMenuItem } from '@/types/componentInterfaces';
 import { systemMenuItems } from './layout/menu-items';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { hasPermission } from '@/utils/helper';
 import { useCommentsShowResolvedButton } from '@udecode/plate-comments';
+import { useAppSelector } from '@/hooks/redux-hooks';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -26,7 +26,8 @@ const isExistingRoute: React.FC<isExistingRouteProps> = ({
 };
 
 const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
-  const { currentUserRole } = useUserLogin();
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const uiActiveUserRole = uiActiveUser.uiRole;
   const { allAppRoutes } = usePage();
   const router = useRouter();
   const pathname = usePathname();
@@ -52,7 +53,7 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       } else {
         if (
           !hasPermission(
-            currentUserRole,
+            uiActiveUserRole,
             currentPage?.pagePermission as string[]
           )
         ) {
@@ -66,13 +67,3 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
 };
 
 export default RouteGuard;
-// else {
-//   if (
-//     !hasPermission(
-//       currentUserRole,
-//       currentPage?.pagePermission as string[]
-//     )
-//   ) {
-//     // router.replace('/access-denied');
-//   }
-// }

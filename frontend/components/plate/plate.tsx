@@ -12,6 +12,7 @@ import { FloatingToolbar } from '@/components/plate-ui/floating-toolbar';
 import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-buttons';
 import { CommentsPopover } from '@/components/plate-ui/comments-popover';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
+import { useAppSelector } from '@/hooks/redux-hooks';
 
 type PlateEditorProps = {
   value: TElement[];
@@ -22,7 +23,9 @@ export const PlateEditor: React.FC<PlateEditorProps> = ({
   value,
   onChange,
 }) => {
-  const { canEdit } = useUserLogin();
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+
   return (
     <TooltipProvider>
       <DndProvider backend={HTML5Backend}>
