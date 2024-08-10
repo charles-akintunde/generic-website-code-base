@@ -119,8 +119,19 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         if (pageContentFetchRefetch) pageContentFetchRefetch();
       }
       await pageRefetch();
+      notify(
+        'Success',
+        response.message || 'The page has been updated successfully.',
+        'success'
+      );
     } catch (error: any) {
-      console.log(error, 'IPageContentRequest');
+      notify(
+        'Error',
+        error?.data?.message ||
+          error?.data?.detail ||
+          'Failed to update the page. Please try again later.',
+        'error'
+      );
     }
   };
 
@@ -184,6 +195,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       notify(
         'Error',
         error?.data?.message ||
+          error?.data?.detail ||
           'Failed to update the page. Please try again later.',
         'error'
       );
@@ -269,8 +281,6 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     hasPageContentFetchError,
     pageContentFetchError,
     handleRemovePageContent,
-    // setPlateEditor,
-    // plateEditor,
     pageContentFetchRefetch,
   };
 };

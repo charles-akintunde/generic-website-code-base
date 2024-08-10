@@ -3,17 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux-hooks';
 import {
   addPages,
-  addPage,
-  editPage,
-  removePage,
   setEditingPage,
   toggleCreatePageDialog,
   getPageContents,
   getPage,
-  setCurrentPage,
 } from '@/store/slice/pageSlice';
 import {
-  IPageContentItem,
   IPageContentMain,
   IPageMain,
   IPageMenuItem,
@@ -32,6 +27,7 @@ import { useNotification } from '@/components/hoc/notification-provider';
 import { routes, systemMenuItems } from '@/components/hoc/layout/menu-items';
 import { MenuProps } from 'antd';
 import Link from 'next/link';
+import HoverableCard from '@/components/common/hover-card';
 
 interface usePageProps {
   pageName?: string;
@@ -126,7 +122,11 @@ const usePage = (pageName?: string) => {
       );
       const navMenuItems: MenuItem[] = visibleMenuItems.map(
         (menuItem: IPageMenuItem, index) => ({
-          label: <Link href={`${menuItem.href}`}>{menuItem.pageName}</Link>,
+          label: (
+            <HoverableCard>
+              <Link href={`${menuItem.href}`}>{menuItem.pageName}</Link>
+            </HoverableCard>
+          ),
           key: `${menuItem.href}`,
         })
       );
@@ -136,28 +136,6 @@ const usePage = (pageName?: string) => {
       dispatch(addPages(normalizedPages));
     }
   }, [pagesData]);
-
-  // useEffect(() => {
-  //   if (pagesData && pagesData.data) {
-  //     const normalizedPages: IPageMain[] = pagesData?.data.Pages.map(
-  //       (page: Page) => ({
-  //         pageId: page.PG_ID,
-  //         pageName: page.PG_Name,
-  //         pagePermission: page.PG_Permission.map((permission) =>
-  //           String(permission)
-  //         ),
-  //         pageType: String(page.PG_Type),
-  //         isHidden: false,
-  //         href: `/${toKebabCase(page.PG_Name)}`,
-  //       })
-  //     );
-  //     const allRoutes = [...routes, ...normalizedPages];
-  //     const combinedMenuItems = [...systemMenuItems, ...normalizedPages];
-  //     setMenuItems(combinedMenuItems);
-  //     setAllAppRoutes(allRoutes);
-  //     dispatch(addPages(normalizedPages));
-  //   }
-  // }, [pagesData]);
 
   useEffect(() => {
     if (pageData && pageData.data) {

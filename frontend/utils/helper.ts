@@ -483,6 +483,6 @@ export const hasNavItems = (navMenuItems: MenuItem[], pathname: string) => {
       (item && item.key === `/${pathname.split('/')[1]}`) ||
       (item && item.key.startsWith(`/${pathname.split('/')[1]}`))
   );
-  console.log(currentNavItem, 'currentNavItem');
+
   return currentNavItem ? currentNavItem.key : null;
 };

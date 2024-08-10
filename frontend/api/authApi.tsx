@@ -27,6 +27,13 @@ export const authApi = createApi({
         body: createAccountRequest,
       }),
     }),
+    refreshToken: builder.mutation<IGenericResponse, void>({
+      query: () => ({
+        url: `${commonUrl}/refresh-token`,
+        method: 'POST',
+        credentials: 'include',
+      }),
+    }),
     verifyAccount: builder.mutation<IGenericResponse, IToken>({
       query: (token: IToken) => ({
         url: `${commonUrl}/account/confirm/`,
@@ -84,4 +91,5 @@ export const {
   useResetPasswordWithEmailMutation,
   useResetPasswordWithTokenMutation,
   useGetActiveUserQuery,
+  useRefreshTokenMutation,
 } = authApi;

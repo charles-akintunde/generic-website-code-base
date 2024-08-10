@@ -18,14 +18,6 @@ const MenuItem: React.FC<IPageMenuItem> = ({ pageName, href, isHidden }) => {
     dispatch(closeDrawer());
   };
 
-  useEffect(() => {
-    if (href === '/') {
-      setIsActive(pathname === href);
-    } else {
-      setIsActive(pathname.startsWith(href));
-    }
-  }, [pathname, href]);
-
   return (
     <Link
       href={href}

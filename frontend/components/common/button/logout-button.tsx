@@ -54,7 +54,9 @@ const LogoutButton: React.FC<ILogoutProps> = ({ trigger }) => {
           <AppButton
             buttonText="Logout"
             onClick={() => sendLogoutRequest(handleCloseDrawer)}
-            classNames={destructiveSolidButtonStyles}
+            classNames={
+              'text-white text-sm hover:bg-red-600 bg-red-500 hover:text-white font-medium py-2 px-4  rounded-md transition duration-200 ease-in-out flex items-center'
+            }
           />
         </DialogFooter>
       </DialogContent>

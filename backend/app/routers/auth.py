@@ -155,13 +155,13 @@ async def refresh_token_endpoint(
                 httponly=True,
                 samesite='none',
                 secure=True,
-                max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
+                max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
                 domain=None
             )
 
         return success_response(message='Token Refreshed Succesfully',status_code=200,headers=response.headers)
     except HTTPException as e:
-        error_response(message=e.detail,status_code=e.status_code)
+        return error_response(message=e.detail,status_code=e.status_code)
 
 @router.post("/account/confirm/", response_class=JSONResponse)
 def confirm_email_endpoint(token: BaseToken, db: Session = Depends(get_db)):

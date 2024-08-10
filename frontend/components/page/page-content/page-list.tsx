@@ -264,9 +264,7 @@ const EditPageContent = () => {
       }
     }
     const pageContentId: string = contentData!.pageContentId!;
-    console.log(changedFields, 'changedFields');
     if (Object.keys(changedFields).length > 0) {
-      console.log(changedFields, 'changedFields');
       await submitEditedPageContent(
         pageName,
         pageType,
@@ -277,7 +275,6 @@ const EditPageContent = () => {
       );
     } else {
       notifyNoChangesMade(notify);
-      return;
     }
   };
 

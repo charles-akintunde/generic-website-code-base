@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
 import { MobileMenuItems } from '../menu-items/menu-items';
 import Logo from '@/components/common/logo';
 import Link from 'next/link';
-import { LogOut } from 'lucide-react';
+import { LogIn, LogOut } from 'lucide-react';
 import LogoutButton from '@/components/common/button/logout-button';
 import AppButton from '@/components/common/button/app-button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -83,19 +83,21 @@ const Drawer: React.FC = () => {
         </ScrollArea>
 
         <footer className="w-full absolute bottom-5 bg-white z-20">
-          {uiId && (
+          {uiId ? (
             <div className="flex w-full items-center justify-between px-6">
-              <LogoutButton
-                trigger={
-                  <AppButton
-                    buttonText="Logout"
-                    Icon={LogOut}
-                    isRightPosition={false}
-                    variant={'ghost'}
-                    classNames={`${transitionStyles} p-0 hover:bg-white hover:text-primary`}
-                  />
-                }
-              />
+              <HoverableCard>
+                <LogoutButton
+                  trigger={
+                    <AppButton
+                      buttonText="Logout"
+                      Icon={LogOut}
+                      isRightPosition={false}
+                      variant={'ghost'}
+                      classNames={`${transitionStyles} p-0 hover:bg-inherit hover:text-inherit text-primary`}
+                    />
+                  }
+                />
+              </HoverableCard>
               <Link onClick={handleClose} href={`/user-profile/${uiId}`}>
                 <HoverableCard
                   classNames={`flex items-center cursor-pointer space-x-2`}
@@ -114,6 +116,15 @@ const Drawer: React.FC = () => {
                 </HoverableCard>
               </Link>
             </div>
+          ) : (
+            <HoverableCard>
+              <Link
+                href={'/sign-in'}
+                className="text-md cursor-pointer flex text-primary items-center transition duration-300 ease-in-out"
+              >
+                <LogIn className="mr-2 h-4 w-4" /> Log in
+              </Link>
+            </HoverableCard>
           )}
         </footer>
       </SheetContent>

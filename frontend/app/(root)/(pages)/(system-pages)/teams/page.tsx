@@ -3,10 +3,12 @@ import { useGetUsersAssignedPositionsQuery } from '@/api/userApi';
 import { IUserBase, IUserList } from '@/types/componentInterfaces';
 import { mapToIIUserList } from '@/utils/helper';
 import React, { useEffect, useState } from 'react';
-import { Row, Avatar, Typography, Divider, Tooltip } from 'antd';
+import { Row, Avatar, Typography, Divider } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import AppLoading from '@/components/common/app-loading';
+import backgroundImage from '@/assets/images/page-list-img1.jpg';
+import Image from 'next/image';
 
 const { Title, Text } = Typography;
 
@@ -62,9 +64,12 @@ const Teams = () => {
     const avatarSize =
       user.uiMemberPosition === EMemberPosition.DIRECTOR ? 150 : 100;
     return (
-      <div key={user.uiEmail} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
+      <div
+        key={user.uiEmail}
+        className="w-full  sm:w-1/2 md:w-1/3 lg:w-1/4 p-4"
+      >
         <Link href={`user-profile/${user.id}`}>
-          <div className="border rounded-lg p-6 text-center bg-white shadow-lg transform transition-transform hover:scale-105 hover:shadow-xl">
+          <div className="border rounded-lg bg-white p-6 text-center shadow-sm transform transition-transform hover:scale-104 hover:shadow-md">
             <Avatar
               size={avatarSize}
               src={user.uiPhotoUrl || <UserOutlined />}
@@ -83,56 +88,66 @@ const Teams = () => {
 
   return (
     <main className="bg-pg min-h-screen p-6">
+      <header className="relative w-full h-64 rounded-sm overflow-hidden">
+        <Image
+          src={backgroundImage}
+          alt="Header Background"
+          layout="fill"
+          objectFit="cover"
+          className="rounded-sm bg-pg"
+        />
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-sm">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-center text-white">
+            Meet our Team
+          </h1>
+        </div>
+      </header>
       <div className="container mx-auto">
         <section className="mb-12">
-          <Title level={2} className="text-center mb-8 text-primary">
-            Meet Our Team
-          </Title>
           <Divider className="mb-8" />
-          <section className="mb-12">
-            <Title level={3} className="text-center mb-6 text-primary">
-              Director
-            </Title>
-            <Row gutter={[16, 16]} className="flex justify-center">
-              {groupedUsers[EMemberPosition.DIRECTOR]?.map(renderUserCard)}
-            </Row>
-          </section>
 
-          <section className="mb-12">
-            <Title level={3} className="text-center mb-6 text-primary">
-              <Divider>Postdoctoral Research Associate & Fellow</Divider>
-            </Title>
-            <Row gutter={[16, 16]} className="flex justify-center">
-              {groupedUsers[EMemberPosition.POSTDOC]?.map(renderUserCard)}
-            </Row>
-          </section>
+          <Title level={3} className="text-center mb-6 text-primary">
+            Director
+          </Title>
+          <Row gutter={[16, 16]} className="flex justify-center">
+            {groupedUsers[EMemberPosition.DIRECTOR]?.map(renderUserCard)}
+          </Row>
+        </section>
 
-          <section className="mb-12">
-            <Title level={3} className="text-center mb-6 text-primary">
-              <Divider>PhD Students</Divider>
-            </Title>
-            <Row gutter={[16, 16]} className="flex justify-center">
-              {groupedUsers[EMemberPosition.PHD]?.map(renderUserCard)}
-            </Row>
-          </section>
+        <section className="mb-12">
+          <Title level={3} className="text-center mb-6 text-primary">
+            <Divider>Postdoctoral Research Associate & Fellow</Divider>
+          </Title>
+          <Row gutter={[16, 16]} className="flex justify-center">
+            {groupedUsers[EMemberPosition.POSTDOC]?.map(renderUserCard)}
+          </Row>
+        </section>
 
-          <section className="mb-12">
-            <Title level={3} className="text-center mb-6 text-primary">
-              <Divider>Master Students</Divider>
-            </Title>
-            <Row gutter={[16, 16]} className="flex justify-center">
-              {groupedUsers[EMemberPosition.MASTER]?.map(renderUserCard)}
-            </Row>
-          </section>
+        <section className="mb-12">
+          <Title level={3} className="text-center mb-6 text-primary">
+            <Divider>PhD Students</Divider>
+          </Title>
+          <Row gutter={[16, 16]} className="flex justify-center ">
+            {groupedUsers[EMemberPosition.PHD]?.map(renderUserCard)}
+          </Row>
+        </section>
 
-          <section className="mb-12">
-            <Title level={3} className="text-center mb-6 text-primary">
-              <Divider>Undergraduate Students</Divider>
-            </Title>
-            <Row gutter={[16, 16]} className="flex justify-center">
-              {groupedUsers[EMemberPosition.UNDERGRAD]?.map(renderUserCard)}
-            </Row>
-          </section>
+        <section className="mb-12">
+          <Title level={3} className="text-center mb-6 text-primary">
+            <Divider>Master Students</Divider>
+          </Title>
+          <Row gutter={[16, 16]} className="flex justify-center">
+            {groupedUsers[EMemberPosition.MASTER]?.map(renderUserCard)}
+          </Row>
+        </section>
+
+        <section className="mb-12">
+          <Title level={3} className="text-center mb-6 text-primary">
+            <Divider>Undergraduate Students</Divider>
+          </Title>
+          <Row gutter={[16, 16]} className="flex justify-center">
+            {groupedUsers[EMemberPosition.UNDERGRAD]?.map(renderUserCard)}
+          </Row>
         </section>
       </div>
     </main>

@@ -19,14 +19,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User, RefreshCw, LogOut } from 'lucide-react';
+import { User, RefreshCw, LogOut, LogIn, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
 import LogoutButton from '@/components/common/button/logout-button';
 import { Separator } from '@/components/ui/separator';
 import HoverableCard from '@/components/common/hover-card';
 import useUserInfo from '@/hooks/api-hooks/use-user-info';
-import { IPageMenuItem, IUIActiveUser } from '@/types/componentInterfaces';
+import { IUIActiveUser } from '@/types/componentInterfaces';
 import usePage from '@/hooks/api-hooks/use-page';
 import { cx } from 'class-variance-authority';
 import { usePathname } from 'next/navigation';
@@ -45,6 +45,7 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
   trigger,
 }) => {
   const uiId = uiActiveUser.uiId;
+  const canEdit = uiActiveUser.uiCanEdit;
 
   return (
     <DropdownMenu>
@@ -67,6 +68,14 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
               Reset Password
             </DropdownMenuItem>
           </Link>
+          {canEdit && (
+            <Link href={`/admin-panel`}>
+              <DropdownMenuItem className="cursor-pointer">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                Admin Panel
+              </DropdownMenuItem>
+            </Link>
+          )}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -77,15 +86,18 @@ export const UserProfile = () => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
   const initails = uiActiveUser.uiInitials;
+  const uiId = uiActiveUser.uiId;
 
-  if (!uiActiveUser.uiId) {
+  if (!uiId) {
     return (
-      <Link
-        href={'/sign-in'}
-        className="text-sm  text-primary transition duration-300 ease-in-out"
-      >
-        Log in
-      </Link>
+      <HoverableCard>
+        <Link
+          href={'/sign-in'}
+          className="text-md cursor-pointer flex text-primary items-center transition duration-300 ease-in-out"
+        >
+          <LogIn className="mr-2 h-4 w-4" /> Log in
+        </Link>
+      </HoverableCard>
     );
   }
 
@@ -134,7 +146,7 @@ export const UserProfile = () => {
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
-
+  const uiUser = useUserInfo();
   const pathname = usePathname();
   const handleDrawerToggle = () => {
     dispatch(toggleDrawer());

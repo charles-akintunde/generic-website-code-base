@@ -180,12 +180,13 @@ async def use_refresh_token(
 
     refresh_token: Optional[str]=request.cookies.get('refresh_token')
 
-    if refresh_token is None:
+    if not refresh_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid refresh token",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     payload = verify_token(token=refresh_token,db=db)
     if payload is None:
         raise HTTPException(

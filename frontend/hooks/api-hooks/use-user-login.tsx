@@ -1,7 +1,11 @@
 'use client';
 import { useNotification } from '@/components/hoc/notification-provider';
 import React, { useEffect, useState } from 'react';
-import { useUserLoginMutation, useGetActiveUserQuery } from '@/api/authApi';
+import {
+  useUserLoginMutation,
+  useGetActiveUserQuery,
+  useRefreshTokenMutation,
+} from '@/api/authApi';
 import { IUserInfo, IUserLogin } from '@/types/componentInterfaces';
 import { IUserLoginRequest } from '@/types/requestInterfaces';
 import { useRouter } from 'next/navigation';
@@ -20,6 +24,14 @@ const useUserLogin = () => {
     isLoading: isActiveUserFetchLoading,
     refetch: activePageRefetch,
   } = useGetActiveUserQuery();
+  const [
+    refreshToken,
+    {
+      isError: hasRefreshTokenError,
+      isSuccess: isRefreshTokenSuccess,
+      isLoading: isRefreshTokenLoading,
+    },
+  ] = useRefreshTokenMutation();
 
   const router = useRouter();
   const [userLogin, { isSuccess, isError, isLoading }] = useUserLoginMutation();
@@ -42,39 +54,35 @@ const useUserLogin = () => {
       notify('Error', error.data.message, 'error');
     }
   };
-  const { accessToken, refreshToken } = getTokens();
-  const currentUser = decodeJwt(accessToken ?? '');
-  const currentUserRole = currentUser
-    ? String(currentUser.role)
-    : String(EUserRole.Public);
-  const canEdit =
-    currentUserRole == '0' || currentUserRole == '1' ? true : false;
-  const isAdmin = currentUserRole == '0' ? true : false;
 
   useEffect(() => {
-    if (activeUserData?.data) {
-      const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
-      dispatch(
-        setUIActiveUser({
-          uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
-          uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
-          uiIsAdmin: userProfile.uiRole == EUserRole.Admin,
-          uiIsSuperAdmin: userProfile.uiRole == EUserRole.SuperAdmin,
-          uiId: userProfile.id,
-          uiCanEdit:
-            userProfile.uiRole == EUserRole.Admin ||
-            userProfile.uiRole == EUserRole.SuperAdmin,
-          uiRole: userProfile.uiRole,
-          uiPhotoURL: userProfile.uiPhoto,
-        })
-      );
-    }
-  }, [activeUserData]);
+    const fetchUserData = async () => {
+      if (activeUserData?.data) {
+        const userProfile: IUserInfo = transformToUserInfo(
+          activeUserData?.data
+        );
+        dispatch(
+          setUIActiveUser({
+            uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+            uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+            uiIsAdmin: userProfile.uiRole == EUserRole.Admin,
+            uiIsSuperAdmin: userProfile.uiRole == EUserRole.SuperAdmin,
+            uiId: userProfile.id,
+            uiCanEdit:
+              userProfile.uiRole == EUserRole.Admin ||
+              userProfile.uiRole == EUserRole.SuperAdmin,
+            uiRole: userProfile.uiRole,
+            uiPhotoURL: userProfile.uiPhoto,
+          })
+        );
+      } else {
+        console.log('LLLLLLLLLLLLLLLLLLLLLL');
+        await refreshToken();
+      }
+    };
 
-  const firstName = currentUser && currentUser.firstname;
-  const lastName = currentUser && currentUser.lastname;
-  const fullName = firstName + ' ' + lastName;
-  const initails = firstName && lastName && firstName[0] + lastName[0];
+    fetchUserData();
+  }, [activeUserData, dispatch]);
 
   return {
     isSuccess,
@@ -83,11 +91,6 @@ const useUserLogin = () => {
     errorMessage,
     isLoading,
     sendLoginRequest,
-    currentUser,
-    currentUserRole,
-    canEdit,
-    isAdmin,
-    initails,
   };
 };
 

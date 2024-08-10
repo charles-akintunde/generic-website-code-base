@@ -11,7 +11,7 @@ export default function Home() {
     <div className="bg-pg min-h-screen">
       <section className="container mx-auto px-4 py-12">
         <div className="flex flex-col lg:flex-row items-center">
-          <div className="lg:w-1/2">
+          <div className="lg:w-1/2 py-12">
             <h1 className="text-4xl font-bold mb-4">
               Advanced Flood Modeling for a Safer Tomorrow
             </h1>
@@ -20,7 +20,7 @@ export default function Home() {
               modeling solutions, helping communities and organizations better
               prepare for and respond to flooding events.
             </p>
-            <button className="bg-primary text-white px-6 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transform active:scale-95 transition-transform duration-150">
+            <button className="bg-primary text-white px-8 py-4 rounded-sm hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transform active:scale-95 transition-transform duration-150">
               Discover Our Solutions
             </button>
           </div>
@@ -51,7 +51,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-12">
+      {/* <section className="container mx-auto px-4 py-12">
         <div className="flex flex-col items-center">
           <h2 className="text-2xl font-bold mb-6">
             Trusted by Industry Leaders in Environmental Safety
@@ -62,7 +62,7 @@ export default function Home() {
             <Image src={s3} alt="Gucci" width={100} height={50} />
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="container mx-auto px-4 py-12 bg-white">
         <div className="flex flex-col lg:flex-row items-center">
@@ -76,16 +76,14 @@ export default function Home() {
             />
           </div>
           <div className="lg:w-1/2 lg:pl-12">
-            <h2 className="text-2xl font-bold text-primary mb-4">
-              Why Choose CLISA?
-            </h2>
+            <h2 className="text-2xl font-bold  mb-4">Why Choose CLISA?</h2>
             <p className="mb-6">
               At CLISA, our mission is to provide state-of-the-art flood
               modeling tools that empower communities to mitigate risks and
               protect lives. Our innovative solutions are backed by years of
               research and real-world application.
             </p>
-            <button className="bg-primary text-white px-6 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transform active:scale-95 transition-transform duration-150">
+            <button className="bg-primary text-white px-8 py-2 rounded-sm hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transform active:scale-95 transition-transform duration-150">
               Learn More
             </button>
           </div>
@@ -97,13 +95,13 @@ export default function Home() {
           Our Core Services
         </h2>
         <div className="flex flex-wrap justify-center gap-6">
-          <div className="bg-gray-100 p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
+          <div className="bg-white p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
             <p className="text-center font-bold">Flood Simulation</p>
           </div>
-          <div className="bg-gray-100 p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
+          <div className="bg-white p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
             <p className="text-center font-bold">Risk Management</p>
           </div>
-          <div className="bg-gray-100 p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
+          <div className="bg-white p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
             <p className="text-center font-bold">Early Warning Systems</p>
           </div>
         </div>
@@ -153,7 +151,7 @@ export default function Home() {
           Frequently Asked Questions
         </h2>
         <div className="flex flex-wrap justify-center gap-6">
-          <div className="w-full lg:w-1/3 bg-gray-100 p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
+          <div className="w-full lg:w-1/3 bg-pg p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
             <h3 className="font-bold mb-2">What is CLISA?</h3>
             <p>
               CLISA is an advanced flood modeling platform designed to help
@@ -161,7 +159,7 @@ export default function Home() {
               risks through sophisticated simulations and data-driven insights.
             </p>
           </div>
-          <div className="w-full lg:w-1/3 bg-gray-100 p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
+          <div className="w-full lg:w-1/3 bg-pg p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
             <h3 className="font-bold mb-2">
               What services does CLISA provide?
             </h3>
@@ -171,7 +169,7 @@ export default function Home() {
               warning systems to enhance flood preparedness.
             </p>
           </div>
-          <div className="w-full lg:w-1/3 bg-gray-100 p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
+          <div className="w-full lg:w-1/3 bg-pg p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
             <h3 className="font-bold mb-2">How can I partner with CLISA?</h3>
             <p>
               We work closely with governments, NGOs, and private organizations
