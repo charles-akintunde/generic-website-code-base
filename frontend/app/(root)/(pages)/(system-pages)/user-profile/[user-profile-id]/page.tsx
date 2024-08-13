@@ -1,6 +1,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { UserProfileDialog } from '@/components/common/form/user-profile-form';
+import {
+  UserProfileDialog,
+  UserRoleStatusDialog,
+} from '@/components/common/form/user-profile-form';
 import {
   UserOutlined,
   HomeOutlined,
@@ -9,24 +12,19 @@ import {
   PhoneOutlined,
   MailOutlined,
 } from '@ant-design/icons';
-import { format } from 'date-fns';
 import { Avatar, Divider, Badge, Tooltip } from 'antd';
-import ActionsButtons from '@/components/common/action-buttons';
 import { useGetUserQuery } from '@/api/userApi';
 import {
   formatDate,
   handleRoutingOnError,
   isValidUUID,
   roleBadgeClasses,
-  roleColors,
   statusBadgeClasses,
-  statusColors,
   transformToUserInfo,
   userRoleLabels,
   userStatusLabels,
 } from '@/utils/helper';
 import { IUserInfo } from '@/types/componentInterfaces';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { usePathname, useRouter } from 'next/navigation';
 import AppLoading from '@/components/common/app-loading';
 import { useAppSelector } from '@/hooks/redux-hooks';
@@ -39,7 +37,7 @@ export function sanitizeAndCompare(str1: string, str2: string) {
 const UserProfilePage = () => {
   const router = useRouter();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
-  const isAdmin = uiActiveUser ? uiActiveUser.uiIsAdmin : false;
+  const uiIsAdmin = uiActiveUser ? uiActiveUser.uiIsAdmin : false;
   const pathname = usePathname();
   const userId = pathname.split('/')[2];
 
@@ -52,7 +50,7 @@ const UserProfilePage = () => {
           isError: true,
           isSuccess: false,
           isLoading: false,
-          refetch: () => {},
+          refetch: () => Promise.resolve({}),
           error: null,
         };
 
@@ -130,31 +128,57 @@ const UserProfilePage = () => {
                     <MailOutlined className="mr-2 text-primary" />
                     {userInfo.uiEmail}
                   </p>
-                  {(isAdmin || isSameUser) && (
+                  {(uiIsAdmin || isSameUser) && (
                     <div className="flex space-x-2">
                       <Badge
-                        text={userRoleLabels[userInfo.uiRole]}
-                        color={roleBadgeClasses[userInfo.uiRole]}
+                        text={
+                          userRoleLabels[
+                            userInfo.uiRole as keyof typeof userRoleLabels
+                          ]
+                        }
+                        color={
+                          roleBadgeClasses[
+                            userInfo.uiRole as keyof typeof roleBadgeClasses
+                          ]
+                        }
                         className="mr-2"
                       />
                       <Badge
-                        text={userStatusLabels[userInfo.uiStatus]}
-                        color={statusBadgeClasses[userInfo.uiStatus]}
+                        text={
+                          userStatusLabels[
+                            userInfo.uiStatus as keyof typeof userStatusLabels
+                          ]
+                        }
+                        color={
+                          statusBadgeClasses[
+                            userInfo.uiStatus as keyof typeof statusBadgeClasses
+                          ]
+                        }
                         className="mr-2"
                       />
                     </div>
                   )}
-                  <p className="flex items-center">
-                    <HomeOutlined className="mr-2 text-primary" />
-                    {userInfo.uiCity ? `${userInfo.uiCity}, ` : ''}
-                    {userInfo.uiProvince ? `${userInfo.uiProvince}, ` : ''}
-                    {userInfo.uiCountry}
-                  </p>
-                  <p className="flex items-center">
-                    <PhoneOutlined className="mr-2 text-primary" />
-                    {userInfo.uiPhoneNumber}
-                  </p>
-                  {(isAdmin || isSameUser) && (
+                  {!userInfo.uiCity &&
+                  !userInfo.uiProvince &&
+                  !userInfo.uiCountry ? (
+                    ''
+                  ) : (
+                    <p className="flex items-center">
+                      <HomeOutlined className="mr-2 text-primary" />
+                      {userInfo.uiCity ? `${userInfo.uiCity}, ` : ''}
+                      {userInfo.uiProvince ? `${userInfo.uiProvince}, ` : ''}
+                      {userInfo.uiCountry}
+                    </p>
+                  )}
+
+                  {userInfo.uiPhoneNumber && (
+                    <p className="flex items-center">
+                      <PhoneOutlined className="mr-2 text-primary" />
+                      {userInfo.uiPhoneNumber}
+                    </p>
+                  )}
+
+                  {(uiIsAdmin || isSameUser) && (
                     <p className="flex items-center">
                       <CalendarOutlined className="mr-2 text-primary" />
                       <span className="font-semibold text-gray-700">
@@ -163,28 +187,33 @@ const UserProfilePage = () => {
                       {formatDate(userInfo.uiRegDate)}
                     </p>
                   )}
-                  <p className="flex items-center">
-                    <BankOutlined className="mr-2 text-primary" />
-                    <span className="font-semibold text-gray-700">
-                      Organization:
-                    </span>
-                    <span className="capitalize">
-                      {userInfo.uiOrganization}
-                    </span>
-                  </p>
+                  {userInfo.uiOrganization && (
+                    <p className="flex items-center">
+                      <BankOutlined className="mr-2 text-primary" />
+                      <span className="font-semibold text-gray-700">
+                        Organization:
+                      </span>
+                      <span className="capitalize">
+                        {userInfo.uiOrganization}
+                      </span>
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
-            <div className="mt-10">
-              <h2 className="text-2xl font-semibold text-gray-900">About Me</h2>
-              <Divider className="my-6" />
-              <div className="mt-4">
-                {/* UserProfileForm component should be here */}
-                <p className="mt-2 leading-relaxed text-gray-700">
-                  {userInfo.uiAbout}
-                </p>
+            {userInfo.uiAbout && (
+              <div className="mt-10">
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  About Me
+                </h2>
+                <Divider className="my-6" />
+                <div className="mt-4">
+                  <p className="mt-2 leading-relaxed text-gray-700">
+                    {userInfo.uiAbout}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}

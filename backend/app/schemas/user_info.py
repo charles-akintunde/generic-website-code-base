@@ -56,7 +56,7 @@ class UserResponse(UserBase):
     UI_Role: int
     UI_Status: int
     UI_RegDate: str
-    UI_About: str
+    UI_About: Optional[str] = None
     UI_MemberPosition: Optional[int] = None
 
 

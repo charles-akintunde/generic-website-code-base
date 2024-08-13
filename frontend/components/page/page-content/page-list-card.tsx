@@ -38,6 +38,7 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
   const date = formatDate(pageContent.pageContentCreatedAt as string);
   const href = pageContent.href;
   const category = pageName;
+  const isHidden = pageContent.isPageContentHidden;
 
   const handleRemovePage = async () => {
     await handleRemovePageContent(pageContent.pageContentId);
@@ -54,10 +55,18 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
           />
         </Link>
       </CardHeader>
-      <CardContent className="flex-grow">
-        <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-blue-200 rounded-sm bg-opacity-50 text-blue-400 px-6 py-1 hover:bg-blue-100 hover:bg-opacity-50">
-          {category}
-        </Badge>
+      <CardContent>
+        <div className="flex flex-wrap">
+          <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-blue-200 rounded-sm bg-opacity-50 text-blue-400 px-6 py-1 hover:bg-blue-200 hover:bg-opacity-50 shadow-sm">
+            {category}
+          </Badge>
+          {isHidden && (
+            <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-red-200 rounded-sm bg-opacity-50 text-red-600 px-6 py-1 hover:bg-red-200 hover:bg-opacity-50 shadow-sm">
+              {'This post is hidden from users'}
+            </Badge>
+          )}
+        </div>
+
         <CardTitle className="text-xl font-bold mt-2">
           <Link onClick={handleEditButtonClick} href={href}>
             {title}

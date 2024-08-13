@@ -106,7 +106,8 @@ const Drawer: React.FC = () => {
                     style={{
                       cursor: 'pointer',
                       textTransform: 'uppercase',
-                      backgroundColor: '#69b1ff',
+                      backgroundColor: '#d9d9d9',
+                      color: 'black',
                       transition: 'background-color px-0 0.3s ease-in-out',
                     }}
                   >

@@ -52,6 +52,7 @@ const PageLists = () => {
 
   return (
     <ContentList
+      pageType={page?.pageName ?? ''}
       pageName={page?.pageName ?? ''}
       pageContents={pageContents}
       canEdit={canEdit}

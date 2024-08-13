@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAppDispatch } from '../redux-hooks';
 import { setUIActiveUser } from '@/store/slice/userSlice';
 import { EUserRole } from '@/types/enums';
+import { useRouter } from 'next/navigation';
 
 const useLogout = () => {
   const dispatch = useAppDispatch();
@@ -15,6 +16,7 @@ const useLogout = () => {
   const [errorMessage, setErrorMessage] = useState<string>(
     'Account verification failed'
   );
+  const router = useRouter();
 
   const sendLogoutRequest = async (handleCloseDrawer: any) => {
     try {
@@ -32,7 +34,9 @@ const useLogout = () => {
           uiPhotoURL: null,
         })
       );
+
       handleCloseDrawer();
+      router.refresh();
     } catch (error: any) {
       console.log(error);
       notify(

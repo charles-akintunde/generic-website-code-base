@@ -257,8 +257,8 @@ export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
     uiFirstName: data.UI_FirstName,
     uiLastName: data.UI_LastName,
     uiEmail: data.UI_Email,
-    uiRole: String(data.UI_Role),
-    uiStatus: data.UI_Status,
+    uiRole: data.UI_Role as EUserRole,
+    uiStatus: data.UI_Status as EUserStatus,
     uiRegDate: data.UI_RegDate,
     uiPhoto: data.UI_PhotoURL ? data.UI_PhotoURL : null,
     uiCity: data.UI_City,
@@ -375,6 +375,8 @@ export const mapToIIUserList = (data: IUserResponseData): IUserList => {
     uiPhotoUrl: user.UI_PhotoURL,
     uiMemberPosition: user.UI_MemberPosition,
     uiCountry: user.UI_Country,
+    uiFullName: `${user.UI_FirstName} ${user.UI_LastName}`,
+    uiInitials: user.UI_FirstName[0] + user.UI_LastName[0],
   }));
   return {
     users: users,
@@ -466,11 +468,11 @@ export const handleRoutingOnError = (
 ) => {
   if (hasError && error) {
     if (error.status === 404) {
-      // router.replace('/404');
+      router.replace('/404');
     } else if (error.status === 500) {
-      // router.replace('/500');
+      router.replace('/500');
     } else {
-      // router.replace('/access-denied');
+      router.replace('/access-denied');
     }
   }
 };

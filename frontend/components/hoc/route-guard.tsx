@@ -27,7 +27,7 @@ const isExistingRoute: React.FC<isExistingRouteProps> = ({
 
 const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
-  const uiActiveUserRole = uiActiveUser.uiRole;
+  const uiActiveUserRole = String(uiActiveUser.uiRole);
   const { allAppRoutes } = usePage();
   const router = useRouter();
   const pathname = usePathname();
@@ -59,6 +59,12 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
         ) {
           router.replace('/access-denied');
         }
+
+        console.log(
+          uiActiveUserRole,
+          currentPage?.pagePermission,
+          'HHHHHHHHHHHHHHHHHHHHHhh'
+        );
       }
     }
   }, [allAppRoutes, pathname, router]);

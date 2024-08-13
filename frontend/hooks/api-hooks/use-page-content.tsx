@@ -170,8 +170,6 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         formData.append('PC_Resource', pageContent.pageContentResource);
       }
 
-      console.log(formData.entries(), pageType, 'ENTRIESSSS');
-
       const response = await editPageContent({
         PC_ID: pageContentId,
         formData,
@@ -184,12 +182,13 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       } else {
         singlePageRefetch();
       }
-      await pageRefetch();
+
       notify(
         'Success',
         response.message || 'The page has been updated successfully.',
         'success'
       );
+      await pageRefetch();
     } catch (error: any) {
       console.log(error, 'ERROR');
       notify(

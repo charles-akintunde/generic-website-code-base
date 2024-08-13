@@ -7,6 +7,7 @@ import ActionsButtons from '@/components/common/action-buttons';
 import { Table } from 'antd';
 import { IUserBase, IUserList } from '@/types/componentInterfaces';
 import { useGetUsersQuery } from '@/api/userApi';
+import { ExternalLink } from 'lucide-react';
 import {
   formatDate,
   handleRoutingOnError,
@@ -52,7 +53,6 @@ const UserListItem = () => {
     page: fetchParams.current,
     limit: fetchParams.pageSize,
   });
-  const { currentUser, initails } = useUserLogin();
   const [users, setUsers] = useState<IUserBase[]>();
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -101,11 +101,9 @@ const UserListItem = () => {
       render: (_: any, record: IUserBase) => (
         <div className="flex space-x-2 justify-start text-left items-center">
           <Avatar
-            // size={avatarSize}
-            src={record.uiPhoto}
-            // icon={<UserOutlined />}
-            className=""
-            style={{ backgroundColor: '#67B0FD' }}
+            src={record.uiPhoto as string}
+            className="text-gray-700"
+            style={{ backgroundColor: '#d9d9d9' }}
           >
             {record.uiFirstName[0]}
             {record.uiLastName[0]}
@@ -114,11 +112,12 @@ const UserListItem = () => {
             href={`/user-profile/${record.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:underline  text-left flex items-center"
+            className="hover:text-blue-500 space-x-1 text-left flex items-center text-gray-700"
           >
-            <span className="font-medium">
+            <span className="font-medium truncate w-20 text-nowrap">
               {record.uiFirstName} {record.uiLastName}
             </span>
+            <ExternalLink className="h-3 w-3 " />
           </a>
         </div>
       ),

@@ -120,22 +120,21 @@ export const UserProfile = () => {
       <HoverableCard>
         <UserProfileDropDown
           trigger={
-            <Tooltip title="Your Profile">
-              <span className="flex space-x-2 items-center">
-                <Avatar
-                  style={{
-                    cursor: 'pointer',
-                    textTransform: 'uppercase',
-                    backgroundColor: '#69b1ff',
-                    transition: 'background-color 0.3s ease-in-out',
-                  }}
-                >
-                  {initails}
-                </Avatar>
+            <span className="flex space-x-1 items-center">
+              <Avatar
+                style={{
+                  cursor: 'pointer',
+                  textTransform: 'uppercase',
+                  backgroundColor: '#d9d9d9',
+                  color: '#374151',
+                  transition: 'background-color 0.3s ease-in-out',
+                }}
+              >
+                {initails}
+              </Avatar>
 
-                <ChevronDown className="h-3 w-3" />
-              </span>
-            </Tooltip>
+              <ChevronDown className="h-3 w-3" />
+            </span>
           }
           uiActiveUser={uiActiveUser}
         />

@@ -28,6 +28,8 @@ const Teams = () => {
     refetch: refetchUsersList,
   } = useGetUsersAssignedPositionsQuery();
 
+  console.log(users, 'USERS');
+
   useEffect(() => {
     if (usersResponseData && usersResponseData.data) {
       const usersData: IUserList = mapToIIUserList(usersResponseData.data);
@@ -72,14 +74,17 @@ const Teams = () => {
           <div className="border rounded-lg bg-white p-6 text-center shadow-sm transform transition-transform hover:scale-104 hover:shadow-md">
             <Avatar
               size={avatarSize}
-              src={user.uiPhotoUrl || <UserOutlined />}
+              src={user.uiPhotoUrl}
               alt={`${user.uiFirstName} ${user.uiLastName}`}
+              style={{ backgroundColor: '#f9f9f9ff', color: 'black' }}
               className="mx-auto mb-4 border border-gray-200"
-            />
+            >
+              {user.uiInitials}
+            </Avatar>
             <Title level={4} className="text-gray-800">
               {`${user.uiFirstName} ${user.uiLastName}`}
             </Title>
-            <Text type="secondary">{user.uiEmail}</Text>
+            {/* <Text type="secondary">{user.uiEmail}</Text> */}
           </div>
         </Link>
       </div>

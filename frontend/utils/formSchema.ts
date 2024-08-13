@@ -30,7 +30,10 @@ const emailSchema = () =>
   z.string().email({ message: 'Invalid email address.' });
 
 const requiredTextSchema = (field: string) => {
-  return z.string().min(1, `${field} is required`);
+  return z
+    .string()
+    .min(1, `${field} is required`)
+    .regex(/^[^-]+$/, `${field} should not contain dashes (-)`);
 };
 
 export const loginSchema = z.object({

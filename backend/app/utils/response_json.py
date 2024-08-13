@@ -95,14 +95,14 @@ def create_user_response(user: T_UserInfo)  -> UserResponse:
     UI_Role=user.UI_Role.value,
     UI_Status=user.UI_Status.value,
     UI_RegDate=str(user.UI_RegDate),
-    UI_PhotoURL=str(user.UI_PhotoURL),
-    UI_City=str(user.UI_City),
-    UI_PhoneNumber=str(user.UI_PhoneNumber),
-    UI_PostalCode=str(user.UI_PostalCode),
-    UI_Country=str(user.UI_Country),
-    UI_Province=str(user.UI_Province),
-    UI_Organization=str(user.UI_Organization),
-    UI_About= str(user.UI_About),
+    UI_PhotoURL=user.UI_PhotoURL, # type: ignore
+    UI_City=user.UI_City, # type: ignore
+    UI_PhoneNumber=user.UI_PhoneNumber, # type: ignore
+    UI_PostalCode=user.UI_PostalCode, # type: ignore
+    UI_Country=user.UI_Country, # type: ignore
+    UI_Province=user.UI_Province, # type: ignore
+    UI_Organization=user.UI_Organization, # type: ignore
+    UI_About= user.UI_About, # type: ignore
     UI_MemberPosition= user.UI_MemberPosition.value
     )
 

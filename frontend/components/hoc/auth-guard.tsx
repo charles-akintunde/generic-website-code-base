@@ -32,11 +32,8 @@ const AuthGuard: React.FC<IAuthGuardProps> = ({ children }) => {
     },
   ] = useRefreshTokenMutation();
 
-  console.log(getCookies(), 'COOKIESSSS');
-
   useEffect(() => {
     const fetchUserData = async () => {
-      console.log(activeUserData?.data, 'activeUserData?.data');
       if (activeUserData?.data) {
         const userProfile: IUserInfo = transformToUserInfo(
           activeUserData?.data

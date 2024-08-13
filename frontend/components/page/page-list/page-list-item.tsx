@@ -13,12 +13,11 @@ import {
 } from '@/utils/helper';
 import { IPageList, IPageMain } from '@/types/componentInterfaces';
 import usePage from '@/hooks/api-hooks/use-page';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import ActionsButtons from '@/components/common/action-buttons';
 import { useGetPagesWithOffsetQuery } from '@/api/pageApi';
 import { useRouter } from 'next/navigation';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
 import { useAppSelector } from '@/hooks/redux-hooks';
+import { ExternalLink } from 'lucide-react';
 
 const PageListItem: React.FC = () => {
   const router = useRouter();
@@ -61,7 +60,9 @@ const PageListItem: React.FC = () => {
   }, [pagesResponse]);
 
   useEffect(() => {
-    handleRoutingOnError(router, hasPagesFetchError, pagesFetchError);
+    if (!isPagesFetchSuccess) {
+      handleRoutingOnError(router, hasPagesFetchError, pagesFetchError);
+    }
   }, [hasPagesFetchError, pagesFetchError, router]);
 
   const columns = [
@@ -71,17 +72,15 @@ const PageListItem: React.FC = () => {
       key: 'pageName',
       fixed: 'left',
       render: (text: string, record: IPageMain) => (
-        <div className="flex items-center justify-between">
-          <a
-            href={record.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline flex items-center"
-          >
-            <Link2Icon className="mr-2 h-4 w-4" />
-            <span className="font-medium"> {text}</span>
-          </a>
-        </div>
+        <a
+          href={record.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-blue-500 flex items-center"
+        >
+          <p className="font-medium truncate w-20"> {text}</p>
+          <ExternalLink className="h-3 w-3" />
+        </a>
       ),
     },
     {
@@ -99,7 +98,7 @@ const PageListItem: React.FC = () => {
       dataIndex: 'pagePermission',
       key: 'pagePermission',
       render: (roles: EUserRole[]) => (
-        <div className="flex flex-wrap">
+        <div className="flex gap-1 flex-wrap ">
           {roles.map((role, index) => (
             <Badge
               key={index}

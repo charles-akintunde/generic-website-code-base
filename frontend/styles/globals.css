@@ -86,10 +86,11 @@
 
 body {
   font-family: 'Geist Sans', ui-sans-serif, system-ui, sans-serif;
+  color: rgb(55 65 81);
 }
 
 .superadmin-badge {
-  @apply mr-2 mb-2 lg:mr-4 lg:mb-0 bg-red-100 bg-opacity-50 text-red-400 hover:bg-gray-100 hover:bg-opacity-50 px-2 py-1;
+  @apply mr-2 mb-2 lg:mr-4 lg:mb-0 bg-red-100 bg-opacity-50 text-red-400 hover:bg-red-100 hover:bg-opacity-50 px-2 py-1;
 }
 
 .superadmin-badge:hover {

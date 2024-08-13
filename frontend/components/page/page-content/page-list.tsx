@@ -95,7 +95,7 @@ const CreatePageContent = () => {
   return (
     <PageLayout title="Create Page Content">
       <div
-        className={`flex flex-col min-h-screen w-full ${pageContentPaddingStyles}`}
+        className={`flex flex-col mt-10 min-h-screen w-full ${pageContentPaddingStyles}`}
       >
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="">

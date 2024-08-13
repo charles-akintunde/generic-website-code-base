@@ -81,7 +81,8 @@ const SinglePage = () => {
       setSinglePage(normalizedPage);
       setPage(normalizedPage);
       const singlePageContent: IPageContentMain =
-        normalizedPage.pageContents && normalizedPage.pageContents[0];
+        (normalizedPage.pageContents &&
+          normalizedPage.pageContents[0]) as IPageContentMain;
 
       if (singlePageContent) {
         setOriginalSinglePageData(singlePageContent.editorContent);

@@ -25,15 +25,11 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/plate-ui/button';
-import AppButton from '../button/app-button';
-import { primarySolidButtonStyles } from '@/styles/globals';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-profile/[user-profile-id]/page';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { toggleCreateUserDialog } from '@/store/slice/userSlice';
@@ -53,12 +49,13 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
   userProfileRefetch,
   setDialogOpen,
 }) => {
-  const { isAdmin, currentUser } = useUserLogin();
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const uiId = uiActiveUser.uiId;
   const countries = getNames();
   const { notify } = useNotification();
   const { submitEditUser } = useUserInfo();
   const [isSameUser, setIsSameUser] = useState(
-    sanitizeAndCompare(currentUser?.Id as string, userInfo?.id as string)
+    sanitizeAndCompare(uiId as string, userInfo?.id as string)
   );
   const form = useForm<UserProfileFormData>({
     resolver: zodResolver(userProfileSchema),
@@ -75,8 +72,6 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
       uiAbout: '',
     },
   });
-
-  console.log(userInfo, 'userInfo');
 
   useEffect(() => {
     if (userInfo) {
@@ -205,7 +200,7 @@ export const UserProfileDialog: React.FC<UserProfileFormProps> = ({
           <EditOutlined className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl max-h-[90vh]">
+      <DialogContent className="w-full max-w-xs sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit profile</DialogTitle>
           <DialogDescription>
@@ -229,13 +224,15 @@ export const UserProfileDialog: React.FC<UserProfileFormProps> = ({
 type UserRoleStatusFormData = z.infer<typeof userRoleStatusSchema>;
 
 export const UserRoleStatusDialog = () => {
-  const { isAdmin, currentUser } = useUserLogin();
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const uiId = uiActiveUser.uiId;
   const { submitEditRoleStatus } = useUserInfo();
   const dispatch = useAppDispatch();
   const isDialogOpen = useAppSelector((state) => state.userSlice.isDialogOpen);
   const userInfo = useAppSelector((state) => state.userSlice.editingUser);
+  const uiIsSuperAdmin = uiActiveUser.uiIsSuperAdmin;
   const [isSameUser, setIsSameUser] = useState(
-    sanitizeAndCompare(currentUser?.Id as string, userInfo?.id as string)
+    sanitizeAndCompare(uiId as string, userInfo?.id as string)
   );
   const { notify } = useNotification();
 
@@ -276,6 +273,10 @@ export const UserRoleStatusDialog = () => {
     dispatch(toggleCreateUserDialog());
   };
 
+  if (!uiIsSuperAdmin) {
+    return <></>;
+  }
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-md xl:max-w-md max-h-[90vh]">
@@ -288,7 +289,7 @@ export const UserRoleStatusDialog = () => {
               className="space-y-6 w-full h-full overflow-y-auto pb-20"
               onSubmit={form.handleSubmit(onSubmit)}
             >
-              {isAdmin && !isSameUser && (
+              {!isSameUser && (
                 <>
                   <FormField
                     control={form.control}
