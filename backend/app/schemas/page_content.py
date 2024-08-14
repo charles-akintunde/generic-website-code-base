@@ -3,9 +3,9 @@
 """
 
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Dict
 from fastapi import File, UploadFile
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel
 from typing import Optional
 
 from sqlalchemy import JSON, Boolean
@@ -45,3 +45,6 @@ class PageContentUpdateRequest(BaseModel):
     PC_Content: Optional[Dict] = None
     PC_DisplayURL: Optional[str] = None
     PC_IsHidden: Optional[bool] = None
+
+class PC_PageContentImgResponse(BaseModel):
+    PC_PageContentURL: str

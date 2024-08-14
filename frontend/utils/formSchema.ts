@@ -166,6 +166,11 @@ export const pageContentSchema = z.object({
   isPageContentHidden: z.boolean().default(false),
 });
 
+export const pageContentImageSchema = z.object({
+  pageContentImage: imageFileSchema,
+  pageContentImageURL: urlSchema,
+});
+
 export const optionalImagePageContentSchema = z.object({
   pageContentName: requiredTextSchema('Content Name'),
   pageContentDisplayImage: imageSchema.optional(),

@@ -2,6 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import {
   IGenericResponse,
   IPageContentGetResponse,
+  IPageContentImageResponse,
   IPageContentResponse,
   IPageResponse,
   ISinglePageResponse,
@@ -12,6 +13,7 @@ import {
   IEditPageContentRequest,
   IPageContentCreateRequest,
   IPageContentGetRequest,
+  IPageContentImageRequest,
 } from '@/types/requestInterfaces';
 
 const url = '/page-contents';
@@ -75,6 +77,16 @@ export const pageContentApi = createApi({
         { type: 'Page', id: id },
       ],
     }),
+    uploadPageContent: builder.mutation<
+      IPageContentImageResponse,
+      IPageContentImageRequest
+    >({
+      query: (pageContentImage) => ({
+        url: `${url}/upload-page-content-image`,
+        method: 'POST',
+        body: pageContentImage,
+      }),
+    }),
   }),
 });
 
@@ -83,4 +95,5 @@ export const {
   useGetPageContentQuery,
   useDeletePageContentMutation,
   useEditPageContentMutation,
+  useUploadPageContentMutation,
 } = pageContentApi;

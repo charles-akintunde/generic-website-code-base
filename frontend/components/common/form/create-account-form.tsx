@@ -56,13 +56,13 @@ const CreateAccountForm = () => {
               control={form.control}
               name="firstname"
               label="First Name"
-              placeholder="Your First Name"
+              placeholder=""
             />
             <FormField
               control={form.control}
               name="lastname"
               label="Last Name"
-              placeholder="Your Last Name"
+              placeholder=""
             />
           </div>
 
@@ -70,21 +70,21 @@ const CreateAccountForm = () => {
             control={form.control}
             name="email"
             label="Email"
-            placeholder="example@genericapp.com"
+            placeholder=""
           />
           {/* <div className="flex justify-center space-x-4"> */}
           <FormField
             control={form.control}
             name="password"
             label="Password"
-            placeholder="******"
+            placeholder=""
             type="password"
           />
           <FormField
             control={form.control}
             name="confirmPassword"
             label="Confirm Password"
-            placeholder="******"
+            placeholder=""
             type="password"
           />
           {/* </div> */}

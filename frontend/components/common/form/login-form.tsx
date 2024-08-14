@@ -44,13 +44,13 @@ export function LoginForm() {
               control={form.control}
               name="email"
               label="Email"
-              placeholder="user@genericapp.com"
+              placeholder=""
             />
             <FormField
               control={form.control}
               name="password"
               label="Password"
-              placeholder="******"
+              placeholder=""
               type="password"
             />
             <LoadingButton

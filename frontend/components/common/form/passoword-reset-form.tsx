@@ -47,14 +47,14 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ token }) => {
             control={form.control}
             name="newPassword"
             label="New Password"
-            placeholder="******"
+            placeholder=""
             type="password"
           />
           <FormField
             control={form.control}
             name="confirmPassword"
             label="Confirm New Password"
-            placeholder="******"
+            placeholder=""
             type="password"
           />
           <LoadingButton

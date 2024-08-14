@@ -111,3 +111,11 @@ export interface IGetPagesWithOffsetRequest {
   PG_Number: number;
   PG_Limit: number;
 }
+
+export interface IPageContentImageData {
+  PC_PageContentURL: string;
+}
+
+export interface IPageContentImageResponse extends IGenericResponse {
+  data: IPageContentImageData;
+}

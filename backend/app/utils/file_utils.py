@@ -39,7 +39,6 @@ async def save_file(file: UploadFile, folder: str, delimiter: str = '***') -> st
 
 def extract_path_from_url(file_url: str):
     try:
-        print(file_url,"KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
         parsed_url = urlparse(file_url)
         file_path = parsed_url.path
 
@@ -77,3 +76,17 @@ async def delete_and_save_file(file_url: Optional[str], file: UploadFile, folder
         if file_url:
             delete_file(extract_path_from_url(file_url))
         return await save_file(file, folder=folder)
+
+
+def validate_image_file(file: UploadFile):
+    """
+    Validates that the uploaded file is an image.
+
+    Args:
+        file (UploadFile): The file to be validated.
+
+    Raises:
+        HTTPException: If the file is not an image.
+    """
+    if file.content_type is None or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Uploaded file must be an image.")

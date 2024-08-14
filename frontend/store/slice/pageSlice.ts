@@ -13,6 +13,7 @@ interface PageState {
   currentPageContent: IPageMain | null;
   editingPage: IPageMain | null;
   editingPageContent: IPageContentMain | null;
+  pageContentImageURL: string;
 }
 
 const initialState: PageState = {
@@ -23,6 +24,7 @@ const initialState: PageState = {
   currentPageContent: null,
   currentPage: null,
   editingPageContent: null,
+  pageContentImageURL: '',
 };
 
 const pageSlice = createSlice({
@@ -102,6 +104,9 @@ const pageSlice = createSlice({
     setEditingPage(state, action: PayloadAction<IPageMain | null>) {
       state.editingPage = action.payload;
     },
+    setPageContentImageURL(state, action: PayloadAction<string>) {
+      state.pageContentImageURL = action.payload;
+    },
     setEditingPageContent(
       state,
       action: PayloadAction<IPageContentMain | null>
@@ -135,5 +140,6 @@ export const {
   addPageContent,
   setCurrentPage,
   setCurrentPageContent,
+  setPageContentImageURL,
 } = pageSlice.actions;
 export default pageSlice.reducer;

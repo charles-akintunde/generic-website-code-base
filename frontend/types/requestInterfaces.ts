@@ -80,3 +80,7 @@ export interface IPasswordResetConfirmationRequest {
   UI_NewPassword: string;
   UI_Token: string;
 }
+
+export interface IPageContentImageRequest {
+  PC_PageContentImg: File;
+}

@@ -7,6 +7,7 @@ import { pageContentPaddingStyles } from '@/styles/globals';
 import { EPageType } from '@/types/enums';
 import { FloatButton } from 'antd';
 import { Divider } from 'antd';
+import UploadPageContentImage from '@/components/common/upload-page-content-image';
 interface PageListLayoutProps {
   children: ReactNode;
   pageContent: IPageContentMain;
@@ -53,6 +54,10 @@ const PageListLayout: React.FC<PageListLayoutProps> = ({
       </header>
       <Divider />
       <div>{children}</div>
+      <div className="">
+        <UploadPageContentImage />
+      </div>
+
       <FloatButton.BackTop visibilityHeight={400} />
     </div>
   );

@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Union,Tuple
 
 from uuid import UUID
 from app.models.user_info import T_UserInfo
-from app.schemas.page_content import PageContentResponse
+from app.schemas.page_content import PC_PageContentImgResponse, PageContentResponse
 from app.models.page_content import T_PageContent
 from app.models.page import T_Page
 from app.schemas.page import PG_PagesResponse, PageResponse, PageSingleContent, Page
@@ -113,3 +113,7 @@ def create_page_with_offset_response(pages: List[PageResponse], total_page_count
         PG_PageCount=total_page_count
     )
 
+def create_page_content_img_response(pc_img_url: str)  -> PC_PageContentImgResponse:
+    return PC_PageContentImgResponse(
+        PC_PageContentURL=pc_img_url
+    )

@@ -59,12 +59,6 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
         ) {
           router.replace('/access-denied');
         }
-
-        console.log(
-          uiActiveUserRole,
-          currentPage?.pagePermission,
-          'HHHHHHHHHHHHHHHHHHHHHhh'
-        );
       }
     }
   }, [allAppRoutes, pathname, router]);

@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     COMPANY_NAME: str
     ACCESS_TOKEN_EXPIRE_SECONDS: int
     REFRESH_TOKEN_EXPIRE_SECONDS: int
+    PAGE_CONTENT_FILE_PATH: str
 
     class Config:
         env_file = ".env"

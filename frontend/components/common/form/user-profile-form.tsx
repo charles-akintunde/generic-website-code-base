@@ -108,13 +108,13 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
                 control={form.control}
                 name="uiFirstName"
                 label="First Name"
-                placeholder="Your First Name"
+                placeholder=""
               />
               <FormField
                 control={form.control}
                 name="uiLastName"
                 label="Last Name"
-                placeholder="Your Last Name"
+                placeholder=""
               />
               <FormField
                 control={form.control}
@@ -131,45 +131,45 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
                 control={form.control}
                 name="uiCity"
                 label="City"
-                placeholder="Your City"
+                placeholder=""
               />
               <FormField
                 control={form.control}
                 name="uiProvince"
                 label="Province"
-                placeholder="Your Province"
+                placeholder=""
               />
               <FormField
                 control={form.control}
                 name="uiPostalCode"
                 label="Postal Code"
-                placeholder="Your Postal Code"
+                placeholder=""
               />
               <FormField
                 control={form.control}
                 name="uiPhoneNumber"
                 label="Phone Number"
-                placeholder="Your Phone Number"
+                placeholder=""
               />
               <FormField
                 control={form.control}
                 name="uiOrganization"
                 label="Organization"
-                placeholder="Your Organization"
+                placeholder=""
               />
               <FormField
                 type="picture"
                 control={form.control}
                 name="uiPhoto"
                 label="Profile Picture"
-                placeholder="Your Status"
+                placeholder=""
               />
               <FormField
                 type="textarea"
                 control={form.control}
                 name="uiAbout"
                 label="About"
-                placeholder="Enter a short description about you."
+                placeholder=""
               />
             </>
           )}

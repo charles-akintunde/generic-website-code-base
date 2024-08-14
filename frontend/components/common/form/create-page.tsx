@@ -76,7 +76,7 @@ const CreatePage = () => {
               control={form.control}
               name="pageName"
               label="Page Name"
-              placeholder="Events"
+              placeholder=""
               type="text"
             />
             {!editingPage && (

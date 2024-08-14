@@ -5,6 +5,7 @@ import { useAppDispatch } from '../redux-hooks';
 import { setUIActiveUser } from '@/store/slice/userSlice';
 import { EUserRole } from '@/types/enums';
 import { useRouter } from 'next/navigation';
+import { reloadPage } from '@/utils/helper';
 
 const useLogout = () => {
   const dispatch = useAppDispatch();
@@ -37,6 +38,7 @@ const useLogout = () => {
 
       handleCloseDrawer();
       router.refresh();
+      reloadPage();
     } catch (error: any) {
       console.log(error);
       notify(

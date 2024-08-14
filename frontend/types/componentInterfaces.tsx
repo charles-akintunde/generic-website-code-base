@@ -175,7 +175,7 @@ export interface IButton {
   Icon?: ElementType;
   href?: string;
   buttonText: string;
-  onClick?: () => void | Promise<void>;
+  onClick?: (() => void | Promise<void>) | undefined;
   classNames?: string;
   variant?:
     | 'default'
@@ -206,3 +206,7 @@ export type Notify = (
 // UI_LastName: str
 // UI_Email: EmailStr
 // UI_Password: str
+
+export interface IPageContentImage {
+  pageContentImage: File;
+}

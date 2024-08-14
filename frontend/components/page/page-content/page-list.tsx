@@ -106,13 +106,13 @@ const CreatePageContent = () => {
                     control={form.control}
                     name="pageContentName"
                     label="Content Name"
-                    placeholder="Content Name"
+                    placeholder=""
                   />
                   <FormField
                     control={form.control}
                     name="pageContentDisplayImage"
                     label="Display Image"
-                    placeholder="Select display Image"
+                    placeholder=""
                     type="picture"
                   />
 
@@ -121,7 +121,7 @@ const CreatePageContent = () => {
                       control={form.control}
                       name="pageContentResource"
                       label="Display Document"
-                      placeholder="Select Document"
+                      placeholder=""
                       type="document"
                     />
                   )}
@@ -305,13 +305,13 @@ const EditPageContent = () => {
                           control={form.control}
                           name="pageContentName"
                           label="Content Name"
-                          placeholder="Content Name"
+                          placeholder=""
                         />
                         <FormField
                           control={form.control}
                           name="pageContentDisplayImage"
                           label="Display Image"
-                          placeholder="Select display Image"
+                          placeholder=""
                           type="picture"
                         />
 
@@ -320,7 +320,7 @@ const EditPageContent = () => {
                             control={form.control}
                             name="pageContentResource"
                             label="Display Document"
-                            placeholder="Select Document"
+                            placeholder=""
                             type="document"
                           />
                         )}

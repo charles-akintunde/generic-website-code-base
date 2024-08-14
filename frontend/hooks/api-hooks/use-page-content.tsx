@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux-hooks';
 import {
-  addPageContent,
   setCurrentPageContent,
   setEditingPageContent,
+  setPageContentImageURL,
 } from '@/store/slice/pageSlice';
 import {
+  IPageContentImage,
   IPageContentItem,
   IPageContentMain,
   IPageMain,
@@ -15,6 +16,7 @@ import {
   useGetPageContentQuery,
   useDeletePageContentMutation,
   useEditPageContentMutation,
+  useUploadPageContentMutation,
 } from '@/api/pageContentApi';
 import { IPageContentGetRequest } from '@/types/requestInterfaces';
 import { fromKebabCase, toKebabCase } from '@/utils/helper';
@@ -28,7 +30,14 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
   const pathname = usePathname();
   const page = pathname.split('/');
   const pageName = page[1];
-
+  const [
+    uploadPageContentImage,
+    {
+      isError: hasUploadPageContentImageError,
+      isSuccess: isUploadPageContentImageSuccess,
+      isLoading: isUploadPageContentImageLoading,
+    },
+  ] = useUploadPageContentMutation();
   const { pageRefetch } = usePage(fromKebabCase(pageName));
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -81,6 +90,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     error: pageContentFetchError,
     refetch: pageContentFetchRefetch,
   } = pageContentQueryResult;
+  //const [pageContentImageURL, setPageContentImageURL] = useState<string>('');
 
   const submitPageContent = async (
     pageContent: IPageContentItem,
@@ -135,6 +145,33 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     }
   };
 
+  const submitUploadPageContentImage = async (
+    pageContentImage: IPageContentImage
+  ) => {
+    try {
+      const formData = new FormData();
+      formData.append('PC_PageContentImg', pageContentImage.pageContentImage);
+
+      const response = await uploadPageContentImage(formData).unwrap();
+      dispatch(setPageContentImageURL(response.data.PC_PageContentURL));
+      //setPageContentImageURL(response.data.PC_PageContentURL);
+      console.log(response.data.PC_PageContentURL, 'RESPONSE');
+      notify(
+        'Success',
+        response.message || 'The page has been updated successfully.',
+        'success'
+      );
+    } catch (error: any) {
+      notify(
+        'Error',
+        error?.data?.message ||
+          error?.data?.detail ||
+          'Failed to update the page. Please try again later.',
+        'error'
+      );
+    }
+  };
+
   const submitEditedPageContent = async (
     pageName: string,
     pageType: string,
@@ -166,7 +203,6 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       }
 
       if (pageType == EPageType.ResList && pageContent.pageContentResource) {
-        console.log('kkkkkkkkkkkkkkkkkkkkk');
         formData.append('PC_Resource', pageContent.pageContentResource);
       }
 
@@ -281,6 +317,9 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     pageContentFetchError,
     handleRemovePageContent,
     pageContentFetchRefetch,
+    submitUploadPageContentImage,
+    uploadPageContentImage,
+    isUploadPageContentImageLoading,
   };
 };
 

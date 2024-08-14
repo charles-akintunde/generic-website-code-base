@@ -7,6 +7,7 @@ import { Divider } from 'antd';
 import { FloatButton } from 'antd';
 import Image from 'next/image';
 import backgroundImage from '../../assets/images/page-list-img1.jpg';
+import UploadPageContentImage from '../common/upload-page-content-image';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -41,6 +42,7 @@ const PageLayout: React.FC<LayoutProps> = ({
         <main className="w-full rounded-xl min-h-screen z-20 ">
           <div>{children}</div>
           <FloatButton.BackTop visibilityHeight={400} />
+          {type == 'singlePage' && <UploadPageContentImage />}
         </main>
       </div>
     </div>

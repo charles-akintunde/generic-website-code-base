@@ -138,6 +138,10 @@ export const notifyNoChangesMade = (notify: Notify) => {
   notify('Notice', 'No changes were made to the field items.', 'warning');
 };
 
+export const clipCopiedSucessfully = (notify: Notify) => {
+  notify('Notice', 'Text copied to clipboard', 'success');
+};
+
 export const getPageExcerpt = (contents: TElement[]) => {
   let excerpt = '';
   for (let content of contents) {
@@ -487,4 +491,19 @@ export const hasNavItems = (navMenuItems: MenuItem[], pathname: string) => {
   );
 
   return currentNavItem ? currentNavItem.key : null;
+};
+
+export const copyToClipboard = (text: string, notify: Notify) => {
+  navigator.clipboard
+    .writeText(text)
+    .then(() => {
+      clipCopiedSucessfully(notify);
+    })
+    .catch((err) => {
+      console.error('Failed to copy text: ', err);
+    });
+};
+
+export const reloadPage = () => {
+  window.location.reload();
 };
