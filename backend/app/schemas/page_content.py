@@ -21,7 +21,7 @@ class PageContent(BaseModel):
     PC_IsHidden: bool
     PC_CreatedAt: Optional[str] = None
     PC_LastUpdatedAt: Optional[str] = None
-    PC_IsHidden: bool
+
 
 class PageContentCreateRequest(PageContent):
     PC_Resource: Optional[UploadFile] = None

@@ -17,7 +17,7 @@ import {
 import { ExceptionMap } from 'antd/es/result';
 import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-profile/[user-profile-id]/page';
 import { useEffect, useState } from 'react';
-import { useAppDispatch } from '../redux-hooks';
+import { useAppDispatch, useAppSelector } from '../redux-hooks';
 import {
   setUIActiveUser,
   toggleCreateUserDialog,
@@ -78,17 +78,7 @@ const useUserInfo = () => {
     isLoading: isActiveUserFetchLoading,
     refetch: activePageRefetch,
   } = useGetActiveUserQuery();
-  const [uiActiveUser, setActiveUser] = useState<IUIActiveUser>({
-    uiId: null,
-    uiFullName: '',
-    uiInitials: '',
-    uiIsAdmin: false,
-    uiIsSuperAdmin: false,
-    uiCanEdit: false,
-    uiRole: EUserRole.Public,
-    uiPhotoURL: null,
-  });
-
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const { notify } = useNotification();
   const dispatch = useAppDispatch();
   const [resetPasswordSuccessMessage, setResetPasswordSuccessMessage] =
@@ -221,17 +211,23 @@ const useUserInfo = () => {
     }
   };
 
-  const submitEditUser = async (
-    userId: string,
-    userInfo: IUserInfo,
-    userProfileRefetch?: () => {}
-  ) => {
+  const submitEditUser = async (userId: string, userInfo: IUserInfo) => {
     try {
       userInfo['id'] = userId;
       const isSameUser = sanitizeAndCompare(
         uiActiveUser?.uiId as string,
         userInfo?.id as string
       );
+
+      console.log(uiActiveUser, 'uiActiveUser');
+
+      console.log(
+        uiActiveUser?.uiId as string,
+        userInfo?.id as string,
+        'VVVVVVVVVVV'
+      );
+
+      console.log(isSameUser, 'USER');
       const formData = new FormData();
 
       if (userInfo.uiFirstName) {
@@ -272,9 +268,9 @@ const useUserInfo = () => {
           formData,
         }).unwrap();
 
-        if (userProfileRefetch) {
-          userProfileRefetch();
-        }
+        // if (userProfileRefetch) {
+        //   userProfileRefetch();
+        // }
 
         notify(
           'Success',

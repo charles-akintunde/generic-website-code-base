@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { EMemberPosition, EUserRole, EUserStatus } from '@/types/enums';
-import { Avatar } from 'antd';
+import { Avatar, Tooltip } from 'antd';
 import ActionsButtons from '@/components/common/action-buttons';
 import { Table } from 'antd';
 import { IUserBase, IUserList } from '@/types/componentInterfaces';
@@ -108,17 +108,22 @@ const UserListItem = () => {
             {record.uiFirstName[0]}
             {record.uiLastName[0]}
           </Avatar>
-          <a
-            href={`/user-profile/${record.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-blue-500 space-x-1 text-left flex items-center text-gray-700"
+          <Tooltip
+            placement="left"
+            title={`${record.uiFirstName} ${record.uiLastName}`}
           >
-            <span className="font-medium truncate w-20 text-nowrap">
-              {record.uiFirstName} {record.uiLastName}
-            </span>
-            <ExternalLink className="h-3 w-3 " />
-          </a>
+            <a
+              href={`/user-profile/${record.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-500 space-x-1 text-left flex items-center text-gray-700"
+            >
+              <span className="font-medium truncate w-20 text-nowrap">
+                {record.uiFirstName} {record.uiLastName}
+              </span>
+              <ExternalLink className="h-3 w-3 text-blue-500" />
+            </a>
+          </Tooltip>
         </div>
       ),
     },

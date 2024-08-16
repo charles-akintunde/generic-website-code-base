@@ -1,10 +1,6 @@
 import { getCookies } from '@/utils/helper';
 import Image from 'next/image';
 import teamImg from '@/assets/images/team-img.webp';
-import s1 from '@/assets/images/sponsor1.webp';
-import s2 from '@/assets/images/sponsor2.webp';
-import s3 from '@/assets/images/sponsor3.webp';
-import { Share2Icon } from 'lucide-react';
 
 export default function Home() {
   return (

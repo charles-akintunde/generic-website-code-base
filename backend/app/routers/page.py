@@ -40,7 +40,7 @@ async def create_page_endpoint(
     """
     is_super_admin(current_user=current_user)
     try: 
-        new_page = create_new_page(db,page)
+        new_page =await create_new_page(db,page, current_user)
         return success_response("Page create successfully")
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)

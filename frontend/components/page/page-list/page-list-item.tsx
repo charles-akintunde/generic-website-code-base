@@ -39,6 +39,7 @@ const PageListItem: React.FC = () => {
     isSuccess: isPagesFetchSuccess,
     isLoading: isPagesFetchLoading,
     error: pagesFetchError,
+    refetch: refetchPages,
   } = useGetPagesWithOffsetQuery({
     PG_Limit: fetchParams.pageSize,
     PG_Number: fetchParams.current,

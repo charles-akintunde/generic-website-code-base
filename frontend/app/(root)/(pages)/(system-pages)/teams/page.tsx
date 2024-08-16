@@ -3,7 +3,7 @@ import { useGetUsersAssignedPositionsQuery } from '@/api/userApi';
 import { IUserBase, IUserList } from '@/types/componentInterfaces';
 import { mapToIIUserList } from '@/utils/helper';
 import React, { useEffect, useState } from 'react';
-import { Row, Avatar, Typography, Divider } from 'antd';
+import { Row, Avatar, Typography, Divider, Tooltip } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import AppLoading from '@/components/common/app-loading';
@@ -66,12 +66,12 @@ const Teams = () => {
     const avatarSize =
       user.uiMemberPosition === EMemberPosition.DIRECTOR ? 150 : 100;
     return (
-      <div
-        key={user.uiEmail}
-        className="w-full  sm:w-1/2 md:w-1/3 lg:w-1/4 p-4"
-      >
+      <div key={user.uiEmail} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
         <Link href={`user-profile/${user.id}`}>
-          <div className="border rounded-lg bg-white p-6 text-center shadow-sm transform transition-transform hover:scale-104 hover:shadow-md">
+          <div
+            className="border rounded-lg bg-white p-6 text-center shadow-sm transform transition-transform hover:scale-104 hover:shadow-md"
+            style={{ height: '200px' }} // Set a fixed height for the card
+          >
             <Avatar
               size={avatarSize}
               src={user.uiPhotoUrl}
@@ -81,10 +81,15 @@ const Teams = () => {
             >
               {user.uiInitials}
             </Avatar>
-            <Title level={4} className="text-gray-800">
-              {`${user.uiFirstName} ${user.uiLastName}`}
-            </Title>
-            {/* <Text type="secondary">{user.uiEmail}</Text> */}
+
+            <Tooltip
+              placement="bottom"
+              title={`${user.uiFirstName} ${user.uiLastName}`}
+            >
+              <Title level={4} className="text-gray-800 truncate text-sm">
+                {`${user.uiFirstName} ${user.uiLastName}`}
+              </Title>
+            </Tooltip>
           </div>
         </Link>
       </div>

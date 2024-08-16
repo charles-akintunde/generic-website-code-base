@@ -68,6 +68,7 @@ export const userApi = createApi({
       }),
       invalidatesTags: (result, error, { UI_ID }) => [
         { type: 'Users', id: UI_ID },
+        { type: 'Users', id: 'LIST' },
       ],
     }),
     deleteUser: builder.mutation<IGenericResponse, string>({
@@ -75,7 +76,10 @@ export const userApi = createApi({
         url: `${url}/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Users', id }],
+      invalidatesTags: (result, error, id) => [
+        { type: 'Users', id },
+        { type: 'Users', id: 'LIST' },
+      ],
     }),
   }),
 });

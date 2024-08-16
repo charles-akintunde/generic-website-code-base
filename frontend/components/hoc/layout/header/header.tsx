@@ -184,7 +184,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-40  h-20 shadow-sm w-full bg-white">
+      <header className="sticky top-0 z-40 overflow-hidden  h-20 shadow-sm w-full bg-white">
         <div className={'container mx-auto flex h-full px-4 sm:px-6 lg:px-8'}>
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
@@ -192,10 +192,16 @@ const Header: React.FC = () => {
             </div>
             <div className="hidden lg:block max-w-[600px] space-x-4">
               <Menu
-                style={{ flex: 'auto', minWidth: 800 }}
-                className="border-0 bottom-0"
+                style={{
+                  flex: 'auto',
+                  minWidth: 800,
+                  borderBottom: 'none',
+                  lineHeight: '80px',
+                }}
+                className="border-0 bottom-0 py-4"
                 onClick={onClickNavMenuItem}
                 mode="horizontal"
+                itemPaddingInline={200}
                 selectedKeys={activeNavItem ? [activeNavItem] : []}
                 items={navMenuItems}
               />

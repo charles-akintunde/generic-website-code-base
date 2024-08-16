@@ -16,7 +16,7 @@ from app.utils.utils import check_page_permission, is_admin
 from app.models.user_info import T_UserInfo
 from app.utils.response_json import build_page_content_json, build_multiple_page_response, create_page_with_offset_response
 
-def create_new_page(db: Session, page: PageCreate):
+async def create_new_page(db: Session, page: PageCreate, current_user: T_UserInfo):
     """
     Service to create new page.
     """
@@ -31,7 +31,7 @@ def create_new_page(db: Session, page: PageCreate):
     page.PG_Permission.append(E_UserRole.SuperAdmin)
     permissions = set(page.PG_Permission)
     page.PG_Permission = list(permissions)
-    new_page =page_crud.create_page(db, page)
+    new_page =await page_crud.create_page(db, page,current_user)
     if not new_page:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

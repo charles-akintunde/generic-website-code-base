@@ -84,6 +84,8 @@ const SinglePage = () => {
         (normalizedPage.pageContents &&
           normalizedPage.pageContents[0]) as IPageContentMain;
 
+      console.log(singlePageContent, 'plateEditor');
+
       if (singlePageContent) {
         setOriginalSinglePageData(singlePageContent.editorContent);
         useIsSinglePageCreated(true);
@@ -96,6 +98,8 @@ const SinglePage = () => {
       }
     }
   }, [pageData]);
+
+  console.log(singlePageContent, 'plateEditor');
 
   const handleSinglePageSubmit = async () => {
     console.log(singlePageContent, 'singlePageContent');
@@ -152,6 +156,8 @@ const SinglePage = () => {
     }
   };
 
+  console.log(plateEditor, 'plateEditor');
+
   if (isPageFetchLoading) {
     return <AppLoading />;
   }
@@ -184,8 +190,9 @@ const SinglePage = () => {
             >
               <LoadingButton
                 className=""
-                buttonText="Edit Content"
-                loading={false}
+                buttonText="Submit Content"
+                loading={isPageFetchLoading}
+                onClick={handleSinglePageSubmit}
               />
             </div>
           )}

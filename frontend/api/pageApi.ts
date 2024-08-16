@@ -17,7 +17,7 @@ const url = '/pages';
 
 export const pageApi = createApi({
   reducerPath: 'pageApi',
-  tagTypes: pageTagTypes,
+  tagTypes: ['Pages', 'Menus', 'Page', 'PageContent'],
   baseQuery: publicRouteBaseQuery,
   endpoints: (builder) => ({
     getPages: builder.query<IPageResponse, void>({
@@ -85,6 +85,7 @@ export const pageApi = createApi({
       }),
       invalidatesTags: (result, error, { PG_ID }) => [
         { type: 'Pages', id: PG_ID },
+        { type: 'Pages', id: 'LIST' },
       ],
     }),
     deletePage: builder.mutation<IGenericResponse, string>({
@@ -92,7 +93,10 @@ export const pageApi = createApi({
         url: `${url}/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Pages', id }],
+      invalidatesTags: (result, error, id) => [
+        { type: 'Pages', id: id },
+        { type: 'Pages', id: 'LIST' },
+      ],
     }),
   }),
 });

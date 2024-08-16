@@ -75,7 +75,7 @@ const CreatePageContent = () => {
     },
   });
 
-  const onSubmit = async (data: IPageContentBase) => {
+  const onSubmit = async (data: any) => {
     let pageContent: IPageContentItem = {
       pageContentName: data.pageContentName,
       pageContentDisplayImage: data.pageContentDisplayImage,
@@ -246,7 +246,7 @@ const EditPageContent = () => {
     }
   }, [isPageContentFetchSuccess, contentData, form]);
 
-  const onSubmit = async (data: IPageContentBase) => {
+  const onSubmit = async (data: any) => {
     const pageContent = createPageContentItem(
       data,
       plateEditor,

@@ -64,6 +64,7 @@ export const pageContentApi = createApi({
       }),
       invalidatesTags: (result, error, { PC_ID }) => [
         { type: 'PageContent', id: PC_ID },
+        { type: 'PageContent', id: 'LIST' },
       ],
     }),
     deletePageContent: builder.mutation<IGenericResponse, string>({

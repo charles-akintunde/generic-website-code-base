@@ -1,9 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import {
-  UserProfileDialog,
-  UserRoleStatusDialog,
-} from '@/components/common/form/user-profile-form';
+import { UserProfileForm } from '@/components/common/form/user-profile-form';
 import {
   UserOutlined,
   HomeOutlined,
@@ -16,6 +13,7 @@ import { Avatar, Divider, Badge, Tooltip } from 'antd';
 import { useGetUserQuery } from '@/api/userApi';
 import {
   formatDate,
+  getCookies,
   handleRoutingOnError,
   isValidUUID,
   roleBadgeClasses,
@@ -76,13 +74,17 @@ const UserProfilePage = () => {
       const userProfile: IUserInfo = transformToUserInfo(userData?.data);
       setUserInfo(userProfile);
 
+      console.log(userProfile);
+
+      console.log(uiActiveUser?.uiId as string, userProfile.id, 'FFFFFFF');
+
       const isSameUser = sanitizeAndCompare(
         uiActiveUser?.uiId as string,
         userProfile?.id
       );
       setIsSameUser(isSameUser);
     }
-  }, [userData]);
+  }, [userData, isUserFetchLoading]);
 
   useEffect(() => {
     handleRoutingOnError(router, hasUserFetchError, userFetchError);
@@ -92,10 +94,12 @@ const UserProfilePage = () => {
     return <AppLoading />;
   }
 
+  console.log(getCookies(), 'Cookies');
+
   return (
     <>
       {userInfo && (
-        <div className="pt-10 text-sm bg-pg px-6 min-h-screen">
+        <div className="pt-10 text-sm bg-pg px-6">
           <div className="max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-lg">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="col-span-1 flex justify-center md:justify-start">
@@ -114,14 +118,6 @@ const UserProfilePage = () => {
                   >
                     <h1 className="text-3xl font-bold text-gray-900">{`${userInfo.uiFirstName} ${userInfo.uiLastName}`}</h1>
                   </Tooltip>
-                  <div className="flex items-center">
-                    {isSameUser && (
-                      <UserProfileDialog
-                        userProfileRefetch={userProfileRefetch}
-                        userInfo={userInfo}
-                      />
-                    )}
-                  </div>
                 </div>
                 <div className="space-y-4">
                   <p className="text-gray-600 flex items-center">
@@ -187,33 +183,26 @@ const UserProfilePage = () => {
                       {formatDate(userInfo.uiRegDate)}
                     </p>
                   )}
-                  {userInfo.uiOrganization && (
-                    <p className="flex items-center">
-                      <BankOutlined className="mr-2 text-primary" />
-                      <span className="font-semibold text-gray-700">
-                        Organization:
-                      </span>
-                      <span className="capitalize">
-                        {userInfo.uiOrganization}
-                      </span>
-                    </p>
-                  )}
+                  <div>
+                    {userInfo.uiOrganization && (
+                      <p className="flex items-center">
+                        <BankOutlined className="mr-2 text-primary" />
+                        <span className="font-semibold mr-1 text-gray-700">
+                          Organization:
+                        </span>
+                        <span className="capitalize">
+                          {userInfo.uiOrganization}
+                        </span>
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-            {userInfo.uiAbout && (
-              <div className="mt-10">
-                <h2 className="text-2xl font-semibold text-gray-900">
-                  About Me
-                </h2>
-                <Divider className="my-6" />
-                <div className="mt-4">
-                  <p className="mt-2 leading-relaxed text-gray-700">
-                    {userInfo.uiAbout}
-                  </p>
-                </div>
-              </div>
-            )}
+
+            <div className="mt-10">
+              <UserProfileForm userInfo={userInfo} />
+            </div>
           </div>
         </div>
       )}

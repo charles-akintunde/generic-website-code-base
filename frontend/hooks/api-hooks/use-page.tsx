@@ -123,9 +123,11 @@ const usePage = (pageName?: string) => {
       const navMenuItems: MenuItem[] = visibleMenuItems.map(
         (menuItem: IPageMenuItem, index) => ({
           label: (
-            <HoverableCard>
+            <div
+              className={`transition cursor-pointer duration-300 ease-in-out hover:text-primary transform hover:bg-opacity-50 hover:bg-gray-100 rounded-md px-4`}
+            >
               <Link href={`${menuItem.href}`}>{menuItem.pageName}</Link>
-            </HoverableCard>
+            </div>
           ),
           key: `${menuItem.href}`,
         })

@@ -35,19 +35,17 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { toggleCreateUserDialog } from '@/store/slice/userSlice';
 import { Tooltip } from 'antd';
 import { EMemberPosition, EUserRole } from '@/types/enums';
+import { primarySolidButtonStyles } from '@/styles/globals';
 
 interface UserProfileFormProps {
   userInfo: IUserInfo;
-  userProfileRefetch: () => {};
   setDialogOpen?: (open: boolean) => void;
 }
 
 type UserProfileFormData = z.infer<typeof userProfileSchema>;
 
-const UserProfileForm: React.FC<UserProfileFormProps> = ({
+export const UserProfileForm: React.FC<UserProfileFormProps> = ({
   userInfo,
-  userProfileRefetch,
-  setDialogOpen,
 }) => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const uiId = uiActiveUser.uiId;
@@ -73,6 +71,8 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
     },
   });
 
+  console.log(uiActiveUser, 'uiActiveUser');
+
   useEffect(() => {
     if (userInfo) {
       form.reset(userInfo);
@@ -83,12 +83,12 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
     data: IUserInfo,
     event: { preventDefault: () => void }
   ) => {
+    console.log('I was clicked');
     event.preventDefault();
     const changedFields = getChangedFields(userInfo, data);
     if (Object.keys(changedFields).length > 0) {
       console.log(changedFields, 'changedFields');
-      await submitEditUser(userInfo.id, changedFields, userProfileRefetch);
-      setDialogOpen(false);
+      await submitEditUser(userInfo.id, changedFields);
     } else {
       notifyNoChangesMade(notify);
       return;
@@ -173,53 +173,59 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
               />
             </>
           )}
-        </form>
-      </div>
 
-      <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4 flex justify-center">
-        <LoadingButton loading={false} buttonText={'Save changes'} />
+          <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4 flex justify-center">
+            <LoadingButton loading={false} buttonText={'Save changes'} />
+          </div>
+        </form>
       </div>
     </Form>
   );
 };
 
-export const UserProfileDialog: React.FC<UserProfileFormProps> = ({
-  userInfo,
-  userProfileRefetch,
-}) => {
-  const [isDialogOpen, setDialogOpen] = useState(false);
+// export const UserProfileDialog: React.FC<UserProfileFormProps> = ({
+//   userInfo,
+//   userProfileRefetch,
+// }) => {
+//   const [isDialogOpen, setDialogOpen] = useState(false);
 
-  const handleOpenChange = (open: boolean) => {
-    setDialogOpen(open);
-  };
+//   const handleOpenChange = (open: boolean) => {
+//     setDialogOpen(open);
+//   };
 
-  return (
-    <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button size="icon">
-          <EditOutlined className="h-4 w-4" />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="w-full max-w-xs sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl max-h-[90vh]">
-        <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
-          <DialogDescription>
-            Make changes to the profile here. Click save when you're done.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="py-4 ">
-          <ScrollArea className="max-h-[70vh] rounded-md border p-4">
-            <UserProfileForm
-              userProfileRefetch={userProfileRefetch}
-              userInfo={userInfo}
-              setDialogOpen={setDialogOpen}
-            />
-          </ScrollArea>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
+//   return (
+//     <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
+//       <DialogTrigger asChild>
+//         <Button
+//           className={`space-x-2 items-center flex ${primarySolidButtonStyles} w-full`}
+//           size="icon"
+//         >
+//           <EditOutlined className="h-4 w-4" />
+//           <p className="hidden lg:block">Edit Profile</p>
+
+//           {/* <EditOutlined className="h-4 w-4" /> */}
+//         </Button>
+//       </DialogTrigger>
+//       <DialogContent className="w-full max-w-xs sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl max-h-[90vh]">
+//         <DialogHeader>
+//           <DialogTitle>Edit profile</DialogTitle>
+//           <DialogDescription>
+//             Make changes to the profile here. Click save when you're done.
+//           </DialogDescription>
+//         </DialogHeader>
+//         <div className="py-4 ">
+//           <ScrollArea className="max-h-[70vh] rounded-md border p-4">
+//             <UserProfileForm
+//               userProfileRefetch={userProfileRefetch}
+//               userInfo={userInfo}
+//               setDialogOpen={setDialogOpen}
+//             />
+//           </ScrollArea>
+//         </div>
+//       </DialogContent>
+//     </Dialog>
+//   );
+// };
 
 type UserRoleStatusFormData = z.infer<typeof userRoleStatusSchema>;
 
