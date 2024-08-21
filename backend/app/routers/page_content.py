@@ -5,6 +5,7 @@ This module defines the API endpoints for application-related operations.
 
 import json
 from typing import Optional, Union
+from urllib import response
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 from app.services.page_content import create_page_content, delete_page_content, get_page_content_by_title, update_page_content
@@ -14,8 +15,11 @@ from app.core.auth import get_current_user
 from app.models.user_info import T_UserInfo
 from app.database import get_db
 from app.utils.response import error_response, success_response
-from app.utils.file_utils import save_file
+from app.utils.file_utils import save_file, validate_image_file
 from app.config import settings
+from app.utils.utils import is_super_admin
+from app.utils.response_json import create_page_content_img_response
+from app.crud import page_content
 
 router = APIRouter()
 
@@ -24,7 +28,7 @@ async def create_page_content_endpoint(
     UI_ID: str = Form(...),
     PG_ID: str = Form(...),
     PC_Title: str = Form(...),
-    PC_Content: Optional[str] = Form(None),  # Will be received as JSON string
+    PC_Content: Optional[str] = Form(None), 
     PC_ThumbImg: Optional[UploadFile] = File(None),
     PC_Resource: Optional[UploadFile] = File(None),
     PC_IsHidden: bool = Form(...),
@@ -63,7 +67,7 @@ async def create_page_content_endpoint(
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     
-@router.get("{page_name}/{page_content_title}", response_model=StandardResponse)
+@router.get("/{page_name}/{page_content_title}", response_model=StandardResponse)
 async def get_page_content_by_title_endpoint(
     page_content_title: str,
     page_name: str,
@@ -149,3 +153,38 @@ async def delete_page_content_endpoint(
             return error_response(message="Failed to delete the page content", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
+
+
+@router.post("/upload-page-content-image", response_model=StandardResponse)
+async def upload_page_content_image_endpoint(
+    PC_PageContentImg: UploadFile = File(...),
+  # current_user: T_UserInfo = Depends(get_current_user)
+):
+    """
+    Upload an image to be used within page content.
+
+    This endpoint allows an authenticated super admin user to upload an image for page content.
+    The image is saved to the server, and a URL to the image is returned in the response,
+    which can be used in a content editor that only accepts URLs.
+
+    Args:
+        page_content_image (UploadFile): The image file to be uploaded.
+        current_user (T_UserInfo): The current user, automatically injected by FastAPI.
+
+    Returns:
+        StandardResponse: A response object containing a message and the URL of the uploaded image.
+
+    Raises:
+        HTTPException: If the user is not authorized or if any other error occurs during file processing.
+    """
+    try:
+       # is_super_admin(current_user=current_user)
+        page_content_image = PC_PageContentImg
+        validate_image_file(page_content_image)
+        image_url = await save_file(page_content_image, settings.PAGE_CONTENT_FILE_PATH)
+        response = create_page_content_img_response(image_url)
+        return success_response(message="Image uploaded successfully", data=response.model_dump())
+
+    except HTTPException as e:
+        return error_response(message=e.detail, status_code=e.status_code)
+    

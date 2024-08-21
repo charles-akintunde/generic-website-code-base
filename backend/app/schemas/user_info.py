@@ -5,9 +5,11 @@ Schemas for the User model.
 from datetime import datetime
 from fastapi import File, UploadFile
 from pydantic import BaseModel, EmailStr
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 import uuid
-from app.models.enums import E_Status, E_UserRole
+
+from sqlalchemy import UUID
+from app.models.enums import E_MemberPosition, E_Status, E_UserRole
 
 class UserBase(BaseModel):
     """
@@ -24,6 +26,39 @@ class UserBase(BaseModel):
     UI_PhoneNumber: Optional[str] = None
     UI_Organization: Optional[str] = None
 
+class UserPartial(BaseModel):
+    UI_ID: str
+    UI_FirstName: str
+    UI_LastName: str
+    UI_Email: str
+    UI_Role: str
+    UI_Status: str
+    UI_RegDate: str
+    UI_PhotoURL: Optional[str] = None
+    UI_MemberPosition: Optional[str] = None
+    UI_Country: Optional[str] = None
+    
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
+
+class UsersResponse(BaseModel):
+    users: List[UserPartial]
+    total_users_count : Optional[int] = None
+    last_first_name: Optional[str] = None
+    last_last_name: Optional[str] = None
+    last_uuid: Optional[str] = None
+
+class UserResponse(UserBase):
+    UI_ID: str
+    UI_Email: str
+    UI_Role: int
+    UI_Status: int
+    UI_RegDate: str
+    UI_About: Optional[Dict] = None
+    UI_MemberPosition: Optional[int] = None
+
 
 class UserDelete(BaseModel):
     UI_ID: str
@@ -32,12 +67,15 @@ class UserDelete(BaseModel):
 class UserProfileUpdate(UserBase):
     UI_ID: Optional[str] = None
     UI_Photo: Optional[UploadFile] = File(None)
+    UI_About: Optional[Dict]  = None
 
 
 
-class UserRoleUpdate(BaseModel):
+class UserRoleStatusUpdate(BaseModel):
     UI_ID: str
-    UI_Role: E_UserRole
+    UI_Role: Optional[E_UserRole] = None
+    UI_Status: Optional[E_Status] = None
+    UI_MemberPosition: Optional[E_MemberPosition] = None
 
 class UserStatusUpdate(BaseModel):
     UI_ID: str
@@ -52,6 +90,9 @@ class Token(BaseModel):
     refresh_token : str
     #token_type: str
 
+class UIToken(BaseModel):
+    access_token: Optional[str] = None
+    refresh_token : Optional[str] = None
 
 class UserCreate(BaseModel):
     """
@@ -112,9 +153,20 @@ class UserOut(UserBase):
 class PasswordResetRequest(BaseModel):
     UI_Email: EmailStr
 
-class PasswordResetConfirm(BaseModel):
+class BaseToken(BaseModel):
     token: str
-    new_password: str
+
+class PasswordResetConfirm(BaseModel):
+    UI_NewPassword: str
+    UI_Token: str
 
 class LogoutRequest(BaseModel):
     refresh_token: str
+
+# class UICurrentUser(BaseModel):
+#     UI_FirstName: str 
+#     UI_LastName: str 
+#     UI_Email: str
+#     UI_Role: int
+#     UI_Status: int
+#     UI_Photo: Optional[str] = None

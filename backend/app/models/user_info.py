@@ -1,14 +1,13 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Enum, DateTime
+from sqlalchemy import ARRAY, JSON, Column, String, Enum, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from pydantic import EmailStr 
 from sqlalchemy.ext.declarative import declarative_base
 from typing import Optional, List
-
 from app.types.user_info import UserInfoTypeAnnotations
-from .enums import E_Status, E_UserRole
+from .enums import E_MemberPosition, E_Status, E_UserRole
 from . import Base 
 
 class T_UserInfo(Base):
@@ -22,7 +21,7 @@ class T_UserInfo(Base):
     UI_LastName = Column(String(50), nullable=False)
     UI_Email = Column(String(100), nullable=False, unique=True)
     UI_PasswordHash = Column(String(255), nullable=False)
-    UI_Role = Column(Enum(E_UserRole), nullable=False, default=E_UserRole.Public)
+    UI_Role = Column(ARRAY(Enum(E_UserRole)), nullable=False, default=[E_UserRole.Public])
     UI_Status = Column(Enum(E_Status), nullable=False, default=E_Status.Unauthenticated)
     UI_City = Column(String(100))
     UI_Province = Column(String(100))
@@ -33,6 +32,8 @@ class T_UserInfo(Base):
     UI_Organization = Column(String(100))
     UI_RegDate = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     UI_Other = Column(String(255))
+    UI_About = Column(JSON, nullable=True)
+    UI_MemberPosition = Column(Enum(E_MemberPosition), nullable=True)
 
 
     UI_PageContents = relationship("T_PageContent", back_populates="PC_UserInfo")

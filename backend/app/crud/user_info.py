@@ -2,12 +2,13 @@
 CRUD operations for User model.
 """
 
-from typing import Any, Union
+from typing import Any, List, Optional, Union, Tuple
+from uuid import UUID
 from pydantic import EmailStr
-from sqlalchemy import Column
+from sqlalchemy import UUID, Column
 from sqlalchemy.orm import Session
 from app.models.user_info import T_UserInfo
-from app.schemas.user_info import UserCreate
+from app.schemas.user_info import UserCreate, UserPartial
 import uuid
 from app.models.enums import E_Status, E_UserRole
 
@@ -23,13 +24,16 @@ class UserCRUD:
             db.refresh(user)
         return user
     
-    def update_user_role(self,db: Session, user_id: str, new_role: E_UserRole):
+    def update_user_role_status(self,db: Session, user_id: str, update_data: dict):
         """
         Update the user's role.
         """
         user = db.query(T_UserInfo).filter(T_UserInfo.UI_ID == user_id).first()
         if user:
-            user.UI_Role = new_role # type: ignore
+            for key, value in update_data.items():
+                if value is None:
+                    continue
+                setattr(user, key, value)
             db.commit()
             db.refresh(user)
         return user
@@ -40,6 +44,8 @@ class UserCRUD:
         """
         if user:
             for key, value in update_data.items():
+                if value is None:
+                    continue
                 setattr(user, key, value)
             db.commit()
             db.refresh(user)
@@ -98,6 +104,47 @@ class UserCRUD:
         """
         return db.query(T_UserInfo).filter(T_UserInfo.UI_ID == user_id).first()
     
+    def get_users_with_assigned_positions(self, db: Session) -> List[UserPartial]:
+        """
+        Get users with assigned member positions.
+
+        Args:
+            db (Session): Database session.
+
+        Returns:
+            list: List of User objects with assigned member positions.
+        """
+        users = db.query(T_UserInfo).filter(T_UserInfo.UI_MemberPosition.isnot(None)).all()
+
+    
+        return [UserPartial(
+            UI_ID=str(row.UI_ID),
+            UI_FirstName=str(row.UI_FirstName),
+            UI_LastName=str(row.UI_LastName),
+            UI_Email=str(row.UI_Email),
+            UI_Role=str(row.UI_Role.value), 
+            UI_Status=str(row.UI_Status.value),
+            UI_RegDate=row.UI_RegDate.isoformat(),
+            UI_PhotoURL=str(row.UI_PhotoURL) if row.UI_PhotoURL else None, # type: ignore
+            UI_MemberPosition=str(row.UI_MemberPosition.value) if row.UI_MemberPosition else None, # type: ignore
+            UI_Country = str(row.UI_Country) if row.UI_Country else None # type: ignore
+
+        ) for row in users]
+
+    
+    def get_total_user_count(self, db: Session) -> int:
+            """
+            Get the total count of users.
+
+            Args:
+                db (Session): Database session.
+
+            Returns:
+                int: Total count of users.
+            """
+            return db.query(T_UserInfo).count()
+
+    
     def create_user(self, db: Session, user: UserCreate) -> T_UserInfo:
         """
         Create a new user.
@@ -120,5 +167,70 @@ class UserCRUD:
         db.commit()
         db.refresh(db_user)
         return db_user
+    
+    # def get_users(self, db: Session,  last_key: Optional[Tuple[str, str, str]] = None, limit: int = 10) -> List[UserPartial]:
+    #     query = db.query(
+    #         T_UserInfo.UI_ID,
+    #         T_UserInfo.UI_FirstName,
+    #         T_UserInfo.UI_LastName,
+    #         T_UserInfo.UI_Email,
+    #         T_UserInfo.UI_Role,
+    #         T_UserInfo.UI_Status,
+    #         T_UserInfo.UI_RegDate,
+    #         T_UserInfo.UI_PhotoURL
+    #     )
+    
+    #     if last_key is not None:
+    #         last_first_name, last_last_name, last_uuid = last_key
+    #         query = query.filter(
+    #             (T_UserInfo.UI_FirstName > last_first_name) |
+    #             ((T_UserInfo.UI_FirstName == last_first_name) & (T_UserInfo.UI_LastName > last_last_name)) |
+    #             ((T_UserInfo.UI_FirstName == last_first_name) & (T_UserInfo.UI_LastName == last_last_name) & (T_UserInfo.UI_ID > last_uuid))
+    #         )
+    
+    #     results = query.order_by(T_UserInfo.UI_FirstName, T_UserInfo.UI_LastName, T_UserInfo.UI_ID).limit(limit).all()
+    #     return [UserPartial(
+    #         UI_ID=str(row.UI_ID),
+    #         UI_FirstName=row.UI_FirstName,
+    #         UI_LastName=row.UI_LastName,
+    #         UI_Email=row.UI_Email,
+    #         UI_Role=row.UI_Role, 
+    #         UI_Status=row.UI_Status,
+    #         UI_RegDate=row.UI_RegDate.isoformat(),
+    #         UI_PhotoURL=row.UI_PhotoURL
+    #     ) for row in results]
+    
+
+    def get_users(self, db: Session, page: int = 1, limit: int = 10) -> List[UserPartial]:
+        offset = (page - 1) * limit
+        query = db.query(
+            T_UserInfo.UI_ID,
+            T_UserInfo.UI_FirstName,
+            T_UserInfo.UI_LastName,
+            T_UserInfo.UI_Email,
+            T_UserInfo.UI_Role,
+            T_UserInfo.UI_Status,
+            T_UserInfo.UI_RegDate,
+            T_UserInfo.UI_PhotoURL,
+            T_UserInfo.UI_MemberPosition
+        )
+
+        results = query.order_by(T_UserInfo.UI_FirstName, T_UserInfo.UI_LastName, T_UserInfo.UI_ID)\
+                    .offset(offset)\
+                    .limit(limit)\
+                    .all()
+        
+        return [UserPartial(
+            UI_ID=str(row.UI_ID),
+            UI_FirstName=row.UI_FirstName,
+            UI_LastName=row.UI_LastName,
+            UI_Email=row.UI_Email,
+            UI_Role=row.UI_Role, 
+            UI_Status=row.UI_Status,
+            UI_RegDate=row.UI_RegDate.isoformat(),
+            UI_PhotoURL=row.UI_PhotoURL,
+            UI_MemberPosition=row.UI_MemberPosition if row.UI_MemberPosition else row.UI_MemberPosition
+
+        ) for row in results]
     
 user_crud = UserCRUD()

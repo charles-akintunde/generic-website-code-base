@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --glassmorphism: rgba(255, 255, 255, 0.2);
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+@font-face {
+  font-family: 'Geist Sans';
+  src: url('./../assets/fonts/geist/Geist-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Geist Sans';
+  src: url('./../assets/fonts/geist/Geist-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Geist Sans';
+  src: url('./../assets/fonts/geist/Geist-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Geist Sans';
+  src: url('./../assets/fonts/geist/Geist-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Geist Sans';
+  src: url('./../assets/fonts/geist/Geist-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+}
+
+body {
+  font-family: 'Geist Sans', ui-sans-serif, system-ui, sans-serif;
+  color: rgb(55 65 81);
+}
+
+.superadmin-badge {
+  @apply mr-2 mb-2 lg:mr-4 lg:mb-0 bg-red-100 bg-opacity-50 text-red-400 hover:bg-red-100 hover:bg-opacity-50 px-2 py-1;
+}
+
+.superadmin-badge:hover {
+  @apply bg-red-100;
+}
+
+.admin-badge {
+  @apply mr-2 mb-2 lg:mr-4 lg:mb-0 bg-green-200 text-green-500 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.member-badge {
+  @apply bg-green-200 text-green-500 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.user-badge {
+  @apply bg-blue-100 text-blue-400 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.public-badge {
+  @apply mr-2 mb-2 lg:mr-4 lg:mb-0 bg-gray-200 bg-opacity-50 text-gray-500 hover:bg-gray-200 px-2 py-1;
+}
+
+.active-status {
+  @apply bg-green-200 text-green-500 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.unauthenticated-status {
+  @apply mr-2 mb-2 lg:mr-4 lg:mb-0 bg-gray-200 bg-opacity-50 text-gray-500 px-2 py-1;
+}
+
+.disabled-status {
+  @apply mr-2 mb-2 lg:mr-4 lg:mb-0 bg-red-100 bg-opacity-50 text-red-400 px-2 py-1;
+}
+
+.director-position {
+  @apply bg-purple-200 text-purple-500 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.postdoc-position {
+  @apply bg-blue-100 text-blue-400 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.phd-position {
+  @apply mr-2 mb-2 lg:mr-4 lg:mb-0 bg-blue-100 bg-opacity-50 text-blue-400 px-2 py-1;
+}
+
+.master-position {
+  @apply bg-green-200 text-green-500 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.undergrad-position {
+  @apply bg-yellow-200 text-yellow-600 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.superadmin-role-badge {
+  @apply bg-red-200 text-red-500 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.admin-role-badge {
+  @apply bg-yellow-200 text-yellow-500 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.member-role-badge {
+  @apply bg-green-200 text-green-500 rounded-full px-3 py-1 bg-opacity-50;
+}
+
+.user-role-badge {
+  @apply mr-2 mb-2 lg:mr-4 lg:mb-0 bg-blue-100 bg-opacity-50 text-blue-400 px-2 py-1;
+}
+
+.public-role-badge {
+  @apply bg-gray-200 text-gray-500 rounded-full px-3 py-1 bg-opacity-50;
+}
+
+.active-status-badge {
+  @apply bg-green-200 text-green-500 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.unauthenticated-status-badge {
+  @apply bg-yellow-200 text-yellow-500 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.disabled-status-badge {
+  @apply bg-red-200 text-red-500 rounded-full px-3 py-1  bg-opacity-50;
+}
+
+.glassmorphism {
+  backdrop-filter: blur(10px); /* Adjust the blur amount as needed */
+  background-color: rgba(255, 255, 255, 0.2); /* Use the custom color */
+  border-radius: var(--radius); /* Optional: add some rounded corners */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Optional: add a border */
+}
+
+.bg-glassmorphism {
+  background-color: var(--glassmorphism);
+  backdrop-filter: blur(var(--backdrop-blur));
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* .custom-menu .ant-menu-horizontal > .ant-menu-item::after {
+  @apply absolute bottom-0 left-0 right-0 h-0.5 bg-primary;
+  content: '';
+  transition: all 0.3s ease-in-out;
+}
+
+.custom-menu .ant-menu-item-selected::after {
+  @apply bg-primary;
+} */

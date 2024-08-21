@@ -6,7 +6,7 @@
 from typing import Any, List
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from app.schemas.page import GetPageRequest, PageCreate, PageMultipleContent, PageResponse, PageUpdateRequest
+from app.schemas.page import GetPageRequest, PageCreate, PageMultipleContent, PageResponse, PageUpdateRequest, PagesResponse
 from app.crud.page import page_crud
 from app.crud.user_info import user_crud
 from app.models.enums import E_UserRole
@@ -14,9 +14,9 @@ from app.models.page import T_Page
 from app.core.auth import get_current_user_without_exception
 from app.utils.utils import check_page_permission, is_admin
 from app.models.user_info import T_UserInfo
-from app.utils.response_json import build_page_content_json
+from app.utils.response_json import build_page_content_json, build_multiple_page_response, create_page_with_offset_response
 
-def create_new_page(db: Session, page: PageCreate):
+async def create_new_page(db: Session, page: PageCreate, current_user: T_UserInfo):
     """
     Service to create new page.
     """
@@ -31,7 +31,7 @@ def create_new_page(db: Session, page: PageCreate):
     page.PG_Permission.append(E_UserRole.SuperAdmin)
     permissions = set(page.PG_Permission)
     page.PG_Permission = list(permissions)
-    new_page =page_crud.create_page(db, page)
+    new_page =await page_crud.create_page(db, page,current_user)
     if not new_page:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -39,6 +39,43 @@ def create_new_page(db: Session, page: PageCreate):
         )
 
     return new_page
+
+
+def get_pages_with_offset(db: Session, pg_page_number: int = 1, pg_page_limit: int = 5):
+    total_page_count = page_crud.get_total_pages_count(db=db)
+    total_pages = (total_page_count + pg_page_limit - 1) // pg_page_limit
+    if pg_page_number > total_pages:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid page number: {pg_page_number}. There are only {total_pages} pages available."
+        )
+    
+    pages = page_crud.get_pages_with_offset(db, pg_page_number, pg_page_limit)
+    pages_response = create_page_with_offset_response(pages=pages,total_page_count=total_page_count )
+    return pages_response
+
+def get_pages(db: Session) -> PagesResponse:
+    """
+    Service to create new page.
+
+    db (Session): Database Session.
+    """
+
+    try:
+        pages : List[T_Page] = page_crud.get_pages(db=db);
+        pages_response = []
+        for page in pages:
+            pages_response.append(build_multiple_page_response(page))
+        
+        return PagesResponse(
+            Pages=pages_response
+        )
+        
+    except HTTPException as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={e.detail}
+        )
 
 def get_page(
         db: Session, 
@@ -56,8 +93,9 @@ def get_page(
     if not existing_page:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Page with page name and id ({page_name}) does not exist."
+            detail=f"Page with name '{page_name}' was not found."
         )
+
 
     page_is_accessible_to: List[E_UserRole] = existing_page.PG_Permission  # type: ignore
 
@@ -78,7 +116,7 @@ def get_page(
             PG_Type=existing_page.PG_Type.value,  # Convert enum to its value
             PG_Name=str(existing_page.PG_Name),
             PG_Permission=[role.value for role in existing_page.PG_Permission],   # Assuming this is already a list of E_UserRole # type: ignore
-            PG_PageContents=converted_page_contents if converted_page_contents else None
+            PG_PageContents=converted_page_contents if converted_page_contents else []
         )
     return existing_page
 
@@ -133,7 +171,7 @@ def delete_page(db: Session, page_id: str, user: T_UserInfo) -> bool:
         current_user=user,
         detail="You do not have permission to delete this page"
         )
-    
+    print(existing_page,"existing_page")
     is_success = page_crud.delete_page(
         db, 
         page=existing_page)

@@ -3,9 +3,9 @@
 """
 
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Dict
 from fastapi import File, UploadFile
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel
 from typing import Optional
 
 from sqlalchemy import JSON, Boolean
@@ -21,7 +21,7 @@ class PageContent(BaseModel):
     PC_IsHidden: bool
     PC_CreatedAt: Optional[str] = None
     PC_LastUpdatedAt: Optional[str] = None
-    PC_IsHidden: bool
+
 
 class PageContentCreateRequest(PageContent):
     PC_Resource: Optional[UploadFile] = None
@@ -33,6 +33,8 @@ class PageContentResponse(PageContent):
     UI_FirstName: str
     UI_LastName: str
     PC_ThumbImgURL: Optional[str] = None
+    PC_ResourceURL: Optional[str] = None
+    PG_Name: Optional[str] = None
     # PC_DisplayURL: str
 
 class PageContentUpdateRequest(BaseModel):
@@ -43,3 +45,6 @@ class PageContentUpdateRequest(BaseModel):
     PC_Content: Optional[Dict] = None
     PC_DisplayURL: Optional[str] = None
     PC_IsHidden: Optional[bool] = None
+
+class PC_PageContentImgResponse(BaseModel):
+    PC_PageContentURL: str

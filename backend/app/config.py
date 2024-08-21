@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     THUMBNAILS_FILE_PATH: str
     RESOURCE_FILE_PATH: str
     USER_PROFILE_FILE_PATH: str
+    COMPANY_NAME: str
+    ACCESS_TOKEN_EXPIRE_SECONDS: int
+    REFRESH_TOKEN_EXPIRE_SECONDS: int
+    PAGE_CONTENT_FILE_PATH: str
 
     class Config:
         env_file = ".env"

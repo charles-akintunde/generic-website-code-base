@@ -1,14 +1,17 @@
 """
 User service for handling business logic related to users.
 """
-
+from typing import List, Optional, Tuple, Union
+from uuid import UUID
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.crud.user_info import user_crud
-from app.schemas.user_info import UserRoleUpdate, UserProfileUpdate, UserDelete, UserStatusUpdate
+from app.schemas.user_info import UserPartial, UserRoleStatusUpdate, UserProfileUpdate, UserDelete, UserStatusUpdate, UsersResponse
 from app.models.user_info import T_UserInfo
 from app.config import settings
 from app.utils.file_utils import delete_and_save_file, delete_file, extract_path_from_url, save_file
+from app.utils.response_json import create_user_response, create_users_response
+from app.models.enums import E_UserRole
 
 
 
@@ -29,18 +32,27 @@ def update_user_status(db: Session, user_status_update: UserStatusUpdate, curren
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
 
-def update_user_role(db: Session, user_role_update: UserRoleUpdate, current_user: T_UserInfo):
+def update_user_role_status(db: Session, user_role_status_update: UserRoleStatusUpdate, current_user: T_UserInfo):
     """
     Update a user's role.
     """
 
-    if user_role_update.UI_ID == current_user.UI_ID:
+    if user_role_status_update.UI_Role == E_UserRole.Member and not user_role_status_update.UI_MemberPosition:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="A position must be assigned to a member user."
+        )
+
+    if user_role_status_update.UI_ID == current_user.UI_ID:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You cannot update your own role!")
 
-    user = user_crud.update_user_role(
+    update_data = user_role_status_update.model_dump(exclude_unset=True)
+    update_data = {k: v for k, v in update_data.items() if v is not None}
+    
+    user = user_crud.update_user_role_status(
         db, 
-        user_role_update.UI_ID, 
-        user_role_update.UI_Role)
+        user_role_status_update.UI_ID, 
+        update_data)
     
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -124,3 +136,53 @@ def delete_user(db: Session, delete_user_id: str, current_user: T_UserInfo ):
             detail="User not found"
         )
     return user
+
+# def get_users(db: Session, last_key: Optional[Tuple[str, str, str]] = None, limit: int = 10) -> UsersResponse:
+#     users = user_crud.get_users(db, last_key, limit)
+#     total_user_count = user_crud.get_total_user_count(db=db)
+#     if users:
+#         last_user = users[-1]
+#         new_last_key = (last_user.UI_FirstName, last_user.UI_LastName, last_user.UI_ID)
+#     else:
+#         new_last_key = None
+#     users_response = create_users_response(users, total_user_count,new_last_key)
+#     return users_response
+
+def get_users(db: Session, page: int = 1, limit: int = 10):
+    total_user_count = user_crud.get_total_user_count(db=db)
+    total_pages = (total_user_count + limit - 1) // limit
+    if page > total_pages:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid page number: {page}. There are only {total_pages} pages available."
+        )
+    users = user_crud.get_users(db, page, limit)
+    users_response = create_users_response(users, total_user_count,None)
+    return users_response
+
+def get_users_assigned_with_positions(db: Session):
+    """
+        Retrieve users that have been assigned a member position.
+    """
+
+    users = user_crud.get_users_with_assigned_positions(db=db)
+    total_user_count = len(users)
+
+    return create_users_response(users=users, total_users_count=total_user_count,new_last_key=None)
+
+
+
+def get_user_by_id(db: Session, user_id):
+    """
+        Retrieve a user by their ID from the database.
+    """
+    user = user_crud.get_user_by_id(db=db, user_id=user_id)
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'User with ID {user_id} not found.'
+        )
+    
+    
+    return create_user_response(user=user)

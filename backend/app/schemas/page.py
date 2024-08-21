@@ -10,22 +10,29 @@ from app.schemas.page_content import PageContentResponse
 
 
 class Page(BaseModel):
+    PG_ID: Optional[str] = None
     PG_Type: E_PageType
     PG_Name: str 
     PG_Permission: List[E_UserRole]
-    
 
-class PageCreate(Page):
-    pass
-
-class GetPageRequest(BaseModel):
-    PG_Name: str 
 
 class PageResponse(BaseModel):
     PG_ID: str
     PG_Type: int
     PG_Name: str 
     PG_Permission: List[int]
+
+class PG_PagesResponse(BaseModel):
+    PG_Pages: List[PageResponse]
+    PG_PageCount: int
+    
+class PageCreate(Page):
+    pass
+
+class GetPageRequest(BaseModel):
+    PG_Name: str 
+
+
 
 class PageMultipleContent(PageResponse):
     PG_PageContents: Optional[Any]   
@@ -37,5 +44,8 @@ class PageUpdateRequest(BaseModel):
     PG_Type: Optional[E_PageType] = None
     PG_Name: Optional[str] = None
     PG_Permission: Optional[List[E_UserRole]] = None
+
+class PagesResponse(BaseModel):
+    Pages: List[PageResponse]
 
 

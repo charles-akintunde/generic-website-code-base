@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from typing import Dict
 from uuid import uuid4
 from fastapi import HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.schemas.page_content import PageContentCreateRequest, PageContentUpdateRequest
 from app.models.page_content import T_PageContent
@@ -30,7 +31,6 @@ class PageContentCRUD:
     Returns:
         Page content object created.
     """
-
     page_content_data = page_content.model_dump(exclude_unset=True)
 
     # Create a database model instance
@@ -80,7 +80,7 @@ class PageContentCRUD:
     """
     return db.query(T_PageContent).filter(
         T_PageContent.PG_ID == page_id,
-        T_PageContent.PC_Title == page_content_title
+        func.lower(T_PageContent.PC_Title) == func.lower(page_content_title)
     ).first()
  
  def get_page_content_by_title(
@@ -101,14 +101,14 @@ class PageContentCRUD:
         Page content object created.
     """
     return db.query(T_PageContent).filter(
-       T_PageContent.PC_Title == page_content_title, 
+       func.lower(T_PageContent.PC_Title) == func.lower(page_content_title), 
        T_PageContent.PG_ID == page_id).first()
 
  def update_page_content(
-      self,
-      db: Session,
-      page_content_id: str,
-      page_content_update: PageContentUpdateRequest
+    self,
+    db: Session,
+    page_content_id: str,
+    page_content_update: PageContentUpdateRequest
 ):
     """
     Handles CRUD operation for updating page content.
@@ -120,17 +120,20 @@ class PageContentCRUD:
         db_page_content (T_PageContent) Page content object updated.
     """
     db_page_content = self.get_page_content_by_id(
-       db=db,
-       page_content_id=page_content_id
-   )
+        db=db,
+        page_content_id=page_content_id
+    )
     if not db_page_content:
         return None
         
     update_data = page_content_update.model_dump(exclude_unset=True)
     
     for key, value in update_data.items():
+        if value is None:
+            continue 
         setattr(db_page_content, key, value)
-    db_page_content.PC_LastUpdatedAt = datetime.now(timezone.utc) # type: ignore
+    
+    db_page_content.PC_LastUpdatedAt = datetime.now(timezone.utc)  # type: ignore
     db.commit()
     db.refresh(db_page_content)
     return db_page_content
@@ -149,9 +152,10 @@ class PageContentCRUD:
     """
     try:
         if page_content_to_delete:
-            if page_content_to_delete.PC_DisplayURL: # type: ignore
-                delete_file(extract_path_from_url(page_content_to_delete.PC_DisplayURL)) # type: ignore
-            if str(page_content_to_delete.PC_ThumbImgURL):
+            # if page_content_to_delete.PC_DisplayURL: # type: ignore
+            #     delete_file(extract_path_from_url(page_content_to_delete.PC_DisplayURL)) # type: ignore
+            print(page_content_to_delete,"UUUUUUUUUUUUUUUUUU")
+            if page_content_to_delete.PC_ThumbImgURL: # type: ignore
                 delete_file(extract_path_from_url(page_content_to_delete.PC_ThumbImgURL)) # type: ignore
             db.delete(page_content_to_delete)
             db.commit()

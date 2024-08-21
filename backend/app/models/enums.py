@@ -23,6 +23,7 @@ class E_UserRole(enum.Enum):
     Member = 2
     User = 3
     Public = 4
+    Alumni = 5
 
 class E_PageType(enum.Enum):
     """
@@ -32,3 +33,17 @@ class E_PageType(enum.Enum):
     SinglePage = 0
     PageList = 1
     ResList = 2
+
+class E_MemberPosition(enum.Enum):
+    """
+    Enumeration for app memeber type.
+    """
+    DIRECTOR = 0
+    POSTDOC = 1
+    PHD = 2
+    MASTER = 3
+    UNDERGRAD = 4
+
+
+# class E_MemberType(enum.Enum):
+#     Alumni = 0,
