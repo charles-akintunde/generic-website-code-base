@@ -202,14 +202,14 @@ export const optionalImagePageContentSchema = z.object({
 export const userProfileSchema = z.object({
   uiFirstName: requiredTextSchema('First Name'),
   uiLastName: requiredTextSchema('Last Name'),
-  uiCity: z.string().optional(),
-  uiProvince: z.string().optional(),
-  uiCountry: z.string().optional(),
-  uiPostalCode: z.string().optional(),
-  uiPhoneNumber: z.string().optional(),
-  uiOrganization: z.string().optional(),
-  uiPhoto: imageSchema.optional(),
-  uiAbout: z.string().optional(),
+  uiCity: z.string().nullable().optional(),
+  uiProvince: z.string().nullable().optional(),
+  uiCountry: z.string().nullable().optional(),
+  uiPostalCode: z.string().nullable().optional(),
+  uiPhoneNumber: z.string().nullable().optional(),
+  uiOrganization: z.string().nullable().optional(),
+  uiPhoto: imageSchema.nullable().optional(),
+  // uiAbout: z.string().nullable().optional(),
 });
 
 export const userRoleStatusSchema = z

@@ -2,7 +2,7 @@
     Defines utility functions that would be used across the application.
 """
 
-from typing import List
+from typing import List, Optional
 from urllib.parse import urlparse
 from fastapi import HTTPException, status
 from app.models.user_info import T_UserInfo
@@ -55,3 +55,7 @@ def to_kebab_case(s: str) -> str:
     s = s.replace(' ', '-')
     
     return s
+
+# def handle_empty_string(value: Optional[str]) -> Optional[str]:
+#         print(value,"VALUE")
+#         return value if value is not None else ""

@@ -69,12 +69,23 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
       (state) => state.userSlice.uiActiveUser
     );
     const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+    const activeUserProfileEdit = useAppSelector(
+      (state) => state.userSlice.uiActiveUserProfileEdit
+    );
+    const uiEditorInProfileMode = activeUserProfileEdit.uiEditorInProfileMode;
+    const uiIsUserEditingMode = activeUserProfileEdit.uiIsUserEditingMode;
 
-    // Determine the actual states based on canEdit
-    const finalReadOnly = !canEdit || readOnly;
-    const finalDisabled = !canEdit || disabled;
-    const finalFocused = canEdit && focused;
-    const canEditClassName = !canEdit ? 'border-none' : '';
+    let finalReadOnly = !canEdit || readOnly;
+    let finalDisabled = !canEdit || disabled;
+    let finalFocused = canEdit && focused;
+    let canEditClassName = !canEdit ? 'border-none' : '';
+
+    if (uiEditorInProfileMode) {
+      finalReadOnly = !uiIsUserEditingMode || false;
+      finalDisabled = !uiIsUserEditingMode || false;
+      finalFocused = uiIsUserEditingMode || false;
+      canEditClassName = !uiIsUserEditingMode ? 'border-none' : '';
+    }
 
     return (
       <div className="relative w-full" ref={ref}>

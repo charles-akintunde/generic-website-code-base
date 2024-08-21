@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import JSON, Column, String, Enum, DateTime, Text
+from sqlalchemy import ARRAY, JSON, Column, String, Enum, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from pydantic import EmailStr 
@@ -21,7 +21,7 @@ class T_UserInfo(Base):
     UI_LastName = Column(String(50), nullable=False)
     UI_Email = Column(String(100), nullable=False, unique=True)
     UI_PasswordHash = Column(String(255), nullable=False)
-    UI_Role = Column(Enum(E_UserRole), nullable=False, default=E_UserRole.Public)
+    UI_Role = Column(ARRAY(Enum(E_UserRole)), nullable=False, default=[E_UserRole.Public])
     UI_Status = Column(Enum(E_Status), nullable=False, default=E_Status.Unauthenticated)
     UI_City = Column(String(100))
     UI_Province = Column(String(100))

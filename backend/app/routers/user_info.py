@@ -2,6 +2,7 @@
 API endpoints for user profile updates.
 """
 
+import json
 from typing import List, Optional, Tuple
 from uuid import UUID
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile, status
@@ -107,7 +108,8 @@ async def update_user_profile_endpoint(
             UI_PostalCode=UI_PostalCode,
             UI_PhoneNumber=UI_PhoneNumber,
             UI_Organization=UI_Organization,
-            UI_About=UI_About
+            UI_About=json.loads(UI_About) if UI_About else None
+            
         )
 
         print(profile_update,"profile_update")

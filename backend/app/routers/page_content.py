@@ -28,7 +28,7 @@ async def create_page_content_endpoint(
     UI_ID: str = Form(...),
     PG_ID: str = Form(...),
     PC_Title: str = Form(...),
-    PC_Content: Optional[str] = Form(None),  # Will be received as JSON string
+    PC_Content: Optional[str] = Form(None), 
     PC_ThumbImg: Optional[UploadFile] = File(None),
     PC_Resource: Optional[UploadFile] = File(None),
     PC_IsHidden: bool = Form(...),

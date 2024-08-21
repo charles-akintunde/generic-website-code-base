@@ -5,7 +5,7 @@ Schemas for the User model.
 from datetime import datetime
 from fastapi import File, UploadFile
 from pydantic import BaseModel, EmailStr
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 import uuid
 
 from sqlalchemy import UUID
@@ -56,7 +56,7 @@ class UserResponse(UserBase):
     UI_Role: int
     UI_Status: int
     UI_RegDate: str
-    UI_About: Optional[str] = None
+    UI_About: Optional[Dict] = None
     UI_MemberPosition: Optional[int] = None
 
 
@@ -67,7 +67,7 @@ class UserDelete(BaseModel):
 class UserProfileUpdate(UserBase):
     UI_ID: Optional[str] = None
     UI_Photo: Optional[UploadFile] = File(None)
-    UI_About: Optional[str]  = None
+    UI_About: Optional[Dict]  = None
 
 
 

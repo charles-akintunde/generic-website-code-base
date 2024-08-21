@@ -7,7 +7,8 @@ import { IPageMenuItem } from '@/types/componentInterfaces';
 import { systemMenuItems } from './layout/menu-items';
 import { hasPermission } from '@/utils/helper';
 import { useCommentsShowResolvedButton } from '@udecode/plate-comments';
-import { useAppSelector } from '@/hooks/redux-hooks';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
+import { setUIIsUserEditingMode } from '@/store/slice/userSlice';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -28,6 +29,7 @@ const isExistingRoute: React.FC<isExistingRouteProps> = ({
 const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const uiActiveUserRole = String(uiActiveUser.uiRole);
+  const dispatch = useAppDispatch();
   const { allAppRoutes } = usePage();
   const router = useRouter();
   const pathname = usePathname();
@@ -61,6 +63,12 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
         }
       }
     }
+    dispatch(
+      setUIIsUserEditingMode({
+        uiIsUserEditingMode: false,
+        uiEditorInProfileMode: false,
+      })
+    );
   }, [allAppRoutes, pathname, router]);
 
   return allAppRoutes && allAppRoutes.length > 0 ? <>{children}</> : null;

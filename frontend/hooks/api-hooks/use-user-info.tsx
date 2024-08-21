@@ -211,7 +211,11 @@ const useUserInfo = () => {
     }
   };
 
-  const submitEditUser = async (userId: string, userInfo: IUserInfo) => {
+  const submitEditUser = async (
+    userId: string,
+    userInfo: Partial<IUserInfo>,
+    initialUserInfo: IUserInfo
+  ) => {
     try {
       userInfo['id'] = userId;
       const isSameUser = sanitizeAndCompare(
@@ -219,15 +223,9 @@ const useUserInfo = () => {
         userInfo?.id as string
       );
 
-      console.log(uiActiveUser, 'uiActiveUser');
-
-      console.log(
-        uiActiveUser?.uiId as string,
-        userInfo?.id as string,
-        'VVVVVVVVVVV'
-      );
-
-      console.log(isSameUser, 'USER');
+      let userInfoObj = {
+        ['UI_About']: userInfo.uiAbout,
+      };
       const formData = new FormData();
 
       if (userInfo.uiFirstName) {
@@ -237,29 +235,84 @@ const useUserInfo = () => {
       if (userInfo.uiLastName) {
         formData.append('UI_LastName', userInfo.uiLastName);
       }
-      if (userInfo.uiPhoto) {
+      if (userInfo.uiCity !== undefined) {
+        if (
+          userInfo.uiCity.length === 0 &&
+          initialUserInfo?.uiCity &&
+          initialUserInfo.uiCity.length > 0
+        ) {
+          formData.append('UI_City', ' ');
+        } else {
+          formData.append('UI_City', userInfo.uiCity);
+        }
+      }
+
+      if (userInfo.uiPhoto !== undefined) {
         formData.append('UI_Photo', userInfo.uiPhoto);
       }
-      if (userInfo.uiCity) {
-        formData.append('UI_City', userInfo.uiCity);
+
+      if (userInfo.uiProvince !== undefined) {
+        if (
+          userInfo.uiProvince.length === 0 &&
+          initialUserInfo?.uiProvince &&
+          initialUserInfo.uiProvince.length > 0
+        ) {
+          formData.append('UI_Province', ' ');
+        } else {
+          formData.append('UI_Province', userInfo.uiProvince);
+        }
       }
-      if (userInfo.uiProvince) {
-        formData.append('UI_Province', userInfo.uiProvince);
+
+      if (userInfo.uiCountry !== undefined) {
+        if (
+          userInfo.uiCountry.length === 0 &&
+          initialUserInfo?.uiCountry &&
+          initialUserInfo.uiCountry.length > 0
+        ) {
+          formData.append('UI_Country', ' ');
+        } else {
+          formData.append('UI_Country', userInfo.uiCountry);
+        }
       }
-      if (userInfo.uiCountry) {
-        formData.append('UI_Country', userInfo.uiCountry);
+
+      if (userInfo.uiPostalCode !== undefined) {
+        if (
+          userInfo.uiPostalCode.length === 0 &&
+          initialUserInfo?.uiPostalCode &&
+          initialUserInfo.uiPostalCode.length > 0
+        ) {
+          formData.append('UI_PostalCode', ' ');
+        } else {
+          formData.append('UI_PostalCode', userInfo.uiPostalCode);
+        }
       }
-      if (userInfo.uiPostalCode) {
-        formData.append('UI_PostalCode', userInfo.uiPostalCode);
+
+      if (userInfo.uiPhoneNumber !== undefined) {
+        if (
+          userInfo.uiPhoneNumber.length === 0 &&
+          initialUserInfo?.uiPhoneNumber &&
+          initialUserInfo.uiPhoneNumber.length > 0
+        ) {
+          formData.append('UI_PhoneNumber', ' ');
+        } else {
+          formData.append('UI_PhoneNumber', userInfo.uiPhoneNumber);
+        }
       }
-      if (userInfo.uiPhoneNumber) {
-        formData.append('UI_PhoneNumber', userInfo.uiPhoneNumber);
+
+      if (userInfo.uiOrganization !== undefined) {
+        if (
+          userInfo.uiOrganization.length === 0 &&
+          initialUserInfo?.uiOrganization &&
+          initialUserInfo.uiOrganization.length > 0
+        ) {
+          formData.append('UI_Organization', ' ');
+        } else {
+          formData.append('UI_Organization', userInfo.uiOrganization);
+        }
       }
-      if (userInfo.uiOrganization) {
-        formData.append('UI_Organization', userInfo.uiOrganization);
-      }
+
       if (userInfo.uiAbout) {
-        formData.append('UI_About', userInfo.uiAbout);
+        formData.append('UI_About', JSON.stringify(userInfoObj));
       }
 
       if (isSameUser) {
@@ -267,10 +320,6 @@ const useUserInfo = () => {
           UI_ID: userId,
           formData,
         }).unwrap();
-
-        // if (userProfileRefetch) {
-        //   userProfileRefetch();
-        // }
 
         notify(
           'Success',

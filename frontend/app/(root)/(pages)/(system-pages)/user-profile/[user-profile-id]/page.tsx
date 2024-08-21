@@ -73,11 +73,7 @@ const UserProfilePage = () => {
     if (userData?.data) {
       const userProfile: IUserInfo = transformToUserInfo(userData?.data);
       setUserInfo(userProfile);
-
-      console.log(userProfile);
-
-      console.log(uiActiveUser?.uiId as string, userProfile.id, 'FFFFFFF');
-
+      console.log(userProfile, 'userProfile');
       const isSameUser = sanitizeAndCompare(
         uiActiveUser?.uiId as string,
         userProfile?.id
@@ -161,13 +157,17 @@ const UserProfilePage = () => {
                   ) : (
                     <p className="flex items-center">
                       <HomeOutlined className="mr-2 text-primary" />
-                      {userInfo.uiCity ? `${userInfo.uiCity}, ` : ''}
-                      {userInfo.uiProvince ? `${userInfo.uiProvince}, ` : ''}
-                      {userInfo.uiCountry}
+                      {userInfo.uiCity && userInfo.uiCity?.trim()
+                        ? `${userInfo.uiCity}, `
+                        : ''}
+                      {userInfo.uiProvince && userInfo.uiProvince.trim()
+                        ? `${userInfo.uiProvince}, `
+                        : ''}
+                      {userInfo.uiCountry && userInfo.uiCountry.trim()}
                     </p>
                   )}
 
-                  {userInfo.uiPhoneNumber && (
+                  {userInfo.uiPhoneNumber && userInfo.uiPhoneNumber.trim() && (
                     <p className="flex items-center">
                       <PhoneOutlined className="mr-2 text-primary" />
                       {userInfo.uiPhoneNumber}
@@ -177,29 +177,31 @@ const UserProfilePage = () => {
                   {(uiIsAdmin || isSameUser) && (
                     <p className="flex items-center">
                       <CalendarOutlined className="mr-2 text-primary" />
-                      <span className="font-semibold text-gray-700">
+                      <span className="font-semibold mr-1 text-gray-700">
                         Registered:
                       </span>
                       {formatDate(userInfo.uiRegDate)}
                     </p>
                   )}
                   <div>
-                    {userInfo.uiOrganization && (
-                      <p className="flex items-center">
-                        <BankOutlined className="mr-2 text-primary" />
-                        <span className="font-semibold mr-1 text-gray-700">
-                          Organization:
-                        </span>
-                        <span className="capitalize">
-                          {userInfo.uiOrganization}
-                        </span>
-                      </p>
-                    )}
+                    {userInfo.uiOrganization &&
+                      userInfo.uiOrganization.trim() && (
+                        <p className="flex items-center">
+                          <BankOutlined className="mr-2 text-primary" />
+                          <span className="font-semibold mr-1 text-gray-700">
+                            Organization:
+                          </span>
+                          <span className="capitalize">
+                            {userInfo.uiOrganization}
+                          </span>
+                        </p>
+                      )}
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Place the UserProfileForm inside the card */}
             <div className="mt-10">
               <UserProfileForm userInfo={userInfo} />
             </div>

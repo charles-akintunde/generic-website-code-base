@@ -23,6 +23,7 @@ class E_UserRole(enum.Enum):
     Member = 2
     User = 3
     Public = 4
+    Alumni = 5
 
 class E_PageType(enum.Enum):
     """
@@ -44,3 +45,5 @@ class E_MemberPosition(enum.Enum):
     UNDERGRAD = 4
 
 
+# class E_MemberType(enum.Enum):
+#     Alumni = 0,

@@ -2,10 +2,19 @@ import { IUIActiveUser, IUserBase } from '@/types/componentInterfaces';
 import { EUserRole } from '@/types/enums';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+interface IUIActiveUserProfileEdit {
+  uiIsUserEditingMode: boolean;
+  uiEditorInProfileMode: boolean;
+}
+
 interface UserState {
   editingUser: IUserBase | null;
   isDialogOpen: boolean;
   uiActiveUser: IUIActiveUser;
+  uiActiveUserProfileEdit: {
+    uiIsUserEditingMode: boolean;
+    uiEditorInProfileMode: boolean;
+  };
 }
 
 const initialState: UserState = {
@@ -20,6 +29,10 @@ const initialState: UserState = {
     uiCanEdit: false,
     uiRole: EUserRole.Public,
     uiPhotoURL: null,
+  },
+  uiActiveUserProfileEdit: {
+    uiIsUserEditingMode: false,
+    uiEditorInProfileMode: false,
   },
 };
 
@@ -36,10 +49,20 @@ const userSlice = createSlice({
     setUIActiveUser(state, action: PayloadAction<IUIActiveUser>) {
       state.uiActiveUser = action.payload;
     },
+    setUIIsUserEditingMode(
+      state,
+      action: PayloadAction<IUIActiveUserProfileEdit>
+    ) {
+      state.uiActiveUserProfileEdit = action.payload;
+    },
   },
 });
 
-export const { setEditingUser, toggleCreateUserDialog, setUIActiveUser } =
-  userSlice.actions;
+export const {
+  setEditingUser,
+  toggleCreateUserDialog,
+  setUIActiveUser,
+  setUIIsUserEditingMode,
+} = userSlice.actions;
 
 export default userSlice.reducer;

@@ -28,9 +28,13 @@ import { MediaToolbarButton } from './media-toolbar-button';
 import { IndentToolbarButton } from './indent-toolbar-button';
 
 import { Icons, iconVariants } from '@/components/icons';
+import { useAppSelector } from '@/hooks/redux-hooks';
 
 export function FixedToolbarButtons() {
   const readOnly = useEditorReadOnly();
+  const uiEditorInProfileMode = useAppSelector(
+    (state) => state.userSlice.uiActiveUserProfileEdit.uiEditorInProfileMode
+  );
 
   return (
     <div className="w-full overflow-hidden">
@@ -98,7 +102,9 @@ export function FixedToolbarButtons() {
             <ToolbarGroup>
               <LinkToolbarButton />
 
-              <MediaToolbarButton nodeType={ELEMENT_IMAGE} />
+              {!uiEditorInProfileMode && (
+                <MediaToolbarButton nodeType={ELEMENT_IMAGE} />
+              )}
               <TableDropdownMenu />
               <MoreDropdownMenu />
             </ToolbarGroup>

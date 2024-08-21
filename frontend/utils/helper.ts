@@ -271,7 +271,7 @@ export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
     uiPostalCode: data.UI_PostalCode,
     uiPhoneNumber: data.UI_PhoneNumber,
     uiOrganization: data.UI_Organization,
-    uiAbout: data.UI_About,
+    uiAbout: data.UI_About?.UI_About,
   };
 };
 
@@ -507,3 +507,9 @@ export const copyToClipboard = (text: string, notify: Notify) => {
 export const reloadPage = () => {
   window.location.reload();
 };
+
+export function removeNullValues(obj: any) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, value]) => value !== null)
+  );
+}

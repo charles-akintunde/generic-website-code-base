@@ -3,16 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { Form } from '@/components/ui/form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { userProfileSchema, userRoleStatusSchema } from '@/utils/formSchema';
 import FormField from '../form-field';
 import { getNames } from 'country-list';
 import LoadingButton from '../button/loading-button';
 import { IUserBase, IUserInfo } from '@/types/componentInterfaces';
 import useUserInfo from '@/hooks/api-hooks/use-user-info';
-import { EditOutlined } from '@ant-design/icons';
-import { ScrollArea } from '@/components/ui/scroll-area';
-
+import { TElement } from '@udecode/plate-common';
 import {
   getChangedFields,
   MEMBERPOSITION_OPTIONS,
@@ -24,18 +22,19 @@ import { useNotification } from '@/components/hoc/notification-provider';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/plate-ui/button';
 import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-profile/[user-profile-id]/page';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
-import { toggleCreateUserDialog } from '@/store/slice/userSlice';
-import { Tooltip } from 'antd';
-import { EMemberPosition, EUserRole } from '@/types/enums';
-import { primarySolidButtonStyles } from '@/styles/globals';
+import {
+  setUIIsUserEditingMode,
+  toggleCreateUserDialog,
+} from '@/store/slice/userSlice';
+import { EUserRole } from '@/types/enums';
+import { PlateEditor } from '@/components/plate/plate';
+import { Divider, Switch } from 'antd';
+import { removeNullValues } from '@/utils/helper';
 
 interface UserProfileFormProps {
   userInfo: IUserInfo;
@@ -47,31 +46,71 @@ type UserProfileFormData = z.infer<typeof userProfileSchema>;
 export const UserProfileForm: React.FC<UserProfileFormProps> = ({
   userInfo,
 }) => {
+  const dispatch = useAppDispatch();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const uiId = uiActiveUser.uiId;
   const countries = getNames();
   const { notify } = useNotification();
   const { submitEditUser } = useUserInfo();
+  const [plateEditor, setPlateEditor] = useState<TElement[]>(
+    userInfo && userInfo.uiAbout
+      ? userInfo.uiAbout
+      : [
+          {
+            id: '1',
+            type: 'p',
+            children: [{ text: 'Hello, World!' }],
+          },
+        ]
+  );
+  const [plateEditorKey, setPlateEditorKey] = useState<string>(
+    JSON.stringify(plateEditor)
+  );
   const [isSameUser, setIsSameUser] = useState(
     sanitizeAndCompare(uiId as string, userInfo?.id as string)
   );
+  const handleModeChange = (checked: boolean) => {
+    dispatch(
+      setUIIsUserEditingMode({
+        uiIsUserEditingMode: !uiIsUserEditingMode,
+        uiEditorInProfileMode: true,
+      })
+    );
+  };
+
+  const activeUserProfileEdit = useAppSelector(
+    (state) => state.userSlice.uiActiveUserProfileEdit
+  );
+  const uiIsUserEditingMode = activeUserProfileEdit.uiIsUserEditingMode;
+
+  let userInfoWithoutNull = removeNullValues(userInfo);
+  delete userInfoWithoutNull.uiPhoto;
+
   const form = useForm<UserProfileFormData>({
     resolver: zodResolver(userProfileSchema),
-    defaultValues: userInfo || {
+    defaultValues: userInfoWithoutNull || {
       uiFirstName: '',
       uiLastName: '',
-      uiPhoto: '',
+      uiPhoto: undefined,
       uiCity: '',
       uiProvince: '',
       uiCountry: '',
       uiPostalCode: '',
       uiPhoneNumber: '',
       uiOrganization: '',
-      uiAbout: '',
     },
   });
 
-  console.log(uiActiveUser, 'uiActiveUser');
+  useEffect(() => {
+    sanitizeAndCompare(uiId as string, userInfo?.id as string);
+    setIsSameUser(sanitizeAndCompare(uiId as string, userInfo?.id as string));
+    dispatch(
+      setUIIsUserEditingMode({
+        uiIsUserEditingMode: false,
+        uiEditorInProfileMode: true,
+      })
+    );
+  }, []);
 
   useEffect(() => {
     if (userInfo) {
@@ -79,16 +118,18 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
     }
   }, [userInfo, form]);
 
-  const onSubmit = async (
-    data: IUserInfo,
-    event: { preventDefault: () => void }
-  ) => {
-    console.log('I was clicked');
+  const onSubmit = async (data: any, event: { preventDefault: () => void }) => {
     event.preventDefault();
-    const changedFields = getChangedFields(userInfo, data);
+    const newDataWithContents = { ...data, uiAbout: plateEditor };
+    const changedFields = getChangedFields(userInfo, newDataWithContents);
+
     if (Object.keys(changedFields).length > 0) {
-      console.log(changedFields, 'changedFields');
-      await submitEditUser(userInfo.id, changedFields);
+      await submitEditUser(
+        userInfo.id,
+        changedFields as Partial<IUserInfo>,
+        userInfo
+      );
+      form.reset();
     } else {
       notifyNoChangesMade(notify);
       return;
@@ -97,88 +138,109 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
 
   return (
     <Form {...form}>
-      <div className="max-h-[calc(60vh-80px)] ">
-        <form
-          className="space-y-6 w-full h-full overflow-y-auto pb-20"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          {isSameUser && (
-            <>
-              <FormField
-                control={form.control}
-                name="uiFirstName"
-                label="First Name"
-                placeholder=""
-              />
-              <FormField
-                control={form.control}
-                name="uiLastName"
-                label="Last Name"
-                placeholder=""
-              />
-              <FormField
-                control={form.control}
-                name="uiCountry"
-                label="Country"
-                placeholder="Select Your Country"
-                type="select"
-                options={countries.map((country: string) => ({
-                  value: country,
-                  label: country,
-                }))}
-              />
-              <FormField
-                control={form.control}
-                name="uiCity"
-                label="City"
-                placeholder=""
-              />
-              <FormField
-                control={form.control}
-                name="uiProvince"
-                label="Province"
-                placeholder=""
-              />
-              <FormField
-                control={form.control}
-                name="uiPostalCode"
-                label="Postal Code"
-                placeholder=""
-              />
-              <FormField
-                control={form.control}
-                name="uiPhoneNumber"
-                label="Phone Number"
-                placeholder=""
-              />
-              <FormField
-                control={form.control}
-                name="uiOrganization"
-                label="Organization"
-                placeholder=""
-              />
-              <FormField
-                type="picture"
-                control={form.control}
-                name="uiPhoto"
-                label="Profile Picture"
-                placeholder=""
-              />
-              <FormField
-                type="textarea"
-                control={form.control}
-                name="uiAbout"
-                label="About"
-                placeholder=""
-              />
-            </>
+      <form
+        className="space-y-6 w-full h-full overflow-y-auto pb-20"
+        onSubmit={form.handleSubmit(onSubmit)} // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      >
+        {isSameUser && (
+          <div className="flex justify-end">
+            <Switch
+              checkedChildren="Editing Mode"
+              unCheckedChildren="Viewing Mode"
+              checked={uiIsUserEditingMode}
+              onChange={handleModeChange}
+            />
+          </div>
+        )}
+
+        {isSameUser && uiIsUserEditingMode && (
+          <>
+            <FormField
+              control={form.control}
+              name="uiFirstName"
+              label="First Name"
+              placeholder=""
+            />
+            <FormField
+              control={form.control}
+              name="uiLastName"
+              label="Last Name"
+              placeholder=""
+            />
+            <FormField
+              control={form.control}
+              name="uiCountry"
+              label="Country"
+              placeholder="Select Your Country"
+              type="select"
+              options={countries.map((country: string) => ({
+                value: country,
+                label: country,
+              }))}
+            />
+            <FormField
+              control={form.control}
+              name="uiCity"
+              label="City"
+              placeholder=""
+            />
+            <FormField
+              control={form.control}
+              name="uiProvince"
+              label="Province"
+              placeholder=""
+            />
+            <FormField
+              control={form.control}
+              name="uiPostalCode"
+              label="Postal Code"
+              placeholder=""
+            />
+            <FormField
+              control={form.control}
+              name="uiPhoneNumber"
+              label="Phone Number"
+              placeholder=""
+            />
+            <FormField
+              control={form.control}
+              name="uiOrganization"
+              label="Organization"
+              placeholder=""
+            />
+            <FormField
+              type="picture"
+              control={form.control}
+              name="uiPhoto"
+              label="Profile Picture"
+              placeholder=""
+            />
+          </>
+        )}
+        <div className="mt-20">
+          {isSameUser && uiIsUserEditingMode ? (
+            <span className="font-semibold  mr-1 text-gray-700">About</span>
+          ) : (
+            <div>
+              <p className="font-semibold text-lg text-gray-700">About</p>
+              <Divider />
+            </div>
           )}
 
-          <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4 flex justify-center">
+          <PlateEditor
+            key={plateEditorKey}
+            value={plateEditor}
+            onChange={(value) => {
+              setPlateEditor(value);
+            }}
+          />
+        </div>
+        {isSameUser && uiIsUserEditingMode && (
+          <div className="fixed z-50 mt-20 bottom-0 left-0 right-0 bg-white p-4 flex justify-center">
             <LoadingButton loading={false} buttonText={'Save changes'} />
           </div>
-        </form>
-      </div>
+        )}
+      </form>
     </Form>
   );
 };

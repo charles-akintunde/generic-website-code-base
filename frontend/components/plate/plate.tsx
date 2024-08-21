@@ -13,6 +13,7 @@ import { FloatingToolbarButtons } from '@/components/plate-ui/floating-toolbar-b
 import { CommentsPopover } from '@/components/plate-ui/comments-popover';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { useAppSelector } from '@/hooks/redux-hooks';
+import { containerNoFlexPaddingStyles } from '@/styles/globals';
 
 type PlateEditorProps = {
   value: TElement[];
@@ -24,7 +25,16 @@ export const PlateEditor: React.FC<PlateEditorProps> = ({
   onChange,
 }) => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
-  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+  const uiActiveUserProfileEdit = useAppSelector(
+    (state) => state.userSlice.uiActiveUserProfileEdit
+  );
+  const uiEditorInProfileMode = uiActiveUserProfileEdit.uiEditorInProfileMode;
+  const uiIsUserEditingMode = uiActiveUserProfileEdit.uiIsUserEditingMode;
+  let canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+
+  if (uiEditorInProfileMode) {
+    canEdit = uiIsUserEditingMode;
+  }
 
   return (
     <TooltipProvider>
