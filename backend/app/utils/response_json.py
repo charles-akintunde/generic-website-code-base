@@ -92,7 +92,7 @@ def create_user_response(user: T_UserInfo)  -> UserResponse:
     UI_FirstName=str(user.UI_FirstName),
     UI_LastName=str(user.UI_LastName),
     UI_Email=str(user.UI_Email),
-    UI_Role=user.UI_Role.value,
+    UI_Role=[role.value for role in user.UI_Role],
     UI_Status=user.UI_Status.value,
     UI_RegDate=str(user.UI_RegDate),
     UI_PhotoURL=user.UI_PhotoURL, # type: ignore

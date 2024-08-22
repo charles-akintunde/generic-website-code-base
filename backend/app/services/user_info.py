@@ -37,11 +37,24 @@ def update_user_role_status(db: Session, user_role_status_update: UserRoleStatus
     Update a user's role.
     """
 
-    if user_role_status_update.UI_Role == E_UserRole.Member and not user_role_status_update.UI_MemberPosition:
+    if user_role_status_update.UI_Role and E_UserRole.Member in user_role_status_update.UI_Role and not user_role_status_update.UI_MemberPosition:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="A position must be assigned to a member user."
         )
+    
+    if user_role_status_update.UI_Role and not E_UserRole.Member in user_role_status_update.UI_Role and len(user_role_status_update.UI_Role) > 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Too many roles assigned. A user can only have multiple roles if one of them is 'Member'."
+        )
+    
+    if user_role_status_update.UI_Role and E_UserRole.Member in user_role_status_update.UI_Role and len(user_role_status_update.UI_Role) > 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Too many roles assigned. Even for a 'Member', the maximum allowed roles are two."
+        )
+
 
     if user_role_status_update.UI_ID == current_user.UI_ID:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You cannot update your own role!")

@@ -57,6 +57,7 @@ export const userRoleLabels: { [key in EUserRole]: string } = {
   [EUserRole.Member]: 'Member',
   [EUserRole.User]: 'User',
   [EUserRole.Public]: 'Public',
+  [EUserRole.Alumni]: 'Alumni',
 };
 
 export const userStatusLabels: { [key in EUserStatus]: string } = {
@@ -79,6 +80,7 @@ export const roleColors: { [key in EUserRole]: string } = {
   [EUserRole.Member]: 'user-badge',
   [EUserRole.User]: 'user-badge',
   [EUserRole.Public]: 'public-badge',
+  [EUserRole.Alumni]: 'alumni-badge',
 };
 
 export const statusColors: { [key in EUserStatus]: string } = {
@@ -101,6 +103,7 @@ export const roleBadgeClasses: { [key in EUserRole]: string } = {
   [EUserRole.Member]: 'blue',
   [EUserRole.User]: 'blue',
   [EUserRole.Public]: 'gray',
+  [EUserRole.Alumni]: 'cyan',
 };
 
 export const statusBadgeClasses: { [key in EUserStatus]: string } = {
@@ -374,6 +377,8 @@ export const mapToIIUserList = (data: IUserResponseData): IUserList => {
     uiLastName: user.UI_LastName,
     uiEmail: user.UI_Email,
     uiRole: user.UI_Role,
+    uiMainRoles: user.UI_Role.filter((role) => role !== EUserRole.Alumni)[0],
+    uiIsUserAlumni: user.UI_Role.includes(EUserRole.Alumni),
     uiStatus: user.UI_Status,
     uiRegDate: user.UI_RegDate,
     uiPhotoUrl: user.UI_PhotoURL,

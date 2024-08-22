@@ -15,7 +15,7 @@ def is_super_admin(current_user: T_UserInfo):
     """
     Check whether user is a super admin.
     """
-    if E_UserRole(current_user.UI_Role) != E_UserRole.SuperAdmin:
+    if E_UserRole.SuperAdmin not in current_user.UI_Role:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Only superadmin can access this route.")
     
 
@@ -23,7 +23,7 @@ def is_admin(current_user: T_UserInfo, detail: str):
     """
     Check whether user is a super admin.
     """
-    if E_UserRole(current_user.UI_Role) not in [E_UserRole.SuperAdmin, E_UserRole.Admin]:
+    if  E_UserRole.SuperAdmin not in current_user.UI_Role and  E_UserRole.Admin not in current_user.UI_Role:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=detail)
     
 # Page Utils

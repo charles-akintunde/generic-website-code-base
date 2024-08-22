@@ -103,7 +103,7 @@ def authenticate_user(db: Session, email: str, password: str, response: Response
         "sub": user.UI_Email,
         "firstname": user.UI_FirstName,
         "lastname": user.UI_LastName,
-        "role": user.UI_Role.value,
+        "role": [role.value for role in user.UI_Role],
         "status": user.UI_Status.value,
         "Id": str(user.UI_ID)
     }
@@ -209,7 +209,7 @@ async def use_refresh_token(
         "sub": user.UI_Email,
         "firstname": user.UI_FirstName,
         "lastname": user.UI_LastName,
-        "role": user.UI_Role.value,
+        "role": [role.value for role in user.UI_Role],
         "status": user.UI_Status.value,
         "Id": str(user.UI_ID)
     }

@@ -26,7 +26,8 @@ export interface IUserBase {
   uiFirstName: string;
   uiLastName: string;
   uiEmail: string;
-  uiRole: string;
+  uiRole: string[];
+  uiMainRoles: string[];
   uiStatus: string;
   uiRegDate: string;
   uiPhoto: string | File | null;
@@ -34,6 +35,7 @@ export interface IUserBase {
   uiCountry?: string | null | undefined;
   uiInitials?: string | null | undefined;
   uiFullName?: string | null | undefined;
+  uiIsUserAlumni: boolean;
 }
 
 export interface IUserInfo extends IUserBase {

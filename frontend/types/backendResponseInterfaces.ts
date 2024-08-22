@@ -1,5 +1,4 @@
 import { TElement } from '@udecode/plate-common';
-import internal from 'stream';
 import { EUserRole, EUserStatus } from './enums';
 
 export interface Page {
@@ -32,7 +31,7 @@ export interface UserResponse {
   UI_FirstName: string;
   UI_LastName: string;
   UI_Email: string;
-  UI_Role: EUserRole;
+  UI_Role: EUserRole[];
   UI_Status: EUserStatus;
   UI_City: string | null;
   UI_RegDate: string;

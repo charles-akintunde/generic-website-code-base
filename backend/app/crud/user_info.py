@@ -122,7 +122,7 @@ class UserCRUD:
             UI_FirstName=str(row.UI_FirstName),
             UI_LastName=str(row.UI_LastName),
             UI_Email=str(row.UI_Email),
-            UI_Role=str(row.UI_Role.value), 
+            UI_Role=[str(role.value) for role in row.UI_Role], 
             UI_Status=str(row.UI_Status.value),
             UI_RegDate=row.UI_RegDate.isoformat(),
             UI_PhotoURL=str(row.UI_PhotoURL) if row.UI_PhotoURL else None, # type: ignore
@@ -225,7 +225,7 @@ class UserCRUD:
             UI_FirstName=row.UI_FirstName,
             UI_LastName=row.UI_LastName,
             UI_Email=row.UI_Email,
-            UI_Role=row.UI_Role, 
+            UI_Role=[role for role in row.UI_Role], 
             UI_Status=row.UI_Status,
             UI_RegDate=row.UI_RegDate.isoformat(),
             UI_PhotoURL=row.UI_PhotoURL,

@@ -219,6 +219,8 @@ const usePage = (pageName?: string) => {
           Number(permission)
         ),
       };
+
+      console.log(editPageRequest, 'editPageRequest');
       const response = await editPage({
         PG_ID: pageId,
         PG_Name: editPageRequest.PG_Name,

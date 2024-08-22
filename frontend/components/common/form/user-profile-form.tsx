@@ -307,35 +307,40 @@ export const UserRoleStatusDialog = () => {
   const form = useForm<UserRoleStatusFormData>({
     resolver: zodResolver(userRoleStatusSchema),
     defaultValues: userInfo || {
-      uiRole: '',
+      uiMainRoles: '',
       uiStatus: '',
+      uiIsUserAlumni: false,
       // uiMemberPosition
     },
   });
 
-  console.log(userInfo, 'userInfo');
   useEffect(() => {
     if (userInfo) {
       form.reset(userInfo);
     }
   }, [userInfo, form]);
 
-  const onSubmit = async (
-    data: IUserBase,
-    event: { preventDefault: () => void }
-  ) => {
+  console.log(userInfo, 'USERINFO');
+
+  const onSubmit = async (data: any, event: { preventDefault: () => void }) => {
     event.preventDefault();
     const changedFields = getChangedFields(userInfo, data);
+    console.log(userInfo, data, 'changedFields');
     if (userInfo && Object.keys(changedFields).length > 0) {
-      await submitEditRoleStatus(userInfo.id, changedFields);
+      await submitEditRoleStatus(
+        userInfo.id,
+        changedFields as Partial<IUserBase>
+      );
     } else {
       notifyNoChangesMade(notify);
       return;
     }
   };
 
+  console.log(form.getValues(), 'HHHHHHHHHHHHHhhh');
+
   const { watch } = form;
-  const uiRole = watch('uiRole');
+  const uiRole = watch('uiMainRoles');
 
   const handleOpenChange = () => {
     dispatch(toggleCreateUserDialog());
@@ -369,24 +374,33 @@ export const UserRoleStatusDialog = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="uiRole"
+                    name="uiMainRoles"
                     label="Role"
                     placeholder="User Role"
                     type="select"
                     options={ROLE_OPTIONS}
                   />
-                  {(uiRole == EUserRole.SuperAdmin ||
-                    uiRole == EUserRole.Admin ||
-                    uiRole == EUserRole.Member) && (
-                    <FormField
-                      control={form.control}
-                      name="uiMemberPosition"
-                      label="Member Position"
-                      placeholder="Select Member Position"
-                      type="select"
-                      options={MEMBERPOSITION_OPTIONS}
-                    />
-                  )}
+                  {uiRole &&
+                    (uiRole.includes(EUserRole.SuperAdmin) ||
+                      uiRole.includes(EUserRole.Admin) ||
+                      uiRole.includes(EUserRole.Member)) && (
+                      <FormField
+                        control={form.control}
+                        name="uiMemberPosition"
+                        label="Member Position"
+                        placeholder="Select Member Position"
+                        type="select"
+                        options={MEMBERPOSITION_OPTIONS}
+                      />
+                    )}
+
+                  <FormField
+                    control={form.control}
+                    name="uiIsUserAlumni"
+                    label=""
+                    placeholder="Is this User an Alumni"
+                    type="checkbox"
+                  />
 
                   <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4  flex justify-center">
                     <LoadingButton

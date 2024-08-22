@@ -34,6 +34,7 @@ import { UserRoleStatusDialog } from '@/components/common/form/user-profile-form
 import { routeModule } from 'next/dist/build/templates/app-page';
 import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { useRouter } from 'next/navigation';
+import { transitionStyles } from '@/styles/globals';
 
 const UserListItem = () => {
   const [pagination, setPagination] = useState({
@@ -136,12 +137,16 @@ const UserListItem = () => {
       title: 'Role',
       dataIndex: 'uiRole',
       key: 'role',
-      render: (role: EUserRole) => (
-        <>
-          <Badge className={classNames(roleColors[role])}>
-            {userRoleLabels[role]}
-          </Badge>
-        </>
+      render: (roles: EUserRole[]) => (
+        <div className="flex gap-1 flex-wrap ">
+          {roles.map((role, index) => (
+            <Badge
+              className={`${classNames(roleColors[role])} cursor-pointer hover:bg-inherit ${transitionStyles}`}
+            >
+              {userRoleLabels[role]}
+            </Badge>
+          ))}
+        </div>
       ),
     },
     {
@@ -149,7 +154,9 @@ const UserListItem = () => {
       dataIndex: 'uiStatus',
       key: 'status',
       render: (status: EUserStatus) => (
-        <Badge className={classNames(statusColors[status])}>
+        <Badge
+          className={`${classNames(statusColors[status])} cursor-pointer hover:bg-inherit ${transitionStyles}`}
+        >
           {userStatusLabels[status]}
         </Badge>
       ),
@@ -159,7 +166,9 @@ const UserListItem = () => {
       dataIndex: 'uiMemberPosition',
       key: 'memberPosition',
       render: (position: EMemberPosition) => (
-        <Badge className={classNames(positionColors[position])}>
+        <Badge
+          className={`${classNames(positionColors[position])} cursor-pointer hover:bg-inherit ${transitionStyles}`}
+        >
           {memberPositionLabels[position]}
         </Badge>
       ),
@@ -184,6 +193,8 @@ const UserListItem = () => {
       ),
     },
   ];
+
+  console.log(users, 'users');
 
   useEffect(() => {
     handleRoutingOnError(router, hasUserFetchError, userFetchError);

@@ -10,6 +10,7 @@ export enum EUserRole {
   Member = '2',
   User = '3',
   Public = '4',
+  Alumni = '5',
 }
 
 export enum EPageType {

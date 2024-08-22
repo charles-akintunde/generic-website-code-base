@@ -175,30 +175,47 @@ const useUserInfo = () => {
     }
   };
 
-  const submitEditRoleStatus = async (userId: string, userInfo: IUserBase) => {
+  const submitEditRoleStatus = async (
+    userId: string,
+    userInfo: Partial<IUserBase>,
+    initialUserInfo: IUserBase
+  ) => {
     try {
       const isSameUser = sanitizeAndCompare(
         uiActiveUser?.uiId as string,
         userInfo?.id as string
       );
+
+      let uiRole = initialUserInfo.uiRole;
+
+      if (userInfo.uiIsUserAlumni) {
+        uiRole.push(EUserRole.Alumni);
+      }
+
+      const newRole = uiRole
+        .map((item) => Number(item))
+        .filter((value, index, self) => self.indexOf(value) === index);
+
+      console.log(newRole, 'HHHHHHHHHHhh');
+
       if (uiActiveUser.uiIsSuperAdmin && !isSameUser) {
-        const response = await editRoleAndStatus({
-          UI_ID: userId,
-          UI_Role: Number(userInfo.uiRole),
-          UI_Status: Number(userInfo.uiStatus),
-          UI_MemberPosition: userInfo.uiMemberPosition
-            ? Number(userInfo.uiMemberPosition)
-            : undefined,
-        }).unwrap();
-
-        dispatch(toggleCreateUserDialog());
-
-        notify(
-          'Success',
-          response.message ||
-            'The user information has been successfully updated.',
-          'success'
-        );
+        // const response = await editRoleAndStatus({
+        //   UI_ID: userId,
+        //   UI_Role: Number(userInfo.uiRole),
+        //   UI_Status: Number(userInfo.uiStatus),
+        //   UI_MemberPosition: userInfo.uiMemberPosition
+        //     ? Number(userInfo.uiMemberPosition)
+        //     : undefined,
+        // }).unwrap();
+        // dispatch(toggleCreateUserDialog());
+        // notify(
+        //   'Success',
+        //   response.message ||
+        //     'The user information has been successfully updated.',
+        //   'success'
+        // );
+      } else {
+        notify('Notice', 'You are not permitted to edit this user', 'warning');
       }
     } catch (error: any) {
       console.error('Error editing user:', error);

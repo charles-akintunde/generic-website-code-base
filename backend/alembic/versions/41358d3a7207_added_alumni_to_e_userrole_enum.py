@@ -17,33 +17,29 @@ down_revision: Union[str, None] = 'e313328fb0d1'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-# Define the updated enum type (with the new value)
-new_enum = postgresql.ENUM(E_UserRole, name="e_userrole", create_type=False)
-old_enum = sa.Enum("SuperAdmin", "Admin", "Member", "User", "Public", name="e_userrole")
+new_enum = postgresql.ENUM('SuperAdmin', 'Admin', 'Member', 'User', 'Public', 'Alumni', name="e_userrole", create_type=False)
 
 def upgrade() -> None:
-    # Manually add the new value to the existing enum type
+    # Step 1: Manually add the new value to the existing enum type
     op.execute("ALTER TYPE e_userrole ADD VALUE 'Alumni'")
 
-    # Alter the column to use the updated enum type within an ARRAY
+    # Step 2: Alter the column to use the updated enum type within an ARRAY
     op.alter_column(
         'T_UserInfo', 
-        'UI_Role',
+        'UI_Role',  # The existing column to be modified
         type_=sa.ARRAY(new_enum),
-        postgresql_using="UI_Role::text[]::e_userrole[]"
+        postgresql_using='ARRAY["UI_Role"]'  # Cast the current single enum to an array
     )
 
 def downgrade() -> None:
-    # You cannot remove values from an ENUM in PostgreSQL
-    # So, you will not be able to reverse this part of the migration.
-    # Handle this with a downgrade that reverts other schema changes.
-    # In practice, you may just want to document that downgrading past
-    # this migration requires manual intervention.
-
-    # Revert the column change
+    # Downgrading this specific change would involve complex manual steps
+    # which might include data migration or recreating the table, so a simple revert is not possible.
+    # You can revert the array change by converting it back to a single enum.
+    
+    # Step 1: Convert the array column back to a single enum type (if possible)
     op.alter_column(
         'T_UserInfo', 
         'UI_Role',
-        type_=sa.ARRAY(old_enum),
-        postgresql_using="UI_Role::text[]::e_userrole[]"
+        type_=new_enum,
+        postgresql_using='"UI_Role"[1]'  # Assuming the array had only one value, pick the first
     )

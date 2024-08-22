@@ -1,3 +1,4 @@
+import { setUIActiveUser } from '@/store/slice/userSlice';
 import {
   BaseQueryFn,
   FetchArgs,
@@ -30,6 +31,39 @@ const customBaseQuery: BaseQueryFn<
 
     if (refreshResult) {
       result = await baseQuery(args, api, extraOptions);
+
+      const activeUserResult = await baseQuery(
+        {
+          url: 'auth/active-user',
+          method: 'GET',
+          credentials: 'include',
+        },
+        api,
+        extraOptions
+      );
+
+      if (activeUserResult.data) {
+        const userData = activeUserResult.data;
+
+        console.log(userData, 'USERDATA');
+        // api.dispatch(
+        //   setUIActiveUser({
+        //     uiFullName: `${userData.uiFirstName} ${userData.uiLastName}`,
+        //     uiInitials: userData.uiFirstName[0] + userData.uiLastName[0],
+        //     uiIsAdmin: userProfile.uiRole == EUserRole.Admin,
+        //     uiIsSuperAdmin: userProfile.uiRole == EUserRole.SuperAdmin,
+        //     uiId: userData.id,
+        //     uiCanEdit:
+        //       userProfile.uiRole == EUserRole.Admin ||
+        //       userProfile.uiRole == EUserRole.SuperAdmin,
+        //     uiRole: userProfile.uiRole,
+        //     uiPhotoURL: userData.uiPhoto,
+        //   })
+        // );
+
+        // Retry the original query after fetching the active user
+        result = await baseQuery(args, api, extraOptions);
+      }
     }
   }
 

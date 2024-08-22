@@ -214,13 +214,18 @@ export const userProfileSchema = z.object({
 
 export const userRoleStatusSchema = z
   .object({
-    uiRole: z.string().optional(),
+    uiMainRoles: z.string().optional(),
     uiStatus: z.string().optional(),
     uiMemberPosition: z.string().optional(),
+    uiIsUserAlumni: z.boolean().default(false),
   })
   .refine(
     (data) => {
-      if (data.uiRole === EUserRole.Member && !data.uiMemberPosition) {
+      if (
+        data.uiMainRoles &&
+        data.uiMainRoles.includes(EUserRole.Member) &&
+        !data.uiMemberPosition
+      ) {
         return false;
       }
       return true;

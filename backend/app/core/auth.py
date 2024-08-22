@@ -7,6 +7,7 @@ from datetime import datetime, timedelta , timezone
 import stat
 from jose.exceptions import ExpiredSignatureError, JWTError
 from fastapi import Depends, HTTPException, Request, status
+from sqlalchemy import Enum
 from typing_extensions import deprecated
 from jose import JWTError, jwt
 from typing import Dict, Optional
@@ -158,6 +159,11 @@ def create_refresh_token(data: dict, expires_delta: Optional[timedelta] = None) 
     else:
         expire = datetime.now(timezone.utc) + timedelta(seconds=REFRESH_TOKEN_EXPIRE_SECONDS)
     to_encode.update({"exp": expire})
+
+    # for key, value in to_encode.items():
+    #     if isinstance(value, Enum):
+    #         to_encode[key] = value
+
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
     return encoded_jwt
@@ -180,6 +186,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     else:
         expire = datetime.now(timezone.utc) + timedelta(seconds=ACCESS_TOKEN_EXPIRE_SECONDS)
     to_encode.update({"exp": expire})
+
+    # for key, value in to_encode.items():
+    #     if isinstance(value, Enum):
+    #         to_encode[key] = value
+
     encode_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encode_jwt
 
