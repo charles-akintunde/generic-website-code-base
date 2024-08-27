@@ -112,7 +112,7 @@ const usePage = (pageName?: string) => {
           ),
           pageType: String(page.PG_Type),
           isHidden: false,
-          href: `/${toKebabCase(page.PG_Name)}`,
+          href: `/${page.PG_DisplayURL}`,
         })
       );
       const allRoutes = [...routes, ...normalizedPages];
@@ -192,6 +192,7 @@ const usePage = (pageName?: string) => {
           Number(permission)
         ),
         PG_Type: Number(page.pageType),
+        PG_DisplayURL: page.pageDisplayURL as string,
       };
       const response = await createPage(createPageRequest).unwrap();
       notify(

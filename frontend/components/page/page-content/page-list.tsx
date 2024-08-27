@@ -10,10 +10,8 @@ import { pageContentSchema } from '@/utils/formSchema';
 import LoadingButton from '@/components/common/button/loading-button';
 import usePageContent from '@/hooks/api-hooks/use-page-content';
 import {
-  IPageContentBase,
   IPageContentItem,
   IPageContentMain,
-  IPageMain,
 } from '@/types/componentInterfaces';
 import { usePathname } from 'next/navigation';
 import {
@@ -27,9 +25,7 @@ import {
 
 import { IPageContentGetRequest } from '@/types/requestInterfaces';
 import { useSearchParams } from 'next/navigation';
-import { Spin } from 'antd';
 import { useGetPageContentQuery } from '@/api/pageContentApi';
-import { LoadingOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useNotification } from '@/components/hoc/notification-provider';
 import { pageContentPaddingStyles } from '@/styles/globals';
@@ -37,9 +33,7 @@ import PageListLayout from './page-list-layout';
 import { TElement } from '@udecode/plate-common';
 import { EPageType } from '@/types/enums';
 import AppLoading from '@/components/common/app-loading';
-import { FloatButton } from 'antd';
 import { useRouter } from 'next/navigation';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
 import { useAppSelector } from '@/hooks/redux-hooks';
 
 const CreatePageContent = () => {
@@ -89,7 +83,9 @@ const CreatePageContent = () => {
       userId: (uiId && uiId) as string,
     };
 
-    await submitPageContent(pageContent);
+    console.log(pageContent, 'pageContent');
+
+    //await submitPageContent(pageContent);
   };
 
   return (
@@ -148,11 +144,7 @@ const CreatePageContent = () => {
               <div
                 className={`w-full sticky bg-white flex mx-auto bottom-0 z-40 h-20 shadow2xl`}
               >
-                <LoadingButton
-                  className=""
-                  buttonText="Edit Content"
-                  loading={false}
-                />
+                <LoadingButton className="" buttonText="Post" loading={false} />
               </div>
             )}
           </form>
@@ -226,7 +218,7 @@ const EditPageContent = () => {
   }, [pageContentData]);
 
   const form = useForm({
-    resolver: zodResolver(pageContentSchema),
+    resolver: zodResolver(pageContentSchemaEdit),
     defaultValues: {
       pageContentName: '',
       pageContentResource: undefined,
@@ -351,7 +343,7 @@ const EditPageContent = () => {
                   >
                     <LoadingButton
                       className=""
-                      buttonText="Edit Content"
+                      buttonText="Save Changes"
                       loading={false}
                     />
                   </div>

@@ -4,9 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import usePage from '@/hooks/api-hooks/use-page';
 import { IPageMenuItem } from '@/types/componentInterfaces';
-import { systemMenuItems } from './layout/menu-items';
 import { hasPermission } from '@/utils/helper';
-import { useCommentsShowResolvedButton } from '@udecode/plate-comments';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { setUIIsUserEditingMode } from '@/store/slice/userSlice';
 
@@ -38,6 +36,8 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       item.href === `/${pathname.split('/')[1]}` ||
       item.href.startsWith(`/${pathname.split('/')[1]}`)
   );
+
+  console.log(uiActiveUserRole, 'uiActiveUserRole');
 
   useEffect(() => {
     if (allAppRoutes && allAppRoutes.length > 0) {

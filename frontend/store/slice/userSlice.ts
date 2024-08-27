@@ -27,7 +27,7 @@ const initialState: UserState = {
     uiIsAdmin: false,
     uiIsSuperAdmin: false,
     uiCanEdit: false,
-    uiRole: EUserRole.Public,
+    uiRole: [EUserRole.Public],
     uiPhotoURL: null,
   },
   uiActiveUserProfileEdit: {

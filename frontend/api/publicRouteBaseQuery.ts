@@ -1,4 +1,7 @@
 import { setUIActiveUser } from '@/store/slice/userSlice';
+import { IUserInfo } from '@/types/componentInterfaces';
+import { EUserRole } from '@/types/enums';
+import { transformToUserInfo } from '@/utils/helper';
 import {
   BaseQueryFn,
   FetchArgs,
@@ -29,6 +32,36 @@ const customBaseQuery: BaseQueryFn<
       extraOptions
     );
 
+    const activeUserResult = await baseQuery(
+      {
+        url: 'auth/active-user',
+        method: 'GET',
+        credentials: 'include',
+      },
+      api,
+      extraOptions
+    );
+
+    // if (activeUserResult.data) {
+    //   const userProfile: IUserInfo = transformToUserInfo(activeUserResult.data);
+
+    //   api.dispatch(
+    //     setUIActiveUser({
+    //       uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+    //       uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+    //       uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
+    //       uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
+    //       uiId: userProfile.id,
+    //       uiCanEdit:
+    //         userProfile.uiRole.includes(EUserRole.Admin) ||
+    //         userProfile.uiRole.includes(EUserRole.SuperAdmin),
+    //       uiRole: userProfile.uiRole,
+    //       uiPhotoURL: userProfile.uiPhoto,
+    //     })
+    //   );
+    // }
+    // console.log(activeUserResult, 'activeUserResulttttttttttttttttttttttt');
+
     if (refreshResult) {
       result = await baseQuery(args, api, extraOptions);
 
@@ -42,28 +75,29 @@ const customBaseQuery: BaseQueryFn<
         extraOptions
       );
 
-      if (activeUserResult.data) {
-        const userData = activeUserResult.data;
+      // if (activeUserResult.data) {
+      //   const userProfile: IUserInfo = transformToUserInfo(
+      //     activeUserResult.data
+      //   );
 
-        console.log(userData, 'USERDATA');
-        // api.dispatch(
-        //   setUIActiveUser({
-        //     uiFullName: `${userData.uiFirstName} ${userData.uiLastName}`,
-        //     uiInitials: userData.uiFirstName[0] + userData.uiLastName[0],
-        //     uiIsAdmin: userProfile.uiRole == EUserRole.Admin,
-        //     uiIsSuperAdmin: userProfile.uiRole == EUserRole.SuperAdmin,
-        //     uiId: userData.id,
-        //     uiCanEdit:
-        //       userProfile.uiRole == EUserRole.Admin ||
-        //       userProfile.uiRole == EUserRole.SuperAdmin,
-        //     uiRole: userProfile.uiRole,
-        //     uiPhotoURL: userData.uiPhoto,
-        //   })
-        // );
+      //   api.dispatch(
+      //     setUIActiveUser({
+      //       uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+      //       uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+      //       uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
+      //       uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
+      //       uiId: userProfile.id,
+      //       uiCanEdit:
+      //         userProfile.uiRole.includes(EUserRole.Admin) ||
+      //         userProfile.uiRole.includes(EUserRole.SuperAdmin),
+      //       uiRole: userProfile.uiRole,
+      //       uiPhotoURL: userProfile.uiPhoto,
+      //     })
+      //   );
 
-        // Retry the original query after fetching the active user
-        result = await baseQuery(args, api, extraOptions);
-      }
+      //   // Retry the original query after fetching the active user
+      //   result = await baseQuery(args, api, extraOptions);
+      // }
     }
   }
 

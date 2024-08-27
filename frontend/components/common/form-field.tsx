@@ -29,6 +29,8 @@ const FormField: React.FC<IFormField> = ({
   type = 'text',
   options = [],
   multiple = false,
+  onChange,
+  onBlur,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -54,6 +56,14 @@ const FormField: React.FC<IFormField> = ({
                     autoComplete="off"
                     placeholder={placeholder}
                     {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      if (onChange) onChange(e.target.value);
+                    }}
+                    onBlur={(e) => {
+                      field.onBlur();
+                      if (onBlur) onBlur(e);
+                    }}
                   />
                   {type === 'password' && (
                     <div

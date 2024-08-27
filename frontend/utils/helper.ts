@@ -23,7 +23,6 @@ import {
   EUserRole,
   EUserStatus,
 } from '@/types/enums';
-import { IEditUserRequest } from '@/types/requestInterfaces';
 import { TElement } from '@udecode/plate-common';
 import { MenuProps } from 'antd';
 import { jwtDecode } from 'jwt-decode';
@@ -34,6 +33,13 @@ type MenuItem = Required<MenuProps>['items'][number];
 export const toKebabCase = (str: string): string => {
   str = str.toLowerCase();
   str = str.replace(/ /g, '-');
+  return str;
+};
+
+export const toKebabCase2 = (str: string): string => {
+  str = str.toLowerCase();
+  str = str.replace(/\s+/g, '-');
+
   return str;
 };
 
@@ -67,11 +73,11 @@ export const userStatusLabels: { [key in EUserStatus]: string } = {
 };
 
 export const memberPositionLabels: { [key in EMemberPosition]: string } = {
-  [EMemberPosition.DIRECTOR]: 'Director',
-  [EMemberPosition.POSTDOC]: 'Postdoc',
-  [EMemberPosition.PHD]: 'PhD',
-  [EMemberPosition.MASTER]: 'Masters',
-  [EMemberPosition.UNDERGRAD]: 'Undergrad',
+  [EMemberPosition.Director]: 'Director',
+  [EMemberPosition.PostDoc]: 'Postdoc',
+  [EMemberPosition.Phd]: 'PhD',
+  [EMemberPosition.Master]: 'Masters',
+  [EMemberPosition.Undergrad]: 'Undergrad',
 };
 
 export const roleColors: { [key in EUserRole]: string } = {
@@ -90,11 +96,11 @@ export const statusColors: { [key in EUserStatus]: string } = {
 };
 
 export const positionColors: { [key in EMemberPosition]: string } = {
-  [EMemberPosition.DIRECTOR]: 'director-position',
-  [EMemberPosition.POSTDOC]: 'postdoc-position',
-  [EMemberPosition.PHD]: 'postdoc-position',
-  [EMemberPosition.MASTER]: 'postdoc-position',
-  [EMemberPosition.UNDERGRAD]: 'postdoc-position',
+  [EMemberPosition.Director]: 'director-position',
+  [EMemberPosition.PostDoc]: 'postdoc-position',
+  [EMemberPosition.Phd]: 'phd-position',
+  [EMemberPosition.Master]: 'postdoc-position',
+  [EMemberPosition.Undergrad]: 'postdoc-position',
 };
 
 export const roleBadgeClasses: { [key in EUserRole]: string } = {
@@ -264,7 +270,7 @@ export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
     uiFirstName: data.UI_FirstName,
     uiLastName: data.UI_LastName,
     uiEmail: data.UI_Email,
-    uiRole: data.UI_Role as EUserRole,
+    uiRole: data.UI_Role.map((role) => String(role)),
     uiStatus: data.UI_Status as EUserStatus,
     uiRegDate: data.UI_RegDate,
     uiPhoto: data.UI_PhotoURL ? data.UI_PhotoURL : null,
@@ -360,7 +366,7 @@ export const mapPageToIPageMain = (pagesData: PagesData): IPageList => {
     pagePermission: page.PG_Permission.map((permission) => String(permission)),
     pageType: String(page.PG_Type),
     isHidden: false,
-    href: `/${toKebabCase(page.PG_Name)}`,
+    href: `/${page.PG_DisplayURL}`,
   }));
 
   return {
@@ -446,11 +452,11 @@ export const ROLE_OPTIONS = [
 ];
 
 export const MEMBERPOSITION_OPTIONS = [
-  { label: 'Director', value: EMemberPosition.DIRECTOR },
-  { label: 'Post Doc Fellow', value: EMemberPosition.POSTDOC },
-  { label: 'PhD', value: EMemberPosition.PHD },
-  { label: 'Master', value: EMemberPosition.MASTER },
-  { label: 'Undergraduate', value: EMemberPosition.UNDERGRAD },
+  { label: 'Director', value: EMemberPosition.Director },
+  { label: 'Post Doc Fellow', value: EMemberPosition.PostDoc },
+  { label: 'PhD', value: EMemberPosition.Phd },
+  { label: 'Master', value: EMemberPosition.Master },
+  { label: 'Undergraduate', value: EMemberPosition.Undergrad },
 ];
 
 export const STATUS_OPTIONS = [
@@ -458,6 +464,14 @@ export const STATUS_OPTIONS = [
   { label: 'Unauthenticated', value: EUserStatus.Unauthenticated },
   { label: 'Disabled', value: EUserStatus.Disabled },
 ];
+
+export const MemberPositionTitles: { [key in EMemberPosition]: string } = {
+  [EMemberPosition.Director]: 'Director',
+  [EMemberPosition.PostDoc]: 'Post Doc Fellow',
+  [EMemberPosition.Phd]: 'PhD',
+  [EMemberPosition.Master]: 'Master',
+  [EMemberPosition.Undergrad]: 'Undergraduate',
+};
 
 export const isValidUUID = (id: string): boolean => {
   const uuidRegex =

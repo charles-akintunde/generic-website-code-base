@@ -32,9 +32,7 @@ const SinglePage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { notify } = useNotification();
-  const [pageName, setPageName] = useState(
-    fromKebabCase(pathname.split('/')['1'])
-  );
+  const [pageName, setPageName] = useState(pathname.split('/')['1']);
   const {
     data: pageData,
     isError: hasPageFetchError,

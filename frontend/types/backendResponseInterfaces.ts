@@ -6,6 +6,8 @@ export interface Page {
   PG_Name: string;
   PG_Permission: number[];
   PG_Type: number;
+  PG_DisplayURL: string;
+  PC_DisplayURL: string;
   PG_PageContents?: IPageContentResponse[];
   PG_PageContent?: IPageContentResponse;
 }

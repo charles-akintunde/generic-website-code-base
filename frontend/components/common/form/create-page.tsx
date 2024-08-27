@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { EPageType, EUserRole } from '@/types/enums';
 import { Form } from '@/components/ui/form';
 import FormField from '../form-field';
@@ -19,9 +19,11 @@ import {
 import AppButton from '../button/app-button';
 import { primarySolidButtonStyles } from '@/styles/globals';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
+import { useAppSelector } from '@/hooks/redux-hooks';
 import usePage from '@/hooks/api-hooks/use-page';
 import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { toKebabCase2 } from '@/utils/helper';
+import { truncate } from 'fs';
 
 const CreatePage = () => {
   const {
@@ -33,6 +35,7 @@ const CreatePage = () => {
     isEditPageSuccess,
     isEditPageLoading,
   } = usePage();
+  const [isManualEdit, setIsManualEdit] = useState(false);
   const form = useForm<z.infer<typeof createPageSchema>>({
     resolver: zodResolver(createPageSchema),
     defaultValues: editingPage || {
@@ -59,13 +62,33 @@ const CreatePage = () => {
     // dispatch(toggleCreatePageDialog());
   };
 
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'pageName' && !isManualEdit) {
+        const pageNameValue = value?.pageName || '';
+        form.setValue('pageDisplayURL', toKebabCase2(pageNameValue), {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, isManualEdit]);
+
   const OPTIONS = [
     { label: 'Super Admin', value: EUserRole.SuperAdmin },
     { label: 'Admin', value: EUserRole.Admin },
     { label: 'Member', value: EUserRole.Member },
     { label: 'User', value: EUserRole.User },
     { label: 'Public', value: EUserRole.Public },
+    { label: 'Alumni', value: EUserRole.Alumni },
   ];
+
+  const handlePageDisplayUrlChange = (e) => {
+    setIsManualEdit(true);
+    form.setValue('pageDisplayURL', e.target.value);
+  };
 
   return (
     <div>
@@ -78,6 +101,14 @@ const CreatePage = () => {
               label="Page Name"
               placeholder=""
               type="text"
+            />
+            <FormField
+              control={form.control}
+              name="pageDisplayURL"
+              label="Display URL"
+              placeholder=""
+              type="text"
+              onBlur={handlePageDisplayUrlChange}
             />
             {!editingPage && (
               <FormField

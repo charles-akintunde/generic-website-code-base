@@ -2,8 +2,6 @@
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Table } from 'antd';
-import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { Link2Icon } from '@radix-ui/react-icons';
 import { EPageType, EUserRole } from '@/types/enums';
 import {
   handleRoutingOnError,
@@ -21,7 +19,6 @@ import { ExternalLink } from 'lucide-react';
 
 const PageListItem: React.FC = () => {
   const router = useRouter();
-  const [viewContent, setViewContent] = useState<IPageMain | null>(null);
   const { handleEditButtonClick, handleRemovePage } = usePage();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
@@ -49,7 +46,6 @@ const PageListItem: React.FC = () => {
     if (pagesResponse && pagesResponse.data) {
       const { data } = pagesResponse;
       const pagesData: IPageList = mapPageToIPageMain(data);
-
       if (pagesData && pagesData.pages && pagesData.pgTotalPageCount) {
         setPagination({
           ...pagination,
@@ -65,6 +61,11 @@ const PageListItem: React.FC = () => {
       handleRoutingOnError(router, hasPagesFetchError, pagesFetchError);
     }
   }, [hasPagesFetchError, pagesFetchError, router]);
+
+  const handleRemove = (record: any) => {
+    handleRemovePage(record);
+    refetchPages();
+  };
 
   const columns = [
     {
@@ -123,7 +124,7 @@ const PageListItem: React.FC = () => {
               <ActionsButtons
                 entity="page"
                 handleEditButtonClick={handleEditButtonClick}
-                handleRemove={handleRemovePage}
+                handleRemove={handleRemove}
                 record={record}
               />
             </>

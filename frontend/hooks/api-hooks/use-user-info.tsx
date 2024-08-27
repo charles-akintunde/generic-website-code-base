@@ -29,6 +29,7 @@ import {
 } from '@/api/authApi';
 import { useRouter } from 'next/navigation';
 import { EUserRole } from '@/types/enums';
+import { useCommentsShowResolvedButton } from '@udecode/plate-comments';
 
 export interface GetUsersRequest {
   page: number;
@@ -88,16 +89,18 @@ const useUserInfo = () => {
   useEffect(() => {
     if (activeUserData?.data) {
       const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
+
+      console.log(userProfile, 'USERPROFILE');
       dispatch(
         setUIActiveUser({
           uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
           uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
-          uiIsAdmin: userProfile.uiRole == EUserRole.Admin,
-          uiIsSuperAdmin: userProfile.uiRole == EUserRole.SuperAdmin,
+          uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
+          uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
           uiId: userProfile.id,
           uiCanEdit:
-            userProfile.uiRole == EUserRole.Admin ||
-            userProfile.uiRole == EUserRole.SuperAdmin,
+            userProfile.uiRole.includes(EUserRole.Admin) ||
+            userProfile.uiRole.includes(EUserRole.SuperAdmin),
           uiRole: userProfile.uiRole,
           uiPhotoURL: userProfile.uiPhoto,
         })
@@ -110,14 +113,14 @@ const useUserInfo = () => {
       const response = await deleteUser(user.id).unwrap();
       notify(
         'Success',
-        response.message || 'The page has been successfully deleted.',
+        response?.message || 'The page has been successfully deleted.',
         'success'
       );
     } catch (error: any) {
       console.log(error, 'ERROR');
       notify(
         'Error',
-        error.data.message ||
+        error?.data?.message ||
           'Failed to delete the page. Please try again later.',
         'error'
       );
@@ -154,8 +157,6 @@ const useUserInfo = () => {
         UI_NewPassword: data.newPassword,
       }).unwrap();
 
-      console.log(response, 'RESONSE');
-
       setResetPasswordSuccessMessage(response.message);
       notify(
         'Success',
@@ -166,8 +167,6 @@ const useUserInfo = () => {
     } catch (error: any) {
       const defaultErrorMessage =
         'Failed to reset password. Please try again later.';
-
-      console.log(error, 'ERROR ');
 
       // const errorMessage =
       //   error.data?.message || error.data?.detail || defaultErrorMessage;
@@ -195,8 +194,6 @@ const useUserInfo = () => {
       const newRole = uiRole
         .map((item) => Number(item))
         .filter((value, index, self) => self.indexOf(value) === index);
-
-      console.log(newRole, 'HHHHHHHHHHhh');
 
       if (uiActiveUser.uiIsSuperAdmin && !isSameUser) {
         // const response = await editRoleAndStatus({

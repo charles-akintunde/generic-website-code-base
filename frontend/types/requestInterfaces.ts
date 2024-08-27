@@ -21,6 +21,7 @@ export interface IPageRequest {
   PG_Name: string;
   PG_Permission: number[];
   PG_Type?: number;
+  PG_DisplayURL: string;
 }
 
 export interface IPageContentGetRequest {

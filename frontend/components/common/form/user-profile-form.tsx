@@ -329,7 +329,8 @@ export const UserRoleStatusDialog = () => {
     if (userInfo && Object.keys(changedFields).length > 0) {
       await submitEditRoleStatus(
         userInfo.id,
-        changedFields as Partial<IUserBase>
+        changedFields as Partial<IUserBase>,
+        userInfo
       );
     } else {
       notifyNoChangesMade(notify);

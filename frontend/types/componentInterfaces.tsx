@@ -1,7 +1,7 @@
 import store from '@/store';
 import { NotificationPlacement } from 'antd/lib/notification/interface';
 import { EPageType, EUserRole } from './enums';
-import { ElementType, ReactNode } from 'react';
+import React, { ElementType, ReactNode } from 'react';
 import { Control, ControllerProps, FieldValues } from 'react-hook-form';
 // import { string, z, z, z } from 'zod';
 import { TElement } from '@udecode/plate-common';
@@ -14,6 +14,7 @@ export interface IPageMain {
   pageId: string;
   pageName: string;
   pageType: string;
+  pageDisplayURL?: string;
   pagePermission: string[];
   pageContents?: IPageContentItem[] | IPageContentMain[];
   pageContent?: IPageContentMain;
@@ -55,7 +56,7 @@ export interface IUIActiveUser {
   uiIsAdmin: boolean;
   uiIsSuperAdmin: boolean;
   uiCanEdit: boolean;
-  uiRole: string;
+  uiRole: string[];
   uiPhotoURL: string | null | File;
 }
 
@@ -76,6 +77,7 @@ export interface IPageListItem {
 export interface IPage {
   pageId?: string;
   pageName: string;
+  //pageDisplayURL: string;
   pagePermission: string[];
   pageType: string;
   pageContents?: IPageContentItem[];
@@ -101,6 +103,7 @@ export interface IPageContentItem extends IPageContentBase {
   pageId: string;
   pageType?: string;
   pageName: string;
+  //pageDisplayURL: string;
   userId: string;
   href: string;
 }
@@ -142,6 +145,8 @@ export interface IFormField {
   type?: string;
   multiple?: boolean;
   options?: { value: EUserRole | EPageType | string; label: string }[];
+  onChange?: (value: any) => void;
+  onBlur?: (events: React.FocusEvent<any>) => void;
 }
 
 export interface ILoadingButton {

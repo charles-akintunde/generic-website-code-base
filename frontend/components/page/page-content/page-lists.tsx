@@ -19,9 +19,7 @@ import { useAppSelector } from '@/hooks/redux-hooks';
 const PageLists = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const [pageName, setPageName] = useState(
-    fromKebabCase(pathname.split('/')['1'])
-  );
+  const [pageName, setPageName] = useState(pathname.split('/')['1']);
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
   const { currentPage, hasPageFetchError, pageFetchError, isPageFetchLoading } =
@@ -32,7 +30,6 @@ const PageLists = () => {
     `/${pageNameKebab}/create-page-content?${queryString}`;
   const pageNameKebab = toKebabCase(page?.pageName ?? '');
   const pageId = page?.pageId ?? '';
-  console.log(page, 'PAGE');
   const pageContents: IPageContentMain[] =
     (page?.pageContents as IPageContentMain[]) ?? [];
   const queryParams = {

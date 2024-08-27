@@ -36,6 +36,10 @@ const requiredTextSchema = (field: string) => {
     .regex(/^[^-]+$/, `${field} should not contain dashes (-)`);
 };
 
+const requiredTextSchemaAllowDash = (field: string) => {
+  return z.string().min(1, `${field} is required`);
+};
+
 export const loginSchema = z.object({
   email: emailSchema(),
   password: passwordSchema(),
@@ -71,6 +75,7 @@ export const resetPasswordWithEmailSchema = z.object({
 
 export const createPageSchema = z.object({
   pageName: requiredTextSchema('Page name'),
+  pageDisplayURL: requiredTextSchemaAllowDash('Page Display URL'),
   pageType: z.nativeEnum(EPageType),
   pagePermission: z
     .array(z.nativeEnum(EUserRole))
@@ -159,6 +164,14 @@ const imageSchema = z.union([imageFileSchema, urlSchema]);
 const fileSchema = z.union([docFileSchema, urlSchema]);
 
 export const pageContentSchema = z.object({
+  pageContentName: requiredTextSchema('Content Name'),
+  pageContentDisplayImage: imageSchema,
+  pageContentResource: fileSchema.optional(),
+  editorContent: plateJsSchema.optional(),
+  isPageContentHidden: z.boolean().default(false),
+});
+
+export const pageContentSchemaEdit = z.object({
   pageContentName: requiredTextSchema('Content Name'),
   pageContentDisplayImage: imageSchema.optional(),
   pageContentResource: fileSchema.optional(),
