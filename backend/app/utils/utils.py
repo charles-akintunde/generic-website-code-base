@@ -28,12 +28,14 @@ def is_admin(current_user: T_UserInfo, detail: str):
     
 # Page Utils
 
-def check_page_permission(page_accessible_to: List[E_UserRole] , user_role: E_UserRole):
+def check_page_permission(page_accessible_to: List[E_UserRole] , user_roles: List[E_UserRole]):
     """
     Check page permission.
     """
-    if user_role not in page_accessible_to:
-        raise HTTPException(
+    for role in user_roles:
+        if role in page_accessible_to:
+            return 
+    raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="You are not authorized to access this page.")
 

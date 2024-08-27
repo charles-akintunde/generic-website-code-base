@@ -70,9 +70,9 @@ class PageCRUD:
                 }
             )
 
-        page_content_crud.create_page_content(
-                db,
-                single_page_content)
+            page_content_crud.create_page_content(
+                    db,
+                    single_page_content)
 
   
         return db_page
@@ -90,6 +90,20 @@ class PageCRUD:
         """
 
         return db.query(T_Page).filter(func.lower(T_Page.PG_Name) == func.lower(page_name)).first()
+    
+    def get_page_by_display_url(self, db: Session, pg_display_url: str) -> T_Page:
+        """
+        Gets page with page display url.
+
+        Args:
+            db (Session): Database session.
+            pg_display_url (str): Page Display URL.
+
+        Returns:
+            Page (T_Page): Existing page object.
+        """
+
+        return db.query(T_Page).filter(func.lower(T_Page.PG_DisplayURL) == func.lower(pg_display_url)).first()
     
     def get_page_by_name_and_id(self, db: Session, page_name: str, page_id: str) -> T_Page:
         """
@@ -141,14 +155,16 @@ class PageCRUD:
             T_Page.PG_ID,
             T_Page.PG_Name,
             T_Page.PG_Permission,
-            T_Page.PG_Type
+            T_Page.PG_Type,
+            T_Page.PG_DisplayURL
         )
         page_rows = query.offset(offset).limit(pg_page_limit).all()
         return [PageResponse(
             PG_ID=str(row.PG_ID),
             PG_Name=row.PG_Name ,
             PG_Permission=[permission.value for permission in row.PG_Permission],
-            PG_Type=row.PG_Type.value
+            PG_Type=row.PG_Type.value,
+            PG_DisplayURL=str(row.PG_DisplayURL)
         ) for row in page_rows]
 
     def remove_page_content(self, db: Session, page: T_Page):

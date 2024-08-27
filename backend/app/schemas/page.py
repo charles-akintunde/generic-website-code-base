@@ -3,7 +3,7 @@
 """
 
 from typing import Any, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional
 from app.models.page import E_PageType, E_UserRole
 from app.schemas.page_content import PageContentResponse
@@ -14,6 +14,7 @@ class Page(BaseModel):
     PG_Type: E_PageType
     PG_Name: str 
     PG_Permission: List[E_UserRole]
+    PG_DisplayURL: Optional[str] = None
 
 
 class PageResponse(BaseModel):
@@ -21,6 +22,7 @@ class PageResponse(BaseModel):
     PG_Type: int
     PG_Name: str 
     PG_Permission: List[int]
+    PG_DisplayURL: str
 
 class PG_PagesResponse(BaseModel):
     PG_Pages: List[PageResponse]
@@ -44,6 +46,7 @@ class PageUpdateRequest(BaseModel):
     PG_Type: Optional[E_PageType] = None
     PG_Name: Optional[str] = None
     PG_Permission: Optional[List[E_UserRole]] = None
+    PG_DisplayURL: Optional[str] = None
 
 class PagesResponse(BaseModel):
     Pages: List[PageResponse]

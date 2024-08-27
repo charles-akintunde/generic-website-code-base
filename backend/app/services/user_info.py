@@ -1,8 +1,6 @@
 """
 User service for handling business logic related to users.
 """
-from typing import List, Optional, Tuple, Union
-from uuid import UUID
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.crud.user_info import user_crud
@@ -163,7 +161,11 @@ def delete_user(db: Session, delete_user_id: str, current_user: T_UserInfo ):
 
 def get_users(db: Session, page: int = 1, limit: int = 10):
     total_user_count = user_crud.get_total_user_count(db=db)
-    total_pages = (total_user_count + limit - 1) // limit
+    total_pages = (total_user_count + limit - 1) 
+
+    if total_user_count == 0:
+        return create_users_response(users=[], total_users_count=total_user_count, new_last_key=None)
+
     if page > total_pages:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

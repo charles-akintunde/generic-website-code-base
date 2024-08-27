@@ -41,14 +41,24 @@ async def create_new_page(db: Session, page: PageCreate, current_user: T_UserInf
     return new_page
 
 
-def get_pages_with_offset(db: Session, pg_page_number: int = 1, pg_page_limit: int = 5):
+def get_pages_with_offset(db: Session, pg_page_number: int = 0, pg_page_limit: int = 5):
     total_page_count = page_crud.get_total_pages_count(db=db)
     total_pages = (total_page_count + pg_page_limit - 1) // pg_page_limit
+
+
+    if total_page_count == 0:
+        return create_page_with_offset_response(pages=[], total_page_count=0)
+    
+    total_pages = (total_page_count + pg_page_limit - 1)
+    
     if pg_page_number > total_pages:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid page number: {pg_page_number}. There are only {total_pages} pages available."
         )
+    
+    if pg_page_number == 0:
+        pg_page_number = 1
     
     pages = page_crud.get_pages_with_offset(db, pg_page_number, pg_page_limit)
     pages_response = create_page_with_offset_response(pages=pages,total_page_count=total_page_count )
@@ -79,21 +89,21 @@ def get_pages(db: Session) -> PagesResponse:
 
 def get_page(
         db: Session, 
-        page_name: str,
+        pg_display_url: str,
         current_user: T_UserInfo) -> PageResponse:
     """
     Service to fetch page.
     """
-    user_role = E_UserRole(current_user.UI_Role if current_user else E_UserRole.Public)
+    user_roles = (current_user.UI_Role if current_user else [E_UserRole.Public]) 
 
-    existing_page = page_crud.get_page_by_name(
+    existing_page = page_crud.get_page_by_display_url(
         db=db,
-        page_name=page_name)
+        pg_display_url=pg_display_url)
     
     if not existing_page:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Page with name '{page_name}' was not found."
+            detail=f"Page with Display URL '{pg_display_url}' was not found."
         )
 
 
@@ -101,7 +111,7 @@ def get_page(
 
     check_page_permission(
         page_accessible_to=page_is_accessible_to, 
-        user_role=E_UserRole(user_role))
+        user_roles=user_roles) # type: ignore
     
     converted_page_contents = []
 
@@ -115,6 +125,7 @@ def get_page(
             PG_ID=str(existing_page.PG_ID),
             PG_Type=existing_page.PG_Type.value,  # Convert enum to its value
             PG_Name=str(existing_page.PG_Name),
+            PG_DisplayURL=str(existing_page.PG_DisplayURL),
             PG_Permission=[role.value for role in existing_page.PG_Permission],   # Assuming this is already a list of E_UserRole # type: ignore
             PG_PageContents=converted_page_contents if converted_page_contents else []
         )
@@ -149,6 +160,7 @@ def update_page(db: Session, page_id: str, page_update: PageUpdateRequest, user:
             PG_ID=str(updated_page.PG_ID),
             PG_Type=updated_page.PG_Type.value,  # Convert enum to its value
             PG_Name=str(updated_page.PG_Name),
+            PG_DisplayURL=str(update_page.PG_DisplayURL),
             PG_Permission=[role.value for role in updated_page.PG_Permission],  # Convert each enum to its value
             PG_PageContents=updated_page.PG_PageContents if updated_page.PG_PageContents else None
         )

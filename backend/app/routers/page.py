@@ -45,9 +45,9 @@ async def create_page_endpoint(
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     
-@router.get("/{page_name}", response_model=StandardResponse)
+@router.get("/{pg_display_url}", response_model=StandardResponse)
 async def get_page_endpoint(
-    page_name: str, 
+    pg_display_url: str, 
     db: Session = Depends(get_db), 
     current_user: Optional[T_UserInfo] = Depends(get_current_user_without_exception)):
     """
@@ -64,7 +64,7 @@ async def get_page_endpoint(
     try:
         existing_page = get_page(
             db=db, 
-            page_name=page_name,
+            pg_display_url=pg_display_url,
             current_user=current_user)
         return success_response(message="Page fetched successfully", data=existing_page.model_dump())
     except HTTPException as e:

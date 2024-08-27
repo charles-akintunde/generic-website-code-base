@@ -56,6 +56,7 @@ def build_page_json_with_single_content(
         PG_ID=str(page.PG_ID),
         PG_Type=page.PG_Type.value,
         PG_Name=str(page.PG_Name),
+        PG_DisplayURL=str(page.PG_DisplayURL),
         PG_Permission=[role.value for role in page.PG_Permission],
         PG_PageContent=page_content
     )
@@ -74,6 +75,7 @@ def build_multiple_page_response(page: T_Page) -> PageResponse:
         PG_ID=str(page.PG_ID),
         PG_Type=page.PG_Type.value,  # Assuming you want the enum's value as a string
         PG_Name=str(page.PG_Name),
+        PG_DisplayURL=str(page.PG_DisplayURL),
         PG_Permission=[perm.value for perm in page.PG_Permission]  # Convert enum list to string list
     )
 
