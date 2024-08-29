@@ -22,8 +22,9 @@ export const pageApi = createApi({
   endpoints: (builder) => ({
     getPages: builder.query<IPageResponse, void>({
       query: () => url,
-      providesTags: (result) =>
-        result?.data?.Pages
+      providesTags: (result) => {
+        //  console.log('providesTags result:', result);
+        return result?.data?.Pages
           ? [
               ...result.data.Pages.map((page) => ({
                 type: 'Pages' as const,
@@ -31,7 +32,8 @@ export const pageApi = createApi({
               })),
               { type: 'Pages', id: 'LIST' },
             ]
-          : [{ type: 'Pages', id: 'LIST' }],
+          : [{ type: 'Pages', id: 'LIST' }];
+      },
     }),
     getPagesWithOffset: builder.query<
       IPageResponse,
@@ -39,8 +41,9 @@ export const pageApi = createApi({
     >({
       query: ({ PG_Number, PG_Limit }) =>
         `${url}/?pg_page_number=${PG_Number}&pg_page_limit=${PG_Limit}`,
-      providesTags: (result) =>
-        result?.data?.Pages
+      providesTags: (result) => {
+        console.log('providesTags result:', result);
+        return result?.data?.Pages
           ? [
               ...result.data.Pages.map((page) => ({
                 type: 'Pages' as const,
@@ -48,7 +51,8 @@ export const pageApi = createApi({
               })),
               { type: 'Pages', id: 'LIST' },
             ]
-          : [{ type: 'Pages', id: 'LIST' }],
+          : [{ type: 'Pages', id: 'LIST' }];
+      },
     }),
     getPage: builder.query<ISinglePageResponse, string>({
       query: (PG_Name) => `${url}/${PG_Name}`,

@@ -74,7 +74,10 @@ export const resetPasswordWithEmailSchema = z.object({
 });
 
 export const createPageSchema = z.object({
-  pageName: requiredTextSchema('Page name'),
+  pageName: requiredTextSchemaAllowDash('Page Name').max(
+    100,
+    `Page Name must be at most 100 characters long`
+  ),
   pageDisplayURL: requiredTextSchemaAllowDash('Page Display URL'),
   pageType: z.nativeEnum(EPageType),
   pagePermission: z
@@ -164,15 +167,29 @@ const imageSchema = z.union([imageFileSchema, urlSchema]);
 const fileSchema = z.union([docFileSchema, urlSchema]);
 
 export const pageContentSchema = z.object({
-  pageContentName: requiredTextSchema('Content Name'),
+  pageContentName: requiredTextSchema('Content Name').max(
+    200,
+    `Page Name must be at most 100 characters long`
+  ),
   pageContentDisplayImage: imageSchema,
+  pageContentDisplayURL: requiredTextSchemaAllowDash('Page Display URL').max(
+    255,
+    `Page Name must be at most 254 characters long`
+  ),
   pageContentResource: fileSchema.optional(),
   editorContent: plateJsSchema.optional(),
   isPageContentHidden: z.boolean().default(false),
 });
 
 export const pageContentSchemaEdit = z.object({
-  pageContentName: requiredTextSchema('Content Name'),
+  pageContentName: requiredTextSchema('Content Name').max(
+    200,
+    `Page Name must be at most 100 characters long`
+  ),
+  pageContentDisplayURL: requiredTextSchemaAllowDash('Page Display URL').max(
+    255,
+    `Page Name must be at most 254 characters long`
+  ),
   pageContentDisplayImage: imageSchema.optional(),
   pageContentResource: fileSchema.optional(),
   editorContent: plateJsSchema.optional(),

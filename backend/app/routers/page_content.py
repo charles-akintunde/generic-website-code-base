@@ -4,11 +4,10 @@ This module defines the API endpoints for application-related operations.
 """
 
 import json
-from typing import Optional, Union
-from urllib import response
+from typing import Optional
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
-from app.services.page_content import create_page_content, delete_page_content, get_page_content_by_title, update_page_content
+from app.services.page_content import create_page_content, delete_page_content, get_page_content_by_display_url, update_page_content
 from app.schemas.page_content import PageContentCreateRequest, PageContentUpdateRequest
 from app.schemas.response import StandardResponse
 from app.core.auth import get_current_user
@@ -17,9 +16,7 @@ from app.database import get_db
 from app.utils.response import error_response, success_response
 from app.utils.file_utils import save_file, validate_image_file
 from app.config import settings
-from app.utils.utils import is_super_admin
 from app.utils.response_json import create_page_content_img_response
-from app.crud import page_content
 
 router = APIRouter()
 
@@ -67,9 +64,9 @@ async def create_page_content_endpoint(
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     
-@router.get("/{page_name}/{page_content_title}", response_model=StandardResponse)
-async def get_page_content_by_title_endpoint(
-    page_content_title: str,
+@router.get("/{page_name}/{page_content_display_url}", response_model=StandardResponse)
+async def get_page_content_by_display_url_endpoint(
+    page_content_display_url: str,
     page_name: str,
     db: Session = Depends(get_db)):
     """
@@ -83,9 +80,9 @@ async def get_page_content_by_title_endpoint(
         StandardResponse: The response containing the page content.
     """
     try:
-        page_content = get_page_content_by_title(
+        page_content = get_page_content_by_display_url(
             db=db, 
-            page_content_title=page_content_title,
+            page_content_display_url=page_content_display_url,
             page_name=page_name)
         return success_response(message="Page content fetched successfully", data=page_content.model_dump())
     except HTTPException as e:

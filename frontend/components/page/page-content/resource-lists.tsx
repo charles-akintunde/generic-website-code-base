@@ -11,9 +11,7 @@ import { useAppSelector } from '@/hooks/redux-hooks';
 
 const ResourceLists = () => {
   const pathname = usePathname();
-  const [pageName, setPageName] = useState(
-    fromKebabCase(pathname.split('/')['1'])
-  );
+  const [pageName, setPageName] = useState(pathname.split('/')['1']);
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
   const { currentPage } = usePage(pageName);

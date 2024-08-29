@@ -21,9 +21,7 @@ import { primarySolidButtonStyles } from '@/styles/globals';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useAppSelector } from '@/hooks/redux-hooks';
 import usePage from '@/hooks/api-hooks/use-page';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
 import { toKebabCase2 } from '@/utils/helper';
-import { truncate } from 'fs';
 
 const CreatePage = () => {
   const {
@@ -135,7 +133,7 @@ const CreatePage = () => {
               multiple={true}
             />
             <LoadingButton
-              buttonText="Submit"
+              buttonText="Post"
               loading={editingPage ? isEditPageLoading : isCreatePageLoading}
               type="submit"
             />

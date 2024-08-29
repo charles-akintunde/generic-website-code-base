@@ -47,10 +47,10 @@ const ContentList: React.FC<ContentListProps> = ({
     <div className="min-h-screen">
       <div className={`${containerNoFlexPaddingStyles} pt-8`}>
         <header className="flex justify-between items-center pb-4">
-          <h2 className="text-xl font-bold">Latest {pageName}</h2>
+          <h2 className="text-xl font-bold">Latest </h2>
           {canEdit && (
             <AppButton
-              buttonText={`Create ${pageName.toLowerCase()}`}
+              buttonText={`Create Content`}
               Icon={PlusIcon}
               href={createPageHref(pageNameKebab, queryString)}
               classNames={primarySolidButtonStyles}

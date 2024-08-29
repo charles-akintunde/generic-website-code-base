@@ -107,9 +107,9 @@ async def create_page_content(
         user=user
     )
 
-def get_page_content_by_title(
+def get_page_content_by_display_url(
         db: Session,
-        page_content_title: str,
+        page_content_display_url: str,
         page_name: str) -> PageSingleContent:
     """
     Handles retrieving page content.
@@ -129,15 +129,15 @@ def get_page_content_by_title(
             detail=f"Page with ({page_name}) name not found"
         )
 
-    page_content = page_content_crud.get_page_content_by_title(
+    page_content = page_content_crud.get_page_content_by_display_url(
         db=db,
-        page_content_title=page_content_title,
+        page_content_display_url=page_content_display_url,
         page_id=str(page.PG_ID)
     )
     if page_content is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"This page does not have content with title '{page_content_title}'."
+            detail=f"This page does not have content with displau URL '{page_content_display_url}'."
         )
     
     

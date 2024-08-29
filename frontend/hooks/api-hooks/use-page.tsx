@@ -142,6 +142,7 @@ const usePage = (pageName?: string) => {
   useEffect(() => {
     if (pageData && pageData.data) {
       let response: Page = pageData.data;
+
       const normalizedPage: IPageMain = {
         pageId: response.PG_ID,
         pageName: response.PG_Name,

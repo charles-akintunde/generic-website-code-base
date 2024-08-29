@@ -97,6 +97,7 @@ const useUserInfo = () => {
           uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
           uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
           uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
+          uiIsLoading: isActiveUserFetchLoading,
           uiId: userProfile.id,
           uiCanEdit:
             userProfile.uiRole.includes(EUserRole.Admin) ||

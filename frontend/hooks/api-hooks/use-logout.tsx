@@ -29,6 +29,7 @@ const useLogout = () => {
           uiFullName: '',
           uiInitials: '',
           uiIsAdmin: false,
+          uiIsLoading: false,
           uiIsSuperAdmin: false,
           uiCanEdit: false,
           uiRole: [EUserRole.Public],

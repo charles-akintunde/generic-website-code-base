@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Table } from 'antd';
+import { Table, Tooltip } from 'antd';
 import { EPageType, EUserRole } from '@/types/enums';
 import {
   handleRoutingOnError,
@@ -74,15 +74,17 @@ const PageListItem: React.FC = () => {
       key: 'pageName',
       fixed: 'left',
       render: (text: string, record: IPageMain) => (
-        <a
-          href={record.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-blue-500 flex items-center"
-        >
-          <p className="font-medium truncate w-20"> {text}</p>
-          <ExternalLink className="h-3 w-3" />
-        </a>
+        <Tooltip placement="left" title={`${text}`}>
+          <a
+            href={record.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-blue-500 flex items-center space-x-2"
+          >
+            <p className="font-medium truncate w-30"> {text}</p>
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        </Tooltip>
       ),
     },
     {

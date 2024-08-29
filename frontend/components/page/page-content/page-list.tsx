@@ -6,7 +6,7 @@ import FormField from '@/components/common/form-field';
 import { Form } from '@/components/ui/form';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { pageContentSchema } from '@/utils/formSchema';
+import { pageContentSchema, pageContentSchemaEdit } from '@/utils/formSchema';
 import LoadingButton from '@/components/common/button/loading-button';
 import usePageContent from '@/hooks/api-hooks/use-page-content';
 import {
@@ -35,10 +35,12 @@ import { EPageType } from '@/types/enums';
 import AppLoading from '@/components/common/app-loading';
 import { useRouter } from 'next/navigation';
 import { useAppSelector } from '@/hooks/redux-hooks';
+import { toKebabCase2 } from '@/utils/helper';
 
 const CreatePageContent = () => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+  const [isManualEdit, setIsManualEdit] = useState(false);
   const uiId = uiActiveUser.uiId;
   const [plateEditor, setPlateEditor] = useState<TElement[]>([
     {
@@ -62,6 +64,7 @@ const CreatePageContent = () => {
     resolver: zodResolver(pageContentSchema),
     defaultValues: {
       pageContentName: '',
+      pageContentDisplayURL: '',
       pageContentDisplayImage: undefined,
       pageContentResource: undefined,
       isPageContentHidden: false,
@@ -85,7 +88,26 @@ const CreatePageContent = () => {
 
     console.log(pageContent, 'pageContent');
 
-    //await submitPageContent(pageContent);
+    await submitPageContent(pageContent);
+  };
+
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'pageContentName' && !isManualEdit) {
+        const pageNameValue = value?.pageContentName || '';
+        form.setValue('pageContentDisplayURL', toKebabCase2(pageNameValue), {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, isManualEdit]);
+
+  const handlePageDisplayUrlChange = (e) => {
+    setIsManualEdit(true);
+    form.setValue('pageContentDisplayURL', e.target.value);
   };
 
   return (
@@ -103,6 +125,15 @@ const CreatePageContent = () => {
                     name="pageContentName"
                     label="Content Name"
                     placeholder=""
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="pageContentDisplayURL"
+                    label="Display URL"
+                    placeholder=""
+                    type="text"
+                    onBlur={handlePageDisplayUrlChange}
                   />
                   <FormField
                     control={form.control}

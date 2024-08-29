@@ -18,7 +18,7 @@ class T_Page(Base):
     PG_Type = Column(Enum(E_PageType), nullable=False)
     PG_Name = Column(String(100), nullable=False, unique=True)
     PG_Permission  = Column(ARRAY(Enum(E_UserRole)), nullable=False, default=[E_UserRole.SuperAdmin])
-    PG_DisplayURL = Column(String(255), nullable=True)
+    PG_DisplayURL = Column(String(100), nullable=True)
     PG_Other  = Column(String(255))
 
     PG_PageContents = relationship("T_PageContent", back_populates="PC_Page")

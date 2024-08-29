@@ -25,7 +25,6 @@ import PageLayout from '@/components/page/layout';
 import { TElement } from '@udecode/plate-common';
 import { useGetPageQuery } from '@/api/pageApi';
 import { Page } from '@/types/backendResponseInterfaces';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
 import { useAppSelector } from '@/hooks/redux-hooks';
 
 const SinglePage = () => {
@@ -33,6 +32,7 @@ const SinglePage = () => {
   const pathname = usePathname();
   const { notify } = useNotification();
   const [pageName, setPageName] = useState(pathname.split('/')['1']);
+  console.log(pageName, 'pageName');
   const {
     data: pageData,
     isError: hasPageFetchError,
@@ -82,8 +82,6 @@ const SinglePage = () => {
         (normalizedPage.pageContents &&
           normalizedPage.pageContents[0]) as IPageContentMain;
 
-      console.log(singlePageContent, 'plateEditor');
-
       if (singlePageContent) {
         setOriginalSinglePageData(singlePageContent.editorContent);
         useIsSinglePageCreated(true);
@@ -97,10 +95,7 @@ const SinglePage = () => {
     }
   }, [pageData]);
 
-  console.log(singlePageContent, 'plateEditor');
-
   const handleSinglePageSubmit = async () => {
-    console.log(singlePageContent, 'singlePageContent');
     const pageContentId = singlePageContent && singlePageContent.pageContentId;
     const pageContentName = page?.pageName;
     const isPageContentHidden = false;
@@ -129,7 +124,6 @@ const SinglePage = () => {
     const changedFields = getChangedFields(originalData, newDataWithContents);
     if (Object.keys(changedFields).length > 0) {
       if (isSinglePageCreated) {
-        console.log(isSinglePageCreated, 'Edit');
         await submitEditedPageContent(
           pageName,
           pageType,
@@ -154,12 +148,11 @@ const SinglePage = () => {
     }
   };
 
-  console.log(plateEditor, 'plateEditor');
-
   if (isPageFetchLoading) {
     return <AppLoading />;
   }
 
+  console.log(isPageFetchLoading, 'isPageFetchLoading');
   useEffect(() => {
     handleRoutingOnError(router, hasPageFetchError, pageFetchError);
   }, [hasPageFetchError, router, pageFetchError]);

@@ -7,6 +7,7 @@ import { IPageMenuItem } from '@/types/componentInterfaces';
 import { hasPermission } from '@/utils/helper';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { setUIIsUserEditingMode } from '@/store/slice/userSlice';
+import AppLoading from '../common/app-loading';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -27,6 +28,7 @@ const isExistingRoute: React.FC<isExistingRouteProps> = ({
 const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const uiActiveUserRole = String(uiActiveUser.uiRole);
+  const uiIsLoading = uiActiveUser.uiIsLoading;
   const dispatch = useAppDispatch();
   const { allAppRoutes } = usePage();
   const router = useRouter();
@@ -37,9 +39,12 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       item.href.startsWith(`/${pathname.split('/')[1]}`)
   );
 
-  console.log(uiActiveUserRole, 'uiActiveUserRole');
+  // if (uiIsLoading) {
+  //   return <AppLoading />;
+  // }
 
   useEffect(() => {
+    if (uiIsLoading) return;
     if (allAppRoutes && allAppRoutes.length > 0) {
       const isValidRoute =
         pathname.split('/')[1].startsWith('user-profile') ||
@@ -69,7 +74,7 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
         uiEditorInProfileMode: false,
       })
     );
-  }, [allAppRoutes, pathname, router]);
+  }, [allAppRoutes, pathname, router, uiIsLoading]);
 
   return allAppRoutes && allAppRoutes.length > 0 ? <>{children}</> : null;
 };

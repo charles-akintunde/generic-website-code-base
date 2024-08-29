@@ -55,6 +55,7 @@ export interface IUIActiveUser {
   uiInitials: string;
   uiIsAdmin: boolean;
   uiIsSuperAdmin: boolean;
+  uiIsLoading: boolean;
   uiCanEdit: boolean;
   uiRole: string[];
   uiPhotoURL: string | null | File;

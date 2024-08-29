@@ -68,6 +68,7 @@ const useUserLogin = () => {
             uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
             uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
             uiId: userProfile.id,
+            uiIsLoading: false,
             uiCanEdit:
               userProfile.uiRole.includes(EUserRole.Admin) ||
               userProfile.uiRole.includes(EUserRole.SuperAdmin),

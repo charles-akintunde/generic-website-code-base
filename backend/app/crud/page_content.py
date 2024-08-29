@@ -103,6 +103,27 @@ class PageContentCRUD:
     return db.query(T_PageContent).filter(
        func.lower(T_PageContent.PC_Title) == func.lower(page_content_title), 
        T_PageContent.PG_ID == page_id).first()
+ 
+ def get_page_content_by_display_url(
+       self, 
+       db: Session, 
+       page_id: str,
+       page_content_display_url: str,
+       ) -> T_PageContent:
+        """
+        Handles CRUD operation for fetching page content.
+
+        Args:
+            db (Session): Database Session.
+            page_id (str): Id of the page the that hosts the content.
+            content_title (str): Page content title.
+
+        Returns:
+            Page content object created.
+        """
+        return db.query(T_PageContent).filter(
+        func.lower(T_PageContent.PC_Title) == func.lower(page_content_display_url), 
+        T_PageContent.PG_ID == page_id).first()
 
  def update_page_content(
     self,
