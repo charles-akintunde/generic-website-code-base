@@ -25,8 +25,8 @@ export interface IPageRequest {
 }
 
 export interface IPageContentGetRequest {
-  PG_Name: string;
-  PC_Title: string;
+  PG_DisplayURL: string;
+  PC_DisplayURL: string;
 }
 
 export interface IPageRequestWithIdentifier extends IPageRequest {
@@ -50,6 +50,7 @@ export interface IEditPageContentRequest {
   PC_ThumbImg?: string;
   PC_Resource?: string;
   PC_IsHidden?: boolean;
+  PC_DisplayURL?: boolean;
 }
 
 export interface IEditUserRequest {

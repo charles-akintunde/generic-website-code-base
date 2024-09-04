@@ -181,7 +181,7 @@ const SinglePage = () => {
             >
               <LoadingButton
                 className=""
-                buttonText="Submit Content"
+                buttonText="Save Changes"
                 loading={isPageFetchLoading}
                 onClick={handleSinglePageSubmit}
               />

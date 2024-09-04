@@ -28,7 +28,7 @@ export const pageContentApi = createApi({
       IPageContentGetRequest
     >({
       query: (req) => ({
-        url: `${url}/${req.PG_Name}/${req.PC_Title}`,
+        url: `${url}/${req.PG_DisplayURL}/${req.PC_DisplayURL}`,
         providesTags: (result: IPageContentGetResponse) => {
           result.data.PG_PageContent
             ? [

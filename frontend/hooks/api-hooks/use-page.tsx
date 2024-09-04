@@ -113,6 +113,7 @@ const usePage = (pageName?: string) => {
           pageType: String(page.PG_Type),
           isHidden: false,
           href: `/${page.PG_DisplayURL}`,
+          pageDisplayURL: `/${page.PG_DisplayURL}`,
         })
       );
       const allRoutes = [...routes, ...normalizedPages];

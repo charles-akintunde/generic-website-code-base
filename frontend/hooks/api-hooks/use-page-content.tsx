@@ -38,7 +38,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       isLoading: isUploadPageContentImageLoading,
     },
   ] = useUploadPageContentMutation();
-  const { pageRefetch } = usePage(fromKebabCase(pageName));
+  const { pageRefetch } = usePage(pageName);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const currentPageContent = useAppSelector(
@@ -117,13 +117,15 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         pageContent.pageContentResource
       ) {
         formData.append('PC_Resource', pageContent.pageContentResource);
+      } else if (pageContent.pageType == EPageType.PageList) {
+        formData.append('PC_DisplayURL', pageContent.pageContentDisplayURL);
       }
 
       const response = await createPageContent(formData).unwrap();
 
       if (pageContent.pageType != EPageType.SinglePage) {
         router.replace(
-          `/${toKebabCase(pageContent.pageName)}/${toKebabCase(pageContent.pageContentName)}`
+          `/${pageContent.pageName}/${pageContent.pageContentDisplayURL}`
         );
       } else {
         if (pageContentFetchRefetch) pageContentFetchRefetch();
@@ -173,9 +175,9 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
   };
 
   const submitEditedPageContent = async (
-    pageName: string,
+    pageDisplayURL: string,
     pageType: string,
-    pageContentName: string,
+    pageContentDisplayURL: string,
     pageContentId: string,
     pageContent: Partial<IPageContentItem>,
     singlePageRefetch: () => {}
@@ -192,6 +194,9 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       }
       if (pageContent.pageContentDisplayImage) {
         formData.append('PC_ThumbImg', pageContent.pageContentDisplayImage);
+      }
+      if (pageContent.pageContentDisplayURL) {
+        formData.append('PC_DisplayURL', pageContent.pageContentDisplayURL);
       }
       if (pageContent.isPageContentHidden !== undefined) {
         formData.append('PC_IsHidden', String(pageContent.isPageContentHidden));
@@ -212,9 +217,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       }).unwrap();
 
       if (pageContent.pageContentName) {
-        router.replace(
-          `/${toKebabCase(pageName)}/${toKebabCase(pageContentName)}`
-        );
+        router.replace(`/${pageDisplayURL}/${pageContentDisplayURL}`);
       } else {
         singlePageRefetch();
       }

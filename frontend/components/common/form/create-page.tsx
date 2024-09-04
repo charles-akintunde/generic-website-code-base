@@ -22,6 +22,7 @@ import { PlusIcon } from '@radix-ui/react-icons';
 import { useAppSelector } from '@/hooks/redux-hooks';
 import usePage from '@/hooks/api-hooks/use-page';
 import { toKebabCase2 } from '@/utils/helper';
+import { editPage } from '@/store/slice/pageSlice';
 
 const CreatePage = () => {
   const {
@@ -33,6 +34,7 @@ const CreatePage = () => {
     isEditPageSuccess,
     isEditPageLoading,
   } = usePage();
+  console.log(editingPage, 'editingPage');
   const [isManualEdit, setIsManualEdit] = useState(false);
   const form = useForm<z.infer<typeof createPageSchema>>({
     resolver: zodResolver(createPageSchema),
@@ -133,7 +135,7 @@ const CreatePage = () => {
               multiple={true}
             />
             <LoadingButton
-              buttonText="Post"
+              buttonText={`${editPage != null ? 'Save Changes' : 'Post'}`}
               loading={editingPage ? isEditPageLoading : isCreatePageLoading}
               type="submit"
             />

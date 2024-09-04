@@ -37,12 +37,11 @@ const PageLists = () => {
     handleRoutingOnError(router, hasPageFetchError, pageFetchError);
   }, [router, hasPageFetchError, pageFetchError]);
 
-  console.log('KKKKKKKKKKKKKKK');
-
   if (isPageFetchLoading) {
     return <AppLoading />;
   }
 
+  console.log(pageContents, 'pageContents');
   return (
     <ContentList
       pageType={page?.pageName ?? ''}

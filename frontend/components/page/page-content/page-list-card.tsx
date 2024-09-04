@@ -40,6 +40,8 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
   const category = pageName;
   const isHidden = pageContent.isPageContentHidden;
 
+  console.log(href, 'HREF');
+
   const handleRemovePage = async () => {
     await handleRemovePageContent(pageContent.pageContentId);
   };

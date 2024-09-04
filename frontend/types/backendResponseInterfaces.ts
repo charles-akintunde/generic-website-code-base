@@ -19,6 +19,7 @@ export interface IPageContentResponse {
   UI_LastName: string;
   PG_ID: string;
   PC_Title: string;
+  PG_DisplayURL: string;
   PC_Content: { [key: string]: TElement[] };
   PC_DisplayURL: string;
   PC_ResourceURL?: string;

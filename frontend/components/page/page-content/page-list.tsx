@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { PlateEditor } from '@/components/plate/plate';
 import PageLayout from '@/components/page/layout';
 import FormField from '@/components/common/form-field';
-import { Form } from '@/components/ui/form';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { pageContentSchema, pageContentSchemaEdit } from '@/utils/formSchema';
@@ -18,6 +17,7 @@ import {
   createPageContentItem,
   fromKebabCase,
   getChangedFields,
+  handleRoutingOnError,
   notifyNoChangesMade,
   pageNormalizer,
   toKebabCase,
@@ -78,15 +78,16 @@ const CreatePageContent = () => {
       pageContentDisplayImage: data.pageContentDisplayImage,
       pageContentResource: data.pageContentResource,
       isPageContentHidden: data.isPageContentHidden,
+      pageContentDisplayURL: data.pageContentDisplayURL,
       editorContent: plateEditor,
       pageId: pageId as string,
       pageName: pageName,
       pageType: pageType ? pageType : '',
-      href: `${toKebabCase(pageName)}/${toKebabCase(data.pageContentName)}`,
+      href: `${pageName}/${data.pageContentDisplayURL}`,
       userId: (uiId && uiId) as string,
     };
 
-    console.log(pageContent, 'pageContent');
+    console.log(data, 'pageContent');
 
     await submitPageContent(pageContent);
   };
@@ -195,6 +196,7 @@ const EditPageContent = () => {
   const page = pathname.split('/');
   const pageName = page[1];
   const pageContentName = page[2];
+  const [isManualEdit, setIsManualEdit] = useState(false);
   const { submitEditedPageContent, isEditPageContentSuccess } =
     usePageContent();
   const {
@@ -205,8 +207,8 @@ const EditPageContent = () => {
     error: pageContentFetchError,
     refetch: pageContentFetchRefetch,
   } = useGetPageContentQuery({
-    PC_Title: fromKebabCase(pageContentName),
-    PG_Name: fromKebabCase(pageName),
+    PC_DisplayURL: pageContentName,
+    PG_DisplayURL: pageName,
   } as IPageContentGetRequest);
 
   const [plateEditor, setPlateEditor] = useState<TElement[]>([
@@ -254,13 +256,20 @@ const EditPageContent = () => {
       pageContentName: '',
       pageContentResource: undefined,
       pageContentDisplayImage: undefined,
+      pageContentDisplayURL: '',
       isPageContentHidden: false,
       // editorContent: plateEditor,
     },
   });
 
+  const handlePageDisplayUrlChange = (e) => {
+    setIsManualEdit(true);
+    form.setValue('pageContentDisplayURL', e.target.value);
+  };
+
   useEffect(() => {
     if (isPageContentFetchSuccess && contentData) {
+      console.log(contentData, 'pageContentDisplayURL');
       form.reset(contentData);
       setPlateEditor(contentData.editorContent || plateEditor);
       setPlateEditorKey(
@@ -289,9 +298,9 @@ const EditPageContent = () => {
     const pageContentId: string = contentData!.pageContentId!;
     if (Object.keys(changedFields).length > 0) {
       await submitEditedPageContent(
-        pageName,
+        contentData?.pageDisplayURL as string,
         pageType,
-        data.pageContentName,
+        data.pageContentDisplayURL,
         pageContentId,
         changedFields as Partial<IPageContentItem>,
         pageContentFetchRefetch
@@ -301,11 +310,13 @@ const EditPageContent = () => {
     }
   };
 
-  useEffect(() => {}, [
-    hasPageContentFetchError,
-    pageContentFetchError,
-    router,
-  ]);
+  useEffect(() => {
+    handleRoutingOnError(
+      router,
+      hasPageContentFetchError,
+      pageContentFetchError
+    );
+  }, [hasPageContentFetchError, pageContentFetchError, router]);
 
   if (isPageContentFetchLoading) {
     return <AppLoading />;
@@ -329,6 +340,14 @@ const EditPageContent = () => {
                           name="pageContentName"
                           label="Content Name"
                           placeholder=""
+                        />
+                        <FormField
+                          control={form.control}
+                          name="pageContentDisplayURL"
+                          label="Display URL"
+                          placeholder=""
+                          type="text"
+                          onBlur={handlePageDisplayUrlChange}
                         />
                         <FormField
                           control={form.control}

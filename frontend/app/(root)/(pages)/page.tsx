@@ -1,10 +1,11 @@
 import { getCookies } from '@/utils/helper';
 import Image from 'next/image';
 import teamImg from '@/assets/images/team-img.webp';
+import Footer from '@/components/hoc/layout/footer/footer';
 
 export default function Home() {
   return (
-    <div className="bg-pg min-h-screen">
+    <div className="bg-pg">
       <section className="container mx-auto px-4 py-12">
         <div className="flex flex-col lg:flex-row items-center">
           <div className="lg:w-1/2 py-12">
@@ -46,19 +47,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* <section className="container mx-auto px-4 py-12">
-        <div className="flex flex-col items-center">
-          <h2 className="text-2xl font-bold mb-6">
-            Trusted by Industry Leaders in Environmental Safety
-          </h2>
-          <div className="flex flex-wrap justify-center gap-6">
-            <Image src={s1} alt="Chanel" width={100} height={50} />
-            <Image src={s2} alt="Nike" width={100} height={50} />
-            <Image src={s3} alt="Gucci" width={100} height={50} />
-          </div>
-        </div>
-      </section> */}
 
       <section className="container mx-auto px-4 py-12 bg-white">
         <div className="flex flex-col lg:flex-row items-center">
@@ -103,45 +91,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* <section className="container mx-auto px-4 py-12">
-        <h2 className="text-2xl font-bold mb-6 text-center">Meet Our Team</h2>
-        <div className="flex flex-wrap justify-center gap-6">
-          <div className="text-center transform hover:scale-105 transition-transform duration-150">
-            <Image
-              src="/taylor.jpg"
-              alt="Taylor Bale"
-              width={150}
-              height={150}
-              className="rounded-full"
-            />
-            <p className="font-bold mt-2">Taylor Bale</p>
-            <p>Lead Hydrologist</p>
-          </div>
-          <div className="text-center transform hover:scale-105 transition-transform duration-150">
-            <Image
-              src="/christian.jpg"
-              alt="Christian Naz"
-              width={150}
-              height={150}
-              className="rounded-full"
-            />
-            <p className="font-bold mt-2">Christian Naz</p>
-            <p>Project Manager</p>
-          </div>
-          <div className="text-center transform hover:scale-105 transition-transform duration-150">
-            <Image
-              src="/eyzen.jpg"
-              alt="Eyzen Nile"
-              width={150}
-              height={150}
-              className="rounded-full"
-            />
-            <p className="font-bold mt-2">Eyzen Nile</p>
-            <p>Data Scientist</p>
-          </div>
-        </div>
-      </section> */}
-
       <section className="container mx-auto px-4 py-12 bg-white">
         <h2 className="text-2xl font-bold mb-6 text-center">
           Frequently Asked Questions
@@ -178,22 +127,3 @@ export default function Home() {
     </div>
   );
 }
-// export default function Home() {
-//   return (
-//     <main className="relative min-h-screen overflow-hidden flex items-center justify-center">
-//       <video
-//         src="/videos/home-bg-vid.mp4"
-//         autoPlay
-//         loop
-//         muted
-//         className="absolute inset-0 w-full h-full object-cover"
-//       />
-//       <div className="absolute inset-0 bg-black opacity-30" />
-//       {/* <div className="relative z-10 px-4 py-8 bg-black bg-opacity-40 rounded-lg shadow-lg text-center text-white">
-//         <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4">
-//           CLISA
-//         </h1>
-//       </div> */}
-//     </main>
-//   );
-// }

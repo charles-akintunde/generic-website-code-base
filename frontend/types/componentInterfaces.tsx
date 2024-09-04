@@ -104,7 +104,8 @@ export interface IPageContentItem extends IPageContentBase {
   pageId: string;
   pageType?: string;
   pageName: string;
-  //pageDisplayURL: string;
+  pageDisplayURL: string;
+  pageContentDisplayURL: string;
   userId: string;
   href: string;
 }

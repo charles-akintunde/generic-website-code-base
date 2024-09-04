@@ -167,7 +167,7 @@ const imageSchema = z.union([imageFileSchema, urlSchema]);
 const fileSchema = z.union([docFileSchema, urlSchema]);
 
 export const pageContentSchema = z.object({
-  pageContentName: requiredTextSchema('Content Name').max(
+  pageContentName: requiredTextSchemaAllowDash('Content Name').max(
     200,
     `Page Name must be at most 100 characters long`
   ),
@@ -182,7 +182,7 @@ export const pageContentSchema = z.object({
 });
 
 export const pageContentSchemaEdit = z.object({
-  pageContentName: requiredTextSchema('Content Name').max(
+  pageContentName: requiredTextSchemaAllowDash('Content Name').max(
     200,
     `Page Name must be at most 100 characters long`
   ),

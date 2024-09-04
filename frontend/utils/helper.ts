@@ -23,7 +23,7 @@ import {
   EUserRole,
   EUserStatus,
 } from '@/types/enums';
-import { TElement } from '@udecode/plate-common';
+import { TDescendant, TElement } from '@udecode/plate-common';
 import { MenuProps } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import _ from 'lodash';
@@ -151,17 +151,26 @@ export const clipCopiedSucessfully = (notify: Notify) => {
   notify('Notice', 'Text copied to clipboard', 'success');
 };
 
-export const getPageExcerpt = (contents: TElement[]) => {
+export const getPageExcerpt = (contents: TElement[]): string => {
   let excerpt = '';
+
+  const extractText = (element: TDescendant) => {
+    if ('text' in element && element.text) {
+      excerpt += ' ' + element.text;
+    } else if ('children' in element && element.children) {
+      for (let child of element.children) {
+        extractText(child);
+      }
+    }
+  };
+
   for (let content of contents) {
     if (content.type === 'p' || content.type.startsWith('h')) {
-      for (let child of content.children) {
-        excerpt += excerpt + child.text;
-      }
-      break;
+      extractText(content);
     }
   }
-  return excerpt;
+
+  return excerpt.trim();
 };
 
 export function estimateReadingTime(pageContents: TElement[]) {
@@ -242,15 +251,18 @@ export const pageNormalizer = (
     pageName: page.PG_Name,
     pagePermission: page.PG_Permission.map(String),
     pageType: String(page.PG_Type),
+    pageDisplayURL: pageContent.PG_DisplayURL,
     isHidden: false,
-    href: `/${toKebabCase(page.PG_Name)}`,
+    href: `/${pageContent.PG_DisplayURL}`,
     pageContent: {
       pageContentId: pageContent.PC_ID,
       pageName: page.PG_Name,
       pageType: String(page.PG_Type),
       pageId: pageContent.PG_ID,
       userId: pageContent.UI_ID,
-      href: `${toKebabCase(page.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
+      pageDisplayURL: pageContent.PG_DisplayURL,
+      href: `${pageContent.PG_DisplayURL}/${pageContent.PC_DisplayURL}`,
+      pageContentDisplayURL: pageContent.PC_DisplayURL,
       pageContentName: pageContent.PC_Title,
       pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
       pageContentResource: pageContent.PC_DisplayURL as string,
@@ -367,11 +379,12 @@ export const mapPageToIPageMain = (pagesData: PagesData): IPageList => {
     pageType: String(page.PG_Type),
     isHidden: false,
     href: `/${page.PG_DisplayURL}`,
+    pageDisplayURL: `/${page.PG_DisplayURL}`,
   }));
 
   return {
     pages: pages,
-    pgTotalPageCount: pagesData.PG_PageCount,
+    pgTotalPageCount: Number(pagesData.PG_PageCount),
   };
 };
 
