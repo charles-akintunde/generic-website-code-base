@@ -4,6 +4,7 @@ This module defines the API endpoints for team-related operations.
 """
 
 from typing import List, Optional
+from urllib.parse import unquote
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from httpx import request
@@ -45,9 +46,9 @@ async def create_page_endpoint(
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     
-@router.get("/{pg_display_url}", response_model=StandardResponse)
+@router.get("/{page_display_url}", response_model=StandardResponse)
 async def get_page_endpoint(
-    pg_display_url: str, 
+    page_display_url: str, 
     db: Session = Depends(get_db), 
     current_user: Optional[T_UserInfo] = Depends(get_current_user_without_exception)):
     """
@@ -62,9 +63,10 @@ async def get_page_endpoint(
     """
    
     try:
+        decoded_page_display_url = unquote(page_display_url)
         existing_page = get_page(
             db=db, 
-            pg_display_url=pg_display_url,
+            page_display_url=decoded_page_display_url,
             current_user=current_user)
         return success_response(message="Page fetched successfully", data=existing_page.model_dump())
     except HTTPException as e:

@@ -15,6 +15,7 @@ from app.crud import page_content
 from app.models.user_info import T_UserInfo
 from app.schemas.page_content import PageContent, PageContentCreateRequest
 from app.crud.page_content import page_content_crud
+from urllib.parse import unquote
 
 
 # class PageContent(BaseModel):
@@ -104,8 +105,8 @@ class PageCRUD:
         Returns:
             Page (T_Page): Existing page object.
         """
-
-        return db.query(T_Page).filter(func.lower(T_Page.PG_DisplayURL) == func.lower(pg_display_url)).first()
+        
+        return db.query(T_Page).filter(func.lower(T_Page.PG_DisplayURL) == func.lower(unquote(pg_display_url))).first()
     
     def get_page_by_name_and_id(self, db: Session, page_name: str, page_id: str) -> T_Page:
         """

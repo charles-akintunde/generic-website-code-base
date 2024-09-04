@@ -4,6 +4,7 @@
 
 from datetime import datetime, timezone
 from typing import Dict
+from urllib.parse import unquote
 from uuid import uuid4
 from fastapi import HTTPException, status
 from sqlalchemy import func
@@ -121,8 +122,9 @@ class PageContentCRUD:
         Returns:
             Page content object created.
         """
+       
         return db.query(T_PageContent).filter(
-        func.lower(T_PageContent.PC_Title) == func.lower(page_content_display_url), 
+        func.lower(T_PageContent.PC_DisplayURL) == func.lower(page_content_display_url), 
         T_PageContent.PG_ID == page_id).first()
 
  def update_page_content(

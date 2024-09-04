@@ -5,6 +5,7 @@ This module defines the API endpoints for application-related operations.
 
 import json
 from typing import Optional
+from urllib.parse import unquote
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 from app.services.page_content import create_page_content, delete_page_content, get_page_content_by_display_url, update_page_content
@@ -18,6 +19,7 @@ from app.utils.file_utils import save_file, validate_image_file
 from app.config import settings
 from app.utils.response_json import create_page_content_img_response
 
+
 router = APIRouter()
 
 @router.post("", response_model=StandardResponse)
@@ -25,6 +27,7 @@ async def create_page_content_endpoint(
     UI_ID: str = Form(...),
     PG_ID: str = Form(...),
     PC_Title: str = Form(...),
+    PC_DisplayURL: str = Form(...),
     PC_Content: Optional[str] = Form(None), 
     PC_ThumbImg: Optional[UploadFile] = File(None),
     PC_Resource: Optional[UploadFile] = File(None),
@@ -52,7 +55,8 @@ async def create_page_content_endpoint(
         PC_Content=json.loads(PC_Content) if PC_Content else None,  # Convert JSON string to dict
         PC_IsHidden=PC_IsHidden,
         PC_ThumbImg=PC_ThumbImg,
-        PC_Resource=PC_Resource
+        PC_Resource=PC_Resource,
+        PC_DisplayURL=PC_DisplayURL
     )
 
         new_page_content = await create_page_content(
@@ -64,10 +68,10 @@ async def create_page_content_endpoint(
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     
-@router.get("/{page_name}/{page_content_display_url}", response_model=StandardResponse)
+@router.get("/{page_display_url}/{page_content_display_url}", response_model=StandardResponse)
 async def get_page_content_by_display_url_endpoint(
     page_content_display_url: str,
-    page_name: str,
+    page_display_url: str,
     db: Session = Depends(get_db)):
     """
     Get page content by title.
@@ -80,10 +84,12 @@ async def get_page_content_by_display_url_endpoint(
         StandardResponse: The response containing the page content.
     """
     try:
+        decoded_page_content_display_url = unquote(page_content_display_url)
+        decoded_page_display_url = unquote(page_display_url)
         page_content = get_page_content_by_display_url(
             db=db, 
-            page_content_display_url=page_content_display_url,
-            page_name=page_name)
+            page_content_display_url=decoded_page_content_display_url,
+            page_display_url=decoded_page_display_url)
         return success_response(message="Page content fetched successfully", data=page_content.model_dump())
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
@@ -92,7 +98,8 @@ async def get_page_content_by_display_url_endpoint(
 async def update_page_content_endpoint(
     page_content_id: str ,
     PC_Title: Optional[str] = Form(None),
-    PC_Content: Optional[str] = Form(None),  # Will be received as JSON string
+    PC_Content: Optional[str] = Form(None),  
+    PC_DisplayURL: Optional[str] = Form(...),
     PC_ThumbImg: Optional[UploadFile] = File(None),
     PC_Resource: Optional[UploadFile] = File(None),
     PC_IsHidden: Optional[bool] = Form(None),
@@ -108,15 +115,19 @@ async def update_page_content_endpoint(
 
     Returns:
         StandardResponse: The response indicating the result of the update operation.
-    """
-    page_content_update= PageContentUpdateRequest(
-    PC_Title=PC_Title,
-    PC_ThumbImg=PC_ThumbImg,
-    PC_Resource=PC_Resource,
-    PC_Content=json.loads(PC_Content) if PC_Content else None,
-    PC_IsHidden=PC_IsHidden
-    )
+    """ 
     try:
+        page_content_update= PageContentUpdateRequest(
+        PC_Title=PC_Title,
+        PC_ThumbImg=PC_ThumbImg,
+        PC_Resource=PC_Resource,
+        PC_Content=json.loads(PC_Content) if PC_Content else None,
+        PC_IsHidden=PC_IsHidden
+        )
+
+        if PC_DisplayURL:
+            page_content_update.PC_DisplayURL = PC_DisplayURL
+        
         updated_page_content = await update_page_content(
             db=db,
             page_content_id=page_content_id,

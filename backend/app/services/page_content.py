@@ -1,6 +1,7 @@
 """
     Business logic to handle page content creation.
 """
+from urllib.parse import unquote
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.crud.user_info import user_crud
@@ -103,14 +104,14 @@ async def create_page_content(
     
     return build_page_content_json(
         page_content=new_page_content,
-        page_name=str(page.PG_Name),
+        page=page,
         user=user
     )
 
 def get_page_content_by_display_url(
         db: Session,
         page_content_display_url: str,
-        page_name: str) -> PageSingleContent:
+        page_display_url: str) -> PageSingleContent:
     """
     Handles retrieving page content.
 
@@ -122,11 +123,11 @@ def get_page_content_by_display_url(
     Returns:
         PageSingleContent: Page content response.
     """
-    page = page_crud.get_page_by_name(db=db, page_name=page_name)
+    page = page_crud.get_page_by_display_url(db=db, pg_display_url=page_display_url)
     if page is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Page with ({page_name}) name not found"
+            detail=f"Page with ({page_display_url}) display URL not found"
         )
 
     page_content = page_content_crud.get_page_content_by_display_url(
@@ -137,7 +138,7 @@ def get_page_content_by_display_url(
     if page_content is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"This page does not have content with displau URL '{page_content_display_url}'."
+            detail=f"This page does not have content with displau URL '{unquote(page_content_display_url)}'."
         )
     
     
@@ -149,7 +150,7 @@ def get_page_content_by_display_url(
 
     page_content_json = build_page_content_json(
         page_content=page_content,
-        page_name= str(page.PG_Name),
+        page= page,
         user=page_content_creator
     )
 
@@ -226,7 +227,7 @@ async def update_page_content(
     
     return build_page_content_json(
         page_content= updated_page_content,
-        page_name=str(page.PG_Name),
+        page=page,
         user=user
     )
 

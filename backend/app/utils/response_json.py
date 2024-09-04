@@ -15,7 +15,7 @@ from app.schemas.page import PG_PagesResponse, PageResponse, PageSingleContent, 
 from app.schemas.user_info import UserPartial, UserResponse, UsersResponse
 
 
-def build_page_content_json(page_content : T_PageContent,user: T_UserInfo,page_name:Optional[str]=None) -> Union[PageContentResponse, Any]:
+def build_page_content_json(page_content : T_PageContent,user: T_UserInfo,page:T_Page) -> Union[PageContentResponse, Any]:
     """
     Build page content json.
     """
@@ -26,7 +26,8 @@ def build_page_content_json(page_content : T_PageContent,user: T_UserInfo,page_n
     PG_ID=str(page_content.PG_ID),
     PC_ID=str(page_content.PC_ID),
     PC_Title=str(page_content.PC_Title),
-    PG_Name=page_name,
+    PG_Name=str(page.PG_Name),
+    PG_DisplayURL=str(page.PG_DisplayURL),
     UI_FirstName=str(user.UI_FirstName),
     UI_LastName=str(user.UI_LastName),
     PC_ResourceURL=str(page_content.PC_DisplayURL) if page_content.PC_DisplayURL else None, # type: ignore

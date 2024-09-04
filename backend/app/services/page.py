@@ -89,7 +89,7 @@ def get_pages(db: Session) -> PagesResponse:
 
 def get_page(
         db: Session, 
-        pg_display_url: str,
+        page_display_url: str,
         current_user: T_UserInfo) -> PageResponse:
     """
     Service to fetch page.
@@ -98,12 +98,12 @@ def get_page(
 
     existing_page = page_crud.get_page_by_display_url(
         db=db,
-        pg_display_url=pg_display_url)
+        pg_display_url=page_display_url)
     
     if not existing_page:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Page with Display URL '{pg_display_url}' was not found."
+            detail=f"Page with Display URL '{page_display_url}' was not found."
         )
 
 
@@ -158,9 +158,9 @@ def update_page(db: Session, page_id: str, page_update: PageUpdateRequest, user:
     
     page_response = PageMultipleContent(
             PG_ID=str(updated_page.PG_ID),
-            PG_Type=updated_page.PG_Type.value,  # Convert enum to its value
+            PG_Type=updated_page.PG_Type.value,  
             PG_Name=str(updated_page.PG_Name),
-            PG_DisplayURL=str(update_page.PG_DisplayURL),
+            PG_DisplayURL=str(updated_page.PG_DisplayURL),
             PG_Permission=[role.value for role in updated_page.PG_Permission],  # Convert each enum to its value
             PG_PageContents=updated_page.PG_PageContents if updated_page.PG_PageContents else None
         )
