@@ -14,16 +14,12 @@ import {
   mapToIIUserList,
   memberPositionLabels,
   positionColors,
-  roleBadgeClasses,
   roleColors,
-  statusBadgeClasses,
   statusColors,
   userRoleLabels,
   userStatusLabels,
 } from '@/utils/helper';
 import classNames from 'classnames';
-
-import { userColumns } from '@/utils/tableColumns';
 import useUserInfo from '@/hooks/api-hooks/use-user-info';
 import { useAppDispatch } from '@/hooks/redux-hooks';
 import {
@@ -31,8 +27,6 @@ import {
   toggleCreateUserDialog,
 } from '@/store/slice/userSlice';
 import { UserRoleStatusDialog } from '@/components/common/form/user-profile-form';
-import { routeModule } from 'next/dist/build/templates/app-page';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { useRouter } from 'next/navigation';
 import { transitionStyles } from '@/styles/globals';
 
@@ -193,8 +187,6 @@ const UserListItem = () => {
       ),
     },
   ];
-
-  console.log(users, 'users');
 
   useEffect(() => {
     handleRoutingOnError(router, hasUserFetchError, userFetchError);

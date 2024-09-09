@@ -7,13 +7,12 @@ from sqlalchemy.orm import Session
 from app.crud.user_info import user_crud
 from app.crud.page import page_crud
 from app.crud.page_content import page_content_crud
-from app.schemas.page_content import PageContentCreateRequest, PageContentResponse, PageContentUpdateRequest
+from app.schemas.page_content import PageContentCreateRequest, PageContentUpdateRequest
 from app.utils.utils import is_admin
 from app.models.user_info import T_UserInfo
 from app.utils.response_json import build_page_content_json, build_page_json_with_single_content
-from app.schemas.page import PageResponse, PageSingleContent
-from app.models.page_content import T_PageContent
-from app.utils.file_utils import delete_and_save_file, delete_file, extract_path_from_url, save_file
+from app.schemas.page import  PageSingleContent
+from app.utils.file_utils import delete_and_save_file, save_file
 from app.config import settings
 from app.models.enums import E_PageType
 
@@ -138,10 +137,8 @@ def get_page_content_by_display_url(
     if page_content is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"This page does not have content with displau URL '{unquote(page_content_display_url)}'."
+            detail=f"This page does not have content with displau URL '{page_content_display_url}'."
         )
-    
-    
 
     page_content_creator = user_crud.get_user_by_id(
         db=db,
@@ -231,7 +228,6 @@ async def update_page_content(
         user=user
     )
 
-    return page_content_json
 
 def delete_page_content(db: Session, page_content_id: str) -> bool:
     """

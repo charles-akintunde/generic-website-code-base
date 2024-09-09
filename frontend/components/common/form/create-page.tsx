@@ -41,6 +41,7 @@ const CreatePage = () => {
     defaultValues: editingPage || {
       pageName: '',
       pageType: '',
+      pageDisplayURL: '',
       pagePermission: [],
       isHidden: false,
     },
@@ -48,6 +49,7 @@ const CreatePage = () => {
 
   const onSubmit = (data: z.infer<typeof createPageSchema>) => {
     if (editingPage) {
+      console.log(data, 'DATA');
       submitEditedPage(editingPage.pageId, data);
       if (isEditPageSuccess) {
         form.reset();
@@ -135,7 +137,7 @@ const CreatePage = () => {
               multiple={true}
             />
             <LoadingButton
-              buttonText={`${editPage != null ? 'Save Changes' : 'Post'}`}
+              buttonText={`${editingPage ? 'Save Changes' : 'Post'}`}
               loading={editingPage ? isEditPageLoading : isCreatePageLoading}
               type="submit"
             />

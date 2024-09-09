@@ -279,15 +279,6 @@ const EditPageContent = () => {
   }, [isPageContentFetchSuccess, contentData, form]);
 
   const onSubmit = async (data: any) => {
-    const pageContent = createPageContentItem(
-      data,
-      plateEditor,
-      String(pageId),
-      pageType,
-      pageName,
-      String(uiId && uiId),
-      `${toKebabCase(pageName)}/${toKebabCase(data.pageContentName)}`
-    );
     const newDataWithContents = { ...data, editorContent: plateEditor };
     const changedFields = getChangedFields(originalData, newDataWithContents);
     if (pageType == EPageType.ResList && changedFields) {
@@ -310,13 +301,13 @@ const EditPageContent = () => {
     }
   };
 
-  useEffect(() => {
-    handleRoutingOnError(
-      router,
-      hasPageContentFetchError,
-      pageContentFetchError
-    );
-  }, [hasPageContentFetchError, pageContentFetchError, router]);
+  // useEffect(() => {
+  //   handleRoutingOnError(
+  //     router,
+  //     hasPageContentFetchError,
+  //     pageContentFetchError
+  //   );
+  // }, [hasPageContentFetchError, pageContentFetchError, router]);
 
   if (isPageContentFetchLoading) {
     return <AppLoading />;

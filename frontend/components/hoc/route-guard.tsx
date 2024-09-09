@@ -7,7 +7,6 @@ import { IPageMenuItem } from '@/types/componentInterfaces';
 import { hasPermission } from '@/utils/helper';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { setUIIsUserEditingMode } from '@/store/slice/userSlice';
-import AppLoading from '../common/app-loading';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -22,7 +21,9 @@ const isExistingRoute: React.FC<isExistingRouteProps> = ({
   allAppRoutes,
   pathname,
 }) => {
-  return allAppRoutes.some((item) => item.href === pathname);
+  return allAppRoutes.some(
+    (item) => item.href === decodeURIComponent(pathname)
+  );
 };
 
 const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
@@ -35,16 +36,26 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   const pathname = usePathname();
   const currentPage = allAppRoutes.find(
     (item) =>
-      item.href === `/${pathname.split('/')[1]}` ||
-      item.href.startsWith(`/${pathname.split('/')[1]}`)
+      item.href === decodeURIComponent(`/${pathname.split('/')[1]}`) ||
+      item.href.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`))
   );
 
   // if (uiIsLoading) {
   //   return <AppLoading />;
   // }
 
+  console.log(`/${pathname.split('/')[1]}`, 'sssssssssss');
+  console.log(
+    isExistingRoute({ allAppRoutes: allAppRoutes, pathname: pathname }),
+    isExistingRoute({
+      allAppRoutes: allAppRoutes,
+      pathname: `/${pathname.split('/')[1]}`,
+    }),
+    'LLLLLLLLLLLLLLLLLLLL'
+  );
+
   useEffect(() => {
-    if (uiIsLoading) return;
+    if (uiIsLoading || !currentPage) return;
     if (allAppRoutes && allAppRoutes.length > 0) {
       const isValidRoute =
         pathname.split('/')[1].startsWith('user-profile') ||
@@ -56,6 +67,7 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
           pathname: `/${pathname.split('/')[1]}`,
         });
       if (!isValidRoute) {
+        console.log('KKKKKKKKKKKKKKKKKKKKKKKK');
         router.replace('/404');
       } else {
         if (
@@ -74,7 +86,7 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
         uiEditorInProfileMode: false,
       })
     );
-  }, [allAppRoutes, pathname, router, uiIsLoading]);
+  }, [allAppRoutes, pathname, router, uiIsLoading, currentPage]);
 
   return allAppRoutes && allAppRoutes.length > 0 ? <>{children}</> : null;
 };

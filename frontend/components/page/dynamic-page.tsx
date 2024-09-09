@@ -24,17 +24,15 @@ const DynamicPage = () => {
   } = usePage(pageName);
 
   useEffect(() => {
-    handleRoutingOnError(router, hasPageFetchError, pageFetchError);
-  }, [router, hasPageFetchError, pageFetchError]);
+    if (!isPageFetchLoading) {
+      console.log(pageFetchError, hasPageFetchError, 'pageFetchError');
+      handleRoutingOnError(router, hasPageFetchError, pageFetchError);
+    }
+  }, [router, hasPageFetchError, pageFetchError, isPageFetchLoading]);
 
-  if (isPageFetchLoading && currentPage) {
+  if (isPageFetchLoading || !currentPage) {
     return <AppLoading />;
   }
-
-  if (!currentPage) {
-    return <AppLoading />;
-  }
-
   const renderPageContent = () => {
     switch (currentPage.pageType) {
       case EPageType.SinglePage:

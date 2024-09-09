@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux-hooks';
 import {
   setCurrentPageContent,
@@ -19,7 +19,7 @@ import {
   useUploadPageContentMutation,
 } from '@/api/pageContentApi';
 import { IPageContentGetRequest } from '@/types/requestInterfaces';
-import { fromKebabCase, toKebabCase } from '@/utils/helper';
+import { toKebabCase } from '@/utils/helper';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/hoc/notification-provider';
 import usePage from './use-page';
@@ -153,11 +153,8 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     try {
       const formData = new FormData();
       formData.append('PC_PageContentImg', pageContentImage.pageContentImage);
-
       const response = await uploadPageContentImage(formData).unwrap();
       dispatch(setPageContentImageURL(response.data.PC_PageContentURL));
-      //setPageContentImageURL(response.data.PC_PageContentURL);
-      console.log(response.data.PC_PageContentURL, 'RESPONSE');
       notify(
         'Success',
         response.message || 'The page has been updated successfully.',
@@ -195,6 +192,7 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       if (pageContent.pageContentDisplayImage) {
         formData.append('PC_ThumbImg', pageContent.pageContentDisplayImage);
       }
+
       if (pageContent.pageContentDisplayURL) {
         formData.append('PC_DisplayURL', pageContent.pageContentDisplayURL);
       }
@@ -206,7 +204,6 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
           formData.append('PC_Content', JSON.stringify(pageContentObj));
         }
       }
-
       if (pageType == EPageType.ResList && pageContent.pageContentResource) {
         formData.append('PC_Resource', pageContent.pageContentResource);
       }
@@ -216,8 +213,13 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         formData,
       }).unwrap();
 
-      if (pageContent.pageContentName) {
-        router.replace(`/${pageDisplayURL}/${pageContentDisplayURL}`);
+      if (
+        pageContent.pageContentDisplayURL &&
+        pageType != EPageType.SinglePage
+      ) {
+        router.replace(
+          `/${pageDisplayURL}/${pageContent.pageContentDisplayURL}`
+        );
       } else {
         singlePageRefetch();
       }
@@ -229,7 +231,6 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       );
       await pageRefetch();
     } catch (error: any) {
-      console.log(error, 'ERROR');
       notify(
         'Error',
         error?.data?.message ||
@@ -275,8 +276,6 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         };
         dispatch(setCurrentPageContent(normalizedPage));
       }
-
-      // Do something with normalizedPage if needed
     }
   }, [pageContentData]);
 

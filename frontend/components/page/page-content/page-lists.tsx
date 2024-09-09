@@ -32,7 +32,6 @@ const PageLists = () => {
     pageId: pageId,
   };
   const queryString = new URLSearchParams(queryParams).toString();
-
   useEffect(() => {
     handleRoutingOnError(router, hasPageFetchError, pageFetchError);
   }, [router, hasPageFetchError, pageFetchError]);

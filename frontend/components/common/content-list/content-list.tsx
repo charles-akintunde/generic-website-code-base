@@ -42,6 +42,7 @@ const ContentList: React.FC<ContentListProps> = ({
     ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
     : 'grid-cols-1 md:grid-cols-2 gap-8';
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  console.log(pageContents, 'pageContents');
 
   return (
     <div className="min-h-screen">

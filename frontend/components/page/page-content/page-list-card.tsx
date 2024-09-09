@@ -40,8 +40,6 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
   const category = pageName;
   const isHidden = pageContent.isPageContentHidden;
 
-  console.log(href, 'HREF');
-
   const handleRemovePage = async () => {
     await handleRemovePageContent(pageContent.pageContentId);
   };
@@ -59,9 +57,9 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap">
-          <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-blue-200 rounded-sm bg-opacity-50 text-blue-400 px-6 py-1 hover:bg-blue-200 hover:bg-opacity-50 shadow-sm">
+          {/* <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-blue-200 rounded-sm bg-opacity-50 text-blue-400 px-6 py-1 hover:bg-blue-200 hover:bg-opacity-50 shadow-sm">
             {category}
-          </Badge>
+          </Badge> */}
           {isHidden && (
             <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-red-200 rounded-sm bg-opacity-50 text-red-600 px-6 py-1 hover:bg-red-200 hover:bg-opacity-50 shadow-sm">
               {'This post is hidden from users'}

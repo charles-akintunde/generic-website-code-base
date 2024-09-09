@@ -5,9 +5,7 @@ import {
   IGetPagesWithOffsetRequest,
   IPageResponse,
   ISinglePageResponse,
-  Page,
 } from '@/types/backendResponseInterfaces';
-import { pageTagTypes } from './apiTags';
 import {
   IPageRequest,
   IPageRequestWithIdentifier,

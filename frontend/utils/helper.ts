@@ -44,10 +44,12 @@ export const toKebabCase2 = (str: string): string => {
 };
 
 export const fromKebabCase = (str: string): string => {
-  return str
-    .split('-')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  return decodeURIComponent(
+    str
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+  );
 };
 
 export const pageTypeLabels: { [key in EPageType]: string } = {
@@ -344,11 +346,11 @@ export const normalizeMultiContentPage = (
       return {
         pageContentId: pageContent.PC_ID,
         pageId: pageContent.PG_ID,
+        pageContentDisplayURL: isSinglePage ? response.PG_DisplayURL : '',
+        pageDisplayURL: response.PG_DisplayURL,
         pageName: response.PG_Name,
         userId: pageContent.UI_ID,
-        href: isSinglePage
-          ? toKebabCase(response.PG_Name)
-          : `${toKebabCase(response.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
+        href: isSinglePage ? response.PG_DisplayURL : '',
         pageContentName: pageContent.PC_Title,
         pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
         isPageContentHidden: pageContent.PC_IsHidden,
@@ -367,7 +369,8 @@ export const normalizeMultiContentPage = (
     pageContents: pageContents,
     pageType: String(response.PG_Type),
     isHidden: false,
-    href: `/${toKebabCase(response.PG_Name)}`,
+    pageDisplayURL: `${response.PG_DisplayURL}`,
+    href: `/${response.PG_DisplayURL}`,
   };
 };
 
@@ -379,7 +382,7 @@ export const mapPageToIPageMain = (pagesData: PagesData): IPageList => {
     pageType: String(page.PG_Type),
     isHidden: false,
     href: `/${page.PG_DisplayURL}`,
-    pageDisplayURL: `/${page.PG_DisplayURL}`,
+    pageDisplayURL: `${page.PG_DisplayURL}`,
   }));
 
   return {
@@ -502,24 +505,27 @@ export const handleRoutingOnError = (
   hasError: boolean,
   error: any
 ) => {
-  if (hasError && error) {
-    if (error.status === 404) {
-      router.replace('/404');
-    } else if (error.status === 500) {
-      router.replace('/500');
-    } else {
-      router.replace('/access-denied');
-    }
-  }
+  // if (hasError && error) {
+  //   if (error.status === 404) {
+  //     router.replace('/404');
+  //   } else if (error.status === 500) {
+  //     router.replace('/500');
+  //   } else {
+  //     router.replace('/access-denied');
+  //   }
+  // }
 };
 
 export const hasNavItems = (navMenuItems: MenuItem[], pathname: string) => {
   if (!navMenuItems || !pathname) return null;
 
+  console.log(navMenuItems, 'navMenuItems');
+
   const currentNavItem = navMenuItems.find(
     (item: MenuItem) =>
-      (item && item.key === `/${pathname.split('/')[1]}`) ||
-      (item && item.key.startsWith(`/${pathname.split('/')[1]}`))
+      (item && item.key === decodeURIComponent(`/${pathname.split('/')[1]}`)) ||
+      (item &&
+        item.key.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`)))
   );
 
   return currentNavItem ? currentNavItem.key : null;

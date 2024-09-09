@@ -1,12 +1,11 @@
 'use client';
 import React, { useState } from 'react';
-import { fromKebabCase, toKebabCase } from '@/utils/helper';
+import { toKebabCase } from '@/utils/helper';
 import { IPageContentMain } from '@/types/componentInterfaces';
 import usePage from '@/hooks/api-hooks/use-page';
 import { usePathname } from 'next/navigation';
 import ContentList from '@/components/common/content-list/content-list';
 import ResourceListCard from './resource-list-card';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
 import { useAppSelector } from '@/hooks/redux-hooks';
 
 const ResourceLists = () => {

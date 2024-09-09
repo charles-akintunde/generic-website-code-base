@@ -112,8 +112,8 @@ const usePage = (pageName?: string) => {
           ),
           pageType: String(page.PG_Type),
           isHidden: false,
-          href: `/${page.PG_DisplayURL}`,
-          pageDisplayURL: `/${page.PG_DisplayURL}`,
+          href: decodeURIComponent(`/${page.PG_DisplayURL}`),
+          pageDisplayURL: decodeURIComponent(`/${page.PG_DisplayURL}`),
         })
       );
       const allRoutes = [...routes, ...normalizedPages];
@@ -221,14 +221,16 @@ const usePage = (pageName?: string) => {
         PG_Permission: page.pagePermission.map((permission) =>
           Number(permission)
         ),
+        PG_DisplayURL: page.pageDisplayURL as string,
       };
-
       console.log(editPageRequest, 'editPageRequest');
       const response = await editPage({
         PG_ID: pageId,
         PG_Name: editPageRequest.PG_Name,
         PG_Permission: editPageRequest.PG_Permission,
+        PG_DisplayURL: editPageRequest.PG_DisplayURL,
       }).unwrap();
+
       notify(
         'Success',
         response.message || 'The page has been updated successfully.',

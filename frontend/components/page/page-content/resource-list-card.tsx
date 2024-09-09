@@ -37,7 +37,6 @@ const ResourceListCard: React.FC<PageContentCardProps> = ({
       (pageContent && pageContent.pageContentId) as string
     );
   };
-  console.log(pageContent, '(pageContent && pageContent.pageContentResource)');
 
   return (
     <Card className="rounded-lg shadow-lg overflow-hidden border border-gray-200">

@@ -1,4 +1,3 @@
-import usePage from '@/hooks/api-hooks/use-page';
 import { pageContentPaddingStyles } from '@/styles/globals';
 import {
   createPageContentItem,
@@ -76,6 +75,7 @@ const SinglePage = () => {
     if (pageData && pageData.data) {
       let response: Page = pageData.data;
       const normalizedPage = normalizeMultiContentPage(response, true);
+      console.log(normalizedPage.pageDisplayURL, 'normalizedPage');
       setSinglePage(normalizedPage);
       setPage(normalizedPage);
       const singlePageContent: IPageContentMain =
@@ -124,20 +124,16 @@ const SinglePage = () => {
     const changedFields = getChangedFields(originalData, newDataWithContents);
     if (Object.keys(changedFields).length > 0) {
       if (isSinglePageCreated) {
+        changedFields['pageContentDisplayURL'] = singlePage?.pageDisplayURL;
         await submitEditedPageContent(
           pageName,
           pageType,
-          pageName,
+          singlePage?.pageDisplayURL as string,
           String(pageContentId),
           changedFields as Partial<IPageContentItem>,
           pageRefetch
         );
-        console.log(
-          pageName,
-          pageName,
-          String(pageContentId),
-          changedFields as Partial<IPageContentItem>
-        );
+        console.log(singlePage?.pageDisplayURL as string, 'PPPPPPPPPPPPPPPPPP');
       } else {
         console.log(isSinglePageCreated, 'Create');
         console.log(pageContent, 'pageId');
@@ -153,9 +149,9 @@ const SinglePage = () => {
   }
 
   console.log(isPageFetchLoading, 'isPageFetchLoading');
-  useEffect(() => {
-    handleRoutingOnError(router, hasPageFetchError, pageFetchError);
-  }, [hasPageFetchError, router, pageFetchError]);
+  // useEffect(() => {
+  //   handleRoutingOnError(router, hasPageFetchError, pageFetchError);
+  // }, [hasPageFetchError, router, pageFetchError]);
 
   return (
     <>

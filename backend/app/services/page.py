@@ -117,9 +117,8 @@ def get_page(
 
     for page_content in existing_page.PG_PageContents:
         user  = user_crud.get_user_by_id(db=db,user_id=page_content.UI_ID)
-        converted_page_content = build_page_content_json(page_content, user)
+        converted_page_content = build_page_content_json(page_content, user, page=existing_page)
         converted_page_contents.append(converted_page_content)
-
         
     existing_page = PageMultipleContent(
             PG_ID=str(existing_page.PG_ID),
@@ -135,6 +134,7 @@ def update_page(db: Session, page_id: str, page_update: PageUpdateRequest, user:
     """
     Service to update page.
     """
+    print(page_update,"page_update")
     existing_page = page_crud.get_page_by_id(db, page_id)
 
     if not existing_page:
