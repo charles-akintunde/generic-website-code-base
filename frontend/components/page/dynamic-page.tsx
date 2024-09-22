@@ -14,21 +14,25 @@ import { EPageType } from '@/types/enums';
 const DynamicPage = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const [pageName, setPageName] = useState(pathname.split('/')['1']);
+  const [pageDisplayURL, setPageDisplayURL] = useState(
+    pathname.split('/')['1']
+  );
   const {
     currentPage,
     getCurrentPageContents,
     hasPageFetchError,
     isPageFetchLoading,
     pageFetchError,
-  } = usePage(pageName);
-
+  } = usePage(pageDisplayURL);
+  const pageName = currentPage && (currentPage.pageName as string);
   useEffect(() => {
     if (!isPageFetchLoading) {
       console.log(pageFetchError, hasPageFetchError, 'pageFetchError');
       handleRoutingOnError(router, hasPageFetchError, pageFetchError);
     }
   }, [router, hasPageFetchError, pageFetchError, isPageFetchLoading]);
+
+  console.log(currentPage, 'currentPage');
 
   if (isPageFetchLoading || !currentPage) {
     return <AppLoading />;
@@ -39,13 +43,13 @@ const DynamicPage = () => {
         return <SinglePage />;
       case EPageType.PageList:
         return (
-          <PageLayout title={fromKebabCase(pageName)}>
+          <PageLayout title={pageName as string}>
             <PageLists />
           </PageLayout>
         );
       case EPageType.ResList:
         return (
-          <PageLayout title={fromKebabCase(pageName)}>
+          <PageLayout title={pageName as string}>
             <ResourceLists />
           </PageLayout>
         );

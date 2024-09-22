@@ -24,6 +24,11 @@ export interface IPageRequest {
   PG_DisplayURL: string;
 }
 
+export interface IPageGetRequest {
+  PG_DisplayURL: string;
+  PG_PageNumber: number;
+}
+
 export interface IPageContentGetRequest {
   PG_DisplayURL: string;
   PC_DisplayURL: string;

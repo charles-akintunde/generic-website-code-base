@@ -7,6 +7,7 @@ import {
   ISinglePageResponse,
 } from '@/types/backendResponseInterfaces';
 import {
+  IPageGetRequest,
   IPageRequest,
   IPageRequestWithIdentifier,
 } from '@/types/requestInterfaces';
@@ -21,7 +22,6 @@ export const pageApi = createApi({
     getPages: builder.query<IPageResponse, void>({
       query: () => url,
       providesTags: (result) => {
-        //  console.log('providesTags result:', result);
         return result?.data?.Pages
           ? [
               ...result.data.Pages.map((page) => ({
@@ -54,6 +54,22 @@ export const pageApi = createApi({
     }),
     getPage: builder.query<ISinglePageResponse, string>({
       query: (PG_Name) => `${url}/${PG_Name}`,
+      providesTags: (result) =>
+        result?.data
+          ? [
+              { type: 'Page', id: result.data.PG_ID },
+              { type: 'Page', id: 'LIST' },
+              { type: 'PageContent', id: result.data.PG_ID },
+              { type: 'PageContent', id: 'LIST' },
+            ]
+          : [
+              { type: 'Page', id: 'LIST' },
+              { type: 'PageContent', id: 'LIST' },
+            ],
+    }),
+    getPageWithPagination: builder.query<ISinglePageResponse, IPageGetRequest>({
+      query: ({ PG_DisplayURL, PG_PageNumber }) =>
+        `${url}/with-pagination/${PG_DisplayURL}?pg_page_number=${PG_PageNumber}`,
       providesTags: (result) =>
         result?.data
           ? [
@@ -110,4 +126,5 @@ export const {
   useDeletePageMutation,
   useGetPageQuery,
   useGetPagesWithOffsetQuery,
+  useGetPageWithPaginationQuery,
 } = pageApi;

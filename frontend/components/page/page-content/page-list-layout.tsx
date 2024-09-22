@@ -38,9 +38,7 @@ const PageListLayout: React.FC<PageListLayoutProps> = ({
   return (
     <div className="">
       <header className={`${pageContentPaddingStyles} mt-10`}>
-        <h1 className="text-3xl font-bold mb-2">
-          {fromKebabCase(contentName)}
-        </h1>
+        <h1 className="text-3xl font-bold mb-2">{contentName}</h1>
         {pageType != EPageType.ResList && (
           <div className="flex items-center mb-4">
             <Avatar size="large" icon={<UserOutlined />} />
