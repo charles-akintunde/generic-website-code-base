@@ -127,6 +127,7 @@ class PageContentCRUD:
         func.lower(T_PageContent.PC_DisplayURL) == func.lower(page_content_display_url), 
         T_PageContent.PG_ID == page_id).first()
 
+
  def update_page_content(
     self,
     db: Session,
@@ -177,7 +178,6 @@ class PageContentCRUD:
         if page_content_to_delete:
             # if page_content_to_delete.PC_DisplayURL: # type: ignore
             #     delete_file(extract_path_from_url(page_content_to_delete.PC_DisplayURL)) # type: ignore
-            print(page_content_to_delete,"UUUUUUUUUUUUUUUUUU")
             if page_content_to_delete.PC_ThumbImgURL: # type: ignore
                 delete_file(extract_path_from_url(page_content_to_delete.PC_ThumbImgURL)) # type: ignore
             db.delete(page_content_to_delete)

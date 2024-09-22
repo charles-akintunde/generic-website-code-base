@@ -2,7 +2,7 @@
     Manages CRUD operations for pages.
 """
 
-from typing import Any, List
+from typing import Any, List, Optional
 
 from fastapi import HTTPException, status
 from sqlalchemy import func
@@ -16,6 +16,7 @@ from app.models.user_info import T_UserInfo
 from app.schemas.page_content import PageContent, PageContentCreateRequest
 from app.crud.page_content import page_content_crud
 from urllib.parse import unquote
+from app.models.page_content import T_PageContent
 
 
 # class PageContent(BaseModel):
@@ -91,6 +92,50 @@ class PageCRUD:
         """
 
         return db.query(T_Page).filter(func.lower(T_Page.PG_Name) == func.lower(page_name)).first()
+    
+
+    def get_page_by_display_url_with_offest(
+            self, 
+            db: Session,
+            pg_display_url: str,
+            pg_page_number: Optional[int] = 1) -> T_Page:
+        """
+        Gets page with page display url and limits page content to 10 items per page.
+
+        Args:
+            db (Session): Database session.
+            pg_display_url (str): Page Display URL.
+            pg_page_number (Optional[int]): Page number for pagination.
+
+        Returns:
+            T_Page: Existing page object with the latest 10 page contents.
+        """
+            
+        page_query = db.query(T_Page).filter(
+        func.lower(T_Page.PG_DisplayURL) == func.lower(unquote(pg_display_url)))
+
+        page = page_query.first()
+
+        if not pg_page_number:
+            return page
+        
+        if page: 
+            offset = (pg_page_number - 1) * 8
+            page_contents = (
+            db.query(T_PageContent)
+            .filter(T_PageContent.PG_ID == page.PG_ID) 
+            .order_by(T_PageContent.PC_CreatedAt.desc())
+            .order_by(T_PageContent.PC_ID.asc())  
+            .offset(offset)  
+            .limit(8) 
+            .all()
+        )
+            if not page_contents:
+                page.PG_PageContents = []  
+            else:
+                page.PG_PageContents = page_contents
+ 
+        return page
     
     
     

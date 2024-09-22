@@ -19,6 +19,7 @@ from app.models.user_info import T_UserInfo
 from app.services.page import create_new_page, delete_page, get_page, get_pages, get_pages_with_offset, update_page
 from app.utils.response import error_response, success_response
 from app.models.enums import E_PageType, E_UserRole
+from app.models.page_content import T_PageContent
 
 
 router = APIRouter()
@@ -66,6 +67,35 @@ async def get_page_endpoint(
         decoded_page_display_url = unquote(page_display_url)
         existing_page = get_page(
             db=db, 
+            page_display_url=decoded_page_display_url,
+            current_user=current_user)
+        return success_response(message="Page fetched successfully", data=existing_page.model_dump())
+    except HTTPException as e:
+        return error_response(message=e.detail, status_code=e.status_code)
+
+    
+@router.get("/with-pagination/{page_display_url}", response_model=StandardResponse)
+async def get_page_with_offset_endpoint(
+    page_display_url: str, 
+    pg_page_number: int = Query(1),
+    db: Session = Depends(get_db), 
+    current_user: Optional[T_UserInfo] = Depends(get_current_user_without_exception)):
+    """
+    Get an existing page.
+    
+    Args
+        request (GetPageRequest): page creation schema
+        db (Session): Database session.
+
+    Returns
+        StandardResponse: The response indicating the result of the operation.
+    """
+    try:
+        decoded_page_display_url = unquote(page_display_url)
+        print(pg_page_number,"ROUTER")
+        existing_page = get_page(
+            db=db, 
+            pg_page_number=pg_page_number,
             page_display_url=decoded_page_display_url,
             current_user=current_user)
         return success_response(message="Page fetched successfully", data=existing_page.model_dump())

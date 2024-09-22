@@ -3,7 +3,7 @@
 """
 
 
-from typing import Any, List
+from typing import Any, List, Optional
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.schemas.page import GetPageRequest, PageCreate, PageMultipleContent, PageResponse, PageUpdateRequest, PagesResponse
@@ -88,24 +88,34 @@ def get_pages(db: Session) -> PagesResponse:
         )
 
 def get_page(
-        db: Session, 
+        db: Session,
         page_display_url: str,
-        current_user: T_UserInfo) -> PageResponse:
+        current_user: T_UserInfo,
+        pg_page_number: Optional[int] = 1):
     """
-    Service to fetch page.
-    """
-    user_roles = (current_user.UI_Role if current_user else [E_UserRole.Public]) 
+    Service to fetch page with fixed pagination for infinite scroll (10 items at a time).
 
-    existing_page = page_crud.get_page_by_display_url(
+    Args:
+        db (Session): Database session.
+        page_display_url (str): Page Display URL.
+        current_user (T_UserInfo): Current user info.
+        pg_page_number (Optional[int]): Page number for pagination (infinite scroll).
+
+    Returns:
+        PageResponse: Page data with paginated content.
+    """
+    user_roles = (current_user.UI_Role if current_user else [E_UserRole.Public])
+
+    existing_page = page_crud.get_page_by_display_url_with_offest(
         db=db,
-        pg_display_url=page_display_url)
+        pg_display_url=page_display_url,
+        pg_page_number=pg_page_number)
     
     if not existing_page:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Page with Display URL '{page_display_url}' was not found."
         )
-
 
     page_is_accessible_to: List[E_UserRole] = existing_page.PG_Permission  # type: ignore
 
