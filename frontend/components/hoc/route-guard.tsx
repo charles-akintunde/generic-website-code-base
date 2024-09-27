@@ -40,20 +40,6 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       item.href.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`))
   );
 
-  // if (uiIsLoading) {
-  //   return <AppLoading />;
-  // }
-
-  console.log(`/${pathname.split('/')[1]}`, 'sssssssssss');
-  console.log(
-    isExistingRoute({ allAppRoutes: allAppRoutes, pathname: pathname }),
-    isExistingRoute({
-      allAppRoutes: allAppRoutes,
-      pathname: `/${pathname.split('/')[1]}`,
-    }),
-    'LLLLLLLLLLLLLLLLLLLL'
-  );
-
   useEffect(() => {
     if (uiIsLoading || !currentPage) return;
     if (allAppRoutes && allAppRoutes.length > 0) {
@@ -67,7 +53,6 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
           pathname: `/${pathname.split('/')[1]}`,
         });
       if (!isValidRoute) {
-        console.log('KKKKKKKKKKKKKKKKKKKKKKKK');
         router.replace('/404');
       } else {
         if (

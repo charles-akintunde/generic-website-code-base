@@ -14,13 +14,15 @@ import {
   IPageContentCreateRequest,
   IPageContentGetRequest,
   IPageContentImageRequest,
+  IPageGetRequest,
 } from '@/types/requestInterfaces';
 
 const url = '/page-contents';
+const pageUrl = '/pages';
 
 export const pageContentApi = createApi({
   reducerPath: 'pageContentApi',
-  tagTypes: pageTagTypes,
+  tagTypes: ['Pages', 'Menus', 'Page', 'PageContent'],
   baseQuery: publicRouteBaseQuery,
   endpoints: (builder) => ({
     getPageContent: builder.query<
@@ -67,6 +69,22 @@ export const pageContentApi = createApi({
         { type: 'PageContent', id: 'LIST' },
       ],
     }),
+    getPageWithPagination: builder.query<ISinglePageResponse, IPageGetRequest>({
+      query: ({ PG_DisplayURL, PG_PageNumber }) =>
+        `${pageUrl}/with-pagination/${PG_DisplayURL}?pg_page_number=${PG_PageNumber}`,
+      providesTags: (result) =>
+        result?.data
+          ? [
+              { type: 'Page', id: result.data.PG_ID },
+              { type: 'Page', id: 'LIST' },
+              { type: 'PageContent', id: result.data.PG_ID },
+              { type: 'PageContent', id: 'LIST' },
+            ]
+          : [
+              { type: 'Page', id: 'LIST' },
+              { type: 'PageContent', id: 'LIST' },
+            ],
+    }),
     deletePageContent: builder.mutation<IGenericResponse, string>({
       query: (id) => ({
         url: `${url}/${id}`,
@@ -75,6 +93,7 @@ export const pageContentApi = createApi({
       invalidatesTags: (result, error, id) => [
         { type: 'PageContent', id },
         { type: 'PageContent', id: 'LIST' },
+        { type: 'Page', id: 'LIST' },
         { type: 'Page', id: id },
       ],
     }),
@@ -97,4 +116,5 @@ export const {
   useDeletePageContentMutation,
   useEditPageContentMutation,
   useUploadPageContentMutation,
+  useGetPageWithPaginationQuery,
 } = pageContentApi;

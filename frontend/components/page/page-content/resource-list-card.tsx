@@ -19,7 +19,7 @@ const ResourceListCard: React.FC<PageContentCardProps> = ({
     handleRemovePageContent,
   } = usePageContent();
   const pageName = pageContent?.pageName ?? '';
-  const href = (pageContent?.pageContentResource as string) || '';
+  const href = (pageContent?.pageContentDisplayURL as string) || '';
   const pageContentName = pageContent && pageContent?.pageContentName;
   const pageContentNameTrimmed =
     pageContentName &&

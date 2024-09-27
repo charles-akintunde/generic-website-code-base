@@ -17,7 +17,7 @@ const PageLists = () => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
   const { currentPage, hasPageFetchError, pageFetchError, isPageFetchLoading } =
-    usePage(pageName);
+    usePage({ pageName });
   const page = currentPage;
   const pageType = (page && page?.pageType) ?? '';
   const createPageHref = (pageNameKebab: string, queryString: string) =>
@@ -27,7 +27,7 @@ const PageLists = () => {
   const pageContents: IPageContentMain[] =
     (page?.pageContents as IPageContentMain[]) ?? [];
   const queryParams = {
-    pageName: pageName,
+    pageName: decodeURIComponent(pageName),
     pageType: pageType,
     pageId: pageId,
   };
@@ -39,8 +39,6 @@ const PageLists = () => {
   if (isPageFetchLoading) {
     return <AppLoading />;
   }
-
-  console.log(pageContents, 'pageContents');
   return (
     <ContentList
       pageType={page?.pageName ?? ''}

@@ -58,7 +58,11 @@ const CreatePageContent = () => {
   const pathname = usePathname();
   const page = pathname.split('/');
   const pageName = page[1];
-  const { submitPageContent, isCreatePageContentSuccess } = usePageContent();
+  const pageDisplayURL = pageName;
+  const { submitPageContent, refetchDynamicPage, isCreatePageContentSuccess } =
+    usePageContent({
+      pageDisplayURL,
+    });
 
   const form = useForm({
     resolver: zodResolver(pageContentSchema),
@@ -89,7 +93,7 @@ const CreatePageContent = () => {
 
     console.log(data, 'pageContent');
 
-    await submitPageContent(pageContent);
+    await submitPageContent(pageContent, refetchDynamicPage);
   };
 
   useEffect(() => {

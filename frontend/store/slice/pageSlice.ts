@@ -1,9 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
+  IFetchedPage,
   IPageContentItem,
   IPageContentMain,
   IPageMain,
 } from '@/types/componentInterfaces';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { SerializedError } from '@reduxjs/toolkit';
 
 interface PageState {
   pages: IPageMain[];
@@ -14,6 +17,7 @@ interface PageState {
   editingPage: IPageMain | null;
   editingPageContent: IPageContentMain | null;
   pageContentImageURL: string;
+  fetchingPageData: IFetchedPage | null;
 }
 
 const initialState: PageState = {
@@ -25,6 +29,12 @@ const initialState: PageState = {
   currentPage: null,
   editingPageContent: null,
   pageContentImageURL: '',
+  fetchingPageData: {
+    fetchedPage: null,
+    isPageFetchLoading: true,
+    hasPageFetchError: false,
+    pageFetchError: undefined,
+  },
 };
 
 const pageSlice = createSlice({
@@ -104,6 +114,9 @@ const pageSlice = createSlice({
     setEditingPage(state, action: PayloadAction<IPageMain | null>) {
       state.editingPage = action.payload;
     },
+    setFecthingPageData(state, action: PayloadAction<IFetchedPage | null>) {
+      state.fetchingPageData = action.payload;
+    },
     setPageContentImageURL(state, action: PayloadAction<string>) {
       state.pageContentImageURL = action.payload;
     },
@@ -140,6 +153,7 @@ export const {
   addPageContent,
   setCurrentPage,
   setCurrentPageContent,
+  setFecthingPageData,
   setPageContentImageURL,
 } = pageSlice.actions;
 export default pageSlice.reducer;

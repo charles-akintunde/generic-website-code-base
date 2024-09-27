@@ -59,13 +59,22 @@ async def create_page_content(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Page content title cannot be empty."
         )
-
-
-    existing_page_content = page_content_crud.get_page_content(
-        page_id=page_content.PG_ID,
-        page_content_title=page_content.PC_Title,
-        db=db
+    
+    if page_content.PC_DisplayURL:
+        existing_page_content = page_content_crud.check_page_content__exist_by_title_or_display_url(
+            page_id=page_content.PG_ID,
+            page_content_title=page_content.PC_Title,
+            page_content_display_url=page_content.PC_DisplayURL,
+            db=db
     )
+    else:
+         existing_page_content = page_content_crud.get_page_content_by_title(
+            page_id=page_content.PG_ID,
+            page_content_title=page_content.PC_Title,
+            db=db
+    )
+        
+
 
     if existing_page_content:
         raise HTTPException(

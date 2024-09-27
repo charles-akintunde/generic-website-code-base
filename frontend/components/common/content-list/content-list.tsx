@@ -9,13 +9,15 @@ import {
 } from '@/styles/globals';
 import { IPageContentMain } from '@/types/componentInterfaces';
 import { useRouter } from 'next/navigation';
-import { useGetPageWithPaginationQuery } from '@/api/pageApi';
+import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
 import {
   handleRoutingOnError,
   normalizeMultiContentPage,
   toKebabCase,
 } from '@/utils/helper';
 import AppLoading from '../app-loading';
+import usePageContent from '@/hooks/api-hooks/use-page-content';
+import usePage from '@/hooks/api-hooks/use-page';
 
 interface ContentListProps {
   pageType: string;
@@ -44,45 +46,28 @@ const ContentList: React.FC<ContentListProps> = ({
   const className = isResourcePage
     ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
     : 'grid-cols-1 md:grid-cols-2 gap-8';
-
   const pathname = window.location.pathname;
   const pageDisplayURL = pathname.split('/')[1];
+  const {
+    pageContents,
+    isPageContentFetchLoading,
+    hasPageContentFetchError,
+    pageContentFetchError,
+    hasMore,
+    setPageNumber,
+  } = usePage({ pageDisplayURL });
 
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageContents, setPageContents] = useState<IPageContentMain[]>([]);
-  const [hasMore, setHasMore] = useState(true);
   const router = useRouter();
   const observerRef = useRef<HTMLDivElement>(null);
-  const {
-    data: pageData,
-    isError: hasPageFetchError,
-    isSuccess: isPageFetchSuccess,
-    isLoading: isPageFetchLoading,
-    error: pageFetchError,
-    refetch: pageRefetch,
-  } = useGetPageWithPaginationQuery({
-    PG_DisplayURL: pageDisplayURL,
-    PG_PageNumber: pageNumber,
-  });
-
-  useEffect(() => {
-    if (pageData && pageData.data) {
-      const responseData = pageData.data;
-      const pageList = normalizeMultiContentPage(responseData, false);
-      const newPageContents = pageList.pageContents as IPageContentMain[];
-      setPageContents((prevContents) => [...prevContents, ...newPageContents]);
-      if (newPageContents && newPageContents.length < 8) setHasMore(false);
-    }
-  }, [pageData]);
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const target = entries[0];
-      if (target.isIntersecting && hasMore && !isPageFetchLoading) {
+      if (target.isIntersecting && hasMore && !isPageContentFetchLoading) {
         setPageNumber((prevPage) => prevPage + 1);
       }
     },
-    [hasMore, isPageFetchLoading]
+    [hasMore, isPageContentFetchLoading, setPageNumber]
   );
 
   useEffect(() => {
@@ -102,10 +87,14 @@ const ContentList: React.FC<ContentListProps> = ({
   }, [handleObserver]);
 
   useEffect(() => {
-    handleRoutingOnError(router, hasPageFetchError, pageFetchError);
-  }, [router, hasPageFetchError, pageFetchError]);
+    handleRoutingOnError(
+      router,
+      hasPageContentFetchError,
+      pageContentFetchError
+    );
+  }, [router, hasPageContentFetchError, pageContentFetchError]);
 
-  if (isPageFetchLoading) {
+  if (isPageContentFetchLoading) {
     return <AppLoading />;
   }
 
@@ -143,9 +132,9 @@ const ContentList: React.FC<ContentListProps> = ({
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         )}
-        {isPageFetchLoading && (
+        {(hasMore || isPageContentFetchLoading) && (
           <div className="flex w-full justify-center py-4">
-            <Spin />
+            <Spin size="small" />
           </div>
         )}
         {hasMore && <div ref={observerRef} style={{ height: '20px' }} />}

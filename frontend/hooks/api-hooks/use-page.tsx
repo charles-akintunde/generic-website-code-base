@@ -7,8 +7,10 @@ import {
   toggleCreatePageDialog,
   getPageContents,
   getPage,
+  setFecthingPageData,
 } from '@/store/slice/pageSlice';
 import {
+  IFetchedPage,
   IPageContentMain,
   IPageMain,
   IPageMenuItem,
@@ -19,23 +21,24 @@ import {
   useEditPageMutation,
   useDeletePageMutation,
   useGetPageQuery,
+  useGetPageWithPaginationQuery,
 } from '@/api/pageApi';
-import { toKebabCase } from '@/utils/helper';
+import { normalizeMultiContentPage, toKebabCase } from '@/utils/helper';
 import { Page } from '@/types/backendResponseInterfaces';
 import { IPageRequest } from '@/types/requestInterfaces';
 import { useNotification } from '@/components/hoc/notification-provider';
 import { routes, systemMenuItems } from '@/components/hoc/layout/menu-items';
 import { MenuProps } from 'antd';
 import Link from 'next/link';
-import HoverableCard from '@/components/common/hover-card';
 
 interface usePageProps {
   pageName?: string;
+  pageDisplayURL?: string;
 }
 
 type MenuItem = Required<MenuProps>['items'][number];
 
-const usePage = (pageName?: string) => {
+const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
   const {
     data: pagesData,
     isError: hasPagesFetchError,
@@ -78,6 +81,24 @@ const usePage = (pageName?: string) => {
         error: null,
         refetch: () => {},
       };
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageContents, setPageContents] = useState<IPageContentMain[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const {
+    data: pageContentData,
+    isError: hasPageContentFetchError,
+    isLoading: isPageContentFetchLoading,
+    error: pageContentFetchError,
+    refetch: refetchDynamicPage,
+  } = useGetPageWithPaginationQuery(
+    {
+      PG_DisplayURL: pageDisplayURL ?? '',
+      PG_PageNumber: pageNumber,
+    },
+    {
+      skip: !pageDisplayURL,
+    }
+  );
 
   const {
     data: pageData,
@@ -100,6 +121,24 @@ const usePage = (pageName?: string) => {
   const [menuItems, setMenuItems] = useState<IPageMenuItem[]>([]);
   const [allAppRoutes, setAllAppRoutes] = useState<IPageMenuItem[]>([]);
   const [navMenuItems, setNavMenuItems] = useState<MenuItem[]>([]);
+
+  console.log(pageContentData, 'pageContentData');
+  useEffect(() => {
+    if (pageContentData && pageContentData.data) {
+      const responseData = pageContentData.data;
+      const dynamicPage = normalizeMultiContentPage(responseData, false);
+      const newPageContents = dynamicPage.pageContents as IPageContentMain[];
+      setPageContents((prevContents) => [...prevContents, ...newPageContents]);
+      const fetchingPageData: IFetchedPage = {
+        fetchedPage: dynamicPage,
+        isPageFetchLoading: isPageContentFetchLoading,
+        hasPageFetchError: hasPageContentFetchError,
+        pageFetchError: pageContentFetchError,
+      };
+      dispatch(setFecthingPageData(fetchingPageData));
+      if (newPageContents.length < 8) setHasMore(false);
+    }
+  }, [pageContentData]);
 
   useEffect(() => {
     if (pagesData && pagesData.data) {
@@ -174,6 +213,7 @@ const usePage = (pageName?: string) => {
         isHidden: false,
         href: `/${toKebabCase(response.PG_Name)}`,
       };
+      console.log(normalizedPage, 'normalizedPage');
       setCurrentPage(normalizedPage);
     }
   }, [pageData]);
@@ -304,6 +344,12 @@ const usePage = (pageName?: string) => {
     pageFetchError,
     isPageFetchLoading,
     navMenuItems,
+    pageContents,
+    isPageContentFetchLoading,
+    hasPageContentFetchError,
+    pageContentFetchError,
+    hasMore,
+    setPageNumber,
   };
 };
 

@@ -346,11 +346,25 @@ export const normalizeMultiContentPage = (
       return {
         pageContentId: pageContent.PC_ID,
         pageId: pageContent.PG_ID,
-        pageContentDisplayURL: isSinglePage ? response.PG_DisplayURL : '',
+        pageContentDisplayURL:
+          EPageType.SinglePage == String(response.PG_Type)
+            ? response.PG_DisplayURL
+            : EPageType.ResList == String(response.PG_Type)
+              ? `${pageContent.PC_DisplayURL}`
+              : EPageType.PageList == String(response.PG_Type)
+                ? `/${response.PC_DisplayURL}/${pageContent.PC_DisplayURL}`
+                : '',
         pageDisplayURL: response.PG_DisplayURL,
         pageName: response.PG_Name,
         userId: pageContent.UI_ID,
-        href: isSinglePage ? response.PG_DisplayURL : '',
+        href:
+          EPageType.SinglePage == String(response.PG_Type)
+            ? response.PG_DisplayURL
+            : EPageType.ResList == String(response.PG_Type)
+              ? `${pageContent.PC_DisplayURL}`
+              : EPageType.PageList == String(response.PG_Type)
+                ? `/${response.PC_DisplayURL}/${pageContent.PC_DisplayURL}`
+                : '',
         pageContentName: pageContent.PC_Title,
         pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
         isPageContentHidden: pageContent.PC_IsHidden,
@@ -505,15 +519,15 @@ export const handleRoutingOnError = (
   hasError: boolean,
   error: any
 ) => {
-  // if (hasError && error) {
-  //   if (error.status === 404) {
-  //     router.replace('/404');
-  //   } else if (error.status === 500) {
-  //     router.replace('/500');
-  //   } else {
-  //     router.replace('/access-denied');
-  //   }
-  // }
+  if (hasError && error) {
+    if (error.status === 404) {
+      router.replace('/404');
+    } else if (error.status === 500) {
+      router.replace('/500');
+    } else {
+      router.replace('/access-denied');
+    }
+  }
 };
 
 export const hasNavItems = (navMenuItems: MenuItem[], pathname: string) => {
@@ -542,12 +556,16 @@ export const copyToClipboard = (text: string, notify: Notify) => {
     });
 };
 
-export const reloadPage = () => {
-  window.location.reload();
-};
+// export const reloadPage = () => {
+//   window.location.reload();
+// };
 
 export function removeNullValues(obj: any) {
   return Object.fromEntries(
     Object.entries(obj).filter(([_, value]) => value !== null)
   );
 }
+
+export const reloadPage = () => {
+  window.location.reload();
+};

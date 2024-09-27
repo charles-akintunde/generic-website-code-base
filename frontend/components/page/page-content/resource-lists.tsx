@@ -13,7 +13,7 @@ const ResourceLists = () => {
   const [pageName, setPageName] = useState(pathname.split('/')['1']);
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
-  const { currentPage } = usePage(pageName);
+  const { currentPage } = usePage({ pageName });
   const page = currentPage;
   const pageType = (page && page?.pageType) ?? '';
   const createPageHref = (pageNameKebab: string, queryString: string) =>

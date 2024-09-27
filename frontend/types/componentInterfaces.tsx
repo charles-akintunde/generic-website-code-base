@@ -5,6 +5,8 @@ import React, { ElementType, ReactNode } from 'react';
 import { Control, ControllerProps, FieldValues } from 'react-hook-form';
 // import { string, z, z, z } from 'zod';
 import { TElement } from '@udecode/plate-common';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { SerializedError } from '@reduxjs/toolkit';
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
@@ -218,4 +220,11 @@ export type Notify = (
 
 export interface IPageContentImage {
   pageContentImage: File;
+}
+
+export interface IFetchedPage {
+  fetchedPage: IPageMain | null;
+  isPageFetchLoading: boolean;
+  hasPageFetchError: boolean;
+  pageFetchError: FetchBaseQueryError | SerializedError | undefined;
 }
