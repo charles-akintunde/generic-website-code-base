@@ -18,6 +18,7 @@ import {
 import AppLoading from '../app-loading';
 import usePageContent from '@/hooks/api-hooks/use-page-content';
 import usePage from '@/hooks/api-hooks/use-page';
+import { useAppSelector } from '@/hooks/redux-hooks';
 
 interface ContentListProps {
   pageType: string;
@@ -48,14 +49,15 @@ const ContentList: React.FC<ContentListProps> = ({
     : 'grid-cols-1 md:grid-cols-2 gap-8';
   const pathname = window.location.pathname;
   const pageDisplayURL = pathname.split('/')[1];
-  const {
-    pageContents,
-    isPageContentFetchLoading,
-    hasPageContentFetchError,
-    pageContentFetchError,
-    hasMore,
-    setPageNumber,
-  } = usePage({ pageDisplayURL });
+  const { hasMore, setPageNumber } = usePage({ pageDisplayURL });
+  const fetchingPageData = useAppSelector(
+    (state) => state.page.fetchingPageData
+  );
+  const fetchedPage = fetchingPageData?.fetchedPage;
+  const isPageFetchLoading = fetchingPageData?.isPageFetchLoading;
+  const hasPageFetchError = fetchingPageData?.hasPageFetchError;
+  const pageFetchError = fetchingPageData?.pageFetchError;
+  const fetchedPageContents = fetchedPage && fetchedPage?.pageContents;
 
   const router = useRouter();
   const observerRef = useRef<HTMLDivElement>(null);
@@ -63,11 +65,11 @@ const ContentList: React.FC<ContentListProps> = ({
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const target = entries[0];
-      if (target.isIntersecting && hasMore && !isPageContentFetchLoading) {
+      if (target.isIntersecting && hasMore && !isPageFetchLoading) {
         setPageNumber((prevPage) => prevPage + 1);
       }
     },
-    [hasMore, isPageContentFetchLoading, setPageNumber]
+    [hasMore, isPageFetchLoading, setPageNumber]
   );
 
   useEffect(() => {
@@ -87,14 +89,10 @@ const ContentList: React.FC<ContentListProps> = ({
   }, [handleObserver]);
 
   useEffect(() => {
-    handleRoutingOnError(
-      router,
-      hasPageContentFetchError,
-      pageContentFetchError
-    );
-  }, [router, hasPageContentFetchError, pageContentFetchError]);
+    handleRoutingOnError(router, hasPageFetchError as boolean, pageFetchError);
+  }, [router, hasPageFetchError, pageFetchError]);
 
-  if (isPageContentFetchLoading) {
+  if (isPageFetchLoading) {
     return <AppLoading />;
   }
 
@@ -112,9 +110,9 @@ const ContentList: React.FC<ContentListProps> = ({
             />
           )}
         </header>
-        {pageContents.length > 0 ? (
+        {fetchedPageContents && fetchedPageContents.length > 0 ? (
           <div className={`grid ${className}`}>
-            {pageContents
+            {fetchedPageContents
               .filter(
                 (pageContent) => canEdit || !pageContent.isPageContentHidden
               )
@@ -132,7 +130,7 @@ const ContentList: React.FC<ContentListProps> = ({
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         )}
-        {(hasMore || isPageContentFetchLoading) && (
+        {(hasMore || isPageFetchLoading) && (
           <div className="flex w-full justify-center py-4">
             <Spin size="small" />
           </div>

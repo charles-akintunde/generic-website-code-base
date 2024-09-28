@@ -47,7 +47,6 @@ async def create_page_content_endpoint(
         StandardResponse: The response indicating the result of the create operation.
     """
     try:
-        print('YYYYYYYYYYYYYYYYYYYYYYYYYY')
         page_content_data = PageContentCreateRequest(
         UI_ID=UI_ID,
         PG_ID=PG_ID,
@@ -128,7 +127,7 @@ async def update_page_content_endpoint(
     page_content_id: str ,
     PC_Title: Optional[str] = Form(None),
     PC_Content: Optional[str] = Form(None),  
-    PC_DisplayURL: Optional[str] = Form(...),
+    PC_DisplayURL: Optional[str] = Form(None),
     PC_ThumbImg: Optional[UploadFile] = File(None),
     PC_Resource: Optional[UploadFile] = File(None),
     PC_IsHidden: Optional[bool] = Form(None),

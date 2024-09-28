@@ -350,9 +350,9 @@ export const normalizeMultiContentPage = (
           EPageType.SinglePage == String(response.PG_Type)
             ? response.PG_DisplayURL
             : EPageType.ResList == String(response.PG_Type)
-              ? `${pageContent.PC_DisplayURL}`
+              ? `${pageContent.PG_DisplayURL}`
               : EPageType.PageList == String(response.PG_Type)
-                ? `/${response.PC_DisplayURL}/${pageContent.PC_DisplayURL}`
+                ? `/${response.PG_DisplayURL}/${pageContent.PC_DisplayURL}`
                 : '',
         pageDisplayURL: response.PG_DisplayURL,
         pageName: response.PG_Name,
@@ -363,7 +363,7 @@ export const normalizeMultiContentPage = (
             : EPageType.ResList == String(response.PG_Type)
               ? `${pageContent.PC_DisplayURL}`
               : EPageType.PageList == String(response.PG_Type)
-                ? `/${response.PC_DisplayURL}/${pageContent.PC_DisplayURL}`
+                ? `/${response.PG_DisplayURL}/${pageContent.PC_DisplayURL}`
                 : '',
         pageContentName: pageContent.PC_Title,
         pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,

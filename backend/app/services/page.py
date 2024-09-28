@@ -91,6 +91,7 @@ def get_page(
         db: Session,
         page_display_url: str,
         current_user: T_UserInfo,
+        pg_offset: Optional[int] = 8,
         pg_page_number: Optional[int] = 1):
     """
     Service to fetch page with fixed pagination for infinite scroll (10 items at a time).
@@ -109,7 +110,8 @@ def get_page(
     existing_page = page_crud.get_page_by_display_url_with_offest(
         db=db,
         pg_display_url=page_display_url,
-        pg_page_number=pg_page_number)
+        pg_page_number=pg_page_number,
+        pg_offset= pg_offset)
     
     if not existing_page:
         raise HTTPException(

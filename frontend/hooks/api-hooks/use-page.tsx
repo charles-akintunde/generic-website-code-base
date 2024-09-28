@@ -23,7 +23,11 @@ import {
   useGetPageQuery,
   useGetPageWithPaginationQuery,
 } from '@/api/pageApi';
-import { normalizeMultiContentPage, toKebabCase } from '@/utils/helper';
+import {
+  normalizeMultiContentPage,
+  reloadPage,
+  toKebabCase,
+} from '@/utils/helper';
 import { Page } from '@/types/backendResponseInterfaces';
 import { IPageRequest } from '@/types/requestInterfaces';
 import { useNotification } from '@/components/hoc/notification-provider';
@@ -34,6 +38,7 @@ import Link from 'next/link';
 interface usePageProps {
   pageName?: string;
   pageDisplayURL?: string;
+  // pageOffset?: number;
 }
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -89,7 +94,7 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
     isError: hasPageContentFetchError,
     isLoading: isPageContentFetchLoading,
     error: pageContentFetchError,
-    refetch: refetchDynamicPage,
+    refetch: refetchPageContent,
   } = useGetPageWithPaginationQuery(
     {
       PG_DisplayURL: pageDisplayURL ?? '',
@@ -121,14 +126,18 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
   const [menuItems, setMenuItems] = useState<IPageMenuItem[]>([]);
   const [allAppRoutes, setAllAppRoutes] = useState<IPageMenuItem[]>([]);
   const [navMenuItems, setNavMenuItems] = useState<MenuItem[]>([]);
+  const fetchingPageData = useAppSelector(
+    (state) => state.page.fetchingPageData
+  );
+  const fetchedPage = fetchingPageData?.fetchedPage;
 
-  console.log(pageContentData, 'pageContentData');
   useEffect(() => {
     if (pageContentData && pageContentData.data) {
       const responseData = pageContentData.data;
       const dynamicPage = normalizeMultiContentPage(responseData, false);
       const newPageContents = dynamicPage.pageContents as IPageContentMain[];
       setPageContents((prevContents) => [...prevContents, ...newPageContents]);
+      console.log(pageContents, 'pageContents');
       const fetchingPageData: IFetchedPage = {
         fetchedPage: dynamicPage,
         isPageFetchLoading: isPageContentFetchLoading,
@@ -301,8 +310,8 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
         response.message || 'The page has been successfully deleted.',
         'success'
       );
+      reloadPage();
     } catch (error: any) {
-      console.log(error, 'ERROS');
       notify(
         'Error',
         error?.data?.message ||
@@ -350,6 +359,7 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
     pageContentFetchError,
     hasMore,
     setPageNumber,
+    refetchPageContent,
   };
 };
 

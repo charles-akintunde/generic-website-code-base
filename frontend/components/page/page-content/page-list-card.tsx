@@ -31,7 +31,9 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
   const handleEditButtonClick = () => {
     handlePageContentEditButtonClick(pageContent);
   };
+  console.log(pageContent, 'pageName');
   const title = pageContent.pageContentName;
+  console.log(pageName, 'TITLE');
   const excerpt = getPageExcerpt(pageContent.editorContent);
   const imageSrc = pageContent.pageContentDisplayImage;
   const readTime = `${estimateReadingTime(pageContent.editorContent)} mins Read`;

@@ -68,8 +68,14 @@ export const pageApi = createApi({
             ],
     }),
     getPageWithPagination: builder.query<ISinglePageResponse, IPageGetRequest>({
-      query: ({ PG_DisplayURL, PG_PageNumber }) =>
-        `${url}/with-pagination/${PG_DisplayURL}?pg_page_number=${PG_PageNumber}`,
+      query: ({ PG_DisplayURL, PG_PageNumber, PG_PageOffset }) => {
+        let queryString = `${url}/with-pagination/${PG_DisplayURL}?pg_page_number=${PG_PageNumber}`;
+        if (PG_PageOffset !== undefined) {
+          queryString += `&pg_page_offset=${PG_PageOffset}`;
+        }
+
+        return queryString;
+      },
       providesTags: (result) =>
         result?.data
           ? [

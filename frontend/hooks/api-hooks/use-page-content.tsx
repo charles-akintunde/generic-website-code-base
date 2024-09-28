@@ -51,7 +51,7 @@ const usePageContent = ({
       isLoading: isUploadPageContentImageLoading,
     },
   ] = useUploadPageContentMutation();
-  const { pageRefetch } = usePage({ pageName });
+  const { refetchPageContent } = usePage({ pageDisplayURL: pageName });
   const dispatch = useAppDispatch();
   const router = useRouter();
   const currentPageContent = useAppSelector(
@@ -108,21 +108,7 @@ const usePageContent = ({
   const [pageDisplayURL1, setPageDisplayURL] = useState();
   const [pageContents, setPageContents] = useState<IPageContentMain[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const {
-    data: pageData,
-    isError: hasPageFetchError,
-    isLoading: isPageFetchLoading,
-    error: pageFetchError,
-    refetch: refetchDynamicPage,
-  } = useGetPageWithPaginationQuery(
-    {
-      PG_DisplayURL: pageDisplayURL ?? '',
-      PG_PageNumber: pageNumber,
-    },
-    {
-      skip: !pageDisplayURL,
-    }
-  );
+
   //const [pageContentImageURL, setPageContentImageURL] = useState<string>('');
 
   // useEffect(() => {
@@ -133,15 +119,15 @@ const usePageContent = ({
   //   console.log('RELOAD MEEEEE');
   // }, [router]);
 
-  useEffect(() => {
-    if (pageData && pageData.data) {
-      const responseData = pageData.data;
-      const pageList = normalizeMultiContentPage(responseData, false);
-      const newPageContents = pageList.pageContents as IPageContentMain[];
-      setPageContents((prevContents) => [...prevContents, ...newPageContents]);
-      if (newPageContents.length < 8) setHasMore(false);
-    }
-  }, [pageData]);
+  // useEffect(() => {
+  //   if (pageData && pageData.data) {
+  //     const responseData = pageData.data;
+  //     const pageList = normalizeMultiContentPage(responseData, false);
+  //     const newPageContents = pageList.pageContents as IPageContentMain[];
+  //     setPageContents((prevContents) => [...prevContents, ...newPageContents]);
+  //     if (newPageContents.length < 8) setHasMore(false);
+  //   }
+  // }, [pageData]);
 
   const submitPageContent = async (
     pageContent: IPageContentItem,
@@ -174,12 +160,6 @@ const usePageContent = ({
       const response = await createPageContent(formData).unwrap();
       if (pageContentFetchRefetch) pageContentFetchRefetch();
 
-      notify(
-        'Success',
-        response.message || 'The page has been updated successfully.',
-        'success'
-      );
-
       if (pageContent.pageType == EPageType.ResList) {
         router.replace(`/${pageContent.pageName}`);
         setAllowReloadPage(true);
@@ -187,10 +167,15 @@ const usePageContent = ({
         router.replace(
           `/${pageContent.pageName}/${pageContent.pageContentDisplayURL}`
         );
-        setAllowReloadPage(true);
       }
-      await pageRefetch();
+      await refetchPageContent();
+      notify(
+        'Success',
+        response.message || 'The page has been updated successfully.',
+        'success'
+      );
     } catch (error: any) {
+      console.log(error, 'ERROR');
       notify(
         'Error',
         error?.data?.message ||
@@ -375,11 +360,8 @@ const usePageContent = ({
     submitUploadPageContentImage,
     uploadPageContentImage,
     isUploadPageContentImageLoading,
-    refetchDynamicPage,
     pageContents,
-    isPageFetchLoading,
-    hasPageFetchError,
-    pageFetchError,
+
     hasMore,
     setPageNumber,
   };

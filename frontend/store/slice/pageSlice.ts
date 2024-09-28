@@ -7,6 +7,7 @@ import {
 } from '@/types/componentInterfaces';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { SerializedError } from '@reduxjs/toolkit';
+import { nullable } from 'zod';
 
 interface PageState {
   pages: IPageMain[];

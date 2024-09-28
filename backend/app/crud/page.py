@@ -98,6 +98,7 @@ class PageCRUD:
             self, 
             db: Session,
             pg_display_url: str,
+            pg_offset: Optional[int] = 8,
             pg_page_number: Optional[int] = 1) -> T_Page:
         """
         Gets page with page display url and limits page content to 10 items per page.
@@ -113,14 +114,14 @@ class PageCRUD:
             
         page_query = db.query(T_Page).filter(
         func.lower(T_Page.PG_DisplayURL) == func.lower(unquote(pg_display_url)))
-
+        valid_pg_offset = pg_offset if pg_offset is not None else 8
         page = page_query.first()
 
         if not pg_page_number:
             return page
         
         if page: 
-            offset = (pg_page_number - 1) * 8
+            offset = (pg_page_number - 1) * valid_pg_offset
             page_contents = (
             db.query(T_PageContent)
             .filter(T_PageContent.PG_ID == page.PG_ID) 
@@ -206,7 +207,7 @@ class PageCRUD:
             T_Page.PG_Type,
             T_Page.PG_DisplayURL
         )
-        page_rows = query.offset(offset).limit(pg_page_limit).all()
+        page_rows = query.order_by(T_Page.PG_Name.asc()).offset(offset).limit(pg_page_limit).all()
         return [PageResponse(
             PG_ID=str(row.PG_ID),
             PG_Name=row.PG_Name ,

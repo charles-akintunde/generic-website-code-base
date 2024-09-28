@@ -27,6 +27,7 @@ export interface IPageRequest {
 export interface IPageGetRequest {
   PG_DisplayURL: string;
   PG_PageNumber: number;
+  PG_PageOffset?: number;
 }
 
 export interface IPageContentGetRequest {

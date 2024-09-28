@@ -140,6 +140,18 @@ const CreatePageContent = () => {
                     type="text"
                     onBlur={handlePageDisplayUrlChange}
                   />
+
+                  {/* {pageType == EPageType.ResList && (
+                    <FormField
+                      control={form.control}
+                      name="pageContentDisplayURL"
+                      label="Display URL"
+                      placeholder=""
+                      type="text"
+                      onBlur={handlePageDisplayUrlChange}
+                    />
+                  )} */}
+
                   <FormField
                     control={form.control}
                     name="pageContentDisplayImage"
@@ -305,13 +317,13 @@ const EditPageContent = () => {
     }
   };
 
-  // useEffect(() => {
-  //   handleRoutingOnError(
-  //     router,
-  //     hasPageContentFetchError,
-  //     pageContentFetchError
-  //   );
-  // }, [hasPageContentFetchError, pageContentFetchError, router]);
+  useEffect(() => {
+    handleRoutingOnError(
+      router,
+      hasPageContentFetchError,
+      pageContentFetchError
+    );
+  }, [hasPageContentFetchError, pageContentFetchError, router]);
 
   if (isPageContentFetchLoading) {
     return <AppLoading />;
