@@ -75,7 +75,6 @@ const SinglePage = () => {
     if (pageData && pageData.data) {
       let response: Page = pageData.data;
       const normalizedPage = normalizeMultiContentPage(response, true);
-      console.log(normalizedPage.pageDisplayURL, 'normalizedPage');
       setSinglePage(normalizedPage);
       setPage(normalizedPage);
       const singlePageContent: IPageContentMain =
@@ -133,7 +132,6 @@ const SinglePage = () => {
           changedFields as Partial<IPageContentItem>,
           pageRefetch
         );
-        console.log(singlePage?.pageDisplayURL as string, 'PPPPPPPPPPPPPPPPPP');
       } else {
         console.log(isSinglePageCreated, 'Create');
         console.log(pageContent, 'pageId');
@@ -148,7 +146,6 @@ const SinglePage = () => {
     return <AppLoading />;
   }
 
-  console.log(isPageFetchLoading, 'isPageFetchLoading');
   // useEffect(() => {
   //   handleRoutingOnError(router, hasPageFetchError, pageFetchError);
   // }, [hasPageFetchError, router, pageFetchError]);

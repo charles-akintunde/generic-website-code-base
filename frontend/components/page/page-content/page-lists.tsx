@@ -43,6 +43,7 @@ const PageLists = () => {
     <ContentList
       pageType={page?.pageName ?? ''}
       pageName={page?.pageName ?? ''}
+      pageId={pageId}
       pageContents={pageContents}
       canEdit={canEdit}
       queryString={queryString}

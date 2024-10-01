@@ -33,6 +33,7 @@ const ResourceLists = () => {
     <ContentList
       isResourcePage={true}
       pageType={page?.pageType ?? ''}
+      pageId={pageId}
       pageName={page?.pageName ?? ''}
       pageContents={pageContents}
       canEdit={canEdit}

@@ -34,7 +34,6 @@ const CreatePage = () => {
     isEditPageSuccess,
     isEditPageLoading,
   } = usePage();
-  console.log(editingPage, 'editingPage');
   const [isManualEdit, setIsManualEdit] = useState(false);
   const form = useForm<z.infer<typeof createPageSchema>>({
     resolver: zodResolver(createPageSchema),
@@ -49,7 +48,6 @@ const CreatePage = () => {
 
   const onSubmit = (data: z.infer<typeof createPageSchema>) => {
     if (editingPage) {
-      console.log(data, 'DATA');
       submitEditedPage(editingPage.pageId, data);
       if (isEditPageSuccess) {
         form.reset();

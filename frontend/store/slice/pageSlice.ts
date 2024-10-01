@@ -9,8 +9,19 @@ import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { SerializedError } from '@reduxjs/toolkit';
 import { nullable } from 'zod';
 
+interface ICurrentUserPage {
+  pageId?: string | null;
+  pageType?: string | null;
+  pageName?: string | null;
+  pageDisplayURL?: string | null;
+  isModalOpen: boolean;
+  isEditingMode?: boolean;
+  pageContent?: IPageContentMain | null;
+}
+
 interface PageState {
   pages: IPageMain[];
+  currentUserPage: ICurrentUserPage | null;
   isCreatePageDialogOpen?: boolean;
   currentPage: IPageMain | null;
   currentPageContents: IPageContentItem[] | null;
@@ -19,10 +30,14 @@ interface PageState {
   editingPageContent: IPageContentMain | null;
   pageContentImageURL: string;
   fetchingPageData: IFetchedPage | null;
+  fetchedPageContents: IPageContentMain[];
 }
 
 const initialState: PageState = {
   pages: [],
+  currentUserPage: {
+    isModalOpen: false,
+  },
   isCreatePageDialogOpen: false,
   currentPageContents: null,
   editingPage: null,
@@ -36,6 +51,7 @@ const initialState: PageState = {
     hasPageFetchError: false,
     pageFetchError: undefined,
   },
+  fetchedPageContents: [],
 };
 
 const pageSlice = createSlice({
@@ -75,6 +91,9 @@ const pageSlice = createSlice({
       if (page && page.pageContents) {
         state.currentPage = page;
       }
+    },
+    setCurrentUserPage(state, action: PayloadAction<ICurrentUserPage>) {
+      state.currentUserPage = action.payload;
     },
     addPageContent(state, action: PayloadAction<IPageContentItem>) {
       const { pageName } = action.payload;
@@ -118,6 +137,36 @@ const pageSlice = createSlice({
     setFecthingPageData(state, action: PayloadAction<IFetchedPage | null>) {
       state.fetchingPageData = action.payload;
     },
+    // setFecthingContentData(state, action: PayloadAction<IPageContentMain[]>) {
+    //   const latestData = action.payload;
+    //   const currentContents = state.fetchedPageContents || [];
+    //   const newPageContents = [...latestData, ...currentContents];
+    //   state.fetchedPageContents = newPageContents;
+    // },
+
+    // setFecthingPageData(state, action: PayloadAction<IFetchedPage | null>) {
+    //   const latestData = action.payload;
+
+    //   const currentContents =
+    //     state.fetchingPageData?.fetchedPage?.pageContents || [];
+    //   const latestContents = latestData?.fetchedPage?.pageContents || [];
+
+    //   const newFetchedPage = latestData?.fetchedPage
+    //     ? {
+    //         ...latestData.fetchedPage,
+    //         pageContents: [...currentContents, ...latestContents],
+    //       }
+    //     : state.fetchingPageData?.fetchedPage || null;
+
+    //   const newFetchedPageData: IFetchedPage = {
+    //     fetchedPage: newFetchedPage,
+    //     isPageFetchLoading: latestData?.isPageFetchLoading ?? false,
+    //     hasPageFetchError: latestData?.hasPageFetchError ?? false,
+    //     pageFetchError: latestData?.pageFetchError,
+    //   };
+
+    //   state.fetchingPageData = newFetchedPageData;
+    // },
     setPageContentImageURL(state, action: PayloadAction<string>) {
       state.pageContentImageURL = action.payload;
     },
@@ -156,5 +205,6 @@ export const {
   setCurrentPageContent,
   setFecthingPageData,
   setPageContentImageURL,
+  setCurrentUserPage,
 } = pageSlice.actions;
 export default pageSlice.reducer;

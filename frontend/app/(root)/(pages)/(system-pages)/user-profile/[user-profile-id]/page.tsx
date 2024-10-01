@@ -73,7 +73,6 @@ const UserProfilePage = () => {
     if (userData?.data) {
       const userProfile: IUserInfo = transformToUserInfo(userData?.data);
       setUserInfo(userProfile);
-      console.log(userProfile, 'userProfile');
       const isSameUser = sanitizeAndCompare(
         uiActiveUser?.uiId as string,
         userProfile?.id

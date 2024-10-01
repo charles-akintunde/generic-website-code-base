@@ -8,6 +8,7 @@ import {
   getPageContents,
   getPage,
   setFecthingPageData,
+  //setFecthingContentData,
 } from '@/store/slice/pageSlice';
 import {
   IFetchedPage,
@@ -93,8 +94,11 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
     data: pageContentData,
     isError: hasPageContentFetchError,
     isLoading: isPageContentFetchLoading,
+    isFetching: isPageContentFetching,
+    status: pageContentFetchStatus,
     error: pageContentFetchError,
     refetch: refetchPageContent,
+    isSuccess: isPageContentFetchSuccess,
   } = useGetPageWithPaginationQuery(
     {
       PG_DisplayURL: pageDisplayURL ?? '',
@@ -102,6 +106,7 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
     },
     {
       skip: !pageDisplayURL,
+      refetchOnMountOrArgChange: true,
     }
   );
 
@@ -130,14 +135,34 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
     (state) => state.page.fetchingPageData
   );
   const fetchedPage = fetchingPageData?.fetchedPage;
+  console.log(pageContentData, 'Check Data outside useEffect');
 
   useEffect(() => {
-    if (pageContentData && pageContentData.data) {
+    if (!pageContentData) {
+      console.log('No page content data available');
+
+      return;
+    }
+
+    if (pageContentData.data) {
       const responseData = pageContentData.data;
       const dynamicPage = normalizeMultiContentPage(responseData, false);
       const newPageContents = dynamicPage.pageContents as IPageContentMain[];
-      setPageContents((prevContents) => [...prevContents, ...newPageContents]);
-      console.log(pageContents, 'pageContents');
+
+      setPageContents((prevContents) => {
+        const uniqueNewPageContents = newPageContents.filter(
+          (newContent) =>
+            !prevContents.some(
+              (existingContent) =>
+                existingContent.pageContentId === newContent.pageContentId
+            )
+        );
+
+        return uniqueNewPageContents.length > 0
+          ? [...prevContents, ...uniqueNewPageContents]
+          : prevContents;
+      });
+
       const fetchingPageData: IFetchedPage = {
         fetchedPage: dynamicPage,
         isPageFetchLoading: isPageContentFetchLoading,
@@ -145,9 +170,10 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
         pageFetchError: pageContentFetchError,
       };
       dispatch(setFecthingPageData(fetchingPageData));
+
       if (newPageContents.length < 8) setHasMore(false);
     }
-  }, [pageContentData]);
+  }, [isPageContentFetchSuccess, pageContentData?.data]);
 
   useEffect(() => {
     if (pagesData && pagesData.data) {
@@ -173,6 +199,7 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
         (menuItem: IPageMenuItem, index) => ({
           label: (
             <div
+              // onClick={() => reloadPage()}
               className={`transition cursor-pointer duration-300 ease-in-out hover:text-primary transform hover:bg-opacity-50 hover:bg-gray-100 rounded-md px-4`}
             >
               <Link href={`${menuItem.href}`}>{menuItem.pageName}</Link>
@@ -222,7 +249,6 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
         isHidden: false,
         href: `/${toKebabCase(response.PG_Name)}`,
       };
-      console.log(normalizedPage, 'normalizedPage');
       setCurrentPage(normalizedPage);
     }
   }, [pageData]);
@@ -272,7 +298,6 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
         ),
         PG_DisplayURL: page.pageDisplayURL as string,
       };
-      console.log(editPageRequest, 'editPageRequest');
       const response = await editPage({
         PG_ID: pageId,
         PG_Name: editPageRequest.PG_Name,

@@ -320,12 +320,9 @@ export const UserRoleStatusDialog = () => {
     }
   }, [userInfo, form]);
 
-  console.log(userInfo, 'USERINFO');
-
   const onSubmit = async (data: any, event: { preventDefault: () => void }) => {
     event.preventDefault();
     const changedFields = getChangedFields(userInfo, data);
-    console.log(userInfo, data, 'changedFields');
     if (userInfo && Object.keys(changedFields).length > 0) {
       await submitEditRoleStatus(
         userInfo.id,
@@ -337,8 +334,6 @@ export const UserRoleStatusDialog = () => {
       return;
     }
   };
-
-  console.log(form.getValues(), 'HHHHHHHHHHHHHhhh');
 
   const { watch } = form;
   const uiRole = watch('uiMainRoles');

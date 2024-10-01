@@ -169,7 +169,6 @@ const Header: React.FC = () => {
 
       setActiveNavItem(key);
     }
-    // console.log(keysNavItem, 'activeNavItem');
   };
 
   useEffect(() => {

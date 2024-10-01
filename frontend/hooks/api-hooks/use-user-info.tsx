@@ -90,7 +90,6 @@ const useUserInfo = () => {
     if (activeUserData?.data) {
       const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
 
-      console.log(userProfile, 'USERPROFILE');
       dispatch(
         setUIActiveUser({
           uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,

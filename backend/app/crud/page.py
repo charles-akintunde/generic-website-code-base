@@ -126,7 +126,7 @@ class PageCRUD:
             db.query(T_PageContent)
             .filter(T_PageContent.PG_ID == page.PG_ID) 
             .order_by(T_PageContent.PC_CreatedAt.desc())
-            .order_by(T_PageContent.PC_ID.asc())  
+            .order_by(T_PageContent.PC_Title.asc())  
             .offset(offset)  
             .limit(8) 
             .all()

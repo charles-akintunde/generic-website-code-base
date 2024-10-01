@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux-hooks';
 import {
   setCurrentPageContent,
+  setCurrentUserPage,
   setEditingPageContent,
   setPageContentImageURL,
 } from '@/store/slice/pageSlice';
@@ -168,19 +169,29 @@ const usePageContent = ({
           `/${pageContent.pageName}/${pageContent.pageContentDisplayURL}`
         );
       }
-      await refetchPageContent();
+
+      dispatch(
+        setCurrentUserPage({
+          isModalOpen: false,
+        })
+      );
+
       notify(
         'Success',
-        response.message || 'The page has been updated successfully.',
+        response.message || 'The page content has been created successfully.',
         'success'
       );
+
+      if (pageContent.pageType == EPageType.ResList) {
+        reloadPage();
+      }
     } catch (error: any) {
       console.log(error, 'ERROR');
       notify(
         'Error',
         error?.data?.message ||
           error?.data?.detail ||
-          'Failed to update the page. Please try again later.',
+          'Failed to page content the page. Please try again later.',
         'error'
       );
     }
@@ -220,7 +231,6 @@ const usePageContent = ({
   ) => {
     try {
       const formData = new FormData();
-      console.log(pageContent, 'pageContent');
       let pageContentObj = {
         ['PC_Content']: pageContent.editorContent,
       };
@@ -232,7 +242,7 @@ const usePageContent = ({
         formData.append('PC_ThumbImg', pageContent.pageContentDisplayImage);
       }
 
-      if (pageContent.pageContentDisplayURL) {
+      if (pageType != EPageType.ResList && pageContent.pageContentDisplayURL) {
         formData.append('PC_DisplayURL', pageContent.pageContentDisplayURL);
       }
       if (pageContent.isPageContentHidden !== undefined) {
@@ -254,22 +264,33 @@ const usePageContent = ({
 
       if (
         pageContent.pageContentDisplayURL &&
-        pageType != EPageType.SinglePage
+        pageType != EPageType.SinglePage &&
+        pageType != EPageType.ResList
       ) {
         router.replace(
           `/${pageDisplayURL}/${pageContent.pageContentDisplayURL}`
         );
       } else {
         singlePageRefetch();
+        // refetchPageContent();
       }
+
+      dispatch(
+        setCurrentUserPage({
+          isModalOpen: false,
+          pageContent: null,
+        })
+      );
 
       notify(
         'Success',
         response.message || 'The page has been updated successfully.',
         'success'
       );
-      await pageRefetch();
+      reloadPage();
+      // await pageRefetch();
     } catch (error: any) {
+      console.log(error, 'ERRRO');
       notify(
         'Error',
         error?.data?.message ||

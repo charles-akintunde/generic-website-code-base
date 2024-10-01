@@ -64,7 +64,6 @@ class BlackListedTokenCRUD:
             None
         """
         try:
-            print("I WAS CALLED")
             current_time = datetime.now(timezone.utc)
             db.query(T_BlackListedToken).filter(
                 (T_BlackListedToken.BT_AccessTokenExp < current_time) |

@@ -9,7 +9,6 @@ import React from 'react';
 const ConfirmUser = () => {
   const pathname = usePathname();
   const paths = pathname.split('/');
-  console.log(pathname.split('/'), 'PATHNAME');
 
   if (paths.length != 3 || !paths[2]) {
     return (

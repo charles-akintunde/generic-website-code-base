@@ -36,6 +36,7 @@ import AppLoading from '@/components/common/app-loading';
 import { useRouter } from 'next/navigation';
 import { useAppSelector } from '@/hooks/redux-hooks';
 import { toKebabCase2 } from '@/utils/helper';
+import { CreatePageContentForm } from '@/components/common/form/create-page-content';
 
 const CreatePageContent = () => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
@@ -90,9 +91,6 @@ const CreatePageContent = () => {
       href: `${pageName}/${data.pageContentDisplayURL}`,
       userId: (uiId && uiId) as string,
     };
-
-    console.log(data, 'pageContent');
-
     await submitPageContent(pageContent, refetchDynamicPage);
   };
 
@@ -141,7 +139,7 @@ const CreatePageContent = () => {
                     onBlur={handlePageDisplayUrlChange}
                   />
 
-                  {/* {pageType == EPageType.ResList && (
+                  {pageType == EPageType.ResList && (
                     <FormField
                       control={form.control}
                       name="pageContentDisplayURL"
@@ -150,7 +148,7 @@ const CreatePageContent = () => {
                       type="text"
                       onBlur={handlePageDisplayUrlChange}
                     />
-                  )} */}
+                  )}
 
                   <FormField
                     control={form.control}
@@ -331,7 +329,7 @@ const EditPageContent = () => {
 
   return (
     <>
-      {isPageContentFetchSuccess && originalData && (
+      {isPageContentFetchSuccess && originalData ? (
         <PageListLayout pageContent={originalData}>
           <div
             className={`flex flex-col min-h-screen w-full ${pageContentPaddingStyles}`}
@@ -409,6 +407,10 @@ const EditPageContent = () => {
             </FormProvider>
           </div>
         </PageListLayout>
+      ) : (
+        <>
+          <AppLoading />
+        </>
       )}
     </>
   );

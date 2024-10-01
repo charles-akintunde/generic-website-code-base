@@ -34,8 +34,6 @@ interface IPageContentCarouselCardProps {
 const PageContentCarouselCard: React.FC<IPageContentCarouselCardProps> = ({
   pageContent,
 }) => {
-  const excerpt = getPageExcerpt(pageContent.editorContent);
-
   return (
     <div className="p-4 bg-white shadow-sm rounded-lg hover:shadow-md transition-shadow duration-300">
       <Link href={pageContent.href}>
@@ -46,10 +44,13 @@ const PageContentCarouselCard: React.FC<IPageContentCarouselCardProps> = ({
         />
       </Link>
 
-      <Tooltip placement="topLeft" title={'Read content'}>
+      <Tooltip
+        placement="topLeft"
+        title={`Read: ${pageContent.pageContentName}`}
+      >
         <div className="mt-4">
           <Link href={pageContent.href}>
-            <h2 className="text-lg font-semibold transition-colors duration-300 hover:text-primary">
+            <h2 className="text-lg font-semibold transition-colors duration-300 hover:text-primary overflow-hidden text-ellipsis whitespace-nowrap">
               {pageContent.pageContentName}
             </h2>
           </Link>

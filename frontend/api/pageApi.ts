@@ -40,7 +40,6 @@ export const pageApi = createApi({
       query: ({ PG_Number, PG_Limit }) =>
         `${url}/?pg_page_number=${PG_Number}&pg_page_limit=${PG_Limit}`,
       providesTags: (result) => {
-        console.log('providesTags result:', result);
         return result?.data?.Pages
           ? [
               ...result.data.Pages.map((page) => ({

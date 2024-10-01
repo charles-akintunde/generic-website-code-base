@@ -4,9 +4,10 @@ import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import usePage from '@/hooks/api-hooks/use-page';
 import { IPageMenuItem } from '@/types/componentInterfaces';
-import { hasPermission } from '@/utils/helper';
+import { hasPermission, reloadPage } from '@/utils/helper';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { setUIIsUserEditingMode } from '@/store/slice/userSlice';
+import { setFecthingPageData } from '@/store/slice/pageSlice';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -69,6 +70,15 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       setUIIsUserEditingMode({
         uiIsUserEditingMode: false,
         uiEditorInProfileMode: false,
+      })
+    );
+
+    dispatch(
+      setFecthingPageData({
+        fetchedPage: null,
+        isPageFetchLoading: true,
+        hasPageFetchError: false,
+        pageFetchError: undefined,
       })
     );
   }, [allAppRoutes, pathname, router, uiIsLoading, currentPage]);

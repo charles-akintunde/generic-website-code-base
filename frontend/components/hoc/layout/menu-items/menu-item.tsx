@@ -11,9 +11,6 @@ const MenuItem: React.FC<IPageMenuItem> = ({ pageName, href, isHidden }) => {
   const pathname = usePathname();
   const [isActive, setIsActive] = useState(false);
   const dispatch = useAppDispatch();
-
-  // console.log(pathname, href, 'pathname');
-
   const handleClose = () => {
     dispatch(closeDrawer());
   };

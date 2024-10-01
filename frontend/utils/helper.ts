@@ -406,7 +406,6 @@ export const mapPageToIPageMain = (pagesData: PagesData): IPageList => {
 };
 
 export const mapToIIUserList = (data: IUserResponseData): IUserList => {
-  console.log(data, 'DATA');
   const users: IUserBase[] = data.users.map((user: UserResponse) => ({
     id: user.UI_ID,
     uiFirstName: user.UI_FirstName,
@@ -532,8 +531,6 @@ export const handleRoutingOnError = (
 
 export const hasNavItems = (navMenuItems: MenuItem[], pathname: string) => {
   if (!navMenuItems || !pathname) return null;
-
-  console.log(navMenuItems, 'navMenuItems');
 
   const currentNavItem = navMenuItems.find(
     (item: MenuItem) =>

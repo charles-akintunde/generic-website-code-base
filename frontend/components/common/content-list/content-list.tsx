@@ -18,7 +18,10 @@ import {
 import AppLoading from '../app-loading';
 import usePageContent from '@/hooks/api-hooks/use-page-content';
 import usePage from '@/hooks/api-hooks/use-page';
-import { useAppSelector } from '@/hooks/redux-hooks';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
+import { EPageType } from '@/types/enums';
+import { CreatePageContentModal } from '../form/create-page-content';
+import { setCurrentUserPage } from '@/store/slice/pageSlice';
 
 interface ContentListProps {
   pageType: string;
@@ -32,35 +35,42 @@ interface ContentListProps {
     pageContent: IPageContentMain;
     pageName: string;
   }>;
+  pageId: string;
   createPageHref: (pageNameKebab: string, queryString: string) => string;
   emptyDescription?: string;
 }
 
 const ContentList: React.FC<ContentListProps> = ({
+  pageType,
   isResourcePage,
   canEdit,
   ListCardComponent,
   pageName,
   queryString,
   createPageHref,
+  pageId,
 }) => {
   const className = isResourcePage
     ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
     : 'grid-cols-1 md:grid-cols-2 gap-8';
   const pathname = window.location.pathname;
   const pageDisplayURL = pathname.split('/')[1];
-  const { hasMore, setPageNumber } = usePage({ pageDisplayURL });
+  const { hasMore, setPageNumber, pageContents } = usePage({ pageDisplayURL });
   const fetchingPageData = useAppSelector(
     (state) => state.page.fetchingPageData
   );
+  const fetchingPageContentData = useAppSelector(
+    (state) => state.page.fetchedPageContents
+  );
+
   const fetchedPage = fetchingPageData?.fetchedPage;
   const isPageFetchLoading = fetchingPageData?.isPageFetchLoading;
   const hasPageFetchError = fetchingPageData?.hasPageFetchError;
   const pageFetchError = fetchingPageData?.pageFetchError;
-  const fetchedPageContents = fetchedPage && fetchedPage?.pageContents;
-
+  const fetchedPageContents = pageContents;
   const router = useRouter();
   const observerRef = useRef<HTMLDivElement>(null);
+  const dispatch = useAppDispatch();
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
@@ -75,8 +85,8 @@ const ContentList: React.FC<ContentListProps> = ({
   useEffect(() => {
     const observer = new IntersectionObserver(handleObserver, {
       root: null,
-      rootMargin: '20px',
-      threshold: 1.0,
+      rootMargin: '350px',
+      threshold: 0,
     });
 
     if (observerRef.current) {
@@ -96,18 +106,42 @@ const ContentList: React.FC<ContentListProps> = ({
     return <AppLoading />;
   }
 
+  const openCreateContentModal = () => {
+    dispatch(
+      setCurrentUserPage({
+        isModalOpen: true,
+        pageId: pageId,
+        pageName: pageName,
+        pageType: pageType,
+        isEditingMode: false,
+      })
+    );
+  };
+
+  console.log(pageType, 'PAGE TYPE');
+
   return (
     <div className="min-h-screen">
       <div className={`${containerNoFlexPaddingStyles} pt-8`}>
         <header className="flex justify-between items-center pb-4">
           <h2 className="text-xl font-bold">Latest Content</h2>
           {canEdit && (
-            <AppButton
-              buttonText={`Create Content`}
-              Icon={PlusIcon}
-              href={createPageHref(pageDisplayURL, queryString)}
-              classNames={primarySolidButtonStyles}
-            />
+            <>
+              {pageType == EPageType.ResList ? (
+                <CreatePageContentModal
+                  onClick={openCreateContentModal}
+                  pageType={pageType}
+                  pageId={pageId}
+                />
+              ) : (
+                <AppButton
+                  buttonText={`Create Content`}
+                  Icon={PlusIcon}
+                  href={createPageHref(pageDisplayURL, queryString)}
+                  classNames={primarySolidButtonStyles}
+                />
+              )}
+            </>
           )}
         </header>
         {fetchedPageContents && fetchedPageContents.length > 0 ? (

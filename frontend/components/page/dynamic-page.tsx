@@ -28,17 +28,8 @@ const DynamicPage = () => {
   const pageFetchError = fetchingPageData?.pageFetchError;
   const pageName = fetchedPage && (fetchedPage.pageName as string);
   useEffect(() => {
-    if (!isPageFetchLoading) {
-      console.log(pageFetchError, hasPageFetchError, 'pageFetchError');
-      handleRoutingOnError(
-        router,
-        hasPageFetchError as boolean,
-        pageFetchError
-      );
-    }
+    handleRoutingOnError(router, hasPageFetchError as boolean, pageFetchError);
   }, [router, hasPageFetchError, pageFetchError]);
-
-  console.log(fetchedPage, 'fetchedPage');
 
   if (isPageFetchLoading) {
     return <AppLoading />;
