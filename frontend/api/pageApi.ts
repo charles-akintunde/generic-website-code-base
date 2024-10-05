@@ -10,6 +10,7 @@ import {
   IPageGetRequest,
   IPageRequest,
   IPageRequestWithIdentifier,
+  ISinglePageRequest,
 } from '@/types/requestInterfaces';
 
 const url = '/pages';
@@ -32,6 +33,12 @@ export const pageApi = createApi({
             ]
           : [{ type: 'Pages', id: 'LIST' }];
       },
+    }),
+    getPageColumnsByDisplayUrl: builder.query<
+      ISinglePageResponse,
+      ISinglePageRequest
+    >({
+      query: ({ PG_DisplayURL }) => `${url}/columns/${PG_DisplayURL}`,
     }),
     getPagesWithOffset: builder.query<
       IPageResponse,
@@ -131,5 +138,6 @@ export const {
   useDeletePageMutation,
   useGetPageQuery,
   useGetPagesWithOffsetQuery,
-  useGetPageWithPaginationQuery,
+  // useGetPageWithPaginationQuery,
+  useGetPageColumnsByDisplayUrlQuery,
 } = pageApi;

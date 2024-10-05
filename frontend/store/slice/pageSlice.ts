@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   IFetchedPage,
+  IFetchedSinglePage,
   IPageContentItem,
   IPageContentMain,
   IPageMain,
@@ -30,7 +31,8 @@ interface PageState {
   editingPageContent: IPageContentMain | null;
   pageContentImageURL: string;
   fetchingPageData: IFetchedPage | null;
-  fetchedPageContents: IPageContentMain[];
+  pageContents: IPageContentMain[] | [];
+  fetchedSinglePageData: IFetchedSinglePage | null;
 }
 
 const initialState: PageState = {
@@ -51,7 +53,13 @@ const initialState: PageState = {
     hasPageFetchError: false,
     pageFetchError: undefined,
   },
-  fetchedPageContents: [],
+  fetchedSinglePageData: {
+    fetchedPage: null,
+    isPageFetchLoading: true,
+    hasPageFetchError: false,
+    pageFetchError: undefined,
+  },
+  pageContents: [],
 };
 
 const pageSlice = createSlice({
@@ -137,6 +145,59 @@ const pageSlice = createSlice({
     setFecthingPageData(state, action: PayloadAction<IFetchedPage | null>) {
       state.fetchingPageData = action.payload;
     },
+    setFetchedSinglePageData(
+      state,
+      action: PayloadAction<IFetchedSinglePage | null>
+    ) {
+      state.fetchedSinglePageData = action.payload;
+    },
+    setPageContents: (state, action: PayloadAction<IPageContentMain[]>) => {
+      state.pageContents = action.payload;
+    },
+    // addPageContents: (state, action: PayloadAction<IPageContentMain[]>) => {
+    //   const newContents = action.payload;
+    //   const existingIds = new Set(
+    //     state.pageContents.map((content) => content.pageContentId)
+    //   );
+    //   const uniqueNewContents = newContents.filter(
+    //     (content) => !existingIds.has(content.pageContentId)
+    //   );
+    //   state.pageContents.push(...uniqueNewContents);
+    // },
+    removePageContent: (state, action: PayloadAction<string>) => {
+      state.pageContents = state.pageContents.filter(
+        (content) => content.pageContentId !== action.payload
+      );
+      console.log('DELETED');
+    },
+    addPageContents: (state, action: PayloadAction<IPageContentMain[]>) => {
+      const newContents = action.payload;
+
+      newContents.forEach((newContent) => {
+        // Find the index of the content with the same pageContentId
+        const existingIndex = state.pageContents.findIndex(
+          (content) => content.pageContentId === newContent.pageContentId
+        );
+
+        if (existingIndex !== -1) {
+          // Content exists, check if any properties are different
+          const existingContent = state.pageContents[existingIndex];
+
+          // Replace the content if there are changes
+          const hasChanged = Object.keys(newContent).some(
+            (key) => newContent[key] !== existingContent[key]
+          );
+
+          if (hasChanged) {
+            state.pageContents[existingIndex] = newContent;
+          }
+        } else {
+          // Content does not exist, add the new content
+          state.pageContents.push(newContent);
+        }
+      });
+    },
+
     // setFecthingContentData(state, action: PayloadAction<IPageContentMain[]>) {
     //   const latestData = action.payload;
     //   const currentContents = state.fetchedPageContents || [];
@@ -206,5 +267,9 @@ export const {
   setFecthingPageData,
   setPageContentImageURL,
   setCurrentUserPage,
+  setFetchedSinglePageData,
+  setPageContents,
+  addPageContents,
+  removePageContent,
 } = pageSlice.actions;
 export default pageSlice.reducer;

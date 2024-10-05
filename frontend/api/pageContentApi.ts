@@ -22,7 +22,7 @@ const pageUrl = '/pages';
 
 export const pageContentApi = createApi({
   reducerPath: 'pageContentApi',
-  tagTypes: ['Pages', 'Menus', 'Page', 'PageContent'],
+  tagTypes: ['Pages', 'Menus', 'Page', 'PageContent', 'SinglePageContent'],
   baseQuery: publicRouteBaseQuery,
   endpoints: (builder) => ({
     getPageContent: builder.query<
@@ -31,18 +31,18 @@ export const pageContentApi = createApi({
     >({
       query: (req) => ({
         url: `${url}/${req.PG_DisplayURL}/${req.PC_DisplayURL}`,
-        providesTags: (result: IPageContentGetResponse) => {
-          result.data.PG_PageContent
-            ? [
-                {
-                  type: 'PageContent' as const,
-                  id: result.data.PG_PageContent.PC_ID,
-                },
-                { type: 'PageContent', id: 'LIST' },
-              ]
-            : [{ type: 'PageContent', id: 'LIST' }];
-        },
       }),
+      providesTags: (result: IPageContentGetResponse | undefined) => {
+        return result?.data.PG_PageContent
+          ? [
+              {
+                type: 'SinglePageContent',
+                id: result.data.PG_PageContent.PC_ID,
+              },
+              { type: 'SinglePageContent', id: 'SINGLE_PAGE_CONTENT' },
+            ]
+          : [{ type: 'SinglePageContent', id: 'SINGLE_PAGE_CONTENT' }];
+      },
     }),
     createPageContent: builder.mutation<
       IGenericResponse,
@@ -65,24 +65,54 @@ export const pageContentApi = createApi({
         body: patch.formData,
       }),
       invalidatesTags: (result, error, { PC_ID }) => [
-        { type: 'PageContent', id: PC_ID },
-        { type: 'PageContent', id: 'LIST' },
+        { type: 'SinglePageContent', id: PC_ID },
+        { type: 'SinglePageContent', id: 'SINGLE_PAGE_CONTENT' },
+        { type: 'PageContent' as const, id: 'LIST' },
       ],
     }),
+    // getPageWithPagination: builder.query<ISinglePageResponse, IPageGetRequest>({
+    //   query: ({ PG_DisplayURL, PG_PageNumber }) =>
+    //     `${pageUrl}/with-pagination/${PG_DisplayURL}?pg_page_number=${PG_PageNumber}`,
+    //   providesTags: (result) =>
+    //     result?.data?.PG_PageContents
+    //       ? [
+    //           ...(result.data.PG_PageContents.map((content) => ({
+    //             type: 'PageContent' as const,
+    //             id: content.PC_ID,
+    //           })) || []),
+    //           { type: 'Page' as const, id: result.data.PG_ID },
+    //           { type: 'PageContent' as const, id: 'LIST' },
+    //           { type: 'Page' as const, id: 'LIST' },
+    //         ]
+    //       : [
+    //           { type: 'Page' as const, id: 'LIST' },
+    //           { type: 'PageContent' as const, id: 'LIST' },
+    //         ],
+    // }),
     getPageWithPagination: builder.query<ISinglePageResponse, IPageGetRequest>({
-      query: ({ PG_DisplayURL, PG_PageNumber }) =>
-        `${pageUrl}/with-pagination/${PG_DisplayURL}?pg_page_number=${PG_PageNumber}`,
+      query: ({ PG_DisplayURL, PG_PageNumber, PG_PageOffset }) => {
+        let queryString = `${'pages'}/with-pagination/${PG_DisplayURL}?pg_page_number=${PG_PageNumber}`;
+        if (PG_PageOffset !== undefined) {
+          queryString += `&pg_page_offset=${PG_PageOffset}`;
+        }
+
+        return queryString;
+      },
       providesTags: (result) =>
-        result?.data
+        result?.data?.PG_PageContents
           ? [
-              { type: 'Page', id: result.data.PG_ID },
-              { type: 'Page', id: 'LIST' },
-              { type: 'PageContent', id: result.data.PG_ID },
-              { type: 'PageContent', id: 'LIST' },
+              ...(result.data.PG_PageContents.map((content) => ({
+                type: 'PageContent' as const,
+                id: content.PC_ID,
+              })) || []),
+              { type: 'Page' as const, id: result.data.PG_ID },
+              { type: 'PageContent' as const, id: 'LIST' },
+              { type: 'Page' as const, id: 'LIST' },
+              'PageContent',
             ]
           : [
-              { type: 'Page', id: 'LIST' },
-              { type: 'PageContent', id: 'LIST' },
+              { type: 'Page' as const, id: 'LIST' },
+              { type: 'PageContent' as const, id: 'LIST' },
             ],
     }),
     deletePageContent: builder.mutation<IGenericResponse, string>({
@@ -90,13 +120,16 @@ export const pageContentApi = createApi({
         url: `${url}/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [
-        { type: 'PageContent', id },
-        { type: 'PageContent', id: 'LIST' },
-        { type: 'Page', id: 'LIST' },
-        { type: 'Page', id: id },
-      ],
+      invalidatesTags: (result, error, id) => {
+        return [
+          { type: 'PageContent', id },
+          { type: 'PageContent', id: 'LIST' },
+          { type: 'Page', id: 'LIST' },
+          'PageContent',
+        ];
+      },
     }),
+
     uploadPageContent: builder.mutation<
       IPageContentImageResponse,
       IPageContentImageRequest

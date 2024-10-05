@@ -154,6 +154,32 @@ class PageCRUD:
         
         return db.query(T_Page).filter(func.lower(T_Page.PG_DisplayURL) == func.lower(unquote(pg_display_url))).first()
     
+    def get_page_specific_columns_by_display_url(self, db: Session, pg_display_url: str):
+        """
+        Gets specific columns of a page with page display URL.
+
+        Args:
+            db (Session): Database session.
+            pg_display_url (str): Page Display URL.
+
+        Returns:
+            PageResponse: The response schema containing the selected columns of the page.
+        """
+        
+        return db.query(
+            T_Page.PG_ID,
+            T_Page.PG_Type,
+            T_Page.PG_Name,
+            T_Page.PG_Permission,
+            T_Page.PG_DisplayURL
+        ).filter(
+            func.lower(T_Page.PG_DisplayURL) == func.lower(unquote(pg_display_url))
+        ).first()
+
+   
+        
+
+    
     def get_page_by_name_and_id(self, db: Session, page_name: str, page_id: str) -> T_Page:
         """
         Gets page with page name and id.

@@ -7,8 +7,12 @@ import {
   containerNoFlexPaddingStyles,
   primarySolidButtonStyles,
 } from '@/styles/globals';
-import { IPageContentMain } from '@/types/componentInterfaces';
-import { useRouter } from 'next/navigation';
+import {
+  IFetchedPage,
+  IPageContentMain,
+  RootState,
+} from '@/types/componentInterfaces';
+import { usePathname, useRouter } from 'next/navigation';
 import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
 import {
   handleRoutingOnError,
@@ -21,7 +25,12 @@ import usePage from '@/hooks/api-hooks/use-page';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { EPageType } from '@/types/enums';
 import { CreatePageContentModal } from '../form/create-page-content';
-import { setCurrentUserPage } from '@/store/slice/pageSlice';
+import {
+  addPageContents,
+  setCurrentUserPage,
+  setFecthingPageData,
+  setPageContents,
+} from '@/store/slice/pageSlice';
 
 interface ContentListProps {
   pageType: string;
@@ -50,28 +59,65 @@ const ContentList: React.FC<ContentListProps> = ({
   createPageHref,
   pageId,
 }) => {
+  const dispatch = useAppDispatch();
+  // dispatch(setPageContents([]));
+
   const className = isResourcePage
     ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
     : 'grid-cols-1 md:grid-cols-2 gap-8';
-  const pathname = window.location.pathname;
-  const pageDisplayURL = pathname.split('/')[1];
-  const { hasMore, setPageNumber, pageContents } = usePage({ pageDisplayURL });
+  const router = useRouter();
+  const pathname = usePathname();
+  const [pageDisplayURL, setPageDisplayURL] = useState(pathname.split('/')[1]);
   const fetchingPageData = useAppSelector(
     (state) => state.page.fetchingPageData
   );
-  const fetchingPageContentData = useAppSelector(
-    (state) => state.page.fetchedPageContents
+  const fetchedPageContents = useAppSelector(
+    (state: RootState) => state.page.pageContents
   );
-
+  const sortedPageContents = [...fetchedPageContents].sort((a, b) => {
+    return (
+      new Date(b.pageContentCreatedAt).getTime() -
+      new Date(a.pageContentCreatedAt).getTime()
+    );
+  });
+  // const [pageContents, setPageContents] = useState<IPageContentMain[]>([]);
+  // const { pageContents } = usePageContent({});
+  const [pageNumber, setPageNumber] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const fetchedPage = fetchingPageData?.fetchedPage;
   const isPageFetchLoading = fetchingPageData?.isPageFetchLoading;
   const hasPageFetchError = fetchingPageData?.hasPageFetchError;
   const pageFetchError = fetchingPageData?.pageFetchError;
-  const fetchedPageContents = pageContents;
-  const router = useRouter();
-  const observerRef = useRef<HTMLDivElement>(null);
-  const dispatch = useAppDispatch();
 
+  const observerRef = useRef<HTMLDivElement>(null);
+  const {
+    data: pageContentsData,
+    isError: hasPageContentFetchError,
+    isLoading: isPageContentFetchLoading,
+    isFetching: isPageContentFetching,
+    status: pageContentFetchStatus,
+    error: pageContentFetchError,
+    refetch: refetchPageContent,
+    isSuccess: isPageContentsFetchSuccess,
+  } = useGetPageWithPaginationQuery(
+    {
+      PG_DisplayURL: pageDisplayURL ?? '',
+      PG_PageNumber: pageNumber,
+    },
+    {
+      skip: !pageDisplayURL,
+      refetchOnMountOrArgChange: true,
+    }
+  );
+
+  useEffect(() => {
+    setPageDisplayURL(pathname.split('/')[1]);
+  }, [pathname]);
+
+  console.log(pageDisplayURL, 'pageDisplayURL');
+
+  // console.log(fetchedpageContents1, 'fetchedpageContents');
+  // console.log(pageContents, 'pageContents');
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const target = entries[0];
@@ -81,6 +127,39 @@ const ContentList: React.FC<ContentListProps> = ({
     },
     [hasMore, isPageFetchLoading, setPageNumber]
   );
+
+  console.log(sortedPageContents);
+
+  useEffect(() => {
+    console.log(pageContentsData, 'pageContentsData');
+    if (!pageContentsData) {
+      console.log('No page content data available');
+
+      return;
+    }
+
+    if (pageContentsData.data) {
+      const responseData = pageContentsData.data;
+      const dynamicPage = normalizeMultiContentPage(responseData, false);
+      const newPageContents = dynamicPage.pageContents as IPageContentMain[];
+      console.log(newPageContents, 'newPageContents');
+      dispatch(addPageContents(newPageContents));
+      const fetchingPageData: IFetchedPage = {
+        fetchedPage: dynamicPage,
+        isPageFetchLoading: isPageContentFetchLoading,
+        hasPageFetchError: hasPageContentFetchError,
+        pageFetchError: pageContentFetchError,
+      };
+      dispatch(setFecthingPageData(fetchingPageData));
+
+      if (newPageContents.length < 8) setHasMore(false);
+    }
+  }, [
+    isPageContentsFetchSuccess,
+    pageContentsData?.data,
+    isPageContentFetchLoading,
+    isPageContentFetching,
+  ]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(handleObserver, {
@@ -118,8 +197,6 @@ const ContentList: React.FC<ContentListProps> = ({
     );
   };
 
-  console.log(pageType, 'PAGE TYPE');
-
   return (
     <div className="min-h-screen">
       <div className={`${containerNoFlexPaddingStyles} pt-8`}>
@@ -144,9 +221,9 @@ const ContentList: React.FC<ContentListProps> = ({
             </>
           )}
         </header>
-        {fetchedPageContents && fetchedPageContents.length > 0 ? (
+        {sortedPageContents && sortedPageContents.length > 0 ? (
           <div className={`grid ${className}`}>
-            {fetchedPageContents
+            {sortedPageContents
               .filter(
                 (pageContent) => canEdit || !pageContent.isPageContentHidden
               )

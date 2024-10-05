@@ -120,3 +120,23 @@ def create_page_content_img_response(pc_img_url: str)  -> PC_PageContentImgRespo
     return PC_PageContentImgResponse(
         PC_PageContentURL=pc_img_url
     )
+
+
+
+def transform_page_to_response(page: T_Page) -> PageResponse:
+    """
+    Helper function to transform a T_Page object into a PageResponse schema.
+    
+    Args:
+        page (T_Page): The T_Page object to transform.
+    
+    Returns:
+        PageResponse: The transformed data in the response format.
+    """
+    return PageResponse(
+        PG_ID=str(page.PG_ID),
+        PG_Type=page.PG_Type.value, 
+        PG_Name=str(page.PG_Name),
+        PG_DisplayURL=str(page.PG_DisplayURL),
+        PG_Permission=[perm.value for perm in page.PG_Permission]  
+    )

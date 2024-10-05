@@ -204,7 +204,8 @@ class PageContentCRUD:
             # if page_content_to_delete.PC_DisplayURL: # type: ignore
             #     delete_file(extract_path_from_url(page_content_to_delete.PC_DisplayURL)) # type: ignore
             if page_content_to_delete.PC_ThumbImgURL: # type: ignore
-                delete_file(extract_path_from_url(page_content_to_delete.PC_ThumbImgURL)) # type: ignore
+                pass
+                #delete_file(extract_path_from_url(page_content_to_delete.PC_ThumbImgURL)) # type: ignore
             db.delete(page_content_to_delete)
             db.commit()
             return True

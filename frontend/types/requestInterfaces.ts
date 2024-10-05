@@ -92,3 +92,7 @@ export interface IPasswordResetConfirmationRequest {
 export interface IPageContentImageRequest {
   PC_PageContentImg: File;
 }
+
+export interface ISinglePageRequest {
+  PG_DisplayURL: string;
+}

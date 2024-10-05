@@ -62,13 +62,12 @@ const PageContentCarouselCard: React.FC<IPageContentCarouselCardProps> = ({
 
 const PageContentCarousel: React.FC = () => {
   const pageDisplayURL = 'test-page';
-  const {} = usePage({ pageDisplayURL });
-  const fetchingPageData = useAppSelector(
-    (state) => state.page.fetchingPageData
-  ) as IFetchedPage;
+  const { pageContents } = usePage({ pageDisplayURL });
+  // const fetchingPageData = useAppSelector(
+  //   (state) => state.page.fetchingPageData
+  // ) as IFetchedPage;
 
-  const fetchedPageContents: IPageContentMain[] =
-    fetchingPageData?.fetchedPage?.pageContents || [];
+  const fetchedPageContents: IPageContentMain[] = pageContents;
 
   if (!fetchedPageContents || fetchedPageContents.length === 0) {
     return (

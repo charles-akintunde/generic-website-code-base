@@ -11,24 +11,35 @@ import ResourceLists from '@/components/page/page-content/resource-lists';
 import AppLoading from '../common/app-loading';
 import { EPageType } from '@/types/enums';
 import { useAppSelector } from '@/hooks/redux-hooks';
+import useHelper from '@/hooks/api-hooks/use-helper';
 
 const DynamicPage = () => {
   const pathname = usePathname();
+  const { clearCache } = useHelper(0);
   const router = useRouter();
-  const [pageDisplayURL, setPageDisplayURL] = useState(
+  const [pageDisplayURLForDynamicPage, setPageDisplayURL] = useState(
     pathname.split('/')['1']
   );
-  const {} = usePage({ pageDisplayURL });
+  const {} = usePage({ pageDisplayURLForDynamicPage });
   const fetchingPageData = useAppSelector(
     (state) => state.page.fetchingPageData
   );
-  const fetchedPage = fetchingPageData?.fetchedPage;
-  const isPageFetchLoading = fetchingPageData?.isPageFetchLoading;
-  const hasPageFetchError = fetchingPageData?.hasPageFetchError;
-  const pageFetchError = fetchingPageData?.pageFetchError;
+  const fetchedSinglePageData = useAppSelector(
+    (state) => state.page.fetchedSinglePageData
+  );
+
+  const fetchedPage = fetchedSinglePageData?.fetchedPage;
+  const isPageFetchLoading = fetchedSinglePageData?.isPageFetchLoading;
+  const hasPageFetchError = fetchedSinglePageData?.hasPageFetchError;
+  const pageFetchError = fetchedSinglePageData?.pageFetchError;
   const pageName = fetchedPage && (fetchedPage.pageName as string);
   useEffect(() => {
-    handleRoutingOnError(router, hasPageFetchError as boolean, pageFetchError);
+    handleRoutingOnError(
+      router,
+      hasPageFetchError as boolean,
+      pageFetchError,
+      clearCache
+    );
   }, [router, hasPageFetchError, pageFetchError]);
 
   if (isPageFetchLoading) {

@@ -14,7 +14,7 @@ from app.models.page import T_Page
 from app.core.auth import get_current_user_without_exception
 from app.utils.utils import check_page_permission, is_admin
 from app.models.user_info import T_UserInfo
-from app.utils.response_json import build_page_content_json, build_multiple_page_response, create_page_with_offset_response
+from app.utils.response_json import build_page_content_json, build_multiple_page_response, create_page_with_offset_response, transform_page_to_response
 
 async def create_new_page(db: Session, page: PageCreate, current_user: T_UserInfo):
     """
@@ -86,6 +86,29 @@ def get_pages(db: Session) -> PagesResponse:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={e.detail}
         )
+    
+
+def get_page_specific_columns_by_display_url(db: Session, pg_display_url: str) -> PageResponse:
+    """
+    Service function to fetch a page by display URL and transform it to PageResponse.
+
+    Args:
+        db (Session): The database session.
+        pg_display_url (str): The page display URL.
+
+    Returns:
+        PageResponse: The transformed page data in the response format.
+    """
+    page = page_crud.get_page_by_display_url(db, pg_display_url)
+
+    if not page:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Page was not found."
+        )
+    
+    return transform_page_to_response(page)
+
 
 def get_page(
         db: Session,

@@ -315,13 +315,15 @@ const EditPageContent = () => {
     }
   };
 
-  useEffect(() => {
-    handleRoutingOnError(
-      router,
-      hasPageContentFetchError,
-      pageContentFetchError
-    );
-  }, [hasPageContentFetchError, pageContentFetchError, router]);
+  // useEffect(() => {
+  //   handleRoutingOnError(
+  //     router,
+  //     hasPageContentFetchError,
+  //     pageContentFetchError
+  //   );
+  // }, [hasPageContentFetchError, pageContentFetchError, router]);
+
+  console.log(hasPageContentFetchError, pageContentFetchError);
 
   if (isPageContentFetchLoading) {
     return <AppLoading />;

@@ -33,28 +33,28 @@ const CookieConsentBanner = () => {
       declineButtonText="Decline"
       cookieName="userConsent"
       style={{
-        background: 'hsl(var(--primary))',
-        color: 'hsl(var(--primary-foreground))',
-        boxShadow: `0px 4px 15px hsla(var(--foreground), 0.3)`,
+        background: '#dde3ed', // Soft light blue-gray to blend with the page
+        color: '#2B2D42', // Dark gray for the text to ensure readability
+        boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)', // Soft shadow for depth
         padding: '1rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
       }}
       buttonStyle={{
-        background: 'hsl(var(--secondary))',
-        color: 'hsl(var(--secondary-foreground))',
+        background: '#3B82F6', // Softer blue for the accept button
+        color: '#FFFFFF', // White text for contrast
         fontSize: '13px',
         border: 'none',
-        borderRadius: 'var(--radius)',
+        borderRadius: '8px',
         padding: '0.5rem 1rem',
       }}
       declineButtonStyle={{
-        background: 'hsl(var(--destructive))',
-        color: 'hsl(var(--destructive-foreground))',
+        background: '#F87171', // Softer red for the decline button
+        color: '#FFFFFF', // White text for contrast
         fontSize: '13px',
         border: 'none',
-        borderRadius: 'var(--radius)',
+        borderRadius: '8px',
         padding: '0.5rem 1rem',
         marginLeft: '1rem',
       }}
@@ -65,10 +65,7 @@ const CookieConsentBanner = () => {
     >
       We use cookies to improve your experience. By using our site, you consent
       to cookies.{' '}
-      <a
-        href="/cookie-policy"
-        style={{ color: 'hsl(var(--primary-foreground))' }}
-      >
+      <a href="/cookie-policy" style={{ color: '#2B2D42' }}>
         Learn More
       </a>
     </CookieConsent>

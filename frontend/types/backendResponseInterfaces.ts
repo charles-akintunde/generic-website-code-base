@@ -109,6 +109,10 @@ export interface ISinglePageResponse extends IGenericResponse {
   data: Page;
 }
 
+// export interface ISinglePageDataOnlyResponse extends IGenericResponse {
+//   data: Page;
+// }
+
 export interface IGetPagesWithOffsetRequest {
   PG_Number: number;
   PG_Limit: number;

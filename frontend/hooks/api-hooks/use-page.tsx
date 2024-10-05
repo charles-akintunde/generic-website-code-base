@@ -8,6 +8,7 @@ import {
   getPageContents,
   getPage,
   setFecthingPageData,
+  setFetchedSinglePageData,
   //setFecthingContentData,
 } from '@/store/slice/pageSlice';
 import {
@@ -22,12 +23,13 @@ import {
   useEditPageMutation,
   useDeletePageMutation,
   useGetPageQuery,
-  useGetPageWithPaginationQuery,
+  useGetPageColumnsByDisplayUrlQuery,
 } from '@/api/pageApi';
 import {
   normalizeMultiContentPage,
   reloadPage,
   toKebabCase,
+  transformPageToIPage,
 } from '@/utils/helper';
 import { Page } from '@/types/backendResponseInterfaces';
 import { IPageRequest } from '@/types/requestInterfaces';
@@ -35,22 +37,41 @@ import { useNotification } from '@/components/hoc/notification-provider';
 import { routes, systemMenuItems } from '@/components/hoc/layout/menu-items';
 import { MenuProps } from 'antd';
 import Link from 'next/link';
+import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
 
 interface usePageProps {
   pageName?: string;
   pageDisplayURL?: string;
+  pageDisplayURLForDynamicPage?: string;
   // pageOffset?: number;
 }
 
 type MenuItem = Required<MenuProps>['items'][number];
 
-const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
+const usePage = ({
+  pageName,
+  pageDisplayURL,
+  pageDisplayURLForDynamicPage,
+}: usePageProps = {}) => {
   const {
     data: pagesData,
     isError: hasPagesFetchError,
     isSuccess: isPagesFetchSuccess,
     isLoading: isPagesFetchLoading,
   } = useGetPagesQuery();
+
+  const {
+    data: singlePageColumnsData,
+    isError: hasSinglePageColumnsFetchError,
+    isSuccess: isSinglePageColumnsFetchSuccess,
+    isLoading: isSinglePageColumnsFetchLoading,
+    error: singlePageFetchError,
+  } = useGetPageColumnsByDisplayUrlQuery(
+    { PG_DisplayURL: pageDisplayURLForDynamicPage ?? '' },
+    {
+      skip: !pageDisplayURLForDynamicPage,
+    }
+  );
 
   const { notify } = useNotification();
   const [
@@ -135,7 +156,51 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
     (state) => state.page.fetchingPageData
   );
   const fetchedPage = fetchingPageData?.fetchedPage;
-  console.log(pageContentData, 'Check Data outside useEffect');
+  // console.log(pageContentData, 'Check Data outside useEffect');
+
+  useEffect(() => {
+    if (isSinglePageColumnsFetchLoading) {
+      dispatch(
+        setFetchedSinglePageData({
+          fetchedPage: null,
+          isPageFetchLoading: true,
+          hasPageFetchError: false,
+          pageFetchError: undefined,
+        })
+      );
+    }
+
+    if (isSinglePageColumnsFetchSuccess && singlePageColumnsData) {
+      const fetchedPage = transformPageToIPage(singlePageColumnsData.data);
+
+      dispatch(
+        setFetchedSinglePageData({
+          fetchedPage: fetchedPage,
+          isPageFetchLoading: false,
+          hasPageFetchError: false,
+          pageFetchError: undefined,
+        })
+      );
+    }
+
+    if (hasSinglePageColumnsFetchError) {
+      dispatch(
+        setFetchedSinglePageData({
+          fetchedPage: null,
+          isPageFetchLoading: false,
+          hasPageFetchError: true,
+          pageFetchError: pageFetchError,
+        })
+      );
+    }
+  }, [
+    isSinglePageColumnsFetchLoading,
+    isSinglePageColumnsFetchSuccess,
+    hasSinglePageColumnsFetchError,
+    singlePageColumnsData,
+    pageFetchError,
+    dispatch,
+  ]);
 
   useEffect(() => {
     if (!pageContentData) {
@@ -163,13 +228,13 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
           : prevContents;
       });
 
-      const fetchingPageData: IFetchedPage = {
-        fetchedPage: dynamicPage,
-        isPageFetchLoading: isPageContentFetchLoading,
-        hasPageFetchError: hasPageContentFetchError,
-        pageFetchError: pageContentFetchError,
-      };
-      dispatch(setFecthingPageData(fetchingPageData));
+      // const fetchingPageData: IFetchedPage = {
+      //   fetchedPage: dynamicPage,
+      //   isPageFetchLoading: isPageContentFetchLoading,
+      //   hasPageFetchError: hasPageContentFetchError,
+      //   pageFetchError: pageContentFetchError,
+      // };
+      // dispatch(setFecthingPageData(fetchingPageData));
 
       if (newPageContents.length < 8) setHasMore(false);
     }
@@ -379,12 +444,12 @@ const usePage = ({ pageName, pageDisplayURL }: usePageProps = {}) => {
     isPageFetchLoading,
     navMenuItems,
     pageContents,
-    isPageContentFetchLoading,
-    hasPageContentFetchError,
-    pageContentFetchError,
-    hasMore,
-    setPageNumber,
-    refetchPageContent,
+    // isPageContentFetchLoading,
+    // hasPageContentFetchError,
+    // pageContentFetchError,
+    // hasMore,
+    // setPageNumber,
+    // refetchPageContent,
   };
 };
 

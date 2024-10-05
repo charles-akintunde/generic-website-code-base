@@ -80,7 +80,7 @@ export interface IPageListItem {
 export interface IPage {
   pageId?: string;
   pageName: string;
-  //pageDisplayURL: string;
+  pageDisplayURL?: string;
   pagePermission: string[];
   pageType: string;
   pageContents?: IPageContentItem[];
@@ -227,4 +227,11 @@ export interface IFetchedPage {
   isPageFetchLoading: boolean;
   hasPageFetchError: boolean;
   pageFetchError: FetchBaseQueryError | SerializedError | undefined;
+}
+
+export interface IFetchedSinglePage {
+  fetchedPage: IPage | null;
+  isPageFetchLoading: boolean;
+  hasPageFetchError: boolean;
+  pageFetchError: FetchBaseQueryError | SerializedError | undefined | null;
 }

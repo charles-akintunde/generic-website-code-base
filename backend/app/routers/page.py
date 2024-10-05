@@ -16,7 +16,7 @@ from app.database import get_db
 from app.core.auth import get_current_user, get_current_user_without_exception
 from app.utils.utils import is_super_admin
 from app.models.user_info import T_UserInfo
-from app.services.page import create_new_page, delete_page, get_page, get_pages, get_pages_with_offset, update_page
+from app.services.page import create_new_page, delete_page, get_page, get_page_specific_columns_by_display_url, get_pages, get_pages_with_offset, update_page
 from app.utils.response import error_response, success_response
 from app.models.enums import E_PageType, E_UserRole
 from app.models.page_content import T_PageContent
@@ -47,6 +47,9 @@ async def create_page_endpoint(
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     
+
+
+    
 @router.get("/{page_display_url}", response_model=StandardResponse)
 async def get_page_endpoint(
     page_display_url: str, 
@@ -72,6 +75,27 @@ async def get_page_endpoint(
         return success_response(message="Page fetched successfully", data=existing_page.model_dump())
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
+    
+@router.get("/columns/{pg_display_url}", response_model=PageResponse)
+def get_page_columns(pg_display_url: str, db: Session = Depends(get_db)):
+    """
+    API endpoint to get specific columns of a page by its display URL.
+    
+    Args:
+        pg_display_url (str): The page display URL.
+        db (Session): The database session.
+    
+    Returns:
+        PageResponse: The specific columns of the page in the response format.
+    """
+    try:
+        decoded_page_display_url = unquote(pg_display_url)
+        page = get_page_specific_columns_by_display_url(db, decoded_page_display_url)
+
+        return success_response(message="Page fetched successfully", data=page.model_dump())
+    except HTTPException as e:
+        return error_response(message=e.detail, status_code=e.status_code)
+    
 
     
 @router.get("/with-pagination/{page_display_url}", response_model=StandardResponse)

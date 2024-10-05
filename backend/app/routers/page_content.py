@@ -105,7 +105,7 @@ async def get_page_content_by_display_url_endpoint(
 
 #     Args:
 #         postTitle (str): The title of the page content to retrieve.
-#         db (Session): Database session.
+#         db (Session): Database session.delete
 
 #     Returns:
 #         StandardResponse: The response containing the page content.

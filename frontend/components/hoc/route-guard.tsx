@@ -7,7 +7,7 @@ import { IPageMenuItem } from '@/types/componentInterfaces';
 import { hasPermission, reloadPage } from '@/utils/helper';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { setUIIsUserEditingMode } from '@/store/slice/userSlice';
-import { setFecthingPageData } from '@/store/slice/pageSlice';
+import { setFecthingPageData, setPageContents } from '@/store/slice/pageSlice';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -72,6 +72,8 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
         uiEditorInProfileMode: false,
       })
     );
+
+    dispatch(setPageContents([]));
 
     dispatch(
       setFecthingPageData({

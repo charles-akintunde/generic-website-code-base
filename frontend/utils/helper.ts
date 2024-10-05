@@ -1,3 +1,4 @@
+import useHelper from '@/hooks/api-hooks/use-helper';
 import {
   ICompleteUserResponse,
   IPageContentGetResponse,
@@ -16,6 +17,7 @@ import {
   IUserInfo,
   Notify,
   IPageList,
+  IPage,
 } from '@/types/componentInterfaces';
 import {
   EMemberPosition,
@@ -153,7 +155,11 @@ export const clipCopiedSucessfully = (notify: Notify) => {
   notify('Notice', 'Text copied to clipboard', 'success');
 };
 
-export const getPageExcerpt = (contents: TElement[]): string => {
+export const getPageExcerpt = (contents: TElement[] | null): string => {
+  if (!contents || contents.length === 0) {
+    return '';
+  }
+
   let excerpt = '';
 
   const extractText = (element: TDescendant) => {
@@ -166,44 +172,45 @@ export const getPageExcerpt = (contents: TElement[]): string => {
     }
   };
 
-  for (let content of contents) {
-    if (content.type === 'p' || content.type.startsWith('h')) {
-      extractText(content);
+  if (contents) {
+    for (let content of contents) {
+      if (content.type === 'p' || content.type.startsWith('h')) {
+        extractText(content);
+      }
     }
   }
 
   return excerpt.trim();
 };
 
-export function estimateReadingTime(pageContents: TElement[]) {
+export function estimateReadingTime(pageContents: TElement[] | null) {
+  if (!pageContents || pageContents.length === 0) {
+    return 0;
+  }
+
   let totalWords = 0;
   let imageCount = 0;
 
-  const readingSpeed = 200; // words per minute
-  const imageReadingTime = 5; // seconds per image
-
-  // Traverse through the page contents
+  const readingSpeed = 200;
+  const imageReadingTime = 5;
   pageContents.forEach((content) => {
     if (content.type === 'p') {
-      // Count words in <p> elements
       content.children.forEach((child) => {
         if (child.text) {
           totalWords += countWords(child.text);
         }
       });
     } else if (content.type === 'img') {
-      // Count images
       imageCount += content.children.length;
     }
   });
 
-  // Calculate reading time
   const readingTimeMinutes = totalWords / readingSpeed;
   const imageTimeMinutes = (imageCount * imageReadingTime) / 60;
 
   const totalReadingTimeMinutes = readingTimeMinutes + imageTimeMinutes;
 
-  return Math.round(totalReadingTimeMinutes); // Return in minutes, rounded to the nearest whole number
+  return Math.round(totalReadingTimeMinutes);
 }
 
 // Helper function to count words
@@ -516,7 +523,8 @@ export const getCookies = () => {
 export const handleRoutingOnError = (
   router: any,
   hasError: boolean,
-  error: any
+  error: any,
+  clearCache?: () => void
 ) => {
   if (hasError && error) {
     if (error.status === 404) {
@@ -525,6 +533,10 @@ export const handleRoutingOnError = (
       router.replace('/500');
     } else {
       router.replace('/access-denied');
+    }
+
+    if (clearCache) {
+      clearCache();
     }
   }
 };
@@ -564,5 +576,17 @@ export function removeNullValues(obj: any) {
 }
 
 export const reloadPage = () => {
-  window.location.reload();
+  //window.location.reload();
+};
+
+export const transformPageToIPage = (page: Page): IPage => {
+  return {
+    pageId: page.PG_ID,
+    pageName: page.PG_Name,
+    pageDisplayURL: page.PG_DisplayURL,
+    pagePermission: page.PG_Permission.map((permission: number) =>
+      permission.toString()
+    ),
+    pageType: page.PG_Type.toString(),
+  };
 };
