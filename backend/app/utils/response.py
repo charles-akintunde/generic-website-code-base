@@ -3,10 +3,11 @@ Utility for handling standardized responses.
 """
 
 from typing import Any, Dict
+from xmlrpc.client import boolean
 from fastapi import status
 from fastapi.responses import JSONResponse
 
-def success_response(message: str, data: Any = {}, status_code: int = status.HTTP_200_OK, headers: Any = {}):
+def success_response(message: str, data: Any = {}, status_code: int = status.HTTP_200_OK, headers: Any = {},is_success:boolean=True):
     """
     Create a standardized success response.
 
@@ -19,7 +20,7 @@ def success_response(message: str, data: Any = {}, status_code: int = status.HTT
         JSONResponse: Standardized success response.
     """
     response_content = {
-         "success": True,
+         "success": is_success,
          "message": message
     }
     if data:

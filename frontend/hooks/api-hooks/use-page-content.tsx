@@ -14,6 +14,7 @@ import {
   IPageContentItem,
   IPageContentMain,
   IPageMain,
+  RootState,
 } from '@/types/componentInterfaces';
 import {
   useCreatePageContentMutation,
@@ -115,6 +116,19 @@ const usePageContent = ({
     refetch: pageContentFetchRefetch,
   } = pageContentQueryResult;
   const pageDisplayURL = pathname.split('/')[1];
+  const fetchedPageContents = useAppSelector(
+    (state: RootState) => state.page.pageContents
+  );
+  const sortedPageContents = [...fetchedPageContents].sort((a, b) => {
+    const dateA = a.pageContentCreatedAt
+      ? new Date(a.pageContentCreatedAt).getTime()
+      : 0;
+    const dateB = b.pageContentCreatedAt
+      ? new Date(b.pageContentCreatedAt).getTime()
+      : 0;
+
+    return dateB - dateA;
+  });
   // const {
   //   data: pageContentsData,
   //   isError: hasPageContentsFetchError,
@@ -203,6 +217,9 @@ const usePageContent = ({
       }
       // @ts-ignore
       const response = await createPageContent(formData).unwrap();
+      console.log(response, 'response');
+
+      console.log();
       if (pageContentFetchRefetch) pageContentFetchRefetch();
 
       // if (pageContent.pageType == EPageType.ResList) {
@@ -307,8 +324,6 @@ const usePageContent = ({
         formData.append('PC_Resource', pageContent.pageContentResource);
       }
 
-      console.log('Before API call:', pageContent.pageContentDisplayURL);
-
       const response = await editPageContent({
         PC_ID: pageContentId,
         // @ts-ignore
@@ -323,7 +338,6 @@ const usePageContent = ({
         pageType !== EPageType.ResList
       ) {
         const newUrl = `/${pageDisplayURL}/${pageContent.pageContentDisplayURL}`;
-        console.log('Routing to:', newUrl);
         router.replace(newUrl);
       }
 
@@ -395,15 +409,14 @@ const usePageContent = ({
 
   const handleRemovePageContent = async (pageContentId: string) => {
     try {
+      console.log('Deleting...');
       const response = await deletePageContent(pageContentId).unwrap();
-      console.log('Response:', response);
-
-      notify(
-        'Success',
-        response.message || 'The page has been successfully deleted.',
-        'success'
-      );
-
+      // notify(
+      //   'Success',
+      //   response.message || 'The page has been successfully deleted.',
+      //   'success'
+      // );
+      console.log('Complete Deleting...');
       console.log('About to dispatch...');
       try {
         dispatch(removePageContent(pageContentId));
@@ -411,6 +424,7 @@ const usePageContent = ({
       } catch (dispatchError) {
         console.error('Dispatch failed:', dispatchError);
       }
+      console.log(sortedPageContents, 'sortedPageContents');
     } catch (error: any) {
       notify(
         'Error',

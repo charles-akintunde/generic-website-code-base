@@ -40,8 +40,6 @@ const DynamicPage = () => {
     (route) => route.href === fetchedPage?.pageDisplayURL
   );
 
-  console.log(pageFetchError, 'ERROR');
-
   useEffect(() => {
     handleRoutingOnError(
       router,

@@ -288,7 +288,6 @@ const EditPageContent = () => {
 
   useEffect(() => {
     if (isPageContentFetchSuccess && contentData) {
-      console.log(contentData, 'pageContentDisplayURL');
       // @ts-ignore
       form.reset(contentData);
       setPlateEditor(contentData.editorContent || plateEditor);
@@ -328,8 +327,6 @@ const EditPageContent = () => {
   //     pageContentFetchError
   //   );
   // }, [hasPageContentFetchError, pageContentFetchError, router]);
-
-  console.log(hasPageContentFetchError, pageContentFetchError);
 
   if (isPageContentFetchLoading) {
     return <AppLoading />;

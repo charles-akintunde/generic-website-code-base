@@ -189,6 +189,7 @@ export const CreatePageContentForm = ({}) => {
         () => ({})
       );
     } else {
+      // @ts-ignore
       let pageContent: IPageContentItem = {
         pageContentName: data.pageContentName,
         pageContentDisplayImage: data.pageContentDisplayImage,
@@ -220,10 +221,13 @@ export const CreatePageContentForm = ({}) => {
     return () => subscription.unsubscribe();
   }, [form, isManualEdit]);
 
-  const handlePageDisplayUrlChange = (e) => {
+  const handlePageDisplayUrlChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setIsManualEdit(true);
     form.setValue('pageContentDisplayURL', e.target.value);
   };
+
   return (
     <>
       <FormProvider {...form}>
@@ -389,15 +393,16 @@ export const EditPageContentForm = () => {
     },
   });
 
-  const handlePageDisplayUrlChange = (e) => {
+  const handlePageDisplayUrlChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setIsManualEdit(true);
     form.setValue('pageContentDisplayURL', e.target.value);
   };
 
   useEffect(() => {
     if (isPageContentFetchSuccess && contentData) {
-      console.log(contentData, 'pageContentDisplayURL');
-      form.reset(contentData);
+      form.reset(contentData as any);
       setPlateEditor(contentData.editorContent || plateEditor);
       setPlateEditorKey(
         JSON.stringify(contentData.editorContent || plateEditor)

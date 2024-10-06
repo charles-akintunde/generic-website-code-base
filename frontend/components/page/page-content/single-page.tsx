@@ -164,8 +164,6 @@ const SinglePage = () => {
           pageRefetch
         );
       } else {
-        console.log(isSinglePageCreated, 'Create');
-        console.log(pageContent, 'pageId');
       }
     } else {
       notifyNoChangesMade(notify);

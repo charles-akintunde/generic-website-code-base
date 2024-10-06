@@ -105,8 +105,22 @@ const useUserInfo = () => {
           uiPhotoURL: userProfile.uiPhoto,
         })
       );
+    } else {
+      dispatch(
+        setUIActiveUser({
+          uiId: null,
+          uiFullName: '',
+          uiInitials: '',
+          uiIsAdmin: false,
+          uiIsLoading: false,
+          uiIsSuperAdmin: false,
+          uiCanEdit: false,
+          uiRole: [EUserRole.Public],
+          uiPhotoURL: null,
+        })
+      );
     }
-  }, [activeUserData]);
+  }, [activeUserData, router]);
 
   const handleRemoveUser = async (user: IUserBase) => {
     try {
@@ -186,8 +200,6 @@ const useUserInfo = () => {
       );
       let roles = [];
 
-      console.log(userInfo.uiRole, 'userInfo.uiRole');
-
       if (
         userInfo.uiMainRoles &&
         !initialUserInfo.uiRole.includes(userInfo.uiMainRoles)
@@ -203,7 +215,6 @@ const useUserInfo = () => {
       }
 
       roles = [...new Set(roles)];
-      console.log(roles, 'ROLES');
 
       if (uiActiveUser.uiIsSuperAdmin && !isSameUser) {
         const response = await editRoleAndStatus({

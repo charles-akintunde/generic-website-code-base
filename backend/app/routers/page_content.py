@@ -58,12 +58,15 @@ async def create_page_content_endpoint(
         PC_DisplayURL=PC_DisplayURL
     )
 
-        await create_page_content(
+        new_page_content = await create_page_content(
             db=db,
             user = current_user,
             page_content=page_content_data
         )
-        return success_response("Page content created successfully")
+        
+
+        print(new_page_content)
+        return success_response("Page content created successfully", data=new_page_content.model_dump())
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     

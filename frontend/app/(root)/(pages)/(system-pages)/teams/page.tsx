@@ -9,7 +9,7 @@ import Link from 'next/link';
 import AppLoading from '@/components/common/app-loading';
 import backgroundImage from '@/assets/images/page-list-img1.jpg';
 import Image from 'next/image';
-import { EMemberPosition, EUserRole } from '@/types/enums';
+import { EUserRole } from '@/types/enums';
 
 const { Title, Text } = Typography;
 
@@ -40,7 +40,7 @@ const Teams = () => {
     }
   }, [usersResponseData]);
 
-  if (isUsersFetchLoading) {
+  if (isUsersFetchLoading || !users) {
     return <AppLoading />;
   }
 
@@ -83,8 +83,10 @@ const Teams = () => {
 
     // Determine if the user is an Alumni and get their position title
     const isAlumni = user.uiRole.includes(EUserRole.Alumni);
+    // @ts-ignore
     const positionTitle = isAlumni
-      ? MemberPositionTitles[user.uiMemberPosition as EMemberPosition]
+      ? // @ts-ignore
+        MemberPositionTitles[user.uiMemberPosition as EMemberPosition]
       : '';
 
     return (
@@ -96,6 +98,7 @@ const Teams = () => {
           >
             <Avatar
               size={avatarSize}
+              // @ts-ignore
               src={user.uiPhotoUrl}
               alt={`${user.uiFirstName} ${user.uiLastName}`}
               style={{ backgroundColor: '#f9f9f9ff', color: 'black' }}
@@ -121,8 +124,6 @@ const Teams = () => {
       </div>
     );
   };
-
-  console.log(groupedUsers, 'groupedUsers');
 
   return (
     <main className="bg-pg min-h-screen p-6">

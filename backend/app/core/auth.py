@@ -53,11 +53,29 @@ def get_token_from_cookie(request: Request) -> str:
         )
     return token
 
-def get_token_from_cookies_without_exception(request: Request):
+def get_token_from_cookies_without_exception(
+    request: Request, 
+    db: Session = Depends(get_db) 
+) -> Optional[str]:
+    """
+    Retrieves the token from cookies, and checks if it is blacklisted.
+
+    Args:
+        request (Request): The HTTP request object.
+        db (Session): The database session (automatically injected).
+
+    Returns:
+        Optional[str]: The access token if valid and not blacklisted, otherwise None.
+    """
     token = request.cookies.get('access_token')
+    
+    if token and blacklisted_token_crud.is_token_blacklisted(token=token, db=db):
+        return None  
+    
     if not token:
-        return None
-    return token
+        return None  
+    
+    return token 
 
 def get_current_user_without_exception(
         token= Depends(get_token_from_cookies_without_exception),

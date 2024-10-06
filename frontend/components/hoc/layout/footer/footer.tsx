@@ -1,10 +1,3 @@
-import {
-  MailOutlined,
-  PhoneOutlined,
-  FacebookOutlined,
-  TwitterOutlined,
-  InstagramOutlined,
-} from '@ant-design/icons';
 import { Divider } from 'antd';
 import Link from 'next/link';
 
@@ -12,8 +5,10 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-[#f9f9f9ff] py-8">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="mb-6">
+        {/* Footer Top Section */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+          {/* CLISA Description */}
+          <div className="col-span-1 md:col-span-2">
             <span className="text-3xl font-bold text-white tracking-tighter">
               CLISA
             </span>
@@ -24,6 +19,7 @@ export default function Footer() {
             </p>
           </div>
 
+          {/* Solutions */}
           <div>
             <h4 className="font-medium text-white mb-3">SOLUTIONS</h4>
             <ul className="space-y-2">
@@ -54,6 +50,7 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Resources */}
           <div>
             <h4 className="font-medium text-white mb-3">RESOURCES</h4>
             <ul className="space-y-2">
@@ -84,6 +81,7 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Company */}
           <div>
             <h4 className="font-medium text-white mb-3">COMPANY</h4>
             <ul className="space-y-2">
@@ -123,8 +121,10 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Divider */}
         <Divider className="my-8" />
 
+        {/* Footer Bottom Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="text-xs text-[#f9f9f9ff]">
             © 2024 CLISA.com - All rights reserved

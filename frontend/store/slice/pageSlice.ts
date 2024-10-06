@@ -6,9 +6,6 @@ import {
   IPageContentMain,
   IPageMain,
 } from '@/types/componentInterfaces';
-import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import { SerializedError } from '@reduxjs/toolkit';
-import { nullable } from 'zod';
 
 interface ICurrentUserPage {
   pageId?: string | null;
@@ -18,6 +15,16 @@ interface ICurrentUserPage {
   isModalOpen: boolean;
   isEditingMode?: boolean;
   pageContent?: IPageContentMain | null;
+}
+
+export interface IPageContentRecord extends IPageContentItem {
+  pageContentId: string;
+  pageContentLastUpdatedAt?: string;
+  pageContentCreatedAt?: string;
+  pageContentExcerpt?: string;
+  pageContentReadingTime?: string;
+  creatorFullName?: string;
+  deleted?: boolean;
 }
 
 interface PageState {
@@ -31,7 +38,7 @@ interface PageState {
   editingPageContent: IPageContentMain | null;
   pageContentImageURL: string;
   fetchingPageData: IFetchedPage | null;
-  pageContents: IPageContentMain[] | [];
+  pageContents: IPageContentRecord[] | [];
   fetchedSinglePageData: IFetchedSinglePage | null;
 }
 
@@ -114,7 +121,7 @@ const pageSlice = createSlice({
           state.pages[updatedPageIndex].pageContents = [];
         }
 
-        state.pages[updatedPageIndex].pageContents.push(action.payload);
+        state.pages[updatedPageIndex].pageContents.push(action.payload as any);
       }
     },
     addPages(state, action: PayloadAction<IPageMain[]>) {
@@ -165,35 +172,39 @@ const pageSlice = createSlice({
     //   state.pageContents.push(...uniqueNewContents);
     // },
     removePageContent: (state, action: PayloadAction<string>) => {
-      state.pageContents = state.pageContents.filter(
-        (content) => content.pageContentId !== action.payload
+      const existingIndex = state.pageContents.findIndex(
+        (content) => content.pageContentId === action.payload
       );
-      console.log('DELETED');
+
+      if (existingIndex !== -1) {
+        state.pageContents[existingIndex].deleted = true;
+      }
+
+      console.log('FLAGGED AS DELETED');
     },
-    addPageContents: (state, action: PayloadAction<IPageContentMain[]>) => {
+    addPageContents: (state, action: PayloadAction<IPageContentRecord[]>) => {
       const newContents = action.payload;
 
       newContents.forEach((newContent) => {
-        // Find the index of the content with the same pageContentId
         const existingIndex = state.pageContents.findIndex(
           (content) => content.pageContentId === newContent.pageContentId
         );
 
         if (existingIndex !== -1) {
-          // Content exists, check if any properties are different
           const existingContent = state.pageContents[existingIndex];
 
-          // Replace the content if there are changes
-          const hasChanged = Object.keys(newContent).some(
-            (key) => newContent[key] !== existingContent[key]
-          );
+          const hasChanged = Object.keys(newContent).some((key) => {
+            return (newContent as any)[key] !== (existingContent as any)[key];
+          });
 
           if (hasChanged) {
-            state.pageContents[existingIndex] = newContent;
+            state.pageContents[existingIndex] = {
+              ...newContent,
+              deleted: existingContent.deleted || false,
+            };
           }
         } else {
-          // Content does not exist, add the new content
-          state.pageContents.push(newContent);
+          state.pageContents.push({ ...newContent, deleted: false } as never);
         }
       });
     },
@@ -248,6 +259,26 @@ const pageSlice = createSlice({
         (page) => page.pageName !== action.payload.pageName
       );
     },
+    addPageContent1: (state, action: PayloadAction<IPageContentMain>) => {
+      const newContent = action.payload;
+
+      const existingIndex = state.pageContents.findIndex(
+        (content) => content.pageContentId === newContent.pageContentId
+      );
+
+      if (existingIndex !== -1) {
+        const existingContent = state.pageContents[existingIndex];
+        const hasChanged = Object.keys(newContent).some((key) => {
+          return (newContent as any)[key] !== (existingContent as any)[key];
+        });
+
+        if (hasChanged) {
+          state.pageContents[existingIndex] = newContent;
+        }
+      } else {
+        state.pageContents.push(newContent as never);
+      }
+    },
   },
 });
 
@@ -270,6 +301,7 @@ export const {
   setFetchedSinglePageData,
   setPageContents,
   addPageContents,
+  addPageContent1,
   removePageContent,
 } = pageSlice.actions;
 export default pageSlice.reducer;

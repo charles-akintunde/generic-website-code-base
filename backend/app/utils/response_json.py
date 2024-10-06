@@ -14,6 +14,7 @@ from app.models.page import T_Page
 from app.schemas.page import PG_PagesResponse, PageResponse, PageSingleContent, Page
 from app.schemas.user_info import UserPartial, UserResponse, UsersResponse
 from app.utils.utils import estimate_reading_time, get_excerpt
+from app.models.enums import E_PageType
 
 
 def build_page_content_json(page_content : T_PageContent,user: T_UserInfo,page:T_Page) -> Union[PageContentResponse, Any]:
@@ -48,9 +49,13 @@ def build_page_content_json_with_excerpt(page_content: T_PageContent, user: T_Us
     """
     if page_content is None:
         return None
+    
+    PC_Excerpt = ''
+    PC_ReadingTime = 0
 
-    PC_Excerpt = get_excerpt(page_content.PC_Content["PC_Content"]) if page_content.PC_Content and "PC_Content" in page_content.PC_Content else '' # type: ignore
-    PC_ReadingTime = estimate_reading_time(page_content.PC_Content["PC_Content"]) if page_content.PC_Content and "PC_Content" in page_content.PC_Content else 0  # type: ignore
+    if str(page.PG_Type) == str(E_PageType.PageList):
+        PC_Excerpt = get_excerpt(page_content.PC_Content["PC_Content"]) if page_content.PC_Content and "PC_Content" in page_content.PC_Content else '' # type: ignore
+        PC_ReadingTime = estimate_reading_time(page_content.PC_Content["PC_Content"]) if page_content.PC_Content and "PC_Content" in page_content.PC_Content else 0  # type: ignore
     return PageContentResponse(
         UI_ID=str(page_content.UI_ID),
         PG_ID=str(page_content.PG_ID),

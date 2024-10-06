@@ -17,11 +17,8 @@ import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
 import {
   handleRoutingOnError,
   normalizeMultiContentPage,
-  toKebabCase,
 } from '@/utils/helper';
 import AppLoading from '../app-loading';
-import usePageContent from '@/hooks/api-hooks/use-page-content';
-import usePage from '@/hooks/api-hooks/use-page';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { EPageType } from '@/types/enums';
 import { CreatePageContentModal } from '../form/create-page-content';
@@ -74,7 +71,11 @@ const ContentList: React.FC<ContentListProps> = ({
   const fetchedPageContents = useAppSelector(
     (state: RootState) => state.page.pageContents
   );
-  const sortedPageContents = [...fetchedPageContents].sort((a, b) => {
+
+  const visiblePageContents = fetchedPageContents.filter(
+    (content) => !content.deleted
+  );
+  const sortedPageContents = [...visiblePageContents].sort((a, b) => {
     const dateA = a.pageContentCreatedAt
       ? new Date(a.pageContentCreatedAt).getTime()
       : 0;
@@ -98,9 +99,7 @@ const ContentList: React.FC<ContentListProps> = ({
     isError: hasPageContentFetchError,
     isLoading: isPageContentFetchLoading,
     isFetching: isPageContentFetching,
-    status: pageContentFetchStatus,
     error: pageContentFetchError,
-    refetch: refetchPageContent,
     isSuccess: isPageContentsFetchSuccess,
   } = useGetPageWithPaginationQuery(
     {
@@ -113,7 +112,7 @@ const ContentList: React.FC<ContentListProps> = ({
     }
   );
 
-  console.log(pageContentsData, 'pageContentsData');
+  console.log(sortedPageContents, 'sortedPageContents');
 
   useEffect(() => {
     dispatch(setPageContents([]));
@@ -132,10 +131,10 @@ const ContentList: React.FC<ContentListProps> = ({
     [hasMore, isPageFetchLoading, setPageNumber]
   );
 
-  //console.log(sortedPageContents);
-
   useEffect(() => {
-    /// console.log(pageContentsData, ' ');
+    console.log(pageContentsData, 'pageContentsData');
+    console.log(sortedPageContents, 'sortedPageContents');
+
     if (!pageContentsData) {
       console.log('No page content data available');
 

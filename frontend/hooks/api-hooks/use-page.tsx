@@ -394,7 +394,6 @@ const usePage = ({
 
   const handleRemovePage = async (page: IPageMain) => {
     try {
-      console.log(page, 'page');
       const response = await deletePage(page.pageId).unwrap();
       notify(
         'Success',

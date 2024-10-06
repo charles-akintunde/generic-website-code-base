@@ -41,7 +41,7 @@ const PageListLayout: React.FC<PageListLayoutProps> = ({
         <h1 className="text-3xl font-bold mb-2">{contentName}</h1>
         {pageType != EPageType.ResList && (
           <div className="flex items-center mb-4">
-            <Avatar size="large" icon={<UserOutlined />} />
+            {/* <Avatar size="large" icon={<UserOutlined />} /> */}
             <div className="ml-3">
               <div className="font-medium">{creatorFullName}</div>
               <div className="text-gray-500 text-sm">

@@ -62,7 +62,7 @@ export const pageContentApi = createApi({
       query: ({ PC_ID, ...patch }) => ({
         url: `${url}/${PC_ID}`,
         method: 'PUT',
-        body: patch.formData,
+        body: (patch as any).formData,
       }),
       invalidatesTags: (result, error, { PC_ID }) => [
         { type: 'SinglePageContent', id: PC_ID },

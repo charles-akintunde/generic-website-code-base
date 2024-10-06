@@ -53,8 +53,6 @@ const UploadPageContentImage = () => {
       pageContentImage: data.pageContentImage,
     };
 
-    console.log(data, 'data');
-
     await submitUploadPageContentImage(pageContentImage);
   };
 

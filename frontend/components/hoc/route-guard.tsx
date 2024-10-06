@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { setUIIsUserEditingMode } from '@/store/slice/userSlice';
 import { setFecthingPageData, setPageContents } from '@/store/slice/pageSlice';
 import { appConfig } from '@/utils/appConfig';
+import useUserInfo from '@/hooks/api-hooks/use-user-info';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ const isExistingRoute: React.FC<isExistingRouteProps> = ({
 };
 
 const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
+  const { activePageRefetch } = useUserInfo();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const uiActiveUserRole = String(uiActiveUser.uiRole);
   const uiIsLoading = uiActiveUser.uiIsLoading;
@@ -41,6 +43,8 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       item.href === decodeURIComponent(`/${pathname.split('/')[1]}`) ||
       item.href.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`))
   );
+
+  console.log(uiActiveUser, 'uiActiveUser');
 
   useEffect(() => {
     if (currentPage) {
@@ -126,6 +130,8 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
         pageFetchError: undefined,
       })
     );
+
+    activePageRefetch();
   }, [allAppRoutes, pathname, router, uiIsLoading, currentPage]);
 
   return allAppRoutes && allAppRoutes.length > 0 ? <>{children}</> : null;

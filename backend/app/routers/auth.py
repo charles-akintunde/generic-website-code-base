@@ -18,6 +18,7 @@ from app.models.enums import E_Status, E_UserRole
 from app.schemas.response import StandardResponse
 from app.utils.response_json import create_user_response
 from app.config import settings
+from app.crud import blacklisted_token
 
 router = APIRouter()
 ACCESS_TOKEN_EXPIRE_SECONDS = settings.ACCESS_TOKEN_EXPIRE_SECONDS
@@ -212,23 +213,29 @@ async def resend_confirmation_endpoint(email: EmailStr, db: Session = Depends(ge
     return success_response("Confirmation email resent successfully")
 
 @router.get('/active-user', response_model=StandardResponse)
-def get_active_user(active_user=Depends(get_current_user_without_exception)) -> JSONResponse:
+def get_active_user(
+    active_user=Depends(get_current_user_without_exception)
+) -> JSONResponse:
     """
-    Retrieve the currently logged in user.
+    Retrieve the currently logged-in user.
 
     Args:
-        active_user: The user currently authenticated
-        
+        active_user: The user currently authenticated.
+        token: The current token from the authorization header.
+        db: The database session.
+
     Returns:
         JSONResponse: Standardized response format.
     """
     try:
+        
         if active_user:
             return success_response(message='User retrieved successfully', data=create_user_response(active_user).dict())
         else:
-            return success_response(message='No user is currently logged in')
+            return success_response(message='No user is currently logged in', is_success=False)
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
+
 
 @router.post("/logout", response_model=StandardResponse)
 async def logout(
@@ -276,6 +283,6 @@ async def logout(
         if access_token and refresh_token:
             blacklisted_token = logout_user(access_token=access_token,refresh_token= refresh_token,db= db)
 
-        return success_response(message="Logout successful.")
+        return success_response(message="Logout successful.", headers=response.headers)
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)

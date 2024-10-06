@@ -21,7 +21,9 @@ const store = configureStore({
     [userApi.reducerPath]: userApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(
+    getDefaultMiddleware({
+      immutableCheck: false,
+    }).concat(
       menuApi.middleware,
       authApi.middleware,
       pageApi.middleware,

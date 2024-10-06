@@ -419,7 +419,6 @@ export const mapPageToIPageMain = (pagesData: PagesData): IPageList => {
 };
 
 export const mapToIIUserList = (data: IUserResponseData): IUserList => {
-  console.log(data);
   // @ts-ignore
   const users: IUserBase[] = data.users.map((user: UserResponse) => ({
     id: user.UI_ID,
@@ -438,13 +437,6 @@ export const mapToIIUserList = (data: IUserResponseData): IUserList => {
     uiInitials: user.UI_FirstName[0] + user.UI_LastName[0],
   }));
 
-  console.log(
-    {
-      users: users,
-      totalUserCount: data.total_users_count,
-    },
-    'USERS'
-  );
   return {
     users: users,
     totalUserCount: data.total_users_count,
