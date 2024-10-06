@@ -42,6 +42,8 @@ const PageListItem: React.FC = () => {
     PG_Number: fetchParams.current,
   });
 
+  console.log(pagesResponse, 'pagesResponse');
+
   useEffect(() => {
     if (pagesResponse && pagesResponse.data) {
       const { data } = pagesResponse;

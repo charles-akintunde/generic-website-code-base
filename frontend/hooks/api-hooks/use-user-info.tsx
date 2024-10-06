@@ -184,33 +184,43 @@ const useUserInfo = () => {
         uiActiveUser?.uiId as string,
         userInfo?.id as string
       );
+      let roles = [];
 
-      let uiRole = initialUserInfo.uiRole;
+      console.log(userInfo.uiRole, 'userInfo.uiRole');
 
-      if (userInfo.uiIsUserAlumni) {
-        uiRole.push(EUserRole.Alumni);
+      if (
+        userInfo.uiMainRoles &&
+        !initialUserInfo.uiRole.includes(userInfo.uiMainRoles)
+      ) {
+        roles.push(Number(userInfo.uiMainRoles));
       }
 
-      const newRole = uiRole
-        .map((item) => Number(item))
-        .filter((value, index, self) => self.indexOf(value) === index);
+      if (
+        userInfo.uiIsUserAlumni !== initialUserInfo.uiIsUserAlumni &&
+        userInfo.uiIsUserAlumni
+      ) {
+        roles = [Number(EUserRole.Alumni)];
+      }
+
+      roles = [...new Set(roles)];
+      console.log(roles, 'ROLES');
 
       if (uiActiveUser.uiIsSuperAdmin && !isSameUser) {
-        // const response = await editRoleAndStatus({
-        //   UI_ID: userId,
-        //   UI_Role: Number(userInfo.uiRole),
-        //   UI_Status: Number(userInfo.uiStatus),
-        //   UI_MemberPosition: userInfo.uiMemberPosition
-        //     ? Number(userInfo.uiMemberPosition)
-        //     : undefined,
-        // }).unwrap();
-        // dispatch(toggleCreateUserDialog());
-        // notify(
-        //   'Success',
-        //   response.message ||
-        //     'The user information has been successfully updated.',
-        //   'success'
-        // );
+        const response = await editRoleAndStatus({
+          UI_ID: userId,
+          UI_Role: roles.length == 0 ? undefined : roles,
+          UI_Status: Number(userInfo.uiStatus),
+          UI_MemberPosition: userInfo.uiMemberPosition
+            ? Number(userInfo.uiMemberPosition)
+            : undefined,
+        }).unwrap();
+        dispatch(toggleCreateUserDialog());
+        notify(
+          'Success',
+          response.message ||
+            'The user information has been successfully updated.',
+          'success'
+        );
       } else {
         notify('Notice', 'You are not permitted to edit this user', 'warning');
       }
@@ -291,6 +301,7 @@ const useUserInfo = () => {
 
       if (userInfo.uiPostalCode !== undefined) {
         if (
+          userInfo.uiPostalCode &&
           userInfo.uiPostalCode.length === 0 &&
           initialUserInfo?.uiPostalCode &&
           initialUserInfo.uiPostalCode.length > 0
@@ -303,6 +314,7 @@ const useUserInfo = () => {
 
       if (userInfo.uiPhoneNumber !== undefined) {
         if (
+          userInfo.uiPhoneNumber &&
           userInfo.uiPhoneNumber.length === 0 &&
           initialUserInfo?.uiPhoneNumber &&
           initialUserInfo.uiPhoneNumber.length > 0
@@ -315,6 +327,7 @@ const useUserInfo = () => {
 
       if (userInfo.uiOrganization !== undefined) {
         if (
+          userInfo.uiOrganization &&
           userInfo.uiOrganization.length === 0 &&
           initialUserInfo?.uiOrganization &&
           initialUserInfo.uiOrganization.length > 0

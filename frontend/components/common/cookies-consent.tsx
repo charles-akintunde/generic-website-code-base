@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import CookieConsent, { Cookies } from 'react-cookie-consent';
+import Link from 'next/link';
 
 const CookieConsentBanner = () => {
   const [visible, setVisible] = useState(false);
@@ -33,7 +34,7 @@ const CookieConsentBanner = () => {
       declineButtonText="Decline"
       cookieName="userConsent"
       style={{
-        background: '#dde3ed', // Soft light blue-gray to blend with the page
+        background: '#F4F6FA', // Muted light background to blend with the page
         color: '#2B2D42', // Dark gray for the text to ensure readability
         boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)', // Soft shadow for depth
         padding: '1rem',
@@ -42,7 +43,7 @@ const CookieConsentBanner = () => {
         justifyContent: 'space-between',
       }}
       buttonStyle={{
-        background: '#3B82F6', // Softer blue for the accept button
+        background: '#3B82F6', // Eye-catching but soft blue for the accept button
         color: '#FFFFFF', // White text for contrast
         fontSize: '13px',
         border: 'none',
@@ -50,7 +51,7 @@ const CookieConsentBanner = () => {
         padding: '0.5rem 1rem',
       }}
       declineButtonStyle={{
-        background: '#F87171', // Softer red for the decline button
+        background: '#EF4444', // Muted red for the decline button
         color: '#FFFFFF', // White text for contrast
         fontSize: '13px',
         border: 'none',
@@ -65,9 +66,12 @@ const CookieConsentBanner = () => {
     >
       We use cookies to improve your experience. By using our site, you consent
       to cookies.{' '}
-      <a href="/cookie-policy" style={{ color: '#2B2D42' }}>
+      <Link
+        href="/cookie-policy"
+        style={{ color: '#3B82F6', textDecoration: 'underline' }}
+      >
         Learn More
-      </a>
+      </Link>
     </CookieConsent>
   );
 };

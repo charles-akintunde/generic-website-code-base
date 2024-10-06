@@ -189,7 +189,7 @@ const usePage = ({
           fetchedPage: null,
           isPageFetchLoading: false,
           hasPageFetchError: true,
-          pageFetchError: pageFetchError,
+          pageFetchError: singlePageFetchError,
         })
       );
     }
@@ -255,8 +255,8 @@ const usePage = ({
           pageDisplayURL: decodeURIComponent(`/${page.PG_DisplayURL}`),
         })
       );
-      const allRoutes = [...routes, ...normalizedPages];
-      const combinedMenuItems = [...systemMenuItems, ...normalizedPages];
+      const allRoutes = [...routes];
+      const combinedMenuItems = [...systemMenuItems];
       const visibleMenuItems = combinedMenuItems.filter(
         (item) => item.isHidden == false
       );

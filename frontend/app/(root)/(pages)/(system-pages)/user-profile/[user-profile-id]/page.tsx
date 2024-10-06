@@ -85,11 +85,9 @@ const UserProfilePage = () => {
     handleRoutingOnError(router, hasUserFetchError, userFetchError);
   }, [hasUserFetchError, router, userFetchError]);
 
-  if (isUserFetchLoading) {
+  if (isUserFetchLoading || !userInfo) {
     return <AppLoading />;
   }
-
-  console.log(getCookies(), 'Cookies');
 
   return (
     <>

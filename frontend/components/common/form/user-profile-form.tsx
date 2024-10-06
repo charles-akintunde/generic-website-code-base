@@ -310,7 +310,6 @@ export const UserRoleStatusDialog = () => {
       uiMainRoles: '',
       uiStatus: '',
       uiIsUserAlumni: false,
-      // uiMemberPosition
     },
   });
 
@@ -323,6 +322,7 @@ export const UserRoleStatusDialog = () => {
   const onSubmit = async (data: any, event: { preventDefault: () => void }) => {
     event.preventDefault();
     const changedFields = getChangedFields(userInfo, data);
+    console.log(data, userInfo, changedFields);
     if (userInfo && Object.keys(changedFields).length > 0) {
       await submitEditRoleStatus(
         userInfo.id,
@@ -335,8 +335,15 @@ export const UserRoleStatusDialog = () => {
     }
   };
 
-  const { watch } = form;
+  const { watch, setValue } = form;
   const uiRole = watch('uiMainRoles');
+  const isUserAlumni = watch('uiIsUserAlumni');
+
+  useEffect(() => {
+    if (isUserAlumni) {
+      setValue('uiMainRoles', EUserRole.Alumni);
+    }
+  }, [isUserAlumni, setValue]);
 
   const handleOpenChange = () => {
     dispatch(toggleCreateUserDialog());
@@ -368,14 +375,18 @@ export const UserRoleStatusDialog = () => {
                     type="select"
                     options={STATUS_OPTIONS}
                   />
-                  <FormField
-                    control={form.control}
-                    name="uiMainRoles"
-                    label="Role"
-                    placeholder="User Role"
-                    type="select"
-                    options={ROLE_OPTIONS}
-                  />
+
+                  {!isUserAlumni && (
+                    <FormField
+                      control={form.control}
+                      name="uiMainRoles"
+                      label="Role"
+                      placeholder="User Role"
+                      type="select"
+                      options={ROLE_OPTIONS}
+                    />
+                  )}
+
                   {uiRole &&
                     (uiRole.includes(EUserRole.SuperAdmin) ||
                       uiRole.includes(EUserRole.Admin) ||
@@ -393,12 +404,12 @@ export const UserRoleStatusDialog = () => {
                   <FormField
                     control={form.control}
                     name="uiIsUserAlumni"
-                    label=""
-                    placeholder="Is this User an Alumni"
+                    label="Is this User an Alumni"
+                    placeholder=""
                     type="checkbox"
                   />
 
-                  <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4  flex justify-center">
+                  <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4 flex justify-center">
                     <LoadingButton
                       loading={false}
                       buttonText={'Save changes'}

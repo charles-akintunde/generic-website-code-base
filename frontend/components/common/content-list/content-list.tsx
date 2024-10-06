@@ -111,13 +111,12 @@ const ContentList: React.FC<ContentListProps> = ({
   );
 
   useEffect(() => {
+    dispatch(setPageContents([]));
+    setPageNumber(1);
+    setHasMore(true);
     setPageDisplayURL(pathname.split('/')[1]);
-  }, [pathname]);
+  }, [pathname, dispatch]);
 
-  console.log(pageDisplayURL, 'pageDisplayURL');
-
-  // console.log(fetchedpageContents1, 'fetchedpageContents');
-  // console.log(pageContents, 'pageContents');
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const target = entries[0];
@@ -128,10 +127,10 @@ const ContentList: React.FC<ContentListProps> = ({
     [hasMore, isPageFetchLoading, setPageNumber]
   );
 
-  console.log(sortedPageContents);
+  //console.log(sortedPageContents);
 
   useEffect(() => {
-    console.log(pageContentsData, 'pageContentsData');
+    /// console.log(pageContentsData, ' ');
     if (!pageContentsData) {
       console.log('No page content data available');
 
@@ -142,7 +141,7 @@ const ContentList: React.FC<ContentListProps> = ({
       const responseData = pageContentsData.data;
       const dynamicPage = normalizeMultiContentPage(responseData, false);
       const newPageContents = dynamicPage.pageContents as IPageContentMain[];
-      console.log(newPageContents, 'newPageContents');
+      //  console.log(newPageContents, 'newPageContents');
       dispatch(addPageContents(newPageContents));
       const fetchingPageData: IFetchedPage = {
         fetchedPage: dynamicPage,

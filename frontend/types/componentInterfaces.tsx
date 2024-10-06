@@ -30,7 +30,7 @@ export interface IUserBase {
   uiLastName: string;
   uiEmail: string;
   uiRole: string[];
-  uiMainRoles: string[];
+  uiMainRoles: string;
   uiStatus: string;
   uiRegDate: string;
   uiPhoto: string | File | null;
@@ -120,6 +120,7 @@ export interface ITablePagination {
 export interface IPageMenuItem extends IPage {
   href: string;
   isHidden: boolean;
+  description?: string;
 }
 
 export interface INotificationContextProps {

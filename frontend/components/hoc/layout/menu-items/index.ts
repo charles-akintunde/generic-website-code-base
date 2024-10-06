@@ -7,6 +7,7 @@ export const systemMenuItems: IPageMenuItem[] = [
     isHidden: false,
     pagePermission: ['0', '1', '2', '3', '4'],
     pageType: '3',
+    description: '',
   },
   {
     pageName: 'Teams',
@@ -14,6 +15,31 @@ export const systemMenuItems: IPageMenuItem[] = [
     isHidden: false,
     pagePermission: ['0', '1', '2', '3', '4'],
     pageType: '3',
+    description: '',
+  },
+  {
+    pageName: 'Single Page1',
+    href: '/single-page1',
+    isHidden: false,
+    pagePermission: ['3', '1', '4', '2', '0'],
+    pageType: '0',
+    description: '',
+  },
+  {
+    pageName: 'Test page',
+    href: '/test-page',
+    isHidden: false,
+    pagePermission: ['3', '1', '4', '2', '0', '5'],
+    pageType: '1',
+    description: '',
+  },
+  {
+    pageName: 'Tinubu’s 15-Month1',
+    href: '/tinubu’s-15-month1',
+    isHidden: false,
+    pagePermission: ['3', '1', '4', '2', '0', '5'],
+    pageType: '2',
+    description: '',
   },
   {
     pageName: 'Admin Panel',
@@ -44,6 +70,7 @@ export const systemMenuItems: IPageMenuItem[] = [
     isHidden: true,
     pagePermission: ['0', '1', '2'],
     pageType: '3',
+    description: '',
   },
   {
     pageName: 'User Profile',

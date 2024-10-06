@@ -109,8 +109,9 @@ const CreatePageContent = () => {
   }, [form, isManualEdit]);
 
   const handlePageDisplayUrlChange = (e) => {
+    const trimmedValue = e.target.value.trim();
     setIsManualEdit(true);
-    form.setValue('pageContentDisplayURL', e.target.value);
+    form.setValue('pageContentDisplayURL', trimmedValue);
   };
 
   return (

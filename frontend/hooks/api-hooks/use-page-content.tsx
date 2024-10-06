@@ -330,6 +330,12 @@ const usePageContent = ({
           pageContent: null,
         })
       );
+
+      notify(
+        'Success',
+        response.message || 'Changes saved successfully.',
+        'success'
+      );
     } catch (error: any) {
       console.log(error, 'ERROR');
       notify(
@@ -387,12 +393,21 @@ const usePageContent = ({
   const handleRemovePageContent = async (pageContentId: string) => {
     try {
       const response = await deletePageContent(pageContentId).unwrap();
-      dispatch(removePageContent(pageContentId));
+      console.log('Response:', response);
+
       notify(
         'Success',
         response.message || 'The page has been successfully deleted.',
         'success'
       );
+
+      console.log('About to dispatch...');
+      try {
+        dispatch(removePageContent(pageContentId));
+        console.log('Deleted');
+      } catch (dispatchError) {
+        console.error('Dispatch failed:', dispatchError);
+      }
     } catch (error: any) {
       console.log(error, 'ERROROROROR');
       notify(

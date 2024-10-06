@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import PageLayout from './layout';
 import PageLists from '@/components/page/page-content/page-lists';
 import { usePathname } from 'next/navigation';
-import { fromKebabCase, handleRoutingOnError } from '@/utils/helper';
+import { handleRoutingOnError } from '@/utils/helper';
 import usePage from '@/hooks/api-hooks/use-page';
 import { useRouter } from 'next/navigation';
 import SinglePage from '@/components/page/page-content/single-page';
@@ -12,10 +12,12 @@ import AppLoading from '../common/app-loading';
 import { EPageType } from '@/types/enums';
 import { useAppSelector } from '@/hooks/redux-hooks';
 import useHelper from '@/hooks/api-hooks/use-helper';
+import { appConfig } from '@/utils/appConfig';
+import Head from 'next/head';
 
 const DynamicPage = () => {
   const pathname = usePathname();
-  const { clearCache } = useHelper(0);
+  const { clearCache } = useHelper();
   const router = useRouter();
   const [pageDisplayURLForDynamicPage, setPageDisplayURL] = useState(
     pathname.split('/')['1']
@@ -27,12 +29,19 @@ const DynamicPage = () => {
   const fetchedSinglePageData = useAppSelector(
     (state) => state.page.fetchedSinglePageData
   );
+  const { allAppRoutes } = usePage();
 
   const fetchedPage = fetchedSinglePageData?.fetchedPage;
   const isPageFetchLoading = fetchedSinglePageData?.isPageFetchLoading;
   const hasPageFetchError = fetchedSinglePageData?.hasPageFetchError;
   const pageFetchError = fetchedSinglePageData?.pageFetchError;
   const pageName = fetchedPage && (fetchedPage.pageName as string);
+  const currentRouteMeta = allAppRoutes.find(
+    (route) => route.href === fetchedPage?.pageDisplayURL
+  );
+
+  console.log(pageFetchError, 'ERROR');
+
   useEffect(() => {
     handleRoutingOnError(
       router,
@@ -42,9 +51,10 @@ const DynamicPage = () => {
     );
   }, [router, hasPageFetchError, pageFetchError]);
 
-  if (isPageFetchLoading) {
+  if (isPageFetchLoading || hasPageFetchError) {
     return <AppLoading />;
   }
+
   const renderPageContent = () => {
     if (fetchedPage) {
       switch (fetchedPage.pageType) {

@@ -6,6 +6,7 @@ import {
   InstagramOutlined,
 } from '@ant-design/icons';
 import { Divider } from 'antd';
+import Link from 'next/link';
 
 export default function Footer() {
   return (
@@ -17,66 +18,68 @@ export default function Footer() {
               CLISA
             </span>
             <p className="text-sm mt-3 text-[#f9f9f9ff]">
-              Create, distribute, and monetize your podcast – all for free.
+              CLISA leverages cutting-edge technology to provide precise flood
+              modeling solutions, helping communities and organizations better
+              prepare for and respond to flooding events.
             </p>
           </div>
 
           <div>
-            <h4 className="font-medium text-white mb-3">STACK OVERFLOW</h4>
+            <h4 className="font-medium text-white mb-3">SOLUTIONS</h4>
             <ul className="space-y-2">
               <li>
-                <a
+                <Link
                   href="#"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
-                  Questions
-                </a>
+                  Hydrological Modeling
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
-                  Help
-                </a>
+                  Flood Risk Assessment
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
-                  Chat
-                </a>
+                  Impact Analysis
+                </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-medium text-white mb-3">PRODUCTS</h4>
+            <h4 className="font-medium text-white mb-3">RESOURCES</h4>
             <ul className="space-y-2">
               <li>
-                <a
+                <Link
                   href="#"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
-                  Teams
-                </a>
+                  Case Studies
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
-                  Advertising
-                </a>
+                  White Papers
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
-                  Talent
-                </a>
+                  Blog
+                </Link>
               </li>
             </ul>
           </div>
@@ -85,36 +88,36 @@ export default function Footer() {
             <h4 className="font-medium text-white mb-3">COMPANY</h4>
             <ul className="space-y-2">
               <li>
-                <a
+                <Link
                   href="#"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
-                  About
-                </a>
+                  About Us
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
-                  Press
-                </a>
+                  Careers
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
-                  Work Here
-                </a>
+                  Contact Us
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
-                  Legal
-                </a>
+                  Privacy Policy
+                </Link>
               </li>
             </ul>
           </div>
@@ -127,36 +130,30 @@ export default function Footer() {
             © 2024 CLISA.com - All rights reserved
           </div>
           <div className="flex justify-center md:justify-end space-x-4">
-            <a
-              href="#"
-              className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
-            >
-              Blog
-            </a>
-            <a
-              href="#"
-              className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
-            >
-              Facebook
-            </a>
-            <a
-              href="#"
-              className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
-            >
-              Twitter
-            </a>
-            <a
-              href="#"
-              className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
-            >
-              Instagram
-            </a>
-            <a
+            <Link
               href="#"
               className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
             >
               LinkedIn
-            </a>
+            </Link>
+            <Link
+              href="#"
+              className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
+            >
+              Twitter
+            </Link>
+            <Link
+              href="#"
+              className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
+            >
+              Facebook
+            </Link>
+            <Link
+              href="#"
+              className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
+            >
+              Instagram
+            </Link>
           </div>
         </div>
       </div>

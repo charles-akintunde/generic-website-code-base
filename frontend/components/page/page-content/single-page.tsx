@@ -25,13 +25,13 @@ import { TElement } from '@udecode/plate-common';
 import { useGetPageQuery } from '@/api/pageApi';
 import { Page } from '@/types/backendResponseInterfaces';
 import { useAppSelector } from '@/hooks/redux-hooks';
+import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
 
 const SinglePage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { notify } = useNotification();
-  const [pageName, setPageName] = useState(pathname.split('/')['1']);
-  console.log(pageName, 'pageName');
+  const [pageDisplayURL, setPageDisplayURL] = useState(pathname.split('/')[1]);
   const {
     data: pageData,
     isError: hasPageFetchError,
@@ -39,7 +39,26 @@ const SinglePage = () => {
     isSuccess: isPageFetchSuccess,
     isLoading: isPageFetchLoading,
     refetch: pageRefetch,
-  } = useGetPageQuery(pageName);
+  } = useGetPageQuery(pageDisplayURL);
+  const {
+    data: pageContentsData,
+    isError: hasPageContentFetchError,
+    isLoading: isPageContentFetchLoading,
+    isFetching: isPageContentFetching,
+    status: pageContentFetchStatus,
+    error: pageContentFetchError,
+    refetch: refetchPageContent,
+    isSuccess: isPageContentsFetchSuccess,
+  } = useGetPageWithPaginationQuery(
+    {
+      PG_DisplayURL: pageDisplayURL ?? '',
+      PG_PageNumber: 1,
+    },
+    {
+      skip: !pageDisplayURL,
+      refetchOnMountOrArgChange: true,
+    }
+  );
   const [page, setPage] = useState<IPageMain>();
   const [singlePageContent, setSinglePageContent] =
     useState<IPageContentMain>();
@@ -50,7 +69,7 @@ const SinglePage = () => {
     {
       id: '1',
       type: 'p',
-      children: [{ text: `Enter Content for ${pageName}` }],
+      children: [{ text: `Enter Content for ${pageDisplayURL}` }],
     },
   ]);
   const [originalSinglePageData, setOriginalSinglePageData] = useState<
@@ -59,7 +78,7 @@ const SinglePage = () => {
     {
       id: '1',
       type: 'p',
-      children: [{ text: `Enter Content for ${pageName}` }],
+      children: [{ text: `Enter Content for ${pageDisplayURL}` }],
     },
   ]);
   const [plateEditorKey, setPlateEditorKey] = useState<string>(
@@ -70,10 +89,15 @@ const SinglePage = () => {
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
   const uiId = uiActiveUser.uiId;
   const [singlePage, setSinglePage] = useState<IPageMain>();
+  const [isDataSet, setIsDatSet] = useState<boolean>(false);
 
   useEffect(() => {
-    if (pageData && pageData.data) {
-      let response: Page = pageData.data;
+    setPageDisplayURL(pathname.split('/')[1]);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (pageContentsData && pageContentsData?.data) {
+      let response: Page = pageContentsData?.data;
       const normalizedPage = normalizeMultiContentPage(response, true);
       setSinglePage(normalizedPage);
       setPage(normalizedPage);
@@ -90,9 +114,16 @@ const SinglePage = () => {
         setPlateEditorKey(
           JSON.stringify(singlePageContent.editorContent || plateEditor)
         );
+        setIsDatSet(true);
       }
     }
-  }, [pageData]);
+  }, [
+    isPageContentsFetchSuccess,
+    pageContentsData?.data,
+    pageContentsData,
+    isPageContentFetchLoading,
+    isPageContentFetching,
+  ]);
 
   const handleSinglePageSubmit = async () => {
     const pageContentId = singlePageContent && singlePageContent.pageContentId;
@@ -103,7 +134,7 @@ const SinglePage = () => {
     const pageId = String(page?.pageId);
     const pageType = String(page?.pageType);
     const userId = uiId as string;
-    const kebabCasePageName = `/${toKebabCase(pageName)}`;
+    const kebabCasePageName = `/${toKebabCase(pageDisplayURL)}`;
     const pageContent = createPageContentItem(
       {
         pageContentName,
@@ -113,7 +144,7 @@ const SinglePage = () => {
       plateEditor,
       pageId,
       pageType,
-      pageName,
+      pageDisplayURL,
       userId,
 
       kebabCasePageName
@@ -125,7 +156,7 @@ const SinglePage = () => {
       if (isSinglePageCreated) {
         changedFields['pageContentDisplayURL'] = singlePage?.pageDisplayURL;
         await submitEditedPageContent(
-          pageName,
+          pageDisplayURL,
           pageType,
           singlePage?.pageDisplayURL as string,
           String(pageContentId),
@@ -142,19 +173,19 @@ const SinglePage = () => {
     }
   };
 
-  if (isPageFetchLoading) {
+  useEffect(() => {
+    handleRoutingOnError(router, hasPageFetchError, pageFetchError);
+  }, [hasPageFetchError, router, pageFetchError]);
+
+  if (isPageFetchLoading || !isDataSet) {
     return <AppLoading />;
   }
-
-  // useEffect(() => {
-  //   handleRoutingOnError(router, hasPageFetchError, pageFetchError);
-  // }, [hasPageFetchError, router, pageFetchError]);
 
   return (
     <>
       <PageLayout
         type="singlePage"
-        title={`${!isSinglePageCreated ? 'Edit' : ''} ${fromKebabCase(pageName)}`}
+        title={`${!isSinglePageCreated ? 'Edit' : ''} ${fromKebabCase(pageDisplayURL)}`}
       >
         <div
           className={`flex flex-col min-h-screen w-full ${pageContentPaddingStyles}`}

@@ -75,9 +75,9 @@ export interface IEditUserRequest {
 
 export interface IEditUserRoleStatusRequest {
   UI_ID: string;
-  UI_Role: Number;
-  UI_Status: Number;
-  UI_MemberPosition: Number;
+  UI_Role: Number[] | null;
+  UI_Status: Number | null;
+  UI_MemberPosition: Number | null;
 }
 
 export interface IPasswordResetRequest {

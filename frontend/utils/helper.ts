@@ -413,13 +413,14 @@ export const mapPageToIPageMain = (pagesData: PagesData): IPageList => {
 };
 
 export const mapToIIUserList = (data: IUserResponseData): IUserList => {
+  console.log(data);
   const users: IUserBase[] = data.users.map((user: UserResponse) => ({
     id: user.UI_ID,
     uiFirstName: user.UI_FirstName,
     uiLastName: user.UI_LastName,
     uiEmail: user.UI_Email,
     uiRole: user.UI_Role,
-    uiMainRoles: user.UI_Role.filter((role) => role !== EUserRole.Alumni)[0],
+    uiMainRoles: user.UI_Role.filter((role) => role != EUserRole.Alumni)[0],
     uiIsUserAlumni: user.UI_Role.includes(EUserRole.Alumni),
     uiStatus: user.UI_Status,
     uiRegDate: user.UI_RegDate,
@@ -429,6 +430,14 @@ export const mapToIIUserList = (data: IUserResponseData): IUserList => {
     uiFullName: `${user.UI_FirstName} ${user.UI_LastName}`,
     uiInitials: user.UI_FirstName[0] + user.UI_LastName[0],
   }));
+
+  console.log(
+    {
+      users: users,
+      totalUserCount: data.total_users_count,
+    },
+    'USERS'
+  );
   return {
     users: users,
     totalUserCount: data.total_users_count,

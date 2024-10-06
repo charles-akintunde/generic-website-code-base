@@ -8,6 +8,7 @@ import { hasPermission, reloadPage } from '@/utils/helper';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { setUIIsUserEditingMode } from '@/store/slice/userSlice';
 import { setFecthingPageData, setPageContents } from '@/store/slice/pageSlice';
+import { appConfig } from '@/utils/appConfig';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -40,6 +41,48 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       item.href === decodeURIComponent(`/${pathname.split('/')[1]}`) ||
       item.href.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`))
   );
+
+  useEffect(() => {
+    if (currentPage) {
+      document.title = `${currentPage.pageName} | ${appConfig.appName}`;
+
+      const metaDescription = document.querySelector(
+        'meta[name="description"]'
+      );
+      if (metaDescription) {
+        metaDescription.setAttribute(
+          'content',
+          currentPage.description || 'Default description for SEO'
+        );
+      } else {
+        const meta = document.createElement('meta');
+        meta.name = 'description';
+        meta.content = currentPage.description || 'Default description for SEO';
+        document.head.appendChild(meta);
+      }
+
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) {
+        ogTitle.setAttribute('content', currentPage.pageName);
+      }
+
+      const ogDescription = document.querySelector(
+        'meta[property="og:description"]'
+      );
+      if (ogDescription) {
+        ogDescription.setAttribute(
+          'content',
+          currentPage.description ||
+            'Default description for social media sharing'
+        );
+      }
+
+      const ogUrl = document.querySelector('meta[property="og:url"]');
+      if (ogUrl) {
+        ogUrl.setAttribute('content', `${appConfig.appURL}${currentPage.href}`);
+      }
+    }
+  }, [pathname, currentPage]);
 
   useEffect(() => {
     if (uiIsLoading || !currentPage) return;

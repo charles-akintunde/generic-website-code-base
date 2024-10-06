@@ -57,6 +57,10 @@ def update_user_role_status(db: Session, user_role_status_update: UserRoleStatus
     if user_role_status_update.UI_ID == current_user.UI_ID:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You cannot update your own role!")
 
+    if  user_role_status_update.UI_Role and E_UserRole.Alumni in  user_role_status_update.UI_Role:
+        user_role_status_update.UI_Role = [E_UserRole.Alumni]
+
+
     update_data = user_role_status_update.model_dump(exclude_unset=True)
     update_data = {k: v for k, v in update_data.items() if v is not None}
     
