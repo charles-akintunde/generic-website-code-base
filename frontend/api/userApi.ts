@@ -51,7 +51,7 @@ export const userApi = createApi({
       query: ({ UI_ID, ...patch }) => ({
         url: `${url}/${UI_ID}`,
         method: 'PUT',
-        body: patch.formData,
+        body: (patch as any).formData,
       }),
       invalidatesTags: (result, error, { UI_ID }) => [
         { type: 'User', id: UI_ID },

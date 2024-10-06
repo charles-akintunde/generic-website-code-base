@@ -13,6 +13,7 @@ from app.models.page_content import T_PageContent
 from app.models.page import T_Page
 from app.schemas.page import PG_PagesResponse, PageResponse, PageSingleContent, Page
 from app.schemas.user_info import UserPartial, UserResponse, UsersResponse
+from app.utils.utils import estimate_reading_time, get_excerpt
 
 
 def build_page_content_json(page_content : T_PageContent,user: T_UserInfo,page:T_Page) -> Union[PageContentResponse, Any]:
@@ -32,12 +33,44 @@ def build_page_content_json(page_content : T_PageContent,user: T_UserInfo,page:T
     UI_LastName=str(user.UI_LastName),
     PC_ResourceURL=str(page_content.PC_DisplayURL) if page_content.PC_DisplayURL else None, # type: ignore
     PC_ThumbImgURL=str(page_content.PC_ThumbImgURL) if page_content.PC_ThumbImgURL else None, # type: ignore
+  #  PC_Excerpt = get_excerpt(page_content.PC_Content["PC_Content"]), # type: ignore
     PC_Content=page_content.PC_Content, # type: ignore
     PC_DisplayURL=str(page_content.PC_DisplayURL),
     PC_CreatedAt=page_content.PC_CreatedAt.isoformat() if page_content.PC_CreatedAt else None,  # type: ignore
     PC_LastUpdatedAt=page_content.PC_LastUpdatedAt.isoformat() if page_content.PC_LastUpdatedAt else None, # type: ignore
     PC_IsHidden=bool(page_content.PC_IsHidden)
     )
+
+
+def build_page_content_json_with_excerpt(page_content: T_PageContent, user: T_UserInfo, page: T_Page) -> Union[PageContentResponse, Any]:
+    """
+    Build page content json.
+    """
+    if page_content is None:
+        return None
+
+    PC_Excerpt = get_excerpt(page_content.PC_Content["PC_Content"]) if page_content.PC_Content and "PC_Content" in page_content.PC_Content else '' # type: ignore
+    PC_ReadingTime = estimate_reading_time(page_content.PC_Content["PC_Content"]) if page_content.PC_Content and "PC_Content" in page_content.PC_Content else 0  # type: ignore
+    return PageContentResponse(
+        UI_ID=str(page_content.UI_ID),
+        PG_ID=str(page_content.PG_ID),
+        PC_ID=str(page_content.PC_ID),
+        PC_Title=str(page_content.PC_Title),
+        PG_Name=str(page.PG_Name),
+        PG_DisplayURL=str(page.PG_DisplayURL),
+        UI_FirstName=str(user.UI_FirstName),
+        UI_LastName=str(user.UI_LastName),
+        PC_ResourceURL=str(page_content.PC_DisplayURL) if page_content.PC_DisplayURL else None,  # type: ignore
+        PC_ThumbImgURL=str(page_content.PC_ThumbImgURL) if page_content.PC_ThumbImgURL else None,  # type: ignore
+        PC_Excerpt=PC_Excerpt,
+        PC_ReadingTime=PC_ReadingTime,
+        PC_Content=page_content.PC_Content,  # type: ignore
+        PC_DisplayURL=str(page_content.PC_DisplayURL),
+        PC_CreatedAt=page_content.PC_CreatedAt.isoformat() if page_content.PC_CreatedAt else None,  # type: ignore
+        PC_LastUpdatedAt=page_content.PC_LastUpdatedAt.isoformat() if page_content.PC_LastUpdatedAt else None,  # type: ignore
+        PC_IsHidden=bool(page_content.PC_IsHidden)
+    )
+
 
 
 def build_page_json_with_single_content(

@@ -99,6 +99,8 @@ export interface IPageContentMain extends IPageContentItem {
   pageContentId: string;
   pageContentLastUpdatedAt?: string;
   pageContentCreatedAt?: string;
+  pageContentExcerpt?: string;
+  pageContentReadingTime?: string;
   creatorFullName?: string;
 }
 

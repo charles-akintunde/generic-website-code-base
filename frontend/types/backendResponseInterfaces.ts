@@ -8,6 +8,8 @@ export interface Page {
   PG_Type: number;
   PG_DisplayURL: string;
   PC_DisplayURL: string;
+  PC_Excerpt?: string;
+  PC_ReadingTime?: string;
   PG_PageContents?: IPageContentResponse[];
   PG_PageContent?: IPageContentResponse;
 }

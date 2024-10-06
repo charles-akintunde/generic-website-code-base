@@ -261,41 +261,44 @@ const useUserInfo = () => {
       }
       if (userInfo.uiCity !== undefined) {
         if (
+          userInfo.uiCity &&
           userInfo.uiCity.length === 0 &&
           initialUserInfo?.uiCity &&
           initialUserInfo.uiCity.length > 0
         ) {
           formData.append('UI_City', ' ');
         } else {
-          formData.append('UI_City', userInfo.uiCity);
+          formData.append('UI_City', userInfo.uiCity ?? '');
         }
       }
 
       if (userInfo.uiPhoto !== undefined) {
-        formData.append('UI_Photo', userInfo.uiPhoto);
+        formData.append('UI_Photo', userInfo.uiPhoto ?? '');
       }
 
       if (userInfo.uiProvince !== undefined) {
         if (
+          userInfo.uiProvince &&
           userInfo.uiProvince.length === 0 &&
           initialUserInfo?.uiProvince &&
           initialUserInfo.uiProvince.length > 0
         ) {
           formData.append('UI_Province', ' ');
         } else {
-          formData.append('UI_Province', userInfo.uiProvince);
+          formData.append('UI_Province', userInfo.uiProvince ?? '');
         }
       }
 
       if (userInfo.uiCountry !== undefined) {
         if (
+          userInfo.uiCountry &&
           userInfo.uiCountry.length === 0 &&
           initialUserInfo?.uiCountry &&
           initialUserInfo.uiCountry.length > 0
         ) {
           formData.append('UI_Country', ' ');
         } else {
-          formData.append('UI_Country', userInfo.uiCountry);
+          formData.append('UI_Country', userInfo.uiCountry ?? '');
         }
       }
 
@@ -308,7 +311,7 @@ const useUserInfo = () => {
         ) {
           formData.append('UI_PostalCode', ' ');
         } else {
-          formData.append('UI_PostalCode', userInfo.uiPostalCode);
+          formData.append('UI_PostalCode', userInfo.uiPostalCode ?? '');
         }
       }
 
@@ -321,7 +324,7 @@ const useUserInfo = () => {
         ) {
           formData.append('UI_PhoneNumber', ' ');
         } else {
-          formData.append('UI_PhoneNumber', userInfo.uiPhoneNumber);
+          formData.append('UI_PhoneNumber', userInfo.uiPhoneNumber ?? '');
         }
       }
 
@@ -334,7 +337,7 @@ const useUserInfo = () => {
         ) {
           formData.append('UI_Organization', ' ');
         } else {
-          formData.append('UI_Organization', userInfo.uiOrganization);
+          formData.append('UI_Organization', userInfo.uiOrganization ?? '');
         }
       }
 
@@ -345,6 +348,7 @@ const useUserInfo = () => {
       if (isSameUser) {
         const response = await editPage({
           UI_ID: userId,
+          // @ts-ignore
           formData,
         }).unwrap();
 

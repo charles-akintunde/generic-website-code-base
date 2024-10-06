@@ -75,13 +75,16 @@ const ContentList: React.FC<ContentListProps> = ({
     (state: RootState) => state.page.pageContents
   );
   const sortedPageContents = [...fetchedPageContents].sort((a, b) => {
-    return (
-      new Date(b.pageContentCreatedAt).getTime() -
-      new Date(a.pageContentCreatedAt).getTime()
-    );
+    const dateA = a.pageContentCreatedAt
+      ? new Date(a.pageContentCreatedAt).getTime()
+      : 0;
+    const dateB = b.pageContentCreatedAt
+      ? new Date(b.pageContentCreatedAt).getTime()
+      : 0;
+
+    return dateB - dateA;
   });
-  // const [pageContents, setPageContents] = useState<IPageContentMain[]>([]);
-  // const { pageContents } = usePageContent({});
+
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const fetchedPage = fetchingPageData?.fetchedPage;
@@ -109,6 +112,8 @@ const ContentList: React.FC<ContentListProps> = ({
       refetchOnMountOrArgChange: true,
     }
   );
+
+  console.log(pageContentsData, 'pageContentsData');
 
   useEffect(() => {
     dispatch(setPageContents([]));

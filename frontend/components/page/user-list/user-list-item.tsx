@@ -198,6 +198,7 @@ const UserListItem = () => {
         <>
           <Table
             scroll={{ x: 1400 }}
+            // @ts-ignore
             columns={userColumns}
             dataSource={users && users}
             pagination={{

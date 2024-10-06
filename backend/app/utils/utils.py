@@ -1,7 +1,7 @@
 """"
     Defines utility functions that would be used across the application.
 """
-
+from typing import Union, List, Dict, Any
 from typing import List, Optional
 from urllib.parse import urlparse
 from fastapi import HTTPException, status
@@ -9,6 +9,9 @@ from app.models.user_info import T_UserInfo
 from app.models.enums import E_PageType, E_UserRole
 from app.schemas.page_content import PageContentResponse
 from app.utils.response import error_response
+
+TElement = Dict[str, Any]
+TDescendant = Union[TElement, Dict[str, str]]
 
 # User Utils
 def is_super_admin(current_user: T_UserInfo):
@@ -61,3 +64,63 @@ def to_kebab_case(s: str) -> str:
 # def handle_empty_string(value: Optional[str]) -> Optional[str]:
 #         print(value,"VALUE")
 #         return value if value is not None else ""
+
+
+def extract_text(element: TDescendant, excerpt: str = '') -> str:
+    max_length = 150  
+
+    if len(excerpt) >= max_length:
+        return excerpt[:max_length]
+    if isinstance(element, str):
+        excerpt += ' ' + element
+    elif 'text' in element and element['text']:
+        excerpt += ' ' + element['text']
+    elif 'children' in element and isinstance(element['children'], list):
+        for child in element['children']:
+            excerpt = extract_text(child, excerpt)
+            if len(excerpt) >= max_length:
+                break  
+    
+    return excerpt[:max_length].strip()
+
+def get_excerpt(contents: List[TElement]) -> str:
+    excerpt = ''
+    if not contents:
+        return ''
+    max_length = 150  
+    if contents:
+        for content in contents:
+            if content['type'] == 'p' or content['type'].startswith('h'):
+                excerpt = extract_text(content, excerpt)
+                if len(excerpt) >= max_length:
+                    break  
+    return excerpt.strip()
+
+
+def count_words(text: str) -> int:
+    return len(text.split())
+
+def estimate_reading_time(page_contents: List[TElement] ) -> int:
+    if not page_contents or len(page_contents) == 0:
+        return 0
+
+    total_words = 0
+    image_count = 0
+
+    reading_speed = 200  
+    image_reading_time = 5  
+
+    for content in page_contents:
+        if content.get('type') == 'p':
+            for child in content.get('children', []):
+                if 'text' in child:
+                    total_words += count_words(child['text'])
+        elif content.get('type') == 'img':
+            image_count += len(content.get('children', []))  
+
+    reading_time_minutes = total_words / reading_speed
+    image_time_minutes = (image_count * image_reading_time) / 60
+
+    total_reading_time_minutes = reading_time_minutes + image_time_minutes
+
+    return round(total_reading_time_minutes)

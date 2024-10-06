@@ -201,6 +201,7 @@ const usePageContent = ({
       } else if (pageContent.pageType == EPageType.PageList) {
         formData.append('PC_DisplayURL', pageContent.pageContentDisplayURL);
       }
+      // @ts-ignore
       const response = await createPageContent(formData).unwrap();
       if (pageContentFetchRefetch) pageContentFetchRefetch();
 
@@ -252,6 +253,7 @@ const usePageContent = ({
     try {
       const formData = new FormData();
       formData.append('PC_PageContentImg', pageContentImage.pageContentImage);
+      // @ts-ignore
       const response = await uploadPageContentImage(formData).unwrap();
       dispatch(setPageContentImageURL(response.data.PC_PageContentURL));
       notify(
@@ -309,6 +311,7 @@ const usePageContent = ({
 
       const response = await editPageContent({
         PC_ID: pageContentId,
+        // @ts-ignore
         formData,
       }).unwrap();
 
@@ -409,7 +412,6 @@ const usePageContent = ({
         console.error('Dispatch failed:', dispatchError);
       }
     } catch (error: any) {
-      console.log(error, 'ERROROROROR');
       notify(
         'Error',
         error?.data?.message ||

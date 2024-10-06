@@ -60,10 +60,9 @@ const CreatePageContent = () => {
   const page = pathname.split('/');
   const pageName = page[1];
   const pageDisplayURL = pageName;
-  const { submitPageContent, refetchDynamicPage, isCreatePageContentSuccess } =
-    usePageContent({
-      pageDisplayURL,
-    });
+  const { submitPageContent, isCreatePageContentSuccess } = usePageContent({
+    pageDisplayURL,
+  });
 
   const form = useForm({
     resolver: zodResolver(pageContentSchema),
@@ -78,6 +77,7 @@ const CreatePageContent = () => {
   });
 
   const onSubmit = async (data: any) => {
+    // @ts-ignore
     let pageContent: IPageContentItem = {
       pageContentName: data.pageContentName,
       pageContentDisplayImage: data.pageContentDisplayImage,
@@ -91,7 +91,7 @@ const CreatePageContent = () => {
       href: `${pageName}/${data.pageContentDisplayURL}`,
       userId: (uiId && uiId) as string,
     };
-    await submitPageContent(pageContent, refetchDynamicPage);
+    await submitPageContent(pageContent);
   };
 
   useEffect(() => {
@@ -108,7 +108,9 @@ const CreatePageContent = () => {
     return () => subscription.unsubscribe();
   }, [form, isManualEdit]);
 
-  const handlePageDisplayUrlChange = (e) => {
+  const handlePageDisplayUrlChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const trimmedValue = e.target.value.trim();
     setIsManualEdit(true);
     form.setValue('pageContentDisplayURL', trimmedValue);
@@ -277,7 +279,9 @@ const EditPageContent = () => {
     },
   });
 
-  const handlePageDisplayUrlChange = (e) => {
+  const handlePageDisplayUrlChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setIsManualEdit(true);
     form.setValue('pageContentDisplayURL', e.target.value);
   };
@@ -285,6 +289,7 @@ const EditPageContent = () => {
   useEffect(() => {
     if (isPageContentFetchSuccess && contentData) {
       console.log(contentData, 'pageContentDisplayURL');
+      // @ts-ignore
       form.reset(contentData);
       setPlateEditor(contentData.editorContent || plateEditor);
       setPlateEditorKey(

@@ -32,9 +32,10 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
     handlePageContentEditButtonClick(pageContent);
   };
   const title = pageContent.pageContentName;
-  const excerpt = getPageExcerpt(pageContent.editorContent);
+  //const excerpt = getPageExcerpt(pageContent.editorContent);
+  const excerpt = pageContent.pageContentExcerpt;
   const imageSrc = pageContent.pageContentDisplayImage;
-  const readTime = `${estimateReadingTime(pageContent.editorContent)} mins Read`;
+  const readTime = `${pageContent.pageContentReadingTime} mins Read`;
   const date = formatDate(pageContent.pageContentCreatedAt as string);
   const href = pageContent.href;
   const category = pageName;

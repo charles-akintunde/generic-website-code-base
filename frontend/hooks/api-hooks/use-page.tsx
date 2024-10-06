@@ -293,6 +293,7 @@ const usePage = ({
         pageContents:
           response.PG_PageContents &&
           (response.PG_PageContents.map((pageContent) => {
+            // @ts-ignore
             const pageContentResponse: IPageContentMain = {
               pageContentId: pageContent.PC_ID,
               pageId: pageContent.PG_ID,

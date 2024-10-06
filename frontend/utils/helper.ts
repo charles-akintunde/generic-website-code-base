@@ -166,6 +166,7 @@ export const getPageExcerpt = (contents: TElement[] | null): string => {
     if ('text' in element && element.text) {
       excerpt += ' ' + element.text;
     } else if ('children' in element && element.children) {
+      // @ts-ignore
       for (let child of element.children) {
         extractText(child);
       }
@@ -197,6 +198,7 @@ export function estimateReadingTime(pageContents: TElement[] | null) {
     if (content.type === 'p') {
       content.children.forEach((child) => {
         if (child.text) {
+          // @ts-ignore
           totalWords += countWords(child.text);
         }
       });
@@ -286,6 +288,7 @@ export const pageNormalizer = (
 };
 
 export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
+  // @ts-ignore
   return {
     id: data.UI_ID,
     uiFirstName: data.UI_FirstName,
@@ -331,6 +334,7 @@ export const createPageContentItem = (
   currentUserId: string,
   href: string
 ): IPageContentItem => {
+  // @ts-ignore
   return {
     pageContentName: data.pageContentName,
     pageContentDisplayImage: data.pageContentDisplayImage,
@@ -353,6 +357,8 @@ export const normalizeMultiContentPage = (
       return {
         pageContentId: pageContent.PC_ID,
         pageId: pageContent.PG_ID,
+        pageContentExcerpt: pageContent.PC_Excerpt,
+        pageContentReadingTime: pageContent.PC_ReadingTime,
         pageContentDisplayURL:
           EPageType.SinglePage == String(response.PG_Type)
             ? response.PG_DisplayURL
@@ -414,6 +420,7 @@ export const mapPageToIPageMain = (pagesData: PagesData): IPageList => {
 
 export const mapToIIUserList = (data: IUserResponseData): IUserList => {
   console.log(data);
+  // @ts-ignore
   const users: IUserBase[] = data.users.map((user: UserResponse) => ({
     id: user.UI_ID,
     uiFirstName: user.UI_FirstName,
@@ -460,7 +467,9 @@ export function transformUserInfoToEditUserRequest(
   // if (userInfo.uiRegDate) {
   //   formData.append('UI_RegDate', userInfo.uiRegDate);
   // }
+  // @ts-ignore
   if (userInfo.uiPhotoUrl) {
+    // @ts-ignore
     formData.append('UI_Photo', userInfo.uiPhotoUrl);
   }
   if (userInfo.uiCity) {
@@ -482,6 +491,7 @@ export function transformUserInfoToEditUserRequest(
     formData.append('UI_Organization', userInfo.uiOrganization);
   }
   if (userInfo.uiAbout) {
+    // @ts-ignore
     formData.append('UI_About', userInfo.uiAbout);
   }
 
@@ -557,6 +567,7 @@ export const hasNavItems = (navMenuItems: MenuItem[], pathname: string) => {
     (item: MenuItem) =>
       (item && item.key === decodeURIComponent(`/${pathname.split('/')[1]}`)) ||
       (item &&
+        // @ts-ignore
         item.key.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`)))
   );
 

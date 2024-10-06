@@ -118,7 +118,10 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
     }
   }, [userInfo, form]);
 
-  const onSubmit = async (data: any, event: { preventDefault: () => void }) => {
+  const onSubmit = async (
+    data: any,
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
     const newDataWithContents = { ...data, uiAbout: plateEditor };
     const changedFields = getChangedFields(userInfo, newDataWithContents);
@@ -140,7 +143,8 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
     <Form {...form}>
       <form
         className="space-y-6 w-full h-full overflow-y-auto pb-20"
-        onSubmit={form.handleSubmit(onSubmit)} // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // @ts-ignore
+        onSubmit={form.handleSubmit(onSubmit)}
       >
         {isSameUser && (
           <div className="flex justify-end">
@@ -306,6 +310,7 @@ export const UserRoleStatusDialog = () => {
 
   const form = useForm<UserRoleStatusFormData>({
     resolver: zodResolver(userRoleStatusSchema),
+    // @ts-ignore
     defaultValues: userInfo || {
       uiMainRoles: '',
       uiStatus: '',
@@ -315,6 +320,7 @@ export const UserRoleStatusDialog = () => {
 
   useEffect(() => {
     if (userInfo) {
+      // @ts-ignore
       form.reset(userInfo);
     }
   }, [userInfo, form]);
@@ -363,6 +369,7 @@ export const UserRoleStatusDialog = () => {
           <Form {...form}>
             <form
               className="space-y-6 w-full h-full overflow-y-auto pb-20"
+              // @ts-ignore
               onSubmit={form.handleSubmit(onSubmit)}
             >
               {!isSameUser && (

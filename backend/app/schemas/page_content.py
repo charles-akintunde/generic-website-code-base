@@ -41,6 +41,8 @@ class PageContentResponse(PageContent):
     PC_ResourceURL: Optional[str] = None
     PG_Name: Optional[str] = None
     PG_DisplayURL: Optional[str] = None
+    PC_Excerpt:  Optional[str] = None
+    PC_ReadingTime: Optional[int] = None
     # PC_DisplayURL: str
 
 class PageContentUpdateRequest(BaseModel):

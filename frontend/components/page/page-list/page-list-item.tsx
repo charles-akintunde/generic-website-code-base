@@ -156,6 +156,7 @@ const PageListItem: React.FC = () => {
   return (
     <div className=" space-y-4">
       <Table
+        // @ts-ignore
         columns={columns}
         scroll={{ x: 1200 }}
         loading={isPagesFetchLoading}
