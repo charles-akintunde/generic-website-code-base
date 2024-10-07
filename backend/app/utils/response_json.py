@@ -127,25 +127,26 @@ def create_users_response(users: List[UserPartial], total_users_count: int ,new_
         total_users_count= total_users_count
     )
 
-def create_user_response(user: T_UserInfo)  -> UserResponse:
+def create_user_response(user: T_UserInfo) -> UserResponse:
     return UserResponse(
-    UI_ID=str(user.UI_ID),
-    UI_FirstName=str(user.UI_FirstName),
-    UI_LastName=str(user.UI_LastName),
-    UI_Email=str(user.UI_Email),
-    UI_Role=[role.value for role in user.UI_Role],
-    UI_Status=user.UI_Status.value,
-    UI_RegDate=str(user.UI_RegDate),
-    UI_PhotoURL=user.UI_PhotoURL, # type: ignore
-    UI_City=user.UI_City, # type: ignore
-    UI_PhoneNumber=user.UI_PhoneNumber, # type: ignore
-    UI_PostalCode=user.UI_PostalCode, # type: ignore
-    UI_Country=user.UI_Country, # type: ignore
-    UI_Province=user.UI_Province, # type: ignore
-    UI_Organization=user.UI_Organization, # type: ignore
-    UI_About= user.UI_About, # type: ignore
-    UI_MemberPosition= user.UI_MemberPosition.value
+        UI_ID=str(user.UI_ID),
+        UI_FirstName=str(user.UI_FirstName),
+        UI_LastName=str(user.UI_LastName),
+        UI_Email=str(user.UI_Email),
+        UI_Role=[role.value for role in user.UI_Role],
+        UI_Status=user.UI_Status.value,
+        UI_RegDate=str(user.UI_RegDate),
+        UI_PhotoURL=user.UI_PhotoURL if user.UI_PhotoURL is not None else None, # type: ignore
+        UI_City=user.UI_City if user.UI_City is not None else None, # type: ignore
+        UI_PhoneNumber=user.UI_PhoneNumber if user.UI_PhoneNumber is not None else None, # type: ignore
+        UI_PostalCode=user.UI_PostalCode if user.UI_PostalCode is not None else None, # type: ignore
+        UI_Country=user.UI_Country if user.UI_Country is not None else None, # type: ignore
+        UI_Province=user.UI_Province if user.UI_Province is not None else None, # type: ignore
+        UI_Organization=user.UI_Organization if user.UI_Organization is not None else None, # type: ignore
+        UI_About=user.UI_About if user.UI_About is not None else None, # type: ignore
+        UI_MemberPosition=user.UI_MemberPosition.value if user.UI_MemberPosition is not None else None
     )
+
 
 
 def create_page_with_offset_response(pages: List[PageResponse], total_page_count: int) -> PG_PagesResponse:

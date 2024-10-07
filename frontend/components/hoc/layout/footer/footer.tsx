@@ -7,15 +7,15 @@ export default function Footer() {
       <div className="container mx-auto px-6">
         {/* Footer Top Section */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-          {/* CLISA Description */}
+          {/* Climate Smart Lab Description */}
           <div className="col-span-1 md:col-span-2">
             <span className="text-3xl font-bold text-white tracking-tighter">
-              CLISA
+              Climate Smart Lab
             </span>
             <p className="text-sm mt-3 text-[#f9f9f9ff]">
-              CLISA leverages cutting-edge technology to provide precise flood
-              modeling solutions, helping communities and organizations better
-              prepare for and respond to flooding events.
+              Climate Smart Lab leverages cutting-edge technology to provide
+              precise flood modeling solutions, helping communities and
+              organizations better prepare for and respond to flooding events.
             </p>
           </div>
 
@@ -87,23 +87,23 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="#"
+                  href="/news"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
-                  About Us
+                  News
                 </Link>
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/events"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
-                  Careers
+                  Events
                 </Link>
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/contact-us"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
                   Contact Us
@@ -111,7 +111,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/privacy-policy"
                   className="inline-block transition-all duration-200 ease-in-out hover:border-b-2 hover:border-white"
                 >
                   Privacy Policy
@@ -127,7 +127,7 @@ export default function Footer() {
         {/* Footer Bottom Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="text-xs text-[#f9f9f9ff]">
-            © 2024 CLISA.com - All rights reserved
+            © 2024 ClimateSmartLab.com - All rights reserved
           </div>
           <div className="flex justify-center md:justify-end space-x-4">
             <Link

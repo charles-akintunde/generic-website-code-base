@@ -164,20 +164,12 @@ async def refresh_token_endpoint(
     except HTTPException as e:
         return error_response(message=e.detail,status_code=e.status_code)
 
+from sqlalchemy.orm.attributes import flag_modified
+
 @router.post("/account/confirm/", response_class=JSONResponse)
 def confirm_email_endpoint(token: BaseToken, db: Session = Depends(get_db)):
-    """
-    Confirm user's email address.
-
-    Args:
-        token (str): Confirmation token.
-        db (Session): Database session.
-
-    Returns:
-        JSONResponse: Confirmation message.
-    """
-    payload = verify_token(token=token.token,db=db)
-    email = payload.get("sub") # type: ignore
+    payload = verify_token(token=token.token, db=db)
+    email = payload.get("sub")
     if email is None:
         return error_response("Invalid or expired token", status.HTTP_400_BAD_REQUEST)
     
@@ -188,11 +180,25 @@ def confirm_email_endpoint(token: BaseToken, db: Session = Depends(get_db)):
     if db_user.UI_Status == E_Status.Active: # type: ignore
         return error_response(message="Email already confirmed", status_code=status.HTTP_400_BAD_REQUEST)
     
-    db_user.UI_Status, db_user.UI_Role = E_Status.Active, E_UserRole.User # type: ignore
+    # Modify the roles
+    if E_UserRole.Public in db_user.UI_Role:
+        db_user.UI_Role.remove(E_UserRole.Public)  # Remove 'Public' role
+    if E_UserRole.User not in db_user.UI_Role:
+        db_user.UI_Role.append(E_UserRole.User)  # Add 'User' role
+
+    # Mark the UI_Role as modified to ensure SQLAlchemy tracks the change
+    flag_modified(db_user, "UI_Role")
+
+    # Set the user's status to active
+    db_user.UI_Status = E_Status.Active # type: ignore
+
+    # Commit the changes to the database
     db.commit()
     db.refresh(db_user)
     
     return success_response("Email confirmed successfully")
+
+
 
 @router.post("/resend-confirmation", response_class=JSONResponse)
 async def resend_confirmation_endpoint(email: EmailStr, db: Session = Depends(get_db)):

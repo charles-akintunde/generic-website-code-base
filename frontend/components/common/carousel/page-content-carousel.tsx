@@ -15,10 +15,11 @@ import {
   IPageContentItem,
   IPageContentMain,
 } from '@/types/componentInterfaces';
-import { getPageExcerpt } from '@/utils/helper';
+import { formatDate, getPageExcerpt } from '@/utils/helper';
 import Link from 'next/link';
 import { Empty } from 'antd';
 import { Tooltip } from 'antd';
+import { appConfig } from '@/utils/appConfig';
 
 interface IPageContent {
   pageContentId: string;
@@ -34,12 +35,13 @@ interface IPageContentCarouselCardProps {
 const PageContentCarouselCard: React.FC<IPageContentCarouselCardProps> = ({
   pageContent,
 }) => {
+  const date = formatDate(pageContent.pageContentCreatedAt as string);
   return (
     <div className="p-4 bg-white shadow-sm rounded-lg hover:shadow-md transition-shadow duration-300">
       <Link href={pageContent.href}>
         <img
           className="w-full h-48 object-cover rounded-md transition-opacity duration-300 hover:opacity-90"
-          src={pageContent.pageContentDisplayImage}
+          src={pageContent.pageContentDisplayImage as string}
           alt={pageContent.pageContentName}
         />
       </Link>
@@ -50,22 +52,38 @@ const PageContentCarouselCard: React.FC<IPageContentCarouselCardProps> = ({
       >
         <div className="mt-4">
           <Link href={pageContent.href}>
-            <h2 className="text-lg font-semibold transition-colors duration-300 hover:text-primary overflow-hidden text-ellipsis whitespace-nowrap">
+            <h2 className="text-lg font-semibold transition-colors duration-300 hover:text-blue-500 overflow-hidden text-ellipsis whitespace-nowrap">
               {pageContent.pageContentName}
             </h2>
           </Link>
         </div>
       </Tooltip>
+
+      <div className="mt-2 h-20 text-sm text-gray-700 overflow-hidden text-ellipsis">
+        {pageContent.pageContentExcerpt}{' '}
+      </div>
+
+      <Link href={pageContent.href}>
+        <span className="text-blue-500 text-sm mt-2 block hover:opacity-70 transition-opacity duration-300">
+          Read More
+        </span>
+      </Link>
+
+      <div className=" text-sm text-gray-500 mt-4">
+        <span>{date}</span> |
+        <span> {pageContent.pageContentReadingTime} min read</span>
+      </div>
     </div>
   );
 };
 
 const PageContentCarousel: React.FC = () => {
-  const pageDisplayURL = 'test-page';
+  const pageDisplayURL = appConfig.urlForPageToDisplayOnHome;
   const { pageContents } = usePage({ pageDisplayURL });
   // const fetchingPageData = useAppSelector(
   //   (state) => state.page.fetchingPageData
   // ) as IFetchedPage;
+  console.log(pageContents);
 
   const fetchedPageContents: IPageContentMain[] = pageContents;
 

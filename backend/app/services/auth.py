@@ -205,6 +205,13 @@ async def use_refresh_token(
     
     user=user_crud.get_user_by_email(db=db, email=email)
 
+
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
     token_data = {
         "sub": user.UI_Email,
         "firstname": user.UI_FirstName,

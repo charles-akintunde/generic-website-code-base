@@ -16,6 +16,7 @@ import {
   formatDate,
   getPageExcerpt,
 } from '@/utils/helper';
+import { Tooltip } from 'antd';
 
 interface IPageContentCardProps {
   pageName: string;
@@ -38,7 +39,7 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
   const readTime = `${pageContent.pageContentReadingTime} mins Read`;
   const date = formatDate(pageContent.pageContentCreatedAt as string);
   const href = pageContent.href;
-  const category = pageName;
+  //const category = pageName;
   const isHidden = pageContent.isPageContentHidden;
 
   const handleRemovePage = async () => {
@@ -70,7 +71,12 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
 
         <CardTitle className="text-xl font-bold mt-2">
           <Link onClick={handleEditButtonClick} href={href}>
-            {title}
+            <Tooltip placement={'topLeft'} title={`Read: ${title}`}>
+              {' '}
+              <h2 className="overflow-hidden text-ellipsis whitespace-normal line-clamp-3">
+                {title}
+              </h2>
+            </Tooltip>
           </Link>
         </CardTitle>
         <p className="mt-2 text-md text-gray-600 line-clamp-3">{excerpt}</p>

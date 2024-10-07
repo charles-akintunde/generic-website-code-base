@@ -5,4 +5,5 @@ export const appConfig = {
   appURL: 'https://localhost:3000',
   appLogoURL: './../assets/icons/gw-logo.png',
   appLogo: appLogo,
+  urlForPageToDisplayOnHome: 'news',
 };

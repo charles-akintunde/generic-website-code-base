@@ -10,6 +10,7 @@ import { setUIIsUserEditingMode } from '@/store/slice/userSlice';
 import { setFecthingPageData, setPageContents } from '@/store/slice/pageSlice';
 import { appConfig } from '@/utils/appConfig';
 import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { routes } from './layout/menu-items';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -132,6 +133,10 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
     );
 
     activePageRefetch();
+
+    routes.forEach((route) => {
+      router.prefetch(route.href);
+    });
   }, [allAppRoutes, pathname, router, uiIsLoading, currentPage]);
 
   return allAppRoutes && allAppRoutes.length > 0 ? <>{children}</> : null;
