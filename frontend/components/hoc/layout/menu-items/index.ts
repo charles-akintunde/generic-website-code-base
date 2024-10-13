@@ -8,14 +8,50 @@ export const systemMenuItems: IPageMenuItem[] = [
     pagePermission: ['0', '1', '2', '3', '4'],
     pageType: '3',
     description: '',
+    type: 'item',
   },
   {
-    pageName: 'Teams',
-    href: '/teams',
+    pageName: 'Team Group',
+    type: 'parent',
     isHidden: false,
-    pagePermission: ['0', '1', '2', '3', '4'],
-    pageType: '3',
-    description: '',
+    children: [
+      {
+        pageName: 'Teams',
+        href: '/teams',
+        isHidden: false,
+        pagePermission: ['0', '1', '2', '3', '4'],
+        pageType: '3',
+        description: '',
+        type: 'child',
+      },
+      {
+        pageName: 'Teams',
+        href: '/teams',
+        isHidden: false,
+        pagePermission: ['0', '1', '2', '3', '4'],
+        pageType: '3',
+        description: '',
+        type: 'child',
+      },
+      {
+        pageName: 'Teams',
+        href: '/teams',
+        isHidden: false,
+        pagePermission: ['0', '1', '2', '3', '4'],
+        pageType: '3',
+        description: '',
+        type: 'child',
+      },
+      {
+        pageName: 'Teams',
+        href: '/teams',
+        isHidden: false,
+        pagePermission: ['0', '1', '2', '3', '4'],
+        pageType: '3',
+        description: '',
+        type: 'child',
+      },
+    ],
   },
   {
     pageName: 'News',
@@ -24,6 +60,7 @@ export const systemMenuItems: IPageMenuItem[] = [
     pagePermission: ['3', '1', '4', '2', '0', '5'],
     pageType: '1',
     description: '',
+    type: 'item',
   },
   {
     pageName: 'Events',
@@ -32,8 +69,17 @@ export const systemMenuItems: IPageMenuItem[] = [
     pagePermission: ['3', '1', '4', '2', '0'],
     pageType: '0',
     description: '',
+    type: 'item',
   },
-
+  {
+    pageName: 'Data',
+    href: '/events',
+    isHidden: false,
+    pagePermission: ['3', '1', '4', '2', '0'],
+    pageType: '0',
+    description: '',
+    type: 'item',
+  },
   {
     pageName: 'Research',
     href: '/research',
@@ -41,14 +87,39 @@ export const systemMenuItems: IPageMenuItem[] = [
     pagePermission: ['3', '1', '4', '2', '0', '5'],
     pageType: '2',
     description: '',
+    type: 'item',
   },
   {
     pageName: 'Contact Us',
-    href: '/contact-us',
+    type: 'parent',
     isHidden: false,
-    pagePermission: ['3', '1', '4', '2', '0', '5'],
-    pageType: '2',
-    description: '',
+    children: [
+      {
+        pageName: 'Teams',
+        href: '/teams',
+        isHidden: false,
+        pagePermission: ['0', '1', '2', '3', '4'],
+        pageType: '3',
+        description: '',
+        type: 'child',
+      },
+      {
+        pageName: 'Access Denied',
+        href: '/access-denied',
+        isHidden: true,
+        pagePermission: ['0', '1', '2', '3', '4'],
+        pageType: '3',
+        type: 'child',
+      },
+      {
+        pageName: 'Sign In',
+        href: '/sign-in',
+        isHidden: true,
+        pagePermission: ['0', '1', '2', '3', '4'],
+        pageType: '3',
+        type: 'child',
+      },
+    ],
   },
   {
     pageName: 'Admin Panel',
@@ -56,13 +127,7 @@ export const systemMenuItems: IPageMenuItem[] = [
     isHidden: true,
     pagePermission: ['0', '1'],
     pageType: '3',
-  },
-  {
-    pageName: 'Sign In',
-    href: '/sign-in',
-    isHidden: true,
-    pagePermission: ['0', '1', '2', '3', '4'],
-    pageType: '3',
+    type: 'item',
   },
 
   {
@@ -71,6 +136,7 @@ export const systemMenuItems: IPageMenuItem[] = [
     isHidden: true,
     pagePermission: ['0', '1', '2', '3', '4'],
     pageType: '3',
+    type: 'item',
   },
 
   {
@@ -80,6 +146,7 @@ export const systemMenuItems: IPageMenuItem[] = [
     pagePermission: ['0', '1', '2'],
     pageType: '3',
     description: '',
+    type: 'item',
   },
   {
     pageName: 'User Profile',
@@ -87,6 +154,7 @@ export const systemMenuItems: IPageMenuItem[] = [
     isHidden: true,
     pagePermission: ['0', '1', '2', '3', '4'],
     pageType: '3',
+    type: 'item',
   },
   {
     pageName: 'Access Denied',
@@ -94,6 +162,7 @@ export const systemMenuItems: IPageMenuItem[] = [
     isHidden: true,
     pagePermission: ['0', '1', '2', '3', '4'],
     pageType: '3',
+    type: 'item',
   },
 ];
 
@@ -105,6 +174,7 @@ export const routes = [
     isHidden: true,
     pagePermission: ['0', '1', '2', '3', '4'],
     pageType: '3',
+    type: 'item',
   },
   {
     pageName: 'Confirm User',
@@ -112,5 +182,6 @@ export const routes = [
     isHidden: true,
     pagePermission: ['0', '1', '2', '3', '4'],
     pageType: '3',
+    type: 'item',
   },
 ];

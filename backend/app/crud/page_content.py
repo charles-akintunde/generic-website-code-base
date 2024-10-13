@@ -13,7 +13,7 @@ from app.schemas.page_content import PageContentCreateRequest, PageContentUpdate
 from app.models.page_content import T_PageContent
 from app.models.page import T_Page
 from app.models.page_content import T_PageContent
-from app.utils.file_utils import delete_file, extract_path_from_url
+from app.utils.file_utils import  delete_file_from_azure, extract_path_from_url
 
 
 class PageContentCRUD:
@@ -187,7 +187,7 @@ class PageContentCRUD:
     db.refresh(db_page_content)
     return db_page_content
  
- def delete_page_content(
+ async def delete_page_content(
        self,
        db: Session, 
        page_content_to_delete: T_PageContent):
@@ -202,10 +202,9 @@ class PageContentCRUD:
     try:
         if page_content_to_delete:
             # if page_content_to_delete.PC_DisplayURL: # type: ignore
-            #     delete_file(extract_path_from_url(page_content_to_delete.PC_DisplayURL)) # type: ignore
+            #     await delete_file_from_azure(page_content_to_delete.PC_DisplayURL) # type: ignore
             if page_content_to_delete.PC_ThumbImgURL: # type: ignore
-                pass
-                #delete_file(extract_path_from_url(page_content_to_delete.PC_ThumbImgURL)) # type: ignore
+                await delete_file_from_azure(page_content_to_delete.PC_ThumbImgURL) # type: ignore
             db.delete(page_content_to_delete)
             db.commit()
             return True

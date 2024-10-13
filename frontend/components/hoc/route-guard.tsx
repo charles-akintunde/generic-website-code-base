@@ -30,6 +30,40 @@ const isExistingRoute: React.FC<isExistingRouteProps> = ({
   );
 };
 
+const findPage = (
+  routes: IPageMenuItem[],
+  pathname: string
+): IPageMenuItem | undefined => {
+  const decodedPath = decodeURIComponent(`/${pathname.split('/')[1]}`);
+
+  for (const item of routes) {
+    if (
+      item.href === decodedPath ||
+      (item.href && item.href.startsWith(decodedPath))
+    ) {
+      return item;
+    }
+
+    if (item.children && item.children.length > 0) {
+      const matchingChild = item.children.find((child) => {
+        const childDecodedPath = decodeURIComponent(
+          `/${pathname.split('/')[1]}`
+        );
+        return (
+          child.href === childDecodedPath ||
+          (child.href && child.href.startsWith(childDecodedPath))
+        );
+      });
+
+      if (matchingChild) {
+        return matchingChild;
+      }
+    }
+  }
+
+  return undefined;
+};
+
 const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   const { activePageRefetch } = useUserInfo();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
@@ -39,13 +73,13 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   const { allAppRoutes } = usePage();
   const router = useRouter();
   const pathname = usePathname();
-  const currentPage = allAppRoutes.find(
-    (item) =>
-      item.href === decodeURIComponent(`/${pathname.split('/')[1]}`) ||
-      item.href.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`))
-  );
+  const currentPage = findPage(allAppRoutes, pathname);
 
-  console.log(uiActiveUser, 'uiActiveUser');
+  // const currentPage = allAppRoutes.find(
+  //   (item) =>
+  //     item.href === decodeURIComponent(`/${pathname.split('/')[1]}`) ||
+  //     item.href.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`))
+  // );
 
   useEffect(() => {
     if (currentPage) {
@@ -93,6 +127,7 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
     if (uiIsLoading || !currentPage) return;
     if (allAppRoutes && allAppRoutes.length > 0) {
       const isValidRoute =
+        currentPage ||
         pathname.split('/')[1].startsWith('user-profile') ||
         pathname.startsWith('/confirm-user/account-creation') ||
         pathname.startsWith('/confirm-user/reset-password') ||

@@ -6,6 +6,13 @@ import cx from 'classnames';
 import { usePathname } from 'next/navigation';
 import { closeDrawer } from '@/store/slice/layoutSlice';
 import { useAppDispatch } from '@/hooks/redux-hooks';
+import { ChevronDown } from 'lucide-react';
+
+interface MenuItemComponentProps {
+  href: string;
+  pageName: string;
+  hasChildren: boolean;
+}
 
 const MenuItem: React.FC<IPageMenuItem> = ({ pageName, href, isHidden }) => {
   const pathname = usePathname();
@@ -35,3 +42,37 @@ const MenuItem: React.FC<IPageMenuItem> = ({ pageName, href, isHidden }) => {
 };
 
 export default MenuItem;
+
+export const MenuItemComponent: React.FC<MenuItemComponentProps> = ({
+  href,
+  pageName,
+  hasChildren,
+}) => (
+  <>
+    {href ? (
+      <Link href={href}>
+        <div
+          className={`flex items-center justify-between space-x-2 transition cursor-pointer duration-300 ease-in-out hover:text-primary transform hover:bg-opacity-50 hover:bg-gray-100 rounded-md px-4`}
+        >
+          <p>{pageName}</p>
+          {hasChildren && (
+            <span className="ml-2  flex-end transform transition-transform duration-300 ease-in-out group-hover:rotate-180">
+              <ChevronDown className="h-3 w-3" />
+            </span>
+          )}
+        </div>
+      </Link>
+    ) : (
+      <div
+        className={`flex justify-between items-center cursor-pointer duration-300 ease-in-out hover:text-primary transform hover:bg-opacity-50 hover:bg-gray-100 rounded-md px-4`}
+      >
+        <p>{pageName}</p>
+        {hasChildren && (
+          <span className="ml-2 transform transition-transform duration-300 ease-in-out group-hover:rotate-180">
+            <ChevronDown className="h-3 w-3" />
+          </span>
+        )}
+      </div>
+    )}
+  </>
+);

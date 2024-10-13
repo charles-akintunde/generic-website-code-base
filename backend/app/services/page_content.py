@@ -12,7 +12,7 @@ from app.utils.utils import is_admin
 from app.models.user_info import T_UserInfo
 from app.utils.response_json import build_page_content_json, build_page_json_with_single_content
 from app.schemas.page import  PageSingleContent
-from app.utils.file_utils import delete_and_save_file, save_file
+from app.utils.file_utils import  delete_and_save_file_azure, save_file_to_azure
 from app.config import settings
 from app.models.enums import E_PageType
 
@@ -89,12 +89,12 @@ async def create_page_content(
         )
     
     if page_content.PC_ThumbImg:
-            thumbnail_url=await save_file(page_content.PC_ThumbImg, settings.THUMBNAILS_FILE_PATH)
+            thumbnail_url=await save_file_to_azure(page_content.PC_ThumbImg)
             page_content.PC_ThumbImgURL = str(thumbnail_url) 
     delattr(page_content, "PC_ThumbImg")
 
     if page_content.PC_Resource:
-            resource_url=await save_file(page_content.PC_Resource, settings.RESOURCE_FILE_PATH)
+            resource_url=await save_file_to_azure(page_content.PC_Resource, settings.RESOURCE_FILE_PATH)
             page_content.PC_DisplayURL = str(resource_url) 
     delattr(page_content, "PC_Resource")
 
@@ -197,18 +197,16 @@ async def update_page_content(
 
     if existing_page_content.PC_Page.PG_Type == E_PageType.ResList:
         if page_content_update.PC_Resource:
-            page_content_update.PC_DisplayURL = await delete_and_save_file(
+            page_content_update.PC_DisplayURL = await delete_and_save_file_azure(
                 str(existing_page_content.PC_DisplayURL),
-                page_content_update.PC_Resource,
-                folder=settings.RESOURCE_FILE_PATH
+                page_content_update.PC_Resource
             )
             delattr(page_content_update, 'PC_Resource')
 
     if page_content_update.PC_ThumbImg:
-        page_content_update.PC_ThumbImgURL = await delete_and_save_file(
+        page_content_update.PC_ThumbImgURL = await delete_and_save_file_azure(
             str(existing_page_content.PC_ThumbImgURL),
-            page_content_update.PC_ThumbImg,
-            folder=settings.THUMBNAILS_FILE_PATH
+            page_content_update.PC_ThumbImg
         )
         delattr(page_content_update, 'PC_ThumbImg')
 
@@ -238,7 +236,7 @@ async def update_page_content(
     )
 
 
-def delete_page_content(db: Session, page_content_id: str) -> bool:
+async def delete_page_content(db: Session, page_content_id: str) -> bool:
     """
     Delete page content.
 
@@ -254,7 +252,7 @@ def delete_page_content(db: Session, page_content_id: str) -> bool:
             detail="Page content not found"
         )
     
-    success = page_content_crud.delete_page_content(db, page_content_to_delete)
+    success =await  page_content_crud.delete_page_content(db, page_content_to_delete)
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

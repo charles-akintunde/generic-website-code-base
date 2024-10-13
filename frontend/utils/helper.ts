@@ -552,19 +552,56 @@ export const handleRoutingOnError = (
   }
 };
 
-export const hasNavItems = (navMenuItems: MenuItem[], pathname: string) => {
+export const hasNavItems = (
+  navMenuItems: MenuItem[],
+  pathname: string
+): string | null => {
   if (!navMenuItems || !pathname) return null;
 
-  const currentNavItem = navMenuItems.find(
-    (item: MenuItem) =>
-      (item && item.key === decodeURIComponent(`/${pathname.split('/')[1]}`)) ||
-      (item &&
+  const decodedPath = decodeURIComponent(`/${pathname.split('/')[1]}`);
+
+  const findNavItem = (items: MenuItem[]): MenuItem | undefined => {
+    return items.find((item: MenuItem) => {
+      const isMatch =
         // @ts-ignore
-        item.key.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`)))
-  );
+        item.key === decodedPath || item.key.startsWith(decodedPath);
+
+      if (isMatch) {
+        return true;
+      }
+
+      // @ts-ignore
+      if (item.children && item.children.length > 0) {
+        // @ts-ignore
+        const childMatch = findNavItem(item.children);
+        if (childMatch) {
+          return true;
+        }
+      }
+
+      return false;
+    });
+  };
+
+  // Find the matching item or child
+  const currentNavItem = findNavItem(navMenuItems);
 
   return currentNavItem ? currentNavItem.key : null;
 };
+
+// export const hasNavItems = (navMenuItems: MenuItem[], pathname: string) => {
+//   if (!navMenuItems || !pathname) return null;
+
+//   const currentNavItem = navMenuItems.find(
+//     (item: MenuItem) =>
+//       (item && item.key === decodeURIComponent(`/${pathname.split('/')[1]}`)) ||
+//       (item &&
+//         // @ts-ignore
+//         item.key.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`)))
+//   );
+
+//   return currentNavItem ? currentNavItem.key : null;
+// };
 
 export const copyToClipboard = (text: string, notify: Notify) => {
   navigator.clipboard

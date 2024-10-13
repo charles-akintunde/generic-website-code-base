@@ -38,7 +38,8 @@ import { routes, systemMenuItems } from '@/components/hoc/layout/menu-items';
 import { MenuProps } from 'antd';
 import Link from 'next/link';
 import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
-
+import { ChevronDown } from 'lucide-react';
+import { MenuItemComponent } from '@/components/hoc/layout/menu-items/menu-item';
 interface usePageProps {
   pageName?: string;
   pageDisplayURL?: string;
@@ -260,19 +261,35 @@ const usePage = ({
       const visibleMenuItems = combinedMenuItems.filter(
         (item) => item.isHidden == false
       );
+
+      console.log(visibleMenuItems, 'Visible Menu Items');
       const navMenuItems: MenuItem[] = visibleMenuItems.map(
         (menuItem: IPageMenuItem, index) => ({
           label: (
-            <div
-              // onClick={() => reloadPage()}
-              className={`transition cursor-pointer duration-300 ease-in-out hover:text-primary transform hover:bg-opacity-50 hover:bg-gray-100 rounded-md px-4`}
-            >
-              <Link href={`${menuItem.href}`}>{menuItem.pageName}</Link>
-            </div>
+            <MenuItemComponent
+              href={menuItem?.href as string}
+              pageName={menuItem.pageName}
+              hasChildren={
+                (menuItem?.children && menuItem?.children.length > 0) as boolean
+              }
+            />
           ),
-          key: `${menuItem.href}`,
+          key: `${menuItem?.href} ${menuItem?.pageName}`,
+          children:
+            menuItem?.children &&
+            menuItem?.children.map((child) => ({
+              label: (
+                <MenuItemComponent
+                  href={child.href as string}
+                  pageName={child.pageName}
+                  hasChildren={false}
+                />
+              ),
+              key: `${child.href} ${child.pageName}`,
+            })),
         })
       );
+
       setNavMenuItems(navMenuItems);
       setMenuItems(combinedMenuItems);
       setAllAppRoutes(allRoutes);

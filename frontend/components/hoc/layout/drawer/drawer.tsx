@@ -66,17 +66,19 @@ const Drawer: React.FC = () => {
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={handleClose}>
-      <SheetContent className="min-h-screen" side={'left'}>
+      <SheetContent className="min-h-screen" side="left">
         <SheetHeader>
           <div className="flex items-center pl-6">
             <Logo />
           </div>
         </SheetHeader>
-        <ScrollArea className="overflow-y-auto max-h-[calc(100vh-10rem)] hide-scrollbar">
+
+        <ScrollArea className="overflow-y-auto max-h-[calc(100vh-15rem)] hide-scrollbar">
           <Menu
             className="space-y-10"
             onClick={onClickNavMenuItem}
             selectedKeys={activeNavItem ? [activeNavItem] : []}
+            expandIcon={<></>}
             mode="inline"
             items={navMenuItems}
           />
@@ -92,16 +94,14 @@ const Drawer: React.FC = () => {
                       buttonText="Logout"
                       Icon={LogOut}
                       isRightPosition={false}
-                      variant={'ghost'}
+                      variant="ghost"
                       classNames={`${transitionStyles} p-0 hover:bg-inherit hover:text-inherit text-primary`}
                     />
                   }
                 />
               </HoverableCard>
               <Link onClick={handleClose} href={`/user-profile/${uiId}`}>
-                <HoverableCard
-                  classNames={`flex items-center cursor-pointer space-x-2`}
-                >
+                <HoverableCard classNames="flex items-center cursor-pointer space-x-2">
                   <Avatar
                     style={{
                       cursor: 'pointer',
@@ -112,7 +112,7 @@ const Drawer: React.FC = () => {
                     }}
                   >
                     {uiIntials}
-                  </Avatar>{' '}
+                  </Avatar>
                   <p className="text-xs">{uiFullName}</p>
                 </HoverableCard>
               </Link>
@@ -120,7 +120,7 @@ const Drawer: React.FC = () => {
           ) : (
             <HoverableCard>
               <Link
-                href={'/sign-in'}
+                href="/sign-in"
                 className="text-md cursor-pointer flex text-primary items-center transition duration-300 ease-in-out"
               >
                 <LogIn className="mr-2 h-4 w-4" /> Log in

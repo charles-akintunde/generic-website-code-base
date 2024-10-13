@@ -15,7 +15,7 @@ from app.core.auth import get_current_user
 from app.models.user_info import T_UserInfo
 from app.database import get_db
 from app.utils.response import error_response, success_response
-from app.utils.file_utils import save_file, validate_image_file
+from app.utils.file_utils import save_file, save_file_to_azure, validate_image_file
 from app.config import settings
 from app.utils.response_json import create_page_content_img_response
 
@@ -185,7 +185,7 @@ async def delete_page_content_endpoint(
         StandardResponse: The response indicating the result of the delete operation.
     """ 
     try:
-        success = delete_page_content(db=db, page_content_id=page_content_id)
+        success =await  delete_page_content(db=db, page_content_id=page_content_id)
         if success:
             return success_response(message="Page content deleted successfully")
         else:
@@ -220,7 +220,7 @@ async def upload_page_content_image_endpoint(
        # is_super_admin(current_user=current_user)
         page_content_image = PC_PageContentImg
         validate_image_file(page_content_image)
-        image_url = await save_file(page_content_image, settings.PAGE_CONTENT_FILE_PATH)
+        image_url = await save_file_to_azure(page_content_image)
         response = create_page_content_img_response(image_url)
         return success_response(message="Image uploaded successfully", data=response.model_dump())
 

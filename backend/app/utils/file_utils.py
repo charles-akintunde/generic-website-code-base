@@ -2,18 +2,82 @@
     Utils to handle deletion and addtion of files.
 """
 
+from multiprocessing import connection
 import os 
-import shutil
+from azure.storage.blob import BlobServiceClient, ContentSettings
 from typing import Optional
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 import uuid
-from fastapi import HTTPException, UploadFile, status
-
+from fastapi import HTTPException, UploadFile, status, FastAPI, File
 from app.config import settings
 from app.utils.response import error_response
 
+connection_string = settings.AZURE_STORAGE_CONNECTION_STRING
+blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+azure_storage_container_name = settings.AZURE_STORAGE_CONTAINER_NAME
+container_name = "uploads"
 
 url = f"{settings.BASE_URL}/"
+
+
+async def save_file_to_azure(file: UploadFile, delimiter: str = '-') -> str:
+    """
+    Save the uploaded file to Azure Blob Storage and return the file URL.
+
+    Args:
+        file (UploadFile): The uploaded file.
+        delimiter (str): The delimiter to use in the unique filename.
+
+    Returns:
+        str: The URL of the saved file.
+
+    Raises:
+        HTTPException: If there's an error during the upload process.
+    """
+    try:
+        unique_filename = f"{uuid.uuid4()}{delimiter}{file.filename}"
+        blob_client = blob_service_client.get_blob_client(container=container_name, blob=unique_filename)
+        
+        content_type = file.content_type
+        
+        blob_client.upload_blob(
+            await file.read(),
+            content_settings=ContentSettings(content_type=content_type)
+        )
+        
+        file_url = blob_client.url
+
+        return file_url
+
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error saving file: {e}")
+
+
+async def delete_file_from_azure(file_url: str) -> None:
+    """
+    Deletes the specified file from Azure Blob Storage.
+
+    Args:
+        file_url (str): The URL of the file to be deleted.
+
+    Raises:
+        HTTPException: If there's an error deleting the file or if the file doesn't exist.
+    """
+    try:
+        parsed_url = urlparse(file_url)
+        file_path = parsed_url.path.lstrip('/')  
+        
+        blob_name = file_path.split('/', 1)[1]  
+        decoded_blob_name = unquote(blob_name)
+        blob_client = blob_service_client.get_blob_client(container=container_name, blob=decoded_blob_name)
+        
+        blob_client.delete_blob()
+    
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error deleting file: {e}")
+
+
+
 
 async def save_file(file: UploadFile, folder: str, delimiter: str = '***') -> str:
     """
@@ -78,6 +142,12 @@ async def delete_and_save_file(file_url: Optional[str], file: UploadFile, folder
         return await save_file(file, folder=folder)
 
 
+async def delete_and_save_file_azure(file_url_to_delete: Optional[str], file_to_upload: UploadFile) -> Optional[str]:
+    if file_url_to_delete:
+        await delete_file_from_azure(file_url_to_delete)
+    return await save_file_to_azure(file_to_upload)
+
+
 def validate_image_file(file: UploadFile):
     """
     Validates that the uploaded file is an image.
@@ -90,3 +160,5 @@ def validate_image_file(file: UploadFile):
     """
     if file.content_type is None or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Uploaded file must be an image.")
+    
+

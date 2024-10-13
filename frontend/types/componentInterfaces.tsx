@@ -119,10 +119,18 @@ export interface ITablePagination {
   pageSize: number;
 }
 
-export interface IPageMenuItem extends IPage {
-  href: string;
-  isHidden: boolean;
+export interface IPageMenuItem {
+  href?: string;
   description?: string;
+  children?: IPageMenuItem[];
+  type: 'parent' | 'child' | 'item';
+  pageId?: string;
+  pageName: string;
+  pageDisplayURL?: string;
+  pagePermission?: string[];
+  pageType?: string;
+  pageContents?: IPageContentItem[];
+  isHidden?: boolean;
 }
 
 export interface INotificationContextProps {

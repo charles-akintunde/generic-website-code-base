@@ -54,7 +54,7 @@ const ResourceListCard: React.FC<PageContentCardProps> = ({
             rel="noopener noreferrer"
             className="flex items-center"
           >
-            <Tooltip placement={'right'} title={`Open: ${pageContentName}`}>
+            <Tooltip placement={'topLeft'} title={`Open: ${pageContentName}`}>
               {' '}
               <h2 className="overflow-hidden text-ellipsis whitespace-normal line-clamp-3">
                 {pageContentName}
