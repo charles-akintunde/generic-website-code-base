@@ -137,6 +137,7 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
           pathname: `/${pathname.split('/')[1]}`,
         });
       if (!isValidRoute) {
+        console.log('I was rerouted!!!');
         router.replace('/404');
       } else {
         if (
@@ -168,10 +169,6 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
     );
 
     activePageRefetch();
-
-    routes.forEach((route) => {
-      router.prefetch(route.href);
-    });
   }, [allAppRoutes, pathname, router, uiIsLoading, currentPage]);
 
   return allAppRoutes && allAppRoutes.length > 0 ? <>{children}</> : null;

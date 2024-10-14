@@ -1,27 +1,26 @@
-# Use the official Node.js 18 image as the base image
+# Use official Node.js image as the base image
 FROM node:18
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
+# Set NODE_ENV to production
+ENV NODE_ENV=production
+
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install the dependencies
-RUN npm install
+# Install dependencies
+RUN npm install --only=production
 
-# Install nodemon globally
-RUN npm install -g nodemon
-
-# Copy the rest of the application code to the working directory
+# Copy the entire project to the working directory inside the container
 COPY . .
 
-# Expose port 3000 for the Next.js application
-EXPOSE 3000
+# Build the Next.js app
+RUN npm run build
 
-# Set environment variables
-ENV HOST=127.0.0.1
-ENV PORT=3000
+# Expose port 80
+EXPOSE 80
 
-# Command to run the Next.js development server with nodemon
-CMD ["npx", "nodemon", "--watch", ".", "--exec", "next", "dev", "--experimental-https"]
+# Start the Next.js app on port 80
+CMD ["npm", "run", "start", "--", "-p", "80"]

@@ -112,8 +112,6 @@ const ContentList: React.FC<ContentListProps> = ({
     }
   );
 
-  console.log(sortedPageContents, 'sortedPageContents');
-
   useEffect(() => {
     dispatch(setPageContents([]));
     setPageNumber(1);
@@ -132,9 +130,6 @@ const ContentList: React.FC<ContentListProps> = ({
   );
 
   useEffect(() => {
-    console.log(pageContentsData, 'pageContentsData');
-    console.log(sortedPageContents, 'sortedPageContents');
-
     if (!pageContentsData) {
       console.log('No page content data available');
 
@@ -181,7 +176,13 @@ const ContentList: React.FC<ContentListProps> = ({
   }, [handleObserver]);
 
   useEffect(() => {
-    handleRoutingOnError(router, hasPageFetchError as boolean, pageFetchError);
+    handleRoutingOnError(
+      router,
+      hasPageFetchError as boolean,
+      pageFetchError,
+      () => {},
+      'CONTENT LISTS'
+    );
   }, [router, hasPageFetchError, pageFetchError]);
 
   if (isPageFetchLoading) {

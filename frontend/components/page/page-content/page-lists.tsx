@@ -33,10 +33,16 @@ const PageLists = () => {
   };
   const queryString = new URLSearchParams(queryParams).toString();
   useEffect(() => {
-    handleRoutingOnError(router, hasPageFetchError, pageFetchError);
+    handleRoutingOnError(
+      router,
+      hasPageFetchError,
+      pageFetchError,
+      () => {},
+      'PAGE LISTS'
+    );
   }, [router, hasPageFetchError, pageFetchError]);
 
-  if (isPageFetchLoading) {
+  if (isPageFetchLoading || pageFetchError) {
     return <AppLoading />;
   }
   return (

@@ -116,7 +116,7 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
             samesite='none',
             secure=True,
             max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-           # domain='generic-website-app.eastus.azurecontainer.io'
+           domain='.canadacentral-01.azurewebsites.net'
         )
         response.set_cookie(
             key='refresh_token',
@@ -125,7 +125,7 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
             samesite='none',
             secure=True,
             max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
-           # domain='generic-website-app.eastus.azurecontainer.io'
+           domain='.canadacentral-01.azurewebsites.net'
         )
         print(response.headers,"HEADER")
         return success_response(message='Login Successful',data=token.dict(),status_code=200,headers=response.headers)
@@ -157,7 +157,7 @@ async def refresh_token_endpoint(
             samesite='none',
             secure=True,
             max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-           # domain='generic-website-app.eastus.azurecontainer.io'
+           domain='.canadacentral-01.azurewebsites.net'
         )
 
         return success_response(message='Token Refreshed Succesfully',status_code=200,headers=response.headers)

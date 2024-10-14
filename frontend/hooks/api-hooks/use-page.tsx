@@ -262,7 +262,6 @@ const usePage = ({
         (item) => item.isHidden == false
       );
 
-      console.log(visibleMenuItems, 'Visible Menu Items');
       const navMenuItems: MenuItem[] = visibleMenuItems.map(
         (menuItem: IPageMenuItem, index) => ({
           label: (

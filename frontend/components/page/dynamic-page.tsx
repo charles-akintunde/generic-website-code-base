@@ -40,14 +40,20 @@ const DynamicPage = () => {
     (route) => route.href === fetchedPage?.pageDisplayURL
   );
 
+  console.log(fetchedSinglePageData, 'fetchedPage');
+
   useEffect(() => {
-    handleRoutingOnError(
-      router,
-      hasPageFetchError as boolean,
-      pageFetchError,
-      clearCache
-    );
-  }, [router, hasPageFetchError, pageFetchError]);
+    if (hasPageFetchError) {
+      console.log(pageFetchError, hasPageFetchError, 'EEEEEEEEEEEE');
+      handleRoutingOnError(
+        router,
+        hasPageFetchError as boolean,
+        pageFetchError,
+        clearCache,
+        'DYNAMIC PAGE'
+      );
+    }
+  }, [router, hasPageFetchError, pageFetchError, pageDisplayURLForDynamicPage]);
 
   if (isPageFetchLoading || hasPageFetchError) {
     return <AppLoading />;

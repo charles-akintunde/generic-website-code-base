@@ -535,10 +535,12 @@ export const handleRoutingOnError = (
   router: any,
   hasError: boolean,
   error: any,
-  clearCache?: () => void
+  clearCache?: () => void,
+  from?: string
 ) => {
   if (hasError && error) {
     if (error.status === 404) {
+      console.log(`I was called ${from}`);
       router.replace('/404');
     } else if (error.status === 500) {
       router.replace('/500');
@@ -546,9 +548,9 @@ export const handleRoutingOnError = (
       router.replace('/access-denied');
     }
 
-    if (clearCache) {
-      clearCache();
-    }
+    // if (clearCache) {
+    //   clearCache();
+    // }
   }
 };
 
