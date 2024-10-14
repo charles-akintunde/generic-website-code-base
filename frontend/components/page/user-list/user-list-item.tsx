@@ -14,16 +14,12 @@ import {
   mapToIIUserList,
   memberPositionLabels,
   positionColors,
-  roleBadgeClasses,
   roleColors,
-  statusBadgeClasses,
   statusColors,
   userRoleLabels,
   userStatusLabels,
 } from '@/utils/helper';
 import classNames from 'classnames';
-
-import { userColumns } from '@/utils/tableColumns';
 import useUserInfo from '@/hooks/api-hooks/use-user-info';
 import { useAppDispatch } from '@/hooks/redux-hooks';
 import {
@@ -31,9 +27,8 @@ import {
   toggleCreateUserDialog,
 } from '@/store/slice/userSlice';
 import { UserRoleStatusDialog } from '@/components/common/form/user-profile-form';
-import { routeModule } from 'next/dist/build/templates/app-page';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { useRouter } from 'next/navigation';
+import { transitionStyles } from '@/styles/globals';
 
 const UserListItem = () => {
   const [pagination, setPagination] = useState({
@@ -136,12 +131,16 @@ const UserListItem = () => {
       title: 'Role',
       dataIndex: 'uiRole',
       key: 'role',
-      render: (role: EUserRole) => (
-        <>
-          <Badge className={classNames(roleColors[role])}>
-            {userRoleLabels[role]}
-          </Badge>
-        </>
+      render: (roles: EUserRole[]) => (
+        <div className="flex gap-1 flex-wrap ">
+          {roles.map((role, index) => (
+            <Badge
+              className={`${classNames(roleColors[role])} cursor-pointer hover:bg-inherit ${transitionStyles}`}
+            >
+              {userRoleLabels[role]}
+            </Badge>
+          ))}
+        </div>
       ),
     },
     {
@@ -149,7 +148,9 @@ const UserListItem = () => {
       dataIndex: 'uiStatus',
       key: 'status',
       render: (status: EUserStatus) => (
-        <Badge className={classNames(statusColors[status])}>
+        <Badge
+          className={`${classNames(statusColors[status])} cursor-pointer hover:bg-inherit ${transitionStyles}`}
+        >
           {userStatusLabels[status]}
         </Badge>
       ),
@@ -159,7 +160,9 @@ const UserListItem = () => {
       dataIndex: 'uiMemberPosition',
       key: 'memberPosition',
       render: (position: EMemberPosition) => (
-        <Badge className={classNames(positionColors[position])}>
+        <Badge
+          className={`${classNames(positionColors[position])} cursor-pointer hover:bg-inherit ${transitionStyles}`}
+        >
           {memberPositionLabels[position]}
         </Badge>
       ),
@@ -195,6 +198,7 @@ const UserListItem = () => {
         <>
           <Table
             scroll={{ x: 1400 }}
+            // @ts-ignore
             columns={userColumns}
             dataSource={users && users}
             pagination={{

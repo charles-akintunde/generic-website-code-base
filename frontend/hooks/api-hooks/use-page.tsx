@@ -7,8 +7,12 @@ import {
   toggleCreatePageDialog,
   getPageContents,
   getPage,
+  setFecthingPageData,
+  setFetchedSinglePageData,
+  //setFecthingContentData,
 } from '@/store/slice/pageSlice';
 import {
+  IFetchedPage,
   IPageContentMain,
   IPageMain,
   IPageMenuItem,
@@ -19,29 +23,56 @@ import {
   useEditPageMutation,
   useDeletePageMutation,
   useGetPageQuery,
+  useGetPageColumnsByDisplayUrlQuery,
 } from '@/api/pageApi';
-import { toKebabCase } from '@/utils/helper';
+import {
+  normalizeMultiContentPage,
+  reloadPage,
+  toKebabCase,
+  transformPageToIPage,
+} from '@/utils/helper';
 import { Page } from '@/types/backendResponseInterfaces';
 import { IPageRequest } from '@/types/requestInterfaces';
 import { useNotification } from '@/components/hoc/notification-provider';
 import { routes, systemMenuItems } from '@/components/hoc/layout/menu-items';
 import { MenuProps } from 'antd';
 import Link from 'next/link';
-import HoverableCard from '@/components/common/hover-card';
-
+import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
+import { ChevronDown } from 'lucide-react';
+import { MenuItemComponent } from '@/components/hoc/layout/menu-items/menu-item';
 interface usePageProps {
   pageName?: string;
+  pageDisplayURL?: string;
+  pageDisplayURLForDynamicPage?: string;
+  // pageOffset?: number;
 }
 
 type MenuItem = Required<MenuProps>['items'][number];
 
-const usePage = (pageName?: string) => {
+const usePage = ({
+  pageName,
+  pageDisplayURL,
+  pageDisplayURLForDynamicPage,
+}: usePageProps = {}) => {
   const {
     data: pagesData,
     isError: hasPagesFetchError,
     isSuccess: isPagesFetchSuccess,
     isLoading: isPagesFetchLoading,
   } = useGetPagesQuery();
+
+  const {
+    data: singlePageColumnsData,
+    isError: hasSinglePageColumnsFetchError,
+    isSuccess: isSinglePageColumnsFetchSuccess,
+    isLoading: isSinglePageColumnsFetchLoading,
+    error: singlePageFetchError,
+  } = useGetPageColumnsByDisplayUrlQuery(
+    { PG_DisplayURL: pageDisplayURLForDynamicPage ?? '' },
+    {
+      skip: !pageDisplayURLForDynamicPage,
+    }
+  );
 
   const { notify } = useNotification();
   const [
@@ -78,6 +109,28 @@ const usePage = (pageName?: string) => {
         error: null,
         refetch: () => {},
       };
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageContents, setPageContents] = useState<IPageContentMain[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const {
+    data: pageContentData,
+    isError: hasPageContentFetchError,
+    isLoading: isPageContentFetchLoading,
+    isFetching: isPageContentFetching,
+    status: pageContentFetchStatus,
+    error: pageContentFetchError,
+    refetch: refetchPageContent,
+    isSuccess: isPageContentFetchSuccess,
+  } = useGetPageWithPaginationQuery(
+    {
+      PG_DisplayURL: pageDisplayURL ?? '',
+      PG_PageNumber: pageNumber,
+    },
+    {
+      skip: !pageDisplayURL,
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   const {
     data: pageData,
@@ -100,6 +153,93 @@ const usePage = (pageName?: string) => {
   const [menuItems, setMenuItems] = useState<IPageMenuItem[]>([]);
   const [allAppRoutes, setAllAppRoutes] = useState<IPageMenuItem[]>([]);
   const [navMenuItems, setNavMenuItems] = useState<MenuItem[]>([]);
+  const fetchingPageData = useAppSelector(
+    (state) => state.page.fetchingPageData
+  );
+  const fetchedPage = fetchingPageData?.fetchedPage;
+  // console.log(pageContentData, 'Check Data outside useEffect');
+
+  useEffect(() => {
+    if (isSinglePageColumnsFetchLoading) {
+      dispatch(
+        setFetchedSinglePageData({
+          fetchedPage: null,
+          isPageFetchLoading: true,
+          hasPageFetchError: false,
+          pageFetchError: undefined,
+        })
+      );
+    }
+
+    if (isSinglePageColumnsFetchSuccess && singlePageColumnsData) {
+      const fetchedPage = transformPageToIPage(singlePageColumnsData.data);
+
+      dispatch(
+        setFetchedSinglePageData({
+          fetchedPage: fetchedPage,
+          isPageFetchLoading: false,
+          hasPageFetchError: false,
+          pageFetchError: undefined,
+        })
+      );
+    }
+
+    if (hasSinglePageColumnsFetchError) {
+      dispatch(
+        setFetchedSinglePageData({
+          fetchedPage: null,
+          isPageFetchLoading: false,
+          hasPageFetchError: true,
+          pageFetchError: singlePageFetchError,
+        })
+      );
+    }
+  }, [
+    isSinglePageColumnsFetchLoading,
+    isSinglePageColumnsFetchSuccess,
+    hasSinglePageColumnsFetchError,
+    singlePageColumnsData,
+    pageFetchError,
+    dispatch,
+  ]);
+
+  useEffect(() => {
+    if (!pageContentData) {
+      console.log('No page content data available');
+
+      return;
+    }
+
+    if (pageContentData.data) {
+      const responseData = pageContentData.data;
+      const dynamicPage = normalizeMultiContentPage(responseData, false);
+      const newPageContents = dynamicPage.pageContents as IPageContentMain[];
+
+      setPageContents((prevContents) => {
+        const uniqueNewPageContents = newPageContents.filter(
+          (newContent) =>
+            !prevContents.some(
+              (existingContent) =>
+                existingContent.pageContentId === newContent.pageContentId
+            )
+        );
+
+        return uniqueNewPageContents.length > 0
+          ? [...prevContents, ...uniqueNewPageContents]
+          : prevContents;
+      });
+
+      // const fetchingPageData: IFetchedPage = {
+      //   fetchedPage: dynamicPage,
+      //   isPageFetchLoading: isPageContentFetchLoading,
+      //   hasPageFetchError: hasPageContentFetchError,
+      //   pageFetchError: pageContentFetchError,
+      // };
+      // dispatch(setFecthingPageData(fetchingPageData));
+
+      if (newPageContents.length < 8) setHasMore(false);
+    }
+  }, [isPageContentFetchSuccess, pageContentData?.data]);
 
   useEffect(() => {
     if (pagesData && pagesData.data) {
@@ -112,26 +252,44 @@ const usePage = (pageName?: string) => {
           ),
           pageType: String(page.PG_Type),
           isHidden: false,
-          href: `/${toKebabCase(page.PG_Name)}`,
+          href: decodeURIComponent(`/${page.PG_DisplayURL}`),
+          pageDisplayURL: decodeURIComponent(`/${page.PG_DisplayURL}`),
         })
       );
-      const allRoutes = [...routes, ...normalizedPages];
-      const combinedMenuItems = [...systemMenuItems, ...normalizedPages];
+      const allRoutes = [...routes];
+      const combinedMenuItems = [...systemMenuItems];
       const visibleMenuItems = combinedMenuItems.filter(
         (item) => item.isHidden == false
       );
+
+      console.log(visibleMenuItems, 'Visible Menu Items');
       const navMenuItems: MenuItem[] = visibleMenuItems.map(
         (menuItem: IPageMenuItem, index) => ({
           label: (
-            <div
-              className={`transition cursor-pointer duration-300 ease-in-out hover:text-primary transform hover:bg-opacity-50 hover:bg-gray-100 rounded-md px-4`}
-            >
-              <Link href={`${menuItem.href}`}>{menuItem.pageName}</Link>
-            </div>
+            <MenuItemComponent
+              href={menuItem?.href as string}
+              pageName={menuItem.pageName}
+              hasChildren={
+                (menuItem?.children && menuItem?.children.length > 0) as boolean
+              }
+            />
           ),
-          key: `${menuItem.href}`,
+          key: `${menuItem?.href} ${menuItem?.pageName}`,
+          children:
+            menuItem?.children &&
+            menuItem?.children.map((child) => ({
+              label: (
+                <MenuItemComponent
+                  href={child.href as string}
+                  pageName={child.pageName}
+                  hasChildren={false}
+                />
+              ),
+              key: `${child.href} ${child.pageName}`,
+            })),
         })
       );
+
       setNavMenuItems(navMenuItems);
       setMenuItems(combinedMenuItems);
       setAllAppRoutes(allRoutes);
@@ -142,6 +300,7 @@ const usePage = (pageName?: string) => {
   useEffect(() => {
     if (pageData && pageData.data) {
       let response: Page = pageData.data;
+
       const normalizedPage: IPageMain = {
         pageId: response.PG_ID,
         pageName: response.PG_Name,
@@ -151,6 +310,7 @@ const usePage = (pageName?: string) => {
         pageContents:
           response.PG_PageContents &&
           (response.PG_PageContents.map((pageContent) => {
+            // @ts-ignore
             const pageContentResponse: IPageContentMain = {
               pageContentId: pageContent.PC_ID,
               pageId: pageContent.PG_ID,
@@ -192,6 +352,7 @@ const usePage = (pageName?: string) => {
           Number(permission)
         ),
         PG_Type: Number(page.pageType),
+        PG_DisplayURL: page.pageDisplayURL as string,
       };
       const response = await createPage(createPageRequest).unwrap();
       notify(
@@ -218,12 +379,15 @@ const usePage = (pageName?: string) => {
         PG_Permission: page.pagePermission.map((permission) =>
           Number(permission)
         ),
+        PG_DisplayURL: page.pageDisplayURL as string,
       };
       const response = await editPage({
         PG_ID: pageId,
         PG_Name: editPageRequest.PG_Name,
         PG_Permission: editPageRequest.PG_Permission,
+        PG_DisplayURL: editPageRequest.PG_DisplayURL,
       }).unwrap();
+
       notify(
         'Success',
         response.message || 'The page has been updated successfully.',
@@ -247,15 +411,14 @@ const usePage = (pageName?: string) => {
 
   const handleRemovePage = async (page: IPageMain) => {
     try {
-      console.log(page, 'page');
       const response = await deletePage(page.pageId).unwrap();
       notify(
         'Success',
         response.message || 'The page has been successfully deleted.',
         'success'
       );
+      reloadPage();
     } catch (error: any) {
-      console.log(error, 'ERROS');
       notify(
         'Error',
         error?.data?.message ||
@@ -297,6 +460,13 @@ const usePage = (pageName?: string) => {
     pageFetchError,
     isPageFetchLoading,
     navMenuItems,
+    pageContents,
+    // isPageContentFetchLoading,
+    // hasPageContentFetchError,
+    // pageContentFetchError,
+    // hasMore,
+    // setPageNumber,
+    // refetchPageContent,
   };
 };
 

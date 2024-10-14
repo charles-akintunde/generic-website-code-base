@@ -1,14 +1,33 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { Spin, Empty } from 'antd';
 import AppButton from '../button/app-button';
 import { PlusIcon } from 'lucide-react';
 import {
   containerNoFlexPaddingStyles,
   primarySolidButtonStyles,
 } from '@/styles/globals';
-import { IPageContentMain } from '@/types/componentInterfaces';
-import { Empty } from 'antd';
-import { useAppSelector } from '@/hooks/redux-hooks';
+import {
+  IFetchedPage,
+  IPageContentMain,
+  RootState,
+} from '@/types/componentInterfaces';
+import { usePathname, useRouter } from 'next/navigation';
+import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
+import {
+  handleRoutingOnError,
+  normalizeMultiContentPage,
+} from '@/utils/helper';
+import AppLoading from '../app-loading';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
+import { EPageType } from '@/types/enums';
+import { CreatePageContentModal } from '../form/create-page-content';
+import {
+  addPageContents,
+  setCurrentUserPage,
+  setFecthingPageData,
+  setPageContents,
+} from '@/store/slice/pageSlice';
 
 interface ContentListProps {
   pageType: string;
@@ -22,6 +41,7 @@ interface ContentListProps {
     pageContent: IPageContentMain;
     pageName: string;
   }>;
+  pageId: string;
   createPageHref: (pageNameKebab: string, queryString: string) => string;
   emptyDescription?: string;
 }
@@ -29,72 +49,207 @@ interface ContentListProps {
 const ContentList: React.FC<ContentListProps> = ({
   pageType,
   isResourcePage,
-  pageName,
-  pageContents,
   canEdit,
-  createPageHref,
   ListCardComponent,
-  pageNameKebab,
+  pageName,
   queryString,
-  emptyDescription,
+  createPageHref,
+  pageId,
 }) => {
+  const dispatch = useAppDispatch();
+  // dispatch(setPageContents([]));
+
   const className = isResourcePage
     ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
     : 'grid-cols-1 md:grid-cols-2 gap-8';
-  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const router = useRouter();
+  const pathname = usePathname();
+  const [pageDisplayURL, setPageDisplayURL] = useState(pathname.split('/')[1]);
+  const fetchingPageData = useAppSelector(
+    (state) => state.page.fetchingPageData
+  );
+  const fetchedPageContents = useAppSelector(
+    (state: RootState) => state.page.pageContents
+  );
+
+  const visiblePageContents = fetchedPageContents.filter(
+    (content) => !content.deleted
+  );
+  const sortedPageContents = [...visiblePageContents].sort((a, b) => {
+    const dateA = a.pageContentCreatedAt
+      ? new Date(a.pageContentCreatedAt).getTime()
+      : 0;
+    const dateB = b.pageContentCreatedAt
+      ? new Date(b.pageContentCreatedAt).getTime()
+      : 0;
+
+    return dateB - dateA;
+  });
+
+  const [pageNumber, setPageNumber] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const fetchedPage = fetchingPageData?.fetchedPage;
+  const isPageFetchLoading = fetchingPageData?.isPageFetchLoading;
+  const hasPageFetchError = fetchingPageData?.hasPageFetchError;
+  const pageFetchError = fetchingPageData?.pageFetchError;
+
+  const observerRef = useRef<HTMLDivElement>(null);
+  const {
+    data: pageContentsData,
+    isError: hasPageContentFetchError,
+    isLoading: isPageContentFetchLoading,
+    isFetching: isPageContentFetching,
+    error: pageContentFetchError,
+    isSuccess: isPageContentsFetchSuccess,
+  } = useGetPageWithPaginationQuery(
+    {
+      PG_DisplayURL: pageDisplayURL ?? '',
+      PG_PageNumber: pageNumber,
+    },
+    {
+      skip: !pageDisplayURL,
+      refetchOnMountOrArgChange: true,
+    }
+  );
+
+  console.log(sortedPageContents, 'sortedPageContents');
+
+  useEffect(() => {
+    dispatch(setPageContents([]));
+    setPageNumber(1);
+    setHasMore(true);
+    setPageDisplayURL(pathname.split('/')[1]);
+  }, [pathname, dispatch]);
+
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting && hasMore && !isPageFetchLoading) {
+        setPageNumber((prevPage) => prevPage + 1);
+      }
+    },
+    [hasMore, isPageFetchLoading, setPageNumber]
+  );
+
+  useEffect(() => {
+    console.log(pageContentsData, 'pageContentsData');
+    console.log(sortedPageContents, 'sortedPageContents');
+
+    if (!pageContentsData) {
+      console.log('No page content data available');
+
+      return;
+    }
+
+    if (pageContentsData.data) {
+      const responseData = pageContentsData.data;
+      const dynamicPage = normalizeMultiContentPage(responseData, false);
+      const newPageContents = dynamicPage.pageContents as IPageContentMain[];
+      //  console.log(newPageContents, 'newPageContents');
+      dispatch(addPageContents(newPageContents));
+      const fetchingPageData: IFetchedPage = {
+        fetchedPage: dynamicPage,
+        isPageFetchLoading: isPageContentFetchLoading,
+        hasPageFetchError: hasPageContentFetchError,
+        pageFetchError: pageContentFetchError,
+      };
+      dispatch(setFecthingPageData(fetchingPageData));
+
+      if (newPageContents.length < 8) setHasMore(false);
+    }
+  }, [
+    isPageContentsFetchSuccess,
+    pageContentsData?.data,
+    isPageContentFetchLoading,
+    isPageContentFetching,
+  ]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleObserver, {
+      root: null,
+      rootMargin: '350px',
+      threshold: 0,
+    });
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current);
+    };
+  }, [handleObserver]);
+
+  useEffect(() => {
+    handleRoutingOnError(router, hasPageFetchError as boolean, pageFetchError);
+  }, [router, hasPageFetchError, pageFetchError]);
+
+  if (isPageFetchLoading) {
+    return <AppLoading />;
+  }
+
+  const openCreateContentModal = () => {
+    dispatch(
+      setCurrentUserPage({
+        isModalOpen: true,
+        pageId: pageId,
+        pageName: pageName,
+        pageType: pageType,
+        isEditingMode: false,
+      })
+    );
+  };
 
   return (
     <div className="min-h-screen">
       <div className={`${containerNoFlexPaddingStyles} pt-8`}>
         <header className="flex justify-between items-center pb-4">
-          <h2 className="text-xl font-bold">Latest {pageName}</h2>
+          <h2 className="text-xl font-bold">Latest Content</h2>
           {canEdit && (
-            <AppButton
-              buttonText={`Create ${pageName.toLowerCase()}`}
-              Icon={PlusIcon}
-              href={createPageHref(pageNameKebab, queryString)}
-              classNames={primarySolidButtonStyles}
-            />
+            <>
+              {pageType == EPageType.ResList ? (
+                <CreatePageContentModal
+                  onClick={openCreateContentModal}
+                  pageType={pageType}
+                  pageId={pageId}
+                />
+              ) : (
+                <AppButton
+                  buttonText={`Create Content`}
+                  Icon={PlusIcon}
+                  href={createPageHref(pageDisplayURL, queryString)}
+                  classNames={primarySolidButtonStyles}
+                />
+              )}
+            </>
           )}
         </header>
-        {pageContents && pageContents.length > 0 ? (
-          canEdit ||
-          pageContents.some(
-            (pageContent) => !pageContent.isPageContentHidden
-          ) ? (
-            <div className={`grid ${className}`}>
-              {pageContents
-                .filter(
-                  (pageContent) => canEdit || !pageContent.isPageContentHidden
-                )
-                .map((pageContent, index) => (
-                  <ListCardComponent
-                    key={index}
-                    pageContent={pageContent}
-                    pageName={pageName.toLowerCase()}
-                  />
-                ))}
-            </div>
-          ) : (
-            <div className="flex w-full h-full justify-center items-center">
-              <Empty
-                description={
-                  emptyDescription || `No content for ${pageName.toLowerCase()}`
-                }
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              />
-            </div>
-          )
+        {sortedPageContents && sortedPageContents.length > 0 ? (
+          <div className={`grid ${className}`}>
+            {sortedPageContents
+              .filter(
+                (pageContent) => canEdit || !pageContent.isPageContentHidden
+              )
+              .map((pageContent, index) => (
+                <ListCardComponent
+                  pageName={pageName}
+                  key={index}
+                  pageContent={pageContent}
+                />
+              ))}
+          </div>
         ) : (
-          <div className="flex w-full h-full justify-center items-center">
-            <Empty
-              description={
-                emptyDescription || `No content for ${pageName.toLowerCase()}`
-              }
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            />
+          <Empty
+            description="No content available"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
+        )}
+        {(hasMore || isPageFetchLoading) && (
+          <div className="flex w-full justify-center py-4">
+            <Spin size="small" />
           </div>
         )}
+        {hasMore && <div ref={observerRef} style={{ height: '20px' }} />}
       </div>
     </div>
   );

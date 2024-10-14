@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import appLogo from '@/assets/icons/gw-logo.png';
 import Link from 'next/link';
+import { appConfig } from '@/utils/appConfig';
 
 interface ILogoProps {
   width?: number;
@@ -13,7 +14,7 @@ const Logo: React.FC<ILogoProps> = ({ width = 500, height = 80 }) => {
     <div className="flex cursor-pointer justify-center  items-center">
       <Link href="/">
         <Image
-          src={appLogo}
+          src={appConfig.appLogo}
           alt="App logo"
           style={{
             height: 'auto',

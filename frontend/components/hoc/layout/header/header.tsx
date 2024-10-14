@@ -165,11 +165,11 @@ const Header: React.FC = () => {
     } else if (keysNavItem.includes(e.key)) {
       setActiveNavItem(e.key);
     } else {
+      console.log('I WAS CALED');
       const key = hasNavItems(navMenuItems, pathname);
 
       setActiveNavItem(key);
     }
-    // console.log(keysNavItem, 'activeNavItem');
   };
 
   useEffect(() => {
@@ -198,9 +198,10 @@ const Header: React.FC = () => {
                   borderBottom: 'none',
                   lineHeight: '80px',
                 }}
-                className="border-0 bottom-0 py-4"
+                className="border-0 bottom-0 py-4 custom-menu"
                 onClick={onClickNavMenuItem}
                 mode="horizontal"
+                expandIcon={<></>}
                 itemPaddingInline={200}
                 selectedKeys={activeNavItem ? [activeNavItem] : []}
                 items={navMenuItems}

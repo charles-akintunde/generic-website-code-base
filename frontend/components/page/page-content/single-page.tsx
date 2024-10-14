@@ -1,4 +1,3 @@
-import usePage from '@/hooks/api-hooks/use-page';
 import { pageContentPaddingStyles } from '@/styles/globals';
 import {
   createPageContentItem,
@@ -25,16 +24,14 @@ import PageLayout from '@/components/page/layout';
 import { TElement } from '@udecode/plate-common';
 import { useGetPageQuery } from '@/api/pageApi';
 import { Page } from '@/types/backendResponseInterfaces';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
 import { useAppSelector } from '@/hooks/redux-hooks';
+import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
 
 const SinglePage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { notify } = useNotification();
-  const [pageName, setPageName] = useState(
-    fromKebabCase(pathname.split('/')['1'])
-  );
+  const [pageDisplayURL, setPageDisplayURL] = useState(pathname.split('/')[1]);
   const {
     data: pageData,
     isError: hasPageFetchError,
@@ -42,7 +39,26 @@ const SinglePage = () => {
     isSuccess: isPageFetchSuccess,
     isLoading: isPageFetchLoading,
     refetch: pageRefetch,
-  } = useGetPageQuery(pageName);
+  } = useGetPageQuery(pageDisplayURL);
+  const {
+    data: pageContentsData,
+    isError: hasPageContentFetchError,
+    isLoading: isPageContentFetchLoading,
+    isFetching: isPageContentFetching,
+    status: pageContentFetchStatus,
+    error: pageContentFetchError,
+    refetch: refetchPageContent,
+    isSuccess: isPageContentsFetchSuccess,
+  } = useGetPageWithPaginationQuery(
+    {
+      PG_DisplayURL: pageDisplayURL ?? '',
+      PG_PageNumber: 1,
+    },
+    {
+      skip: !pageDisplayURL,
+      refetchOnMountOrArgChange: true,
+    }
+  );
   const [page, setPage] = useState<IPageMain>();
   const [singlePageContent, setSinglePageContent] =
     useState<IPageContentMain>();
@@ -53,7 +69,7 @@ const SinglePage = () => {
     {
       id: '1',
       type: 'p',
-      children: [{ text: `Enter Content for ${pageName}` }],
+      children: [{ text: `Enter Content for ${pageDisplayURL}` }],
     },
   ]);
   const [originalSinglePageData, setOriginalSinglePageData] = useState<
@@ -62,7 +78,7 @@ const SinglePage = () => {
     {
       id: '1',
       type: 'p',
-      children: [{ text: `Enter Content for ${pageName}` }],
+      children: [{ text: `Enter Content for ${pageDisplayURL}` }],
     },
   ]);
   const [plateEditorKey, setPlateEditorKey] = useState<string>(
@@ -73,18 +89,21 @@ const SinglePage = () => {
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
   const uiId = uiActiveUser.uiId;
   const [singlePage, setSinglePage] = useState<IPageMain>();
+  const [isDataSet, setIsDatSet] = useState<boolean>(false);
 
   useEffect(() => {
-    if (pageData && pageData.data) {
-      let response: Page = pageData.data;
+    setPageDisplayURL(pathname.split('/')[1]);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (pageContentsData && pageContentsData?.data) {
+      let response: Page = pageContentsData?.data;
       const normalizedPage = normalizeMultiContentPage(response, true);
       setSinglePage(normalizedPage);
       setPage(normalizedPage);
       const singlePageContent: IPageContentMain =
         (normalizedPage.pageContents &&
           normalizedPage.pageContents[0]) as IPageContentMain;
-
-      console.log(singlePageContent, 'plateEditor');
 
       if (singlePageContent) {
         setOriginalSinglePageData(singlePageContent.editorContent);
@@ -95,14 +114,18 @@ const SinglePage = () => {
         setPlateEditorKey(
           JSON.stringify(singlePageContent.editorContent || plateEditor)
         );
+        setIsDatSet(true);
       }
     }
-  }, [pageData]);
-
-  console.log(singlePageContent, 'plateEditor');
+  }, [
+    isPageContentsFetchSuccess,
+    pageContentsData?.data,
+    pageContentsData,
+    isPageContentFetchLoading,
+    isPageContentFetching,
+  ]);
 
   const handleSinglePageSubmit = async () => {
-    console.log(singlePageContent, 'singlePageContent');
     const pageContentId = singlePageContent && singlePageContent.pageContentId;
     const pageContentName = page?.pageName;
     const isPageContentHidden = false;
@@ -111,7 +134,7 @@ const SinglePage = () => {
     const pageId = String(page?.pageId);
     const pageType = String(page?.pageType);
     const userId = uiId as string;
-    const kebabCasePageName = `/${toKebabCase(pageName)}`;
+    const kebabCasePageName = `/${toKebabCase(pageDisplayURL)}`;
     const pageContent = createPageContentItem(
       {
         pageContentName,
@@ -121,7 +144,7 @@ const SinglePage = () => {
       plateEditor,
       pageId,
       pageType,
-      pageName,
+      pageDisplayURL,
       userId,
 
       kebabCasePageName
@@ -131,24 +154,16 @@ const SinglePage = () => {
     const changedFields = getChangedFields(originalData, newDataWithContents);
     if (Object.keys(changedFields).length > 0) {
       if (isSinglePageCreated) {
-        console.log(isSinglePageCreated, 'Edit');
+        changedFields['pageContentDisplayURL'] = singlePage?.pageDisplayURL;
         await submitEditedPageContent(
-          pageName,
+          pageDisplayURL,
           pageType,
-          pageName,
+          singlePage?.pageDisplayURL as string,
           String(pageContentId),
           changedFields as Partial<IPageContentItem>,
           pageRefetch
         );
-        console.log(
-          pageName,
-          pageName,
-          String(pageContentId),
-          changedFields as Partial<IPageContentItem>
-        );
       } else {
-        console.log(isSinglePageCreated, 'Create');
-        console.log(pageContent, 'pageId');
       }
     } else {
       notifyNoChangesMade(notify);
@@ -156,21 +171,19 @@ const SinglePage = () => {
     }
   };
 
-  console.log(plateEditor, 'plateEditor');
-
-  if (isPageFetchLoading) {
-    return <AppLoading />;
-  }
-
   useEffect(() => {
     handleRoutingOnError(router, hasPageFetchError, pageFetchError);
   }, [hasPageFetchError, router, pageFetchError]);
+
+  if (isPageFetchLoading || !isDataSet) {
+    return <AppLoading />;
+  }
 
   return (
     <>
       <PageLayout
         type="singlePage"
-        title={`${!isSinglePageCreated ? 'Edit' : ''} ${fromKebabCase(pageName)}`}
+        title={`${!isSinglePageCreated ? 'Edit' : ''} ${fromKebabCase(pageDisplayURL)}`}
       >
         <div
           className={`flex flex-col min-h-screen w-full ${pageContentPaddingStyles}`}
@@ -190,7 +203,7 @@ const SinglePage = () => {
             >
               <LoadingButton
                 className=""
-                buttonText="Submit Content"
+                buttonText="Save Changes"
                 loading={isPageFetchLoading}
                 onClick={handleSinglePageSubmit}
               />

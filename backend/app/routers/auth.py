@@ -18,6 +18,7 @@ from app.models.enums import E_Status, E_UserRole
 from app.schemas.response import StandardResponse
 from app.utils.response_json import create_user_response
 from app.config import settings
+from app.crud import blacklisted_token
 
 router = APIRouter()
 ACCESS_TOKEN_EXPIRE_SECONDS = settings.ACCESS_TOKEN_EXPIRE_SECONDS
@@ -115,7 +116,7 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
             samesite='none',
             secure=True,
             max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-            domain=None
+           # domain='generic-website-app.eastus.azurecontainer.io'
         )
         response.set_cookie(
             key='refresh_token',
@@ -124,7 +125,7 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
             samesite='none',
             secure=True,
             max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
-            domain=None
+           # domain='generic-website-app.eastus.azurecontainer.io'
         )
         print(response.headers,"HEADER")
         return success_response(message='Login Successful',data=token.dict(),status_code=200,headers=response.headers)
@@ -150,33 +151,27 @@ async def refresh_token_endpoint(
     try:
         token = await use_refresh_token(request,db)
         response.set_cookie(
-                key='access_token',
-                value=token,
-                httponly=True,
-                samesite='none',
-                secure=True,
-                max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-                domain=None
-            )
+            key='access_token',
+            value=token,
+            httponly=True,
+            samesite='none',
+            secure=True,
+            max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
+           # domain='generic-website-app.eastus.azurecontainer.io'
+        )
 
         return success_response(message='Token Refreshed Succesfully',status_code=200,headers=response.headers)
     except HTTPException as e:
         return error_response(message=e.detail,status_code=e.status_code)
 
+from sqlalchemy.orm.attributes import flag_modified
+
 @router.post("/account/confirm/", response_class=JSONResponse)
 def confirm_email_endpoint(token: BaseToken, db: Session = Depends(get_db)):
-    """
-    Confirm user's email address.
-
-    Args:
-        token (str): Confirmation token.
-        db (Session): Database session.
-
-    Returns:
-        JSONResponse: Confirmation message.
-    """
-    payload = verify_token(token=token.token,db=db)
-    email = payload.get("sub") # type: ignore
+    payload = verify_token(token=token.token, db=db)
+    if payload is None:
+        return error_response("Invalid or expired token", status.HTTP_400_BAD_REQUEST)
+    email = payload.get("sub")
     if email is None:
         return error_response("Invalid or expired token", status.HTTP_400_BAD_REQUEST)
     
@@ -187,11 +182,25 @@ def confirm_email_endpoint(token: BaseToken, db: Session = Depends(get_db)):
     if db_user.UI_Status == E_Status.Active: # type: ignore
         return error_response(message="Email already confirmed", status_code=status.HTTP_400_BAD_REQUEST)
     
-    db_user.UI_Status, db_user.UI_Role = E_Status.Active, E_UserRole.User # type: ignore
+    # Modify the roles
+    if E_UserRole.Public in db_user.UI_Role:
+        db_user.UI_Role.remove(E_UserRole.Public)  # Remove 'Public' role
+    if E_UserRole.User not in db_user.UI_Role:
+        db_user.UI_Role.append(E_UserRole.User)  # Add 'User' role
+
+    # Mark the UI_Role as modified to ensure SQLAlchemy tracks the change
+    flag_modified(db_user, "UI_Role")
+
+    # Set the user's status to active
+    db_user.UI_Status = E_Status.Active # type: ignore
+
+    # Commit the changes to the database
     db.commit()
     db.refresh(db_user)
     
     return success_response("Email confirmed successfully")
+
+
 
 @router.post("/resend-confirmation", response_class=JSONResponse)
 async def resend_confirmation_endpoint(email: EmailStr, db: Session = Depends(get_db)):
@@ -212,23 +221,29 @@ async def resend_confirmation_endpoint(email: EmailStr, db: Session = Depends(ge
     return success_response("Confirmation email resent successfully")
 
 @router.get('/active-user', response_model=StandardResponse)
-def get_active_user(active_user=Depends(get_current_user_without_exception)) -> JSONResponse:
+def get_active_user(
+    active_user=Depends(get_current_user_without_exception)
+) -> JSONResponse:
     """
-    Retrieve the currently logged in user.
+    Retrieve the currently logged-in user.
 
     Args:
-        active_user: The user currently authenticated
-        
+        active_user: The user currently authenticated.
+        token: The current token from the authorization header.
+        db: The database session.
+
     Returns:
         JSONResponse: Standardized response format.
     """
     try:
+        
         if active_user:
             return success_response(message='User retrieved successfully', data=create_user_response(active_user).dict())
         else:
-            return success_response(message='No user is currently logged in')
+            return success_response(message='No user is currently logged in', is_success=False)
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
+
 
 @router.post("/logout", response_model=StandardResponse)
 async def logout(
@@ -276,6 +291,6 @@ async def logout(
         if access_token and refresh_token:
             blacklisted_token = logout_user(access_token=access_token,refresh_token= refresh_token,db= db)
 
-        return success_response(message="Logout successful.")
+        return success_response(message="Logout successful.", headers=response.headers)
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)

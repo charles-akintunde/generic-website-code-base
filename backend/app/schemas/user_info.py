@@ -31,7 +31,7 @@ class UserPartial(BaseModel):
     UI_FirstName: str
     UI_LastName: str
     UI_Email: str
-    UI_Role: str
+    UI_Role: List[str]
     UI_Status: str
     UI_RegDate: str
     UI_PhotoURL: Optional[str] = None
@@ -53,7 +53,7 @@ class UsersResponse(BaseModel):
 class UserResponse(UserBase):
     UI_ID: str
     UI_Email: str
-    UI_Role: int
+    UI_Role: List[int]
     UI_Status: int
     UI_RegDate: str
     UI_About: Optional[Dict] = None
@@ -73,7 +73,7 @@ class UserProfileUpdate(UserBase):
 
 class UserRoleStatusUpdate(BaseModel):
     UI_ID: str
-    UI_Role: Optional[E_UserRole] = None
+    UI_Role: Optional[List[E_UserRole]] = None
     UI_Status: Optional[E_Status] = None
     UI_MemberPosition: Optional[E_MemberPosition] = None
 

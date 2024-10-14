@@ -29,6 +29,7 @@ import {
 } from '@/api/authApi';
 import { useRouter } from 'next/navigation';
 import { EUserRole } from '@/types/enums';
+import { useCommentsShowResolvedButton } from '@udecode/plate-comments';
 
 export interface GetUsersRequest {
   page: number;
@@ -88,36 +89,52 @@ const useUserInfo = () => {
   useEffect(() => {
     if (activeUserData?.data) {
       const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
+
       dispatch(
         setUIActiveUser({
           uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
           uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
-          uiIsAdmin: userProfile.uiRole == EUserRole.Admin,
-          uiIsSuperAdmin: userProfile.uiRole == EUserRole.SuperAdmin,
+          uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
+          uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
+          uiIsLoading: isActiveUserFetchLoading,
           uiId: userProfile.id,
           uiCanEdit:
-            userProfile.uiRole == EUserRole.Admin ||
-            userProfile.uiRole == EUserRole.SuperAdmin,
+            userProfile.uiRole.includes(EUserRole.Admin) ||
+            userProfile.uiRole.includes(EUserRole.SuperAdmin),
           uiRole: userProfile.uiRole,
           uiPhotoURL: userProfile.uiPhoto,
         })
       );
+    } else {
+      dispatch(
+        setUIActiveUser({
+          uiId: null,
+          uiFullName: '',
+          uiInitials: '',
+          uiIsAdmin: false,
+          uiIsLoading: false,
+          uiIsSuperAdmin: false,
+          uiCanEdit: false,
+          uiRole: [EUserRole.Public],
+          uiPhotoURL: null,
+        })
+      );
     }
-  }, [activeUserData]);
+  }, [activeUserData, router]);
 
   const handleRemoveUser = async (user: IUserBase) => {
     try {
       const response = await deleteUser(user.id).unwrap();
       notify(
         'Success',
-        response.message || 'The page has been successfully deleted.',
+        response?.message || 'The page has been successfully deleted.',
         'success'
       );
     } catch (error: any) {
       console.log(error, 'ERROR');
       notify(
         'Error',
-        error.data.message ||
+        error?.data?.message ||
           'Failed to delete the page. Please try again later.',
         'error'
       );
@@ -154,8 +171,6 @@ const useUserInfo = () => {
         UI_NewPassword: data.newPassword,
       }).unwrap();
 
-      console.log(response, 'RESONSE');
-
       setResetPasswordSuccessMessage(response.message);
       notify(
         'Success',
@@ -167,38 +182,58 @@ const useUserInfo = () => {
       const defaultErrorMessage =
         'Failed to reset password. Please try again later.';
 
-      console.log(error, 'ERROR ');
-
       // const errorMessage =
       //   error.data?.message || error.data?.detail || defaultErrorMessage;
       // notify('Error', errorMessage, 'error');
     }
   };
 
-  const submitEditRoleStatus = async (userId: string, userInfo: IUserBase) => {
+  const submitEditRoleStatus = async (
+    userId: string,
+    userInfo: Partial<IUserBase>,
+    initialUserInfo: IUserBase
+  ) => {
     try {
       const isSameUser = sanitizeAndCompare(
         uiActiveUser?.uiId as string,
         userInfo?.id as string
       );
+      let roles = [];
+
+      if (
+        userInfo.uiMainRoles &&
+        !initialUserInfo.uiRole.includes(userInfo.uiMainRoles)
+      ) {
+        roles.push(Number(userInfo.uiMainRoles));
+      }
+
+      if (
+        userInfo.uiIsUserAlumni !== initialUserInfo.uiIsUserAlumni &&
+        userInfo.uiIsUserAlumni
+      ) {
+        roles = [Number(EUserRole.Alumni)];
+      }
+
+      roles = [...new Set(roles)];
+
       if (uiActiveUser.uiIsSuperAdmin && !isSameUser) {
         const response = await editRoleAndStatus({
           UI_ID: userId,
-          UI_Role: Number(userInfo.uiRole),
+          UI_Role: roles.length == 0 ? undefined : roles,
           UI_Status: Number(userInfo.uiStatus),
           UI_MemberPosition: userInfo.uiMemberPosition
             ? Number(userInfo.uiMemberPosition)
             : undefined,
         }).unwrap();
-
         dispatch(toggleCreateUserDialog());
-
         notify(
           'Success',
           response.message ||
             'The user information has been successfully updated.',
           'success'
         );
+      } else {
+        notify('Notice', 'You are not permitted to edit this user', 'warning');
       }
     } catch (error: any) {
       console.error('Error editing user:', error);
@@ -237,77 +272,83 @@ const useUserInfo = () => {
       }
       if (userInfo.uiCity !== undefined) {
         if (
+          userInfo.uiCity &&
           userInfo.uiCity.length === 0 &&
           initialUserInfo?.uiCity &&
           initialUserInfo.uiCity.length > 0
         ) {
           formData.append('UI_City', ' ');
         } else {
-          formData.append('UI_City', userInfo.uiCity);
+          formData.append('UI_City', userInfo.uiCity ?? '');
         }
       }
 
       if (userInfo.uiPhoto !== undefined) {
-        formData.append('UI_Photo', userInfo.uiPhoto);
+        formData.append('UI_Photo', userInfo.uiPhoto ?? '');
       }
 
       if (userInfo.uiProvince !== undefined) {
         if (
+          userInfo.uiProvince &&
           userInfo.uiProvince.length === 0 &&
           initialUserInfo?.uiProvince &&
           initialUserInfo.uiProvince.length > 0
         ) {
           formData.append('UI_Province', ' ');
         } else {
-          formData.append('UI_Province', userInfo.uiProvince);
+          formData.append('UI_Province', userInfo.uiProvince ?? '');
         }
       }
 
       if (userInfo.uiCountry !== undefined) {
         if (
+          userInfo.uiCountry &&
           userInfo.uiCountry.length === 0 &&
           initialUserInfo?.uiCountry &&
           initialUserInfo.uiCountry.length > 0
         ) {
           formData.append('UI_Country', ' ');
         } else {
-          formData.append('UI_Country', userInfo.uiCountry);
+          formData.append('UI_Country', userInfo.uiCountry ?? '');
         }
       }
 
       if (userInfo.uiPostalCode !== undefined) {
         if (
+          userInfo.uiPostalCode &&
           userInfo.uiPostalCode.length === 0 &&
           initialUserInfo?.uiPostalCode &&
           initialUserInfo.uiPostalCode.length > 0
         ) {
           formData.append('UI_PostalCode', ' ');
         } else {
-          formData.append('UI_PostalCode', userInfo.uiPostalCode);
+          formData.append('UI_PostalCode', userInfo.uiPostalCode ?? '');
         }
       }
 
       if (userInfo.uiPhoneNumber !== undefined) {
         if (
+          userInfo.uiPhoneNumber &&
           userInfo.uiPhoneNumber.length === 0 &&
           initialUserInfo?.uiPhoneNumber &&
           initialUserInfo.uiPhoneNumber.length > 0
         ) {
           formData.append('UI_PhoneNumber', ' ');
         } else {
-          formData.append('UI_PhoneNumber', userInfo.uiPhoneNumber);
+          formData.append('UI_PhoneNumber', userInfo.uiPhoneNumber ?? '');
         }
       }
 
       if (userInfo.uiOrganization !== undefined) {
         if (
+          userInfo.uiOrganization &&
           userInfo.uiOrganization.length === 0 &&
           initialUserInfo?.uiOrganization &&
           initialUserInfo.uiOrganization.length > 0
         ) {
           formData.append('UI_Organization', ' ');
         } else {
-          formData.append('UI_Organization', userInfo.uiOrganization);
+          formData.append('UI_Organization', userInfo.uiOrganization ?? '');
         }
       }
 
@@ -318,6 +359,7 @@ const useUserInfo = () => {
       if (isSameUser) {
         const response = await editPage({
           UI_ID: userId,
+          // @ts-ignore
           formData,
         }).unwrap();
 

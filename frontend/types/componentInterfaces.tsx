@@ -1,10 +1,12 @@
 import store from '@/store';
 import { NotificationPlacement } from 'antd/lib/notification/interface';
 import { EPageType, EUserRole } from './enums';
-import { ElementType, ReactNode } from 'react';
+import React, { ElementType, ReactNode } from 'react';
 import { Control, ControllerProps, FieldValues } from 'react-hook-form';
 // import { string, z, z, z } from 'zod';
 import { TElement } from '@udecode/plate-common';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { SerializedError } from '@reduxjs/toolkit';
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
@@ -14,6 +16,7 @@ export interface IPageMain {
   pageId: string;
   pageName: string;
   pageType: string;
+  pageDisplayURL?: string;
   pagePermission: string[];
   pageContents?: IPageContentItem[] | IPageContentMain[];
   pageContent?: IPageContentMain;
@@ -26,7 +29,8 @@ export interface IUserBase {
   uiFirstName: string;
   uiLastName: string;
   uiEmail: string;
-  uiRole: string;
+  uiRole: string[];
+  uiMainRoles: string;
   uiStatus: string;
   uiRegDate: string;
   uiPhoto: string | File | null;
@@ -34,6 +38,7 @@ export interface IUserBase {
   uiCountry?: string | null | undefined;
   uiInitials?: string | null | undefined;
   uiFullName?: string | null | undefined;
+  uiIsUserAlumni: boolean;
 }
 
 export interface IUserInfo extends IUserBase {
@@ -52,8 +57,9 @@ export interface IUIActiveUser {
   uiInitials: string;
   uiIsAdmin: boolean;
   uiIsSuperAdmin: boolean;
+  uiIsLoading: boolean;
   uiCanEdit: boolean;
-  uiRole: string;
+  uiRole: string[];
   uiPhotoURL: string | null | File;
 }
 
@@ -74,6 +80,7 @@ export interface IPageListItem {
 export interface IPage {
   pageId?: string;
   pageName: string;
+  pageDisplayURL?: string;
   pagePermission: string[];
   pageType: string;
   pageContents?: IPageContentItem[];
@@ -92,6 +99,8 @@ export interface IPageContentMain extends IPageContentItem {
   pageContentId: string;
   pageContentLastUpdatedAt?: string;
   pageContentCreatedAt?: string;
+  pageContentExcerpt?: string;
+  pageContentReadingTime?: string;
   creatorFullName?: string;
 }
 
@@ -99,6 +108,8 @@ export interface IPageContentItem extends IPageContentBase {
   pageId: string;
   pageType?: string;
   pageName: string;
+  pageDisplayURL: string;
+  pageContentDisplayURL: string;
   userId: string;
   href: string;
 }
@@ -108,9 +119,18 @@ export interface ITablePagination {
   pageSize: number;
 }
 
-export interface IPageMenuItem extends IPage {
-  href: string;
-  isHidden: boolean;
+export interface IPageMenuItem {
+  href?: string;
+  description?: string;
+  children?: IPageMenuItem[];
+  type: 'parent' | 'child' | 'item';
+  pageId?: string;
+  pageName: string;
+  pageDisplayURL?: string;
+  pagePermission?: string[];
+  pageType?: string;
+  pageContents?: IPageContentItem[];
+  isHidden?: boolean;
 }
 
 export interface INotificationContextProps {
@@ -140,6 +160,8 @@ export interface IFormField {
   type?: string;
   multiple?: boolean;
   options?: { value: EUserRole | EPageType | string; label: string }[];
+  onChange?: (value: any) => void;
+  onBlur?: (events: React.FocusEvent<any>) => void;
 }
 
 export interface ILoadingButton {
@@ -209,4 +231,18 @@ export type Notify = (
 
 export interface IPageContentImage {
   pageContentImage: File;
+}
+
+export interface IFetchedPage {
+  fetchedPage: IPageMain | null;
+  isPageFetchLoading: boolean;
+  hasPageFetchError: boolean;
+  pageFetchError: FetchBaseQueryError | SerializedError | undefined;
+}
+
+export interface IFetchedSinglePage {
+  fetchedPage: IPage | null;
+  isPageFetchLoading: boolean;
+  hasPageFetchError: boolean;
+  pageFetchError: FetchBaseQueryError | SerializedError | undefined | null;
 }

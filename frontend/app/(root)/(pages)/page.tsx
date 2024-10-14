@@ -1,10 +1,14 @@
 import { getCookies } from '@/utils/helper';
 import Image from 'next/image';
 import teamImg from '@/assets/images/team-img.webp';
+import Footer from '@/components/hoc/layout/footer/footer';
+import usePage from '@/hooks/api-hooks/use-page';
+import PageContentCarousel from '@/components/common/carousel/page-content-carousel';
+import { routes } from '@/components/hoc/layout/menu-items';
 
 export default function Home() {
   return (
-    <div className="bg-pg min-h-screen">
+    <div className="bg-pg">
       <section className="container mx-auto px-4 py-12">
         <div className="flex flex-col lg:flex-row items-center">
           <div className="lg:w-1/2 py-12">
@@ -12,9 +16,9 @@ export default function Home() {
               Advanced Flood Modeling for a Safer Tomorrow
             </h1>
             <p className="mb-6">
-              CLISA leverages cutting-edge technology to provide precise flood
-              modeling solutions, helping communities and organizations better
-              prepare for and respond to flooding events.
+              Climate Smart Lab leverages cutting-edge technology to provide
+              precise flood modeling solutions, helping communities and
+              organizations better prepare for and respond to flooding events.
             </p>
             <button className="bg-primary text-white px-8 py-4 rounded-sm hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transform active:scale-95 transition-transform duration-150">
               Discover Our Solutions
@@ -47,19 +51,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* <section className="container mx-auto px-4 py-12">
-        <div className="flex flex-col items-center">
-          <h2 className="text-2xl font-bold mb-6">
-            Trusted by Industry Leaders in Environmental Safety
-          </h2>
-          <div className="flex flex-wrap justify-center gap-6">
-            <Image src={s1} alt="Chanel" width={100} height={50} />
-            <Image src={s2} alt="Nike" width={100} height={50} />
-            <Image src={s3} alt="Gucci" width={100} height={50} />
-          </div>
-        </div>
-      </section> */}
-
       <section className="container mx-auto px-4 py-12 bg-white">
         <div className="flex flex-col lg:flex-row items-center">
           <div className="lg:w-1/2">
@@ -72,11 +63,13 @@ export default function Home() {
             />
           </div>
           <div className="lg:w-1/2 lg:pl-12">
-            <h2 className="text-2xl font-bold  mb-4">Why Choose CLISA?</h2>
+            <h2 className="text-2xl font-bold  mb-4">
+              Why Choose Climate Smart Lab?
+            </h2>
             <p className="mb-6">
-              At CLISA, our mission is to provide state-of-the-art flood
-              modeling tools that empower communities to mitigate risks and
-              protect lives. Our innovative solutions are backed by years of
+              At Climate Smart Lab, our mission is to provide state-of-the-art
+              flood modeling tools that empower communities to mitigate risks
+              and protect lives. Our innovative solutions are backed by years of
               research and real-world application.
             </p>
             <button className="bg-primary text-white px-8 py-2 rounded-sm hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transform active:scale-95 transition-transform duration-150">
@@ -103,61 +96,23 @@ export default function Home() {
         </div>
       </section>
 
-      {/* <section className="container mx-auto px-4 py-12">
-        <h2 className="text-2xl font-bold mb-6 text-center">Meet Our Team</h2>
-        <div className="flex flex-wrap justify-center gap-6">
-          <div className="text-center transform hover:scale-105 transition-transform duration-150">
-            <Image
-              src="/taylor.jpg"
-              alt="Taylor Bale"
-              width={150}
-              height={150}
-              className="rounded-full"
-            />
-            <p className="font-bold mt-2">Taylor Bale</p>
-            <p>Lead Hydrologist</p>
-          </div>
-          <div className="text-center transform hover:scale-105 transition-transform duration-150">
-            <Image
-              src="/christian.jpg"
-              alt="Christian Naz"
-              width={150}
-              height={150}
-              className="rounded-full"
-            />
-            <p className="font-bold mt-2">Christian Naz</p>
-            <p>Project Manager</p>
-          </div>
-          <div className="text-center transform hover:scale-105 transition-transform duration-150">
-            <Image
-              src="/eyzen.jpg"
-              alt="Eyzen Nile"
-              width={150}
-              height={150}
-              className="rounded-full"
-            />
-            <p className="font-bold mt-2">Eyzen Nile</p>
-            <p>Data Scientist</p>
-          </div>
-        </div>
-      </section> */}
-
       <section className="container mx-auto px-4 py-12 bg-white">
         <h2 className="text-2xl font-bold mb-6 text-center">
           Frequently Asked Questions
         </h2>
         <div className="flex flex-wrap justify-center gap-6">
           <div className="w-full lg:w-1/3 bg-pg p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
-            <h3 className="font-bold mb-2">What is CLISA?</h3>
+            <h3 className="font-bold mb-2">What is Climate Smart Lab?</h3>
             <p>
-              CLISA is an advanced flood modeling platform designed to help
-              communities and organizations predict, assess, and mitigate flood
-              risks through sophisticated simulations and data-driven insights.
+              Climate Smart Lab is an advanced flood modeling platform designed
+              to help communities and organizations predict, assess, and
+              mitigate flood risks through sophisticated simulations and
+              data-driven insights.
             </p>
           </div>
           <div className="w-full lg:w-1/3 bg-pg p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
             <h3 className="font-bold mb-2">
-              What services does CLISA provide?
+              What services does Climate Smart Lab provide?
             </h3>
             <p>
               We offer a comprehensive range of services including hydrological
@@ -166,7 +121,9 @@ export default function Home() {
             </p>
           </div>
           <div className="w-full lg:w-1/3 bg-pg p-4 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-150">
-            <h3 className="font-bold mb-2">How can I partner with CLISA?</h3>
+            <h3 className="font-bold mb-2">
+              How can I partner with Climate Smart Lab?
+            </h3>
             <p>
               We work closely with governments, NGOs, and private organizations
               to provide tailored flood modeling solutions. Contact us to
@@ -175,25 +132,11 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <section className="container w-full mx-auto px-4 py-12 pb-12 ">
+        <h2 className="text-2xl font-bold mb-6 text-center">Latest News</h2>
+        <PageContentCarousel />
+      </section>
     </div>
   );
 }
-// export default function Home() {
-//   return (
-//     <main className="relative min-h-screen overflow-hidden flex items-center justify-center">
-//       <video
-//         src="/videos/home-bg-vid.mp4"
-//         autoPlay
-//         loop
-//         muted
-//         className="absolute inset-0 w-full h-full object-cover"
-//       />
-//       <div className="absolute inset-0 bg-black opacity-30" />
-//       {/* <div className="relative z-10 px-4 py-8 bg-black bg-opacity-40 rounded-lg shadow-lg text-center text-white">
-//         <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4">
-//           CLISA
-//         </h1>
-//       </div> */}
-//     </main>
-//   );
-// }

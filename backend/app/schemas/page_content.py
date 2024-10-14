@@ -23,6 +23,11 @@ class PageContent(BaseModel):
     PC_LastUpdatedAt: Optional[str] = None
 
 
+class GetPageContentWithDisplayURL(BaseModel):
+    PG_DisplayURL: str
+    PC_DisplayURL: str
+
+
 class PageContentCreateRequest(PageContent):
     PC_Resource: Optional[UploadFile] = None
     PC_ThumbImg: Optional[UploadFile] = None
@@ -35,6 +40,9 @@ class PageContentResponse(PageContent):
     PC_ThumbImgURL: Optional[str] = None
     PC_ResourceURL: Optional[str] = None
     PG_Name: Optional[str] = None
+    PG_DisplayURL: Optional[str] = None
+    PC_Excerpt:  Optional[str] = None
+    PC_ReadingTime: Optional[int] = None
     # PC_DisplayURL: str
 
 class PageContentUpdateRequest(BaseModel):

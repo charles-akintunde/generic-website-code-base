@@ -1,18 +1,18 @@
 """
     Business logic to handle page content creation.
 """
+from urllib.parse import unquote
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.crud.user_info import user_crud
 from app.crud.page import page_crud
 from app.crud.page_content import page_content_crud
-from app.schemas.page_content import PageContentCreateRequest, PageContentResponse, PageContentUpdateRequest
+from app.schemas.page_content import PageContentCreateRequest, PageContentUpdateRequest
 from app.utils.utils import is_admin
 from app.models.user_info import T_UserInfo
 from app.utils.response_json import build_page_content_json, build_page_json_with_single_content
-from app.schemas.page import PageResponse, PageSingleContent
-from app.models.page_content import T_PageContent
-from app.utils.file_utils import delete_and_save_file, delete_file, extract_path_from_url, save_file
+from app.schemas.page import  PageSingleContent
+from app.utils.file_utils import  delete_and_save_file_azure, save_file_to_azure
 from app.config import settings
 from app.models.enums import E_PageType
 
@@ -59,13 +59,22 @@ async def create_page_content(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Page content title cannot be empty."
         )
-
-
-    existing_page_content = page_content_crud.get_page_content(
-        page_id=page_content.PG_ID,
-        page_content_title=page_content.PC_Title,
-        db=db
+    
+    if page_content.PC_DisplayURL:
+        existing_page_content = page_content_crud.check_page_content__exist_by_title_or_display_url(
+            page_id=page_content.PG_ID,
+            page_content_title=page_content.PC_Title,
+            page_content_display_url=page_content.PC_DisplayURL,
+            db=db
     )
+    else:
+         existing_page_content = page_content_crud.get_page_content_by_title(
+            page_id=page_content.PG_ID,
+            page_content_title=page_content.PC_Title,
+            db=db
+    )
+        
+
 
     if existing_page_content:
         raise HTTPException(
@@ -80,12 +89,12 @@ async def create_page_content(
         )
     
     if page_content.PC_ThumbImg:
-            thumbnail_url=await save_file(page_content.PC_ThumbImg, settings.THUMBNAILS_FILE_PATH)
+            thumbnail_url=await save_file_to_azure(page_content.PC_ThumbImg)
             page_content.PC_ThumbImgURL = str(thumbnail_url) 
     delattr(page_content, "PC_ThumbImg")
 
     if page_content.PC_Resource:
-            resource_url=await save_file(page_content.PC_Resource, settings.RESOURCE_FILE_PATH)
+            resource_url=await save_file_to_azure(page_content.PC_Resource, settings.RESOURCE_FILE_PATH)
             page_content.PC_DisplayURL = str(resource_url) 
     delattr(page_content, "PC_Resource")
 
@@ -103,14 +112,14 @@ async def create_page_content(
     
     return build_page_content_json(
         page_content=new_page_content,
-        page_name=str(page.PG_Name),
+        page=page,
         user=user
     )
 
-def get_page_content_by_title(
+def get_page_content_by_display_url(
         db: Session,
-        page_content_title: str,
-        page_name: str) -> PageSingleContent:
+        page_content_display_url: str,
+        page_display_url: str) -> PageSingleContent:
     """
     Handles retrieving page content.
 
@@ -122,25 +131,23 @@ def get_page_content_by_title(
     Returns:
         PageSingleContent: Page content response.
     """
-    page = page_crud.get_page_by_name(db=db, page_name=page_name)
+    page = page_crud.get_page_by_display_url(db=db, pg_display_url=page_display_url)
     if page is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Page with ({page_name}) name not found"
+            detail=f"Page with ({page_display_url}) display URL not found"
         )
 
-    page_content = page_content_crud.get_page_content_by_title(
+    page_content = page_content_crud.get_page_content_by_display_url(
         db=db,
-        page_content_title=page_content_title,
+        page_content_display_url=page_content_display_url,
         page_id=str(page.PG_ID)
     )
     if page_content is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"This page does not have content with title '{page_content_title}'."
+            detail=f"This page does not have content with displau URL '{page_content_display_url}'."
         )
-    
-    
 
     page_content_creator = user_crud.get_user_by_id(
         db=db,
@@ -149,7 +156,7 @@ def get_page_content_by_title(
 
     page_content_json = build_page_content_json(
         page_content=page_content,
-        page_name= str(page.PG_Name),
+        page= page,
         user=page_content_creator
     )
 
@@ -190,18 +197,16 @@ async def update_page_content(
 
     if existing_page_content.PC_Page.PG_Type == E_PageType.ResList:
         if page_content_update.PC_Resource:
-            page_content_update.PC_DisplayURL = await delete_and_save_file(
+            page_content_update.PC_DisplayURL = await delete_and_save_file_azure(
                 str(existing_page_content.PC_DisplayURL),
-                page_content_update.PC_Resource,
-                folder=settings.RESOURCE_FILE_PATH
+                page_content_update.PC_Resource
             )
             delattr(page_content_update, 'PC_Resource')
 
     if page_content_update.PC_ThumbImg:
-        page_content_update.PC_ThumbImgURL = await delete_and_save_file(
+        page_content_update.PC_ThumbImgURL = await delete_and_save_file_azure(
             str(existing_page_content.PC_ThumbImgURL),
-            page_content_update.PC_ThumbImg,
-            folder=settings.THUMBNAILS_FILE_PATH
+            page_content_update.PC_ThumbImg
         )
         delattr(page_content_update, 'PC_ThumbImg')
 
@@ -226,13 +231,12 @@ async def update_page_content(
     
     return build_page_content_json(
         page_content= updated_page_content,
-        page_name=str(page.PG_Name),
+        page=page,
         user=user
     )
 
-    return page_content_json
 
-def delete_page_content(db: Session, page_content_id: str) -> bool:
+async def delete_page_content(db: Session, page_content_id: str) -> bool:
     """
     Delete page content.
 
@@ -248,7 +252,7 @@ def delete_page_content(db: Session, page_content_id: str) -> bool:
             detail="Page content not found"
         )
     
-    success = page_content_crud.delete_page_content(db, page_content_to_delete)
+    success =await  page_content_crud.delete_page_content(db, page_content_to_delete)
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

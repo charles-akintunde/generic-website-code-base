@@ -1,27 +1,53 @@
-# Dockerfile
+# FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8-slim
 
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8
+# RUN apt-get update && apt-get install -y \
+#     libdbus-1-dev \
+#     libgirepository1.0-dev \
+#     build-essential \
+#     pkg-config \
+#     libcairo2-dev \
+#     libgirepository-1.0-1 \
+#     gir1.2-glib-2.0 \
+#     libsystemd-dev
 
+# WORKDIR /app
+
+# COPY requirements.txt .
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# COPY . .
+
+# EXPOSE 8000
+
+# # Add --reload to enable auto-reload on file changes
+# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8-slim
+
+# Install necessary dependencies
 RUN apt-get update && apt-get install -y \
-    libsystemd-dev \
-    pkg-config
+    libdbus-1-dev \
+    libgirepository1.0-dev \
+    build-essential \
+    pkg-config \
+    libcairo2-dev \
+    libgirepository-1.0-1 \
+    gir1.2-glib-2.0 \
+    libsystemd-dev
 
+# Set working directory
 WORKDIR /app
 
-# Install dependencies
-RUN pip install --upgrade pip
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy the certificates into the container
+COPY certificates /app/certificates
 
-# Copy the rest of the application
+# Copy the FastAPI app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
-COPY ./cert.pem /app/cert.pem
-COPY ./key.pem /app/key.pem
+# Expose port 443 for HTTPS
+EXPOSE 8000
 
-# Expose HTTPS port (443)
-EXPOSE 443
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "443", "--ssl-keyfile", "/app/key.pem", "--ssl-certfile", "/app/cert.pem", "--reload"]
-
-
+# Start FastAPI with SSL
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--ssl-keyfile", "/app/certificates/private.key", "--ssl-certfile", "/app/certificates/certificate.crt"]

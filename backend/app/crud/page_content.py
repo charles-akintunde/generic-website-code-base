@@ -4,15 +4,16 @@
 
 from datetime import datetime, timezone
 from typing import Dict
+from urllib.parse import unquote
 from uuid import uuid4
 from fastapi import HTTPException, status
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 from app.schemas.page_content import PageContentCreateRequest, PageContentUpdateRequest
 from app.models.page_content import T_PageContent
 from app.models.page import T_Page
 from app.models.page_content import T_PageContent
-from app.utils.file_utils import delete_file, extract_path_from_url
+from app.utils.file_utils import  delete_file_from_azure, extract_path_from_url
 
 
 class PageContentCRUD:
@@ -103,6 +104,54 @@ class PageContentCRUD:
     return db.query(T_PageContent).filter(
        func.lower(T_PageContent.PC_Title) == func.lower(page_content_title), 
        T_PageContent.PG_ID == page_id).first()
+ 
+ def check_page_content__exist_by_title_or_display_url(
+       self, 
+       db: Session, 
+       page_id: str,
+       page_content_title: str,
+       page_content_display_url: str
+       ) -> T_PageContent:
+    """
+    Handles CRUD operation for fetching page content.
+
+    Args:
+        db (Session): Database Session.
+        page_id (str): Id of the page the that hosts the content.
+        content_title (str): Page content title.
+
+    Returns:
+        Page content object created.
+    """
+    return db.query(T_PageContent).filter(
+    or_(
+        func.lower(T_PageContent.PC_Title) == func.lower(page_content_title),
+        T_PageContent.PC_Title == page_content_display_url
+    ),  T_PageContent.PG_ID == page_id
+).first()
+ 
+ def get_page_content_by_display_url(
+       self, 
+       db: Session, 
+       page_id: str,
+       page_content_display_url: str,
+       ) -> T_PageContent:
+        """
+        Handles CRUD operation for fetching page content.
+
+        Args:
+            db (Session): Database Session.
+            page_id (str): Id of the page the that hosts the content.
+            content_title (str): Page content title.
+
+        Returns:
+            Page content object created.
+        """
+       
+        return db.query(T_PageContent).filter(
+        func.lower(T_PageContent.PC_DisplayURL) == func.lower(page_content_display_url), 
+        T_PageContent.PG_ID == page_id).first()
+
 
  def update_page_content(
     self,
@@ -138,7 +187,7 @@ class PageContentCRUD:
     db.refresh(db_page_content)
     return db_page_content
  
- def delete_page_content(
+ async def delete_page_content(
        self,
        db: Session, 
        page_content_to_delete: T_PageContent):
@@ -153,10 +202,9 @@ class PageContentCRUD:
     try:
         if page_content_to_delete:
             # if page_content_to_delete.PC_DisplayURL: # type: ignore
-            #     delete_file(extract_path_from_url(page_content_to_delete.PC_DisplayURL)) # type: ignore
-            print(page_content_to_delete,"UUUUUUUUUUUUUUUUUU")
+            #     await delete_file_from_azure(page_content_to_delete.PC_DisplayURL) # type: ignore
             if page_content_to_delete.PC_ThumbImgURL: # type: ignore
-                delete_file(extract_path_from_url(page_content_to_delete.PC_ThumbImgURL)) # type: ignore
+                await delete_file_from_azure(page_content_to_delete.PC_ThumbImgURL) # type: ignore
             db.delete(page_content_to_delete)
             db.commit()
             return True

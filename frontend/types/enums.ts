@@ -10,6 +10,7 @@ export enum EUserRole {
   Member = '2',
   User = '3',
   Public = '4',
+  Alumni = '5',
 }
 
 export enum EPageType {
@@ -20,9 +21,9 @@ export enum EPageType {
 }
 
 export enum EMemberPosition {
-  DIRECTOR = '0',
-  POSTDOC = '1',
-  PHD = '2',
-  MASTER = '3',
-  UNDERGRAD = '4',
+  Director = '0',
+  PostDoc = '1',
+  Phd = '2',
+  Master = '3',
+  Undergrad = '4',
 }

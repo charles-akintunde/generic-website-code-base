@@ -83,7 +83,6 @@ const ResetPasswordWithEmailForm = () => {
   } = useUserInfo();
 
   const onSubmit = async (data: any) => {
-    console.log(data, 'DATATATA');
     await submitEmailForPasswordReset(data.email);
   };
 

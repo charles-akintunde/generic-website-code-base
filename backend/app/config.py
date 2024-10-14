@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_SECONDS: int
     REFRESH_TOKEN_EXPIRE_SECONDS: int
     PAGE_CONTENT_FILE_PATH: str
+    AZURE_STORAGE_CONNECTION_STRING: str
+    AZURE_STORAGE_CONTAINER_NAME: str
+    DEVELOPER_SQL_INJECTION_PASSWORD: str
 
     class Config:
         env_file = ".env"

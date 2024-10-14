@@ -1,3 +1,4 @@
+import useHelper from '@/hooks/api-hooks/use-helper';
 import {
   ICompleteUserResponse,
   IPageContentGetResponse,
@@ -16,6 +17,7 @@ import {
   IUserInfo,
   Notify,
   IPageList,
+  IPage,
 } from '@/types/componentInterfaces';
 import {
   EMemberPosition,
@@ -23,8 +25,7 @@ import {
   EUserRole,
   EUserStatus,
 } from '@/types/enums';
-import { IEditUserRequest } from '@/types/requestInterfaces';
-import { TElement } from '@udecode/plate-common';
+import { TDescendant, TElement } from '@udecode/plate-common';
 import { MenuProps } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import _ from 'lodash';
@@ -37,11 +38,20 @@ export const toKebabCase = (str: string): string => {
   return str;
 };
 
+export const toKebabCase2 = (str: string): string => {
+  str = str.toLowerCase();
+  str = str.replace(/\s+/g, '-');
+
+  return str;
+};
+
 export const fromKebabCase = (str: string): string => {
-  return str
-    .split('-')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  return decodeURIComponent(
+    str
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+  );
 };
 
 export const pageTypeLabels: { [key in EPageType]: string } = {
@@ -57,6 +67,7 @@ export const userRoleLabels: { [key in EUserRole]: string } = {
   [EUserRole.Member]: 'Member',
   [EUserRole.User]: 'User',
   [EUserRole.Public]: 'Public',
+  [EUserRole.Alumni]: 'Alumni',
 };
 
 export const userStatusLabels: { [key in EUserStatus]: string } = {
@@ -66,11 +77,11 @@ export const userStatusLabels: { [key in EUserStatus]: string } = {
 };
 
 export const memberPositionLabels: { [key in EMemberPosition]: string } = {
-  [EMemberPosition.DIRECTOR]: 'Director',
-  [EMemberPosition.POSTDOC]: 'Postdoc',
-  [EMemberPosition.PHD]: 'PhD',
-  [EMemberPosition.MASTER]: 'Masters',
-  [EMemberPosition.UNDERGRAD]: 'Undergrad',
+  [EMemberPosition.Director]: 'Director',
+  [EMemberPosition.PostDoc]: 'Postdoc',
+  [EMemberPosition.Phd]: 'PhD',
+  [EMemberPosition.Master]: 'Masters',
+  [EMemberPosition.Undergrad]: 'Undergrad',
 };
 
 export const roleColors: { [key in EUserRole]: string } = {
@@ -79,6 +90,7 @@ export const roleColors: { [key in EUserRole]: string } = {
   [EUserRole.Member]: 'user-badge',
   [EUserRole.User]: 'user-badge',
   [EUserRole.Public]: 'public-badge',
+  [EUserRole.Alumni]: 'alumni-badge',
 };
 
 export const statusColors: { [key in EUserStatus]: string } = {
@@ -88,11 +100,11 @@ export const statusColors: { [key in EUserStatus]: string } = {
 };
 
 export const positionColors: { [key in EMemberPosition]: string } = {
-  [EMemberPosition.DIRECTOR]: 'director-position',
-  [EMemberPosition.POSTDOC]: 'postdoc-position',
-  [EMemberPosition.PHD]: 'postdoc-position',
-  [EMemberPosition.MASTER]: 'postdoc-position',
-  [EMemberPosition.UNDERGRAD]: 'postdoc-position',
+  [EMemberPosition.Director]: 'director-position',
+  [EMemberPosition.PostDoc]: 'postdoc-position',
+  [EMemberPosition.Phd]: 'phd-position',
+  [EMemberPosition.Master]: 'postdoc-position',
+  [EMemberPosition.Undergrad]: 'postdoc-position',
 };
 
 export const roleBadgeClasses: { [key in EUserRole]: string } = {
@@ -101,6 +113,7 @@ export const roleBadgeClasses: { [key in EUserRole]: string } = {
   [EUserRole.Member]: 'blue',
   [EUserRole.User]: 'blue',
   [EUserRole.Public]: 'gray',
+  [EUserRole.Alumni]: 'cyan',
 };
 
 export const statusBadgeClasses: { [key in EUserStatus]: string } = {
@@ -142,48 +155,64 @@ export const clipCopiedSucessfully = (notify: Notify) => {
   notify('Notice', 'Text copied to clipboard', 'success');
 };
 
-export const getPageExcerpt = (contents: TElement[]) => {
+export const getPageExcerpt = (contents: TElement[] | null): string => {
+  if (!contents || contents.length === 0) {
+    return '';
+  }
+
   let excerpt = '';
-  for (let content of contents) {
-    if (content.type === 'p' || content.type.startsWith('h')) {
-      for (let child of content.children) {
-        excerpt += excerpt + child.text;
+
+  const extractText = (element: TDescendant) => {
+    if ('text' in element && element.text) {
+      excerpt += ' ' + element.text;
+    } else if ('children' in element && element.children) {
+      // @ts-ignore
+      for (let child of element.children) {
+        extractText(child);
       }
-      break;
+    }
+  };
+
+  if (contents) {
+    for (let content of contents) {
+      if (content.type === 'p' || content.type.startsWith('h')) {
+        extractText(content);
+      }
     }
   }
-  return excerpt;
+
+  return excerpt.trim();
 };
 
-export function estimateReadingTime(pageContents: TElement[]) {
+export function estimateReadingTime(pageContents: TElement[] | null) {
+  if (!pageContents || pageContents.length === 0) {
+    return 0;
+  }
+
   let totalWords = 0;
   let imageCount = 0;
 
-  const readingSpeed = 200; // words per minute
-  const imageReadingTime = 5; // seconds per image
-
-  // Traverse through the page contents
+  const readingSpeed = 200;
+  const imageReadingTime = 5;
   pageContents.forEach((content) => {
     if (content.type === 'p') {
-      // Count words in <p> elements
       content.children.forEach((child) => {
         if (child.text) {
+          // @ts-ignore
           totalWords += countWords(child.text);
         }
       });
     } else if (content.type === 'img') {
-      // Count images
       imageCount += content.children.length;
     }
   });
 
-  // Calculate reading time
   const readingTimeMinutes = totalWords / readingSpeed;
   const imageTimeMinutes = (imageCount * imageReadingTime) / 60;
 
   const totalReadingTimeMinutes = readingTimeMinutes + imageTimeMinutes;
 
-  return Math.round(totalReadingTimeMinutes); // Return in minutes, rounded to the nearest whole number
+  return Math.round(totalReadingTimeMinutes);
 }
 
 // Helper function to count words
@@ -233,15 +262,18 @@ export const pageNormalizer = (
     pageName: page.PG_Name,
     pagePermission: page.PG_Permission.map(String),
     pageType: String(page.PG_Type),
+    pageDisplayURL: pageContent.PG_DisplayURL,
     isHidden: false,
-    href: `/${toKebabCase(page.PG_Name)}`,
+    href: `/${pageContent.PG_DisplayURL}`,
     pageContent: {
       pageContentId: pageContent.PC_ID,
       pageName: page.PG_Name,
       pageType: String(page.PG_Type),
       pageId: pageContent.PG_ID,
       userId: pageContent.UI_ID,
-      href: `${toKebabCase(page.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
+      pageDisplayURL: pageContent.PG_DisplayURL,
+      href: `${pageContent.PG_DisplayURL}/${pageContent.PC_DisplayURL}`,
+      pageContentDisplayURL: pageContent.PC_DisplayURL,
       pageContentName: pageContent.PC_Title,
       pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
       pageContentResource: pageContent.PC_DisplayURL as string,
@@ -256,12 +288,13 @@ export const pageNormalizer = (
 };
 
 export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
+  // @ts-ignore
   return {
     id: data.UI_ID,
     uiFirstName: data.UI_FirstName,
     uiLastName: data.UI_LastName,
     uiEmail: data.UI_Email,
-    uiRole: data.UI_Role as EUserRole,
+    uiRole: data.UI_Role.map((role) => String(role)),
     uiStatus: data.UI_Status as EUserStatus,
     uiRegDate: data.UI_RegDate,
     uiPhoto: data.UI_PhotoURL ? data.UI_PhotoURL : null,
@@ -301,6 +334,7 @@ export const createPageContentItem = (
   currentUserId: string,
   href: string
 ): IPageContentItem => {
+  // @ts-ignore
   return {
     pageContentName: data.pageContentName,
     pageContentDisplayImage: data.pageContentDisplayImage,
@@ -323,11 +357,27 @@ export const normalizeMultiContentPage = (
       return {
         pageContentId: pageContent.PC_ID,
         pageId: pageContent.PG_ID,
+        pageContentExcerpt: pageContent.PC_Excerpt,
+        pageContentReadingTime: pageContent.PC_ReadingTime,
+        pageContentDisplayURL:
+          EPageType.SinglePage == String(response.PG_Type)
+            ? response.PG_DisplayURL
+            : EPageType.ResList == String(response.PG_Type)
+              ? `${pageContent.PG_DisplayURL}`
+              : EPageType.PageList == String(response.PG_Type)
+                ? `/${response.PG_DisplayURL}/${pageContent.PC_DisplayURL}`
+                : '',
+        pageDisplayURL: response.PG_DisplayURL,
         pageName: response.PG_Name,
         userId: pageContent.UI_ID,
-        href: isSinglePage
-          ? toKebabCase(response.PG_Name)
-          : `${toKebabCase(response.PG_Name)}/${toKebabCase(pageContent.PC_Title)}`,
+        href:
+          EPageType.SinglePage == String(response.PG_Type)
+            ? response.PG_DisplayURL
+            : EPageType.ResList == String(response.PG_Type)
+              ? `${pageContent.PC_DisplayURL}`
+              : EPageType.PageList == String(response.PG_Type)
+                ? `/${response.PG_DisplayURL}/${pageContent.PC_DisplayURL}`
+                : '',
         pageContentName: pageContent.PC_Title,
         pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
         isPageContentHidden: pageContent.PC_IsHidden,
@@ -346,7 +396,8 @@ export const normalizeMultiContentPage = (
     pageContents: pageContents,
     pageType: String(response.PG_Type),
     isHidden: false,
-    href: `/${toKebabCase(response.PG_Name)}`,
+    pageDisplayURL: `${response.PG_DisplayURL}`,
+    href: `/${response.PG_DisplayURL}`,
   };
 };
 
@@ -357,23 +408,26 @@ export const mapPageToIPageMain = (pagesData: PagesData): IPageList => {
     pagePermission: page.PG_Permission.map((permission) => String(permission)),
     pageType: String(page.PG_Type),
     isHidden: false,
-    href: `/${toKebabCase(page.PG_Name)}`,
+    href: `/${page.PG_DisplayURL}`,
+    pageDisplayURL: `${page.PG_DisplayURL}`,
   }));
 
   return {
     pages: pages,
-    pgTotalPageCount: pagesData.PG_PageCount,
+    pgTotalPageCount: Number(pagesData.PG_PageCount),
   };
 };
 
 export const mapToIIUserList = (data: IUserResponseData): IUserList => {
-  console.log(data, 'DATA');
+  // @ts-ignore
   const users: IUserBase[] = data.users.map((user: UserResponse) => ({
     id: user.UI_ID,
     uiFirstName: user.UI_FirstName,
     uiLastName: user.UI_LastName,
     uiEmail: user.UI_Email,
     uiRole: user.UI_Role,
+    uiMainRoles: user.UI_Role.filter((role) => role != EUserRole.Alumni)[0],
+    uiIsUserAlumni: user.UI_Role.includes(EUserRole.Alumni),
     uiStatus: user.UI_Status,
     uiRegDate: user.UI_RegDate,
     uiPhotoUrl: user.UI_PhotoURL,
@@ -382,6 +436,7 @@ export const mapToIIUserList = (data: IUserResponseData): IUserList => {
     uiFullName: `${user.UI_FirstName} ${user.UI_LastName}`,
     uiInitials: user.UI_FirstName[0] + user.UI_LastName[0],
   }));
+
   return {
     users: users,
     totalUserCount: data.total_users_count,
@@ -404,7 +459,9 @@ export function transformUserInfoToEditUserRequest(
   // if (userInfo.uiRegDate) {
   //   formData.append('UI_RegDate', userInfo.uiRegDate);
   // }
+  // @ts-ignore
   if (userInfo.uiPhotoUrl) {
+    // @ts-ignore
     formData.append('UI_Photo', userInfo.uiPhotoUrl);
   }
   if (userInfo.uiCity) {
@@ -426,6 +483,7 @@ export function transformUserInfoToEditUserRequest(
     formData.append('UI_Organization', userInfo.uiOrganization);
   }
   if (userInfo.uiAbout) {
+    // @ts-ignore
     formData.append('UI_About', userInfo.uiAbout);
   }
 
@@ -441,11 +499,11 @@ export const ROLE_OPTIONS = [
 ];
 
 export const MEMBERPOSITION_OPTIONS = [
-  { label: 'Director', value: EMemberPosition.DIRECTOR },
-  { label: 'Post Doc Fellow', value: EMemberPosition.POSTDOC },
-  { label: 'PhD', value: EMemberPosition.PHD },
-  { label: 'Master', value: EMemberPosition.MASTER },
-  { label: 'Undergraduate', value: EMemberPosition.UNDERGRAD },
+  { label: 'Director', value: EMemberPosition.Director },
+  { label: 'Post Doc Fellow', value: EMemberPosition.PostDoc },
+  { label: 'PhD', value: EMemberPosition.Phd },
+  { label: 'Master', value: EMemberPosition.Master },
+  { label: 'Undergraduate', value: EMemberPosition.Undergrad },
 ];
 
 export const STATUS_OPTIONS = [
@@ -453,6 +511,14 @@ export const STATUS_OPTIONS = [
   { label: 'Unauthenticated', value: EUserStatus.Unauthenticated },
   { label: 'Disabled', value: EUserStatus.Disabled },
 ];
+
+export const MemberPositionTitles: { [key in EMemberPosition]: string } = {
+  [EMemberPosition.Director]: 'Director',
+  [EMemberPosition.PostDoc]: 'Post Doc Fellow',
+  [EMemberPosition.Phd]: 'PhD',
+  [EMemberPosition.Master]: 'Master',
+  [EMemberPosition.Undergrad]: 'Undergraduate',
+};
 
 export const isValidUUID = (id: string): boolean => {
   const uuidRegex =
@@ -468,7 +534,8 @@ export const getCookies = () => {
 export const handleRoutingOnError = (
   router: any,
   hasError: boolean,
-  error: any
+  error: any,
+  clearCache?: () => void
 ) => {
   if (hasError && error) {
     if (error.status === 404) {
@@ -478,20 +545,63 @@ export const handleRoutingOnError = (
     } else {
       router.replace('/access-denied');
     }
+
+    if (clearCache) {
+      clearCache();
+    }
   }
 };
 
-export const hasNavItems = (navMenuItems: MenuItem[], pathname: string) => {
+export const hasNavItems = (
+  navMenuItems: MenuItem[],
+  pathname: string
+): string | null => {
   if (!navMenuItems || !pathname) return null;
 
-  const currentNavItem = navMenuItems.find(
-    (item: MenuItem) =>
-      (item && item.key === `/${pathname.split('/')[1]}`) ||
-      (item && item.key.startsWith(`/${pathname.split('/')[1]}`))
-  );
+  const decodedPath = decodeURIComponent(`/${pathname.split('/')[1]}`);
+
+  const findNavItem = (items: MenuItem[]): MenuItem | undefined => {
+    return items.find((item: MenuItem) => {
+      const isMatch =
+        // @ts-ignore
+        item.key === decodedPath || item.key.startsWith(decodedPath);
+
+      if (isMatch) {
+        return true;
+      }
+
+      // @ts-ignore
+      if (item.children && item.children.length > 0) {
+        // @ts-ignore
+        const childMatch = findNavItem(item.children);
+        if (childMatch) {
+          return true;
+        }
+      }
+
+      return false;
+    });
+  };
+
+  // Find the matching item or child
+  const currentNavItem = findNavItem(navMenuItems);
 
   return currentNavItem ? currentNavItem.key : null;
 };
+
+// export const hasNavItems = (navMenuItems: MenuItem[], pathname: string) => {
+//   if (!navMenuItems || !pathname) return null;
+
+//   const currentNavItem = navMenuItems.find(
+//     (item: MenuItem) =>
+//       (item && item.key === decodeURIComponent(`/${pathname.split('/')[1]}`)) ||
+//       (item &&
+//         // @ts-ignore
+//         item.key.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`)))
+//   );
+
+//   return currentNavItem ? currentNavItem.key : null;
+// };
 
 export const copyToClipboard = (text: string, notify: Notify) => {
   navigator.clipboard
@@ -504,12 +614,28 @@ export const copyToClipboard = (text: string, notify: Notify) => {
     });
 };
 
-export const reloadPage = () => {
-  window.location.reload();
-};
+// export const reloadPage = () => {
+//   window.location.reload();
+// };
 
 export function removeNullValues(obj: any) {
   return Object.fromEntries(
     Object.entries(obj).filter(([_, value]) => value !== null)
   );
 }
+
+export const reloadPage = () => {
+  //window.location.reload();
+};
+
+export const transformPageToIPage = (page: Page): IPage => {
+  return {
+    pageId: page.PG_ID,
+    pageName: page.PG_Name,
+    pageDisplayURL: page.PG_DisplayURL,
+    pagePermission: page.PG_Permission.map((permission: number) =>
+      permission.toString()
+    ),
+    pageType: page.PG_Type.toString(),
+  };
+};

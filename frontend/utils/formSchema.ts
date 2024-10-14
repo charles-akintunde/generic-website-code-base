@@ -36,6 +36,10 @@ const requiredTextSchema = (field: string) => {
     .regex(/^[^-]+$/, `${field} should not contain dashes (-)`);
 };
 
+const requiredTextSchemaAllowDash = (field: string) => {
+  return z.string().min(1, `${field} is required`);
+};
+
 export const loginSchema = z.object({
   email: emailSchema(),
   password: passwordSchema(),
@@ -70,7 +74,11 @@ export const resetPasswordWithEmailSchema = z.object({
 });
 
 export const createPageSchema = z.object({
-  pageName: requiredTextSchema('Page name'),
+  pageName: requiredTextSchemaAllowDash('Page Name').max(
+    100,
+    `Page Name must be at most 100 characters long`
+  ),
+  pageDisplayURL: requiredTextSchemaAllowDash('Page Display URL'),
   pageType: z.nativeEnum(EPageType),
   pagePermission: z
     .array(z.nativeEnum(EUserRole))
@@ -159,7 +167,29 @@ const imageSchema = z.union([imageFileSchema, urlSchema]);
 const fileSchema = z.union([docFileSchema, urlSchema]);
 
 export const pageContentSchema = z.object({
-  pageContentName: requiredTextSchema('Content Name'),
+  pageContentName: requiredTextSchemaAllowDash('Content Name').max(
+    200,
+    `Page Name must be at most 100 characters long`
+  ),
+  pageContentDisplayImage: imageSchema,
+  pageContentDisplayURL: requiredTextSchemaAllowDash('Page Display URL').max(
+    255,
+    `Page Name must be at most 254 characters long`
+  ),
+  pageContentResource: fileSchema.optional(),
+  editorContent: plateJsSchema.optional(),
+  isPageContentHidden: z.boolean().default(false),
+});
+
+export const pageContentSchemaEdit = z.object({
+  pageContentName: requiredTextSchemaAllowDash('Content Name').max(
+    200,
+    `Page Name must be at most 100 characters long`
+  ),
+  pageContentDisplayURL: requiredTextSchemaAllowDash('Page Display URL').max(
+    255,
+    `Page Name must be at most 254 characters long`
+  ),
   pageContentDisplayImage: imageSchema.optional(),
   pageContentResource: fileSchema.optional(),
   editorContent: plateJsSchema.optional(),
@@ -214,13 +244,18 @@ export const userProfileSchema = z.object({
 
 export const userRoleStatusSchema = z
   .object({
-    uiRole: z.string().optional(),
+    uiMainRoles: z.string().optional(),
     uiStatus: z.string().optional(),
     uiMemberPosition: z.string().optional(),
+    uiIsUserAlumni: z.boolean().default(false),
   })
   .refine(
     (data) => {
-      if (data.uiRole === EUserRole.Member && !data.uiMemberPosition) {
+      if (
+        data.uiMainRoles &&
+        data.uiMainRoles.includes(EUserRole.Member) &&
+        !data.uiMemberPosition
+      ) {
         return false;
       }
       return true;

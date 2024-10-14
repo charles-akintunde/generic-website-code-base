@@ -118,7 +118,10 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
     }
   }, [userInfo, form]);
 
-  const onSubmit = async (data: any, event: { preventDefault: () => void }) => {
+  const onSubmit = async (
+    data: any,
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
     const newDataWithContents = { ...data, uiAbout: plateEditor };
     const changedFields = getChangedFields(userInfo, newDataWithContents);
@@ -140,7 +143,8 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
     <Form {...form}>
       <form
         className="space-y-6 w-full h-full overflow-y-auto pb-20"
-        onSubmit={form.handleSubmit(onSubmit)} // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // @ts-ignore
+        onSubmit={form.handleSubmit(onSubmit)}
       >
         {isSameUser && (
           <div className="flex justify-end">
@@ -306,36 +310,46 @@ export const UserRoleStatusDialog = () => {
 
   const form = useForm<UserRoleStatusFormData>({
     resolver: zodResolver(userRoleStatusSchema),
+    // @ts-ignore
     defaultValues: userInfo || {
-      uiRole: '',
+      uiMainRoles: '',
       uiStatus: '',
-      // uiMemberPosition
+      uiIsUserAlumni: false,
     },
   });
 
-  console.log(userInfo, 'userInfo');
   useEffect(() => {
     if (userInfo) {
+      // @ts-ignore
       form.reset(userInfo);
     }
   }, [userInfo, form]);
 
-  const onSubmit = async (
-    data: IUserBase,
-    event: { preventDefault: () => void }
-  ) => {
+  const onSubmit = async (data: any, event: { preventDefault: () => void }) => {
     event.preventDefault();
     const changedFields = getChangedFields(userInfo, data);
+    console.log(data, userInfo, changedFields);
     if (userInfo && Object.keys(changedFields).length > 0) {
-      await submitEditRoleStatus(userInfo.id, changedFields);
+      await submitEditRoleStatus(
+        userInfo.id,
+        changedFields as Partial<IUserBase>,
+        userInfo
+      );
     } else {
       notifyNoChangesMade(notify);
       return;
     }
   };
 
-  const { watch } = form;
-  const uiRole = watch('uiRole');
+  const { watch, setValue } = form;
+  const uiRole = watch('uiMainRoles');
+  const isUserAlumni = watch('uiIsUserAlumni');
+
+  useEffect(() => {
+    if (isUserAlumni) {
+      setValue('uiMainRoles', EUserRole.Alumni);
+    }
+  }, [isUserAlumni, setValue]);
 
   const handleOpenChange = () => {
     dispatch(toggleCreateUserDialog());
@@ -355,6 +369,7 @@ export const UserRoleStatusDialog = () => {
           <Form {...form}>
             <form
               className="space-y-6 w-full h-full overflow-y-auto pb-20"
+              // @ts-ignore
               onSubmit={form.handleSubmit(onSubmit)}
             >
               {!isSameUser && (
@@ -367,28 +382,41 @@ export const UserRoleStatusDialog = () => {
                     type="select"
                     options={STATUS_OPTIONS}
                   />
-                  <FormField
-                    control={form.control}
-                    name="uiRole"
-                    label="Role"
-                    placeholder="User Role"
-                    type="select"
-                    options={ROLE_OPTIONS}
-                  />
-                  {(uiRole == EUserRole.SuperAdmin ||
-                    uiRole == EUserRole.Admin ||
-                    uiRole == EUserRole.Member) && (
+
+                  {!isUserAlumni && (
                     <FormField
                       control={form.control}
-                      name="uiMemberPosition"
-                      label="Member Position"
-                      placeholder="Select Member Position"
+                      name="uiMainRoles"
+                      label="Role"
+                      placeholder="User Role"
                       type="select"
-                      options={MEMBERPOSITION_OPTIONS}
+                      options={ROLE_OPTIONS}
                     />
                   )}
 
-                  <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4  flex justify-center">
+                  {uiRole &&
+                    (uiRole.includes(EUserRole.SuperAdmin) ||
+                      uiRole.includes(EUserRole.Admin) ||
+                      uiRole.includes(EUserRole.Member)) && (
+                      <FormField
+                        control={form.control}
+                        name="uiMemberPosition"
+                        label="Member Position"
+                        placeholder="Select Member Position"
+                        type="select"
+                        options={MEMBERPOSITION_OPTIONS}
+                      />
+                    )}
+
+                  <FormField
+                    control={form.control}
+                    name="uiIsUserAlumni"
+                    label="Is this User an Alumni"
+                    placeholder=""
+                    type="checkbox"
+                  />
+
+                  <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4 flex justify-center">
                     <LoadingButton
                       loading={false}
                       buttonText={'Save changes'}

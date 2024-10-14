@@ -5,10 +5,10 @@ import RouteGuard from '@/components/hoc/route-guard';
 import { NotificationProvider } from '@/components/hoc/notification-provider';
 import AuthGuard from '@/components/hoc/auth-guard';
 
-export const metadata: Metadata = {
-  title: 'Generic Website',
-  description: '',
-};
+// export const metadata: Metadata = {
+//   title: 'Generic Website',
+//   description: '',
+// };
 
 export default function RootLayout({
   children,

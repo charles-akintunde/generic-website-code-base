@@ -12,7 +12,6 @@ import {
   IUserLoginRequest,
 } from '@/types/requestInterfaces';
 import publicRouteBaseQuery from './publicRouteBaseQuery';
-import Cookies from 'js-cookie';
 
 const commonUrl = '/auth';
 

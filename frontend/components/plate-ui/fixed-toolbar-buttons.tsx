@@ -29,6 +29,7 @@ import { IndentToolbarButton } from './indent-toolbar-button';
 
 import { Icons, iconVariants } from '@/components/icons';
 import { useAppSelector } from '@/hooks/redux-hooks';
+import UploadPageContentImage from '../common/upload-page-content-image';
 
 export function FixedToolbarButtons() {
   const readOnly = useEditorReadOnly();
@@ -105,6 +106,7 @@ export function FixedToolbarButtons() {
               {!uiEditorInProfileMode && (
                 <MediaToolbarButton nodeType={ELEMENT_IMAGE} />
               )}
+              <UploadPageContentImage />
               <TableDropdownMenu />
               <MoreDropdownMenu />
             </ToolbarGroup>

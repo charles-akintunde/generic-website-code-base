@@ -1,22 +1,19 @@
 'use client';
 import React, { useState } from 'react';
-import { fromKebabCase, toKebabCase } from '@/utils/helper';
+import { toKebabCase } from '@/utils/helper';
 import { IPageContentMain } from '@/types/componentInterfaces';
 import usePage from '@/hooks/api-hooks/use-page';
 import { usePathname } from 'next/navigation';
 import ContentList from '@/components/common/content-list/content-list';
 import ResourceListCard from './resource-list-card';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
 import { useAppSelector } from '@/hooks/redux-hooks';
 
 const ResourceLists = () => {
   const pathname = usePathname();
-  const [pageName, setPageName] = useState(
-    fromKebabCase(pathname.split('/')['1'])
-  );
+  const [pageName, setPageName] = useState(pathname.split('/')['1']);
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
-  const { currentPage } = usePage(pageName);
+  const { currentPage } = usePage({ pageName });
   const page = currentPage;
   const pageType = (page && page?.pageType) ?? '';
   const createPageHref = (pageNameKebab: string, queryString: string) =>
@@ -36,6 +33,7 @@ const ResourceLists = () => {
     <ContentList
       isResourcePage={true}
       pageType={page?.pageType ?? ''}
+      pageId={pageId}
       pageName={page?.pageName ?? ''}
       pageContents={pageContents}
       canEdit={canEdit}

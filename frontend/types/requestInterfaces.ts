@@ -21,11 +21,18 @@ export interface IPageRequest {
   PG_Name: string;
   PG_Permission: number[];
   PG_Type?: number;
+  PG_DisplayURL: string;
+}
+
+export interface IPageGetRequest {
+  PG_DisplayURL: string;
+  PG_PageNumber: number;
+  PG_PageOffset?: number;
 }
 
 export interface IPageContentGetRequest {
-  PG_Name: string;
-  PC_Title: string;
+  PG_DisplayURL: string;
+  PC_DisplayURL: string;
 }
 
 export interface IPageRequestWithIdentifier extends IPageRequest {
@@ -49,6 +56,7 @@ export interface IEditPageContentRequest {
   PC_ThumbImg?: string;
   PC_Resource?: string;
   PC_IsHidden?: boolean;
+  PC_DisplayURL?: boolean;
 }
 
 export interface IEditUserRequest {
@@ -67,9 +75,9 @@ export interface IEditUserRequest {
 
 export interface IEditUserRoleStatusRequest {
   UI_ID: string;
-  UI_Role: Number;
-  UI_Status: Number;
-  UI_MemberPosition: Number;
+  UI_Role: Number[] | null;
+  UI_Status: Number | null;
+  UI_MemberPosition: Number | null;
 }
 
 export interface IPasswordResetRequest {
@@ -83,4 +91,8 @@ export interface IPasswordResetConfirmationRequest {
 
 export interface IPageContentImageRequest {
   PC_PageContentImg: File;
+}
+
+export interface ISinglePageRequest {
+  PG_DisplayURL: string;
 }

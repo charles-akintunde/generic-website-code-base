@@ -16,6 +16,7 @@ import {
   formatDate,
   getPageExcerpt,
 } from '@/utils/helper';
+import { Tooltip } from 'antd';
 
 interface IPageContentCardProps {
   pageName: string;
@@ -32,12 +33,13 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
     handlePageContentEditButtonClick(pageContent);
   };
   const title = pageContent.pageContentName;
-  const excerpt = getPageExcerpt(pageContent.editorContent);
+  //const excerpt = getPageExcerpt(pageContent.editorContent);
+  const excerpt = pageContent.pageContentExcerpt;
   const imageSrc = pageContent.pageContentDisplayImage;
-  const readTime = `${estimateReadingTime(pageContent.editorContent)} mins Read`;
+  const readTime = `${pageContent.pageContentReadingTime} mins Read`;
   const date = formatDate(pageContent.pageContentCreatedAt as string);
   const href = pageContent.href;
-  const category = pageName;
+  //const category = pageName;
   const isHidden = pageContent.isPageContentHidden;
 
   const handleRemovePage = async () => {
@@ -57,9 +59,9 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap">
-          <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-blue-200 rounded-sm bg-opacity-50 text-blue-400 px-6 py-1 hover:bg-blue-200 hover:bg-opacity-50 shadow-sm">
+          {/* <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-blue-200 rounded-sm bg-opacity-50 text-blue-400 px-6 py-1 hover:bg-blue-200 hover:bg-opacity-50 shadow-sm">
             {category}
-          </Badge>
+          </Badge> */}
           {isHidden && (
             <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-red-200 rounded-sm bg-opacity-50 text-red-600 px-6 py-1 hover:bg-red-200 hover:bg-opacity-50 shadow-sm">
               {'This post is hidden from users'}
@@ -69,7 +71,12 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
 
         <CardTitle className="text-xl font-bold mt-2">
           <Link onClick={handleEditButtonClick} href={href}>
-            {title}
+            <Tooltip placement={'topLeft'} title={`Read: ${title}`}>
+              {' '}
+              <h2 className="overflow-hidden text-ellipsis whitespace-normal line-clamp-3">
+                {title}
+              </h2>
+            </Tooltip>
           </Link>
         </CardTitle>
         <p className="mt-2 text-md text-gray-600 line-clamp-3">{excerpt}</p>

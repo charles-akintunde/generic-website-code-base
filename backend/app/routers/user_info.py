@@ -15,6 +15,7 @@ from app.utils.utils import is_super_admin
 from app.models.user_info import T_UserInfo
 from app.services.user_info import delete_user, get_user_by_id, get_users, get_users_assigned_with_positions, update_user_profile, update_user_role_status, update_user_status
 from app.utils.response import error_response, success_response
+from app.utils.file_utils import  delete_and_save_file_azure, delete_file_from_azure, save_file_to_azure
 
 
 router = APIRouter()
@@ -42,6 +43,62 @@ async def update_user_status_endpoint(
     try:
         update_user_status(db=db,user_status_update=user_status_update,current_user=current_user)
         return success_response("User status update successfully")
+    except HTTPException as e:
+        return error_response(message=e.detail, status_code=e.status_code)
+
+
+@router.put("/uploads", response_model=StandardResponse)
+async def update_and_delete_file(file_url_to_delete: str, file_to_upload: UploadFile = File(...)):
+    """
+    Update file.
+
+    Args:
+        file_url_to_delete (str): file URL to delete.
+        file (UploadFile): file to upload.
+        db (Session): Database session.
+
+    Returns:
+        StandardResponse: contains file URL.
+    """
+    try:
+        file_url = await delete_and_save_file_azure(file_url_to_delete=file_url_to_delete, file_to_upload=file_to_upload), 
+        return success_response(data={"file_url": file_url}, message="File updated successfully.")
+    except HTTPException as e:
+        return error_response(message=e.detail, status_code=e.status_code)
+
+@router.post("/uploads", response_model=StandardResponse)
+async def upload_file(file: UploadFile = File(...)):
+    """
+    Upload file.
+
+    Args:
+        file (UploadFile): file to upload.
+        db (Session): Database session.
+
+    Returns:
+        StandardResponse: contains file URL.
+    """
+    try:
+        file_url = await save_file_to_azure(file)
+        return success_response(data={"file_url": file_url}, message="File uploaded successfully.")
+    except HTTPException as e:
+        return error_response(message=e.detail, status_code=e.status_code)
+    
+@router.delete("/uploads", response_model=StandardResponse)
+async def delete_file(file_url: str):
+    """
+    Delete file.
+
+    Args:
+        file_url (str): file URL.
+        db (Session): Database session.
+
+    Returns:
+        StandardResponse: contains file URL.
+    """
+    try:
+        await delete_file_from_azure(file_url)
+        return success_response("File deleted successfully.")
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
 
@@ -135,7 +192,7 @@ async def delete_user_endpoint(
     """
     is_super_admin(current_user=current_user)
     try:
-        delete_user(db=db, delete_user_id=user_id,current_user=current_user)
+        await delete_user(db=db, delete_user_id=user_id,current_user=current_user)
         return success_response("User deleted successfully")
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)

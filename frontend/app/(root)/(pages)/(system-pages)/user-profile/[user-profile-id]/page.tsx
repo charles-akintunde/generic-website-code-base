@@ -38,7 +38,6 @@ const UserProfilePage = () => {
   const uiIsAdmin = uiActiveUser ? uiActiveUser.uiIsAdmin : false;
   const pathname = usePathname();
   const userId = pathname.split('/')[2];
-
   const [isEditing, setIsEditing] = useState(false);
   const userQueryResult =
     userId && isValidUUID(userId)
@@ -73,7 +72,6 @@ const UserProfilePage = () => {
     if (userData?.data) {
       const userProfile: IUserInfo = transformToUserInfo(userData?.data);
       setUserInfo(userProfile);
-      console.log(userProfile, 'userProfile');
       const isSameUser = sanitizeAndCompare(
         uiActiveUser?.uiId as string,
         userProfile?.id
@@ -86,11 +84,9 @@ const UserProfilePage = () => {
     handleRoutingOnError(router, hasUserFetchError, userFetchError);
   }, [hasUserFetchError, router, userFetchError]);
 
-  if (isUserFetchLoading) {
+  if (isUserFetchLoading || !userInfo) {
     return <AppLoading />;
   }
-
-  console.log(getCookies(), 'Cookies');
 
   return (
     <>
@@ -125,12 +121,12 @@ const UserProfilePage = () => {
                       <Badge
                         text={
                           userRoleLabels[
-                            userInfo.uiRole as keyof typeof userRoleLabels
+                            userInfo.uiRole as unknown as keyof typeof userRoleLabels
                           ]
                         }
                         color={
                           roleBadgeClasses[
-                            userInfo.uiRole as keyof typeof roleBadgeClasses
+                            userInfo.uiRole as unknown as keyof typeof roleBadgeClasses
                           ]
                         }
                         className="mr-2"

@@ -1,9 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Table } from 'antd';
-import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { Link2Icon } from '@radix-ui/react-icons';
+import { Table, Tooltip } from 'antd';
 import { EPageType, EUserRole } from '@/types/enums';
 import {
   handleRoutingOnError,
@@ -21,7 +19,6 @@ import { ExternalLink } from 'lucide-react';
 
 const PageListItem: React.FC = () => {
   const router = useRouter();
-  const [viewContent, setViewContent] = useState<IPageMain | null>(null);
   const { handleEditButtonClick, handleRemovePage } = usePage();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
@@ -45,11 +42,12 @@ const PageListItem: React.FC = () => {
     PG_Number: fetchParams.current,
   });
 
+  console.log(pagesResponse, 'pagesResponse');
+
   useEffect(() => {
     if (pagesResponse && pagesResponse.data) {
       const { data } = pagesResponse;
       const pagesData: IPageList = mapPageToIPageMain(data);
-
       if (pagesData && pagesData.pages && pagesData.pgTotalPageCount) {
         setPagination({
           ...pagination,
@@ -66,6 +64,11 @@ const PageListItem: React.FC = () => {
     }
   }, [hasPagesFetchError, pagesFetchError, router]);
 
+  const handleRemove = (record: any) => {
+    handleRemovePage(record);
+    refetchPages();
+  };
+
   const columns = [
     {
       title: 'Page Name',
@@ -73,15 +76,17 @@ const PageListItem: React.FC = () => {
       key: 'pageName',
       fixed: 'left',
       render: (text: string, record: IPageMain) => (
-        <a
-          href={record.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-blue-500 flex items-center"
-        >
-          <p className="font-medium truncate w-20"> {text}</p>
-          <ExternalLink className="h-3 w-3" />
-        </a>
+        <Tooltip placement="left" title={`${text}`}>
+          <a
+            href={record.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-blue-500 flex items-center space-x-2"
+          >
+            <p className="font-medium truncate w-30"> {text}</p>
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        </Tooltip>
       ),
     },
     {
@@ -123,7 +128,7 @@ const PageListItem: React.FC = () => {
               <ActionsButtons
                 entity="page"
                 handleEditButtonClick={handleEditButtonClick}
-                handleRemove={handleRemovePage}
+                handleRemove={handleRemove}
                 record={record}
               />
             </>
@@ -151,6 +156,7 @@ const PageListItem: React.FC = () => {
   return (
     <div className=" space-y-4">
       <Table
+        // @ts-ignore
         columns={columns}
         scroll={{ x: 1200 }}
         loading={isPagesFetchLoading}

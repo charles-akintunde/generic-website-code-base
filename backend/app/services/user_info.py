@@ -1,15 +1,13 @@
 """
 User service for handling business logic related to users.
 """
-from typing import List, Optional, Tuple, Union
-from uuid import UUID
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.crud.user_info import user_crud
-from app.schemas.user_info import UserPartial, UserRoleStatusUpdate, UserProfileUpdate, UserDelete, UserStatusUpdate, UsersResponse
+from app.schemas.user_info import  UserRoleStatusUpdate, UserProfileUpdate, UserDelete, UserStatusUpdate, UsersResponse
 from app.models.user_info import T_UserInfo
 from app.config import settings
-from app.utils.file_utils import delete_and_save_file, delete_file, extract_path_from_url, save_file
+from app.utils.file_utils import  delete_and_save_file_azure, delete_file_from_azure, save_file_to_azure
 from app.utils.response_json import create_user_response, create_users_response
 from app.models.enums import E_UserRole
 
@@ -37,14 +35,31 @@ def update_user_role_status(db: Session, user_role_status_update: UserRoleStatus
     Update a user's role.
     """
 
-    if user_role_status_update.UI_Role == E_UserRole.Member and not user_role_status_update.UI_MemberPosition:
+    if user_role_status_update.UI_Role and E_UserRole.Member in user_role_status_update.UI_Role and not user_role_status_update.UI_MemberPosition:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="A position must be assigned to a member user."
         )
+    
+    if user_role_status_update.UI_Role and not E_UserRole.Member in user_role_status_update.UI_Role and len(user_role_status_update.UI_Role) > 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Too many roles assigned. A user can only have multiple roles if one of them is 'Member'."
+        )
+    
+    if user_role_status_update.UI_Role and E_UserRole.Member in user_role_status_update.UI_Role and len(user_role_status_update.UI_Role) > 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Too many roles assigned. Even for a 'Member', the maximum allowed roles are two."
+        )
+
 
     if user_role_status_update.UI_ID == current_user.UI_ID:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You cannot update your own role!")
+
+    if  user_role_status_update.UI_Role and E_UserRole.Alumni in  user_role_status_update.UI_Role:
+        user_role_status_update.UI_Role = [E_UserRole.Alumni]
+
 
     update_data = user_role_status_update.model_dump(exclude_unset=True)
     update_data = {k: v for k, v in update_data.items() if v is not None}
@@ -75,15 +90,13 @@ async def update_user_profile(db: Session, user_id: str, profile_update: UserPro
 
     if profile_update.UI_Photo:
         if existing_user.UI_PhotoURL: # type: ignore
-            profile_update.UI_PhotoURL=await delete_and_save_file(
-                file_url=str(existing_user.UI_PhotoURL),
-                file=profile_update.UI_Photo,
-                folder=settings.USER_PROFILE_FILE_PATH
+            profile_update.UI_PhotoURL=await delete_and_save_file_azure(
+                file_url_to_delete=str(existing_user.UI_PhotoURL),
+                file_to_upload=profile_update.UI_Photo,
             )
         else:
-          profile_update.UI_PhotoURL=await save_file(
-                profile_update.UI_Photo,
-                folder=settings.USER_PROFILE_FILE_PATH
+          profile_update.UI_PhotoURL=await save_file_to_azure(
+                profile_update.UI_Photo
             )
         del profile_update.UI_Photo  # Remove the photo from the update data
 
@@ -104,7 +117,7 @@ async def update_user_profile(db: Session, user_id: str, profile_update: UserPro
     
     return updated_user
 
-def delete_user(db: Session, delete_user_id: str, current_user: T_UserInfo ):
+async def delete_user(db: Session, delete_user_id: str, current_user: T_UserInfo ):
     """
     Delete a user.
     """
@@ -126,7 +139,7 @@ def delete_user(db: Session, delete_user_id: str, current_user: T_UserInfo ):
         )
     
     if existing_user.UI_PhotoURL: # type: ignore
-        delete_file(extract_path_from_url(str(existing_user.UI_PhotoURL)))
+        await delete_file_from_azure(file_url =str(existing_user.UI_PhotoURL))
     
     user = user_crud.delete_user(db, user_to_delete=existing_user)
 
@@ -150,7 +163,11 @@ def delete_user(db: Session, delete_user_id: str, current_user: T_UserInfo ):
 
 def get_users(db: Session, page: int = 1, limit: int = 10):
     total_user_count = user_crud.get_total_user_count(db=db)
-    total_pages = (total_user_count + limit - 1) // limit
+    total_pages = (total_user_count + limit - 1) 
+
+    if total_user_count == 0:
+        return create_users_response(users=[], total_users_count=total_user_count, new_last_key=None)
+
     if page > total_pages:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

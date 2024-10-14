@@ -18,6 +18,8 @@ from app.tests import test_auth
 from app.scheduler.token_cleaner import start_token_cleaner_scheduler
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routers import developer
+
 # Set up logging
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -88,10 +90,11 @@ def create_app() -> FastAPI:
     # Common prefix for all routes in this microservice
     service_prefix = "/api/v1"
 
-    app.mount("/static", StaticFiles(directory="static"), name="static")
+ 
 
     # Include routers with common prefix
     app.include_router(test_auth.router, prefix="", tags=["tests"])
+    app.include_router(developer.router, prefix="", tags=["developer"])
     app.include_router(auth.router, prefix=f"{service_prefix}/auth", tags=["auth"])
     app.include_router(user_info.router, prefix=f"{service_prefix}/users", tags=["users"])
     app.include_router(page.router, prefix=f"{service_prefix}/pages", tags=["page"])

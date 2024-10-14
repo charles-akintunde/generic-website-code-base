@@ -27,6 +27,7 @@ import LoadingButton from './button/loading-button';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { setPageContentImageURL } from '@/store/slice/pageSlice';
 import { UploadOutlined } from '@ant-design/icons';
+// import { ToolbarButton } from '@/components/plate-ui/t';
 
 const UploadPageContentImage = () => {
   const dispatch = useAppDispatch();
@@ -52,8 +53,6 @@ const UploadPageContentImage = () => {
       pageContentImage: data.pageContentImage,
     };
 
-    console.log(data, 'data');
-
     await submitUploadPageContentImage(pageContentImage);
   };
 
@@ -77,18 +76,9 @@ const UploadPageContentImage = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <FloatButton
-          description="Upload Image"
-          type="primary"
-          shape="square"
-          icon={<UploadOutlined />}
-          style={{
-            insetInlineStart: 24,
-            width: 60, // Increase width
-            height: 60, // Increase height
-            fontSize: 24, // Increase font size of the icon
-          }}
-        />
+        <Button className="bg-transparent text-black px-3 py-0 hover:bg-muted hover:text-muted-foreground aria-checked:bg-accent aria-checked:text-accent-foreground">
+          <UploadOutlined />
+        </Button>
       </DialogTrigger>
       <DialogContent className=" sm:max-w-[425px]">
         <DialogHeader>

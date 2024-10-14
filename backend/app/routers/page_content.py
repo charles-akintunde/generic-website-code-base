@@ -4,22 +4,21 @@ This module defines the API endpoints for application-related operations.
 """
 
 import json
-from typing import Optional, Union
-from urllib import response
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from typing import Optional
+from urllib.parse import unquote
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session
-from app.services.page_content import create_page_content, delete_page_content, get_page_content_by_title, update_page_content
+from app.services.page_content import create_page_content, delete_page_content, get_page_content_by_display_url, update_page_content
 from app.schemas.page_content import PageContentCreateRequest, PageContentUpdateRequest
 from app.schemas.response import StandardResponse
 from app.core.auth import get_current_user
 from app.models.user_info import T_UserInfo
 from app.database import get_db
 from app.utils.response import error_response, success_response
-from app.utils.file_utils import save_file, validate_image_file
+from app.utils.file_utils import save_file, save_file_to_azure, validate_image_file
 from app.config import settings
-from app.utils.utils import is_super_admin
 from app.utils.response_json import create_page_content_img_response
-from app.crud import page_content
+
 
 router = APIRouter()
 
@@ -28,6 +27,7 @@ async def create_page_content_endpoint(
     UI_ID: str = Form(...),
     PG_ID: str = Form(...),
     PC_Title: str = Form(...),
+    PC_DisplayURL: Optional[str] = Form(None),
     PC_Content: Optional[str] = Form(None), 
     PC_ThumbImg: Optional[UploadFile] = File(None),
     PC_Resource: Optional[UploadFile] = File(None),
@@ -47,7 +47,6 @@ async def create_page_content_endpoint(
         StandardResponse: The response indicating the result of the create operation.
     """
     try:
-
         page_content_data = PageContentCreateRequest(
         UI_ID=UI_ID,
         PG_ID=PG_ID,
@@ -55,7 +54,8 @@ async def create_page_content_endpoint(
         PC_Content=json.loads(PC_Content) if PC_Content else None,  # Convert JSON string to dict
         PC_IsHidden=PC_IsHidden,
         PC_ThumbImg=PC_ThumbImg,
-        PC_Resource=PC_Resource
+        PC_Resource=PC_Resource,
+        PC_DisplayURL=PC_DisplayURL
     )
 
         new_page_content = await create_page_content(
@@ -63,14 +63,17 @@ async def create_page_content_endpoint(
             user = current_user,
             page_content=page_content_data
         )
-        return success_response("Page content created successfully")
+        
+
+        print(new_page_content)
+        return success_response("Page content created successfully", data=new_page_content.model_dump())
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     
-@router.get("/{page_name}/{page_content_title}", response_model=StandardResponse)
-async def get_page_content_by_title_endpoint(
-    page_content_title: str,
-    page_name: str,
+@router.get("/{page_display_url}/{page_content_display_url}", response_model=StandardResponse)
+async def get_page_content_by_display_url_endpoint(
+    page_content_display_url: str,
+    page_display_url: str,
     db: Session = Depends(get_db)):
     """
     Get page content by title.
@@ -83,19 +86,51 @@ async def get_page_content_by_title_endpoint(
         StandardResponse: The response containing the page content.
     """
     try:
-        page_content = get_page_content_by_title(
+        decoded_page_content_display_url = unquote(page_content_display_url)
+        decoded_page_display_url = unquote(page_display_url)
+        page_content = get_page_content_by_display_url(
             db=db, 
-            page_content_title=page_content_title,
-            page_name=page_name)
+            page_content_display_url=decoded_page_content_display_url,
+            page_display_url=decoded_page_display_url)
         return success_response(message="Page content fetched successfully", data=page_content.model_dump())
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
+    
+# @router.get("/{page_display_url}/{page_content_display_url}", response_model=StandardResponse)
+# async def get_page_content_by_display_url_with_offset_endpoint(
+#     page_content_display_url: str,
+#     page_display_url: str,
+#     pg_page_number: int = Query(1),
+#     pg_page_limit: int = Query(5, gt = 0),
+#     db: Session = Depends(get_db)):
+#     """
+#     Get page content by title.
+
+#     Args:
+#         postTitle (str): The title of the page content to retrieve.
+#         db (Session): Database session.delete
+
+#     Returns:
+#         StandardResponse: The response containing the page content.
+#     """
+#     try:
+#         decoded_page_content_display_url = unquote(page_content_display_url)
+#         decoded_page_display_url = unquote(page_display_url)
+#         page_content = get_page_content_by_display_url(
+#             db=db, 
+#             page_content_display_url=decoded_page_content_display_url,
+#             page_display_url=decoded_page_display_url)
+#         return success_response(message="Page content fetched successfully", data=page_content.model_dump())
+#     except HTTPException as e:
+#         return error_response(message=e.detail, status_code=e.status_code)
+
 
 @router.put("/{page_content_id}", response_model=StandardResponse)
 async def update_page_content_endpoint(
     page_content_id: str ,
     PC_Title: Optional[str] = Form(None),
-    PC_Content: Optional[str] = Form(None),  # Will be received as JSON string
+    PC_Content: Optional[str] = Form(None),  
+    PC_DisplayURL: Optional[str] = Form(None),
     PC_ThumbImg: Optional[UploadFile] = File(None),
     PC_Resource: Optional[UploadFile] = File(None),
     PC_IsHidden: Optional[bool] = Form(None),
@@ -111,15 +146,19 @@ async def update_page_content_endpoint(
 
     Returns:
         StandardResponse: The response indicating the result of the update operation.
-    """
-    page_content_update= PageContentUpdateRequest(
-    PC_Title=PC_Title,
-    PC_ThumbImg=PC_ThumbImg,
-    PC_Resource=PC_Resource,
-    PC_Content=json.loads(PC_Content) if PC_Content else None,
-    PC_IsHidden=PC_IsHidden
-    )
+    """ 
     try:
+        page_content_update= PageContentUpdateRequest(
+        PC_Title=PC_Title,
+        PC_ThumbImg=PC_ThumbImg,
+        PC_Resource=PC_Resource,
+        PC_Content=json.loads(PC_Content) if PC_Content else None,
+        PC_IsHidden=PC_IsHidden
+        )
+
+        if PC_DisplayURL:
+            page_content_update.PC_DisplayURL = PC_DisplayURL
+        
         updated_page_content = await update_page_content(
             db=db,
             page_content_id=page_content_id,
@@ -146,7 +185,7 @@ async def delete_page_content_endpoint(
         StandardResponse: The response indicating the result of the delete operation.
     """ 
     try:
-        success = delete_page_content(db=db, page_content_id=page_content_id)
+        success =await  delete_page_content(db=db, page_content_id=page_content_id)
         if success:
             return success_response(message="Page content deleted successfully")
         else:
@@ -181,7 +220,7 @@ async def upload_page_content_image_endpoint(
        # is_super_admin(current_user=current_user)
         page_content_image = PC_PageContentImg
         validate_image_file(page_content_image)
-        image_url = await save_file(page_content_image, settings.PAGE_CONTENT_FILE_PATH)
+        image_url = await save_file_to_azure(page_content_image)
         response = create_page_content_img_response(image_url)
         return success_response(message="Image uploaded successfully", data=response.model_dump())
 

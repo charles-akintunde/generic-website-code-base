@@ -7,6 +7,7 @@ from datetime import datetime, timedelta , timezone
 import stat
 from jose.exceptions import ExpiredSignatureError, JWTError
 from fastapi import Depends, HTTPException, Request, status
+from sqlalchemy import Enum
 from typing_extensions import deprecated
 from jose import JWTError, jwt
 from typing import Dict, Optional
@@ -52,11 +53,29 @@ def get_token_from_cookie(request: Request) -> str:
         )
     return token
 
-def get_token_from_cookies_without_exception(request: Request):
+def get_token_from_cookies_without_exception(
+    request: Request, 
+    db: Session = Depends(get_db) 
+) -> Optional[str]:
+    """
+    Retrieves the token from cookies, and checks if it is blacklisted.
+
+    Args:
+        request (Request): The HTTP request object.
+        db (Session): The database session (automatically injected).
+
+    Returns:
+        Optional[str]: The access token if valid and not blacklisted, otherwise None.
+    """
     token = request.cookies.get('access_token')
+    
+    if token and blacklisted_token_crud.is_token_blacklisted(token=token, db=db):
+        return None  
+    
     if not token:
-        return None
-    return token
+        return None  
+    
+    return token 
 
 def get_current_user_without_exception(
         token= Depends(get_token_from_cookies_without_exception),
@@ -158,6 +177,11 @@ def create_refresh_token(data: dict, expires_delta: Optional[timedelta] = None) 
     else:
         expire = datetime.now(timezone.utc) + timedelta(seconds=REFRESH_TOKEN_EXPIRE_SECONDS)
     to_encode.update({"exp": expire})
+
+    # for key, value in to_encode.items():
+    #     if isinstance(value, Enum):
+    #         to_encode[key] = value
+
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
     return encoded_jwt
@@ -180,6 +204,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     else:
         expire = datetime.now(timezone.utc) + timedelta(seconds=ACCESS_TOKEN_EXPIRE_SECONDS)
     to_encode.update({"exp": expire})
+
+    # for key, value in to_encode.items():
+    #     if isinstance(value, Enum):
+    #         to_encode[key] = value
+
     encode_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encode_jwt
 

@@ -24,10 +24,11 @@ const initialState: UserState = {
     uiId: null,
     uiFullName: '',
     uiInitials: '',
+    uiIsLoading: true,
     uiIsAdmin: false,
     uiIsSuperAdmin: false,
     uiCanEdit: false,
-    uiRole: EUserRole.Public,
+    uiRole: [EUserRole.Public],
     uiPhotoURL: null,
   },
   uiActiveUserProfileEdit: {

@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux-hooks';
 import {
+  removePageContent,
   setCurrentPageContent,
+  setCurrentUserPage,
   setEditingPageContent,
+  setFecthingPageData,
   setPageContentImageURL,
 } from '@/store/slice/pageSlice';
 import {
+  IFetchedPage,
   IPageContentImage,
   IPageContentItem,
   IPageContentMain,
   IPageMain,
+  RootState,
 } from '@/types/componentInterfaces';
 import {
   useCreatePageContentMutation,
@@ -17,19 +22,38 @@ import {
   useDeletePageContentMutation,
   useEditPageContentMutation,
   useUploadPageContentMutation,
+  // useGetPageWithPaginationQuery,
+  pageContentApi,
+  useGetPageWithPaginationQuery,
 } from '@/api/pageContentApi';
 import { IPageContentGetRequest } from '@/types/requestInterfaces';
-import { fromKebabCase, toKebabCase } from '@/utils/helper';
+import {
+  normalizeMultiContentPage,
+  reloadPage,
+  toKebabCase,
+} from '@/utils/helper';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/hoc/notification-provider';
 import usePage from './use-page';
 import { usePathname } from 'next/navigation';
 import { EPageType } from '@/types/enums';
 
-const usePageContent = (pageContent?: IPageContentGetRequest) => {
+interface IUsePageContentProps {
+  pageContent?: IPageContentGetRequest;
+  pageDisplayURL?: string;
+  // setPageContents?: React.Dispatch<React.SetStateAction<IPageContentMain[]>>;
+}
+
+const usePageContent = ({
+  pageContent,
+
+  // setPageContents,
+}: IUsePageContentProps = {}) => {
   const pathname = usePathname();
   const page = pathname.split('/');
   const pageName = page[1];
+  const [pageNumber, setPageNumber] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [
     uploadPageContentImage,
     {
@@ -38,7 +62,8 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       isLoading: isUploadPageContentImageLoading,
     },
   ] = useUploadPageContentMutation();
-  const { pageRefetch } = usePage(fromKebabCase(pageName));
+  const {} = usePage({ pageDisplayURL: pageName });
+  const [pageContents, setPageContents] = useState<IPageContentMain[]>([]);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const currentPageContent = useAppSelector(
@@ -90,7 +115,77 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     error: pageContentFetchError,
     refetch: pageContentFetchRefetch,
   } = pageContentQueryResult;
-  //const [pageContentImageURL, setPageContentImageURL] = useState<string>('');
+  const pageDisplayURL = pathname.split('/')[1];
+  const fetchedPageContents = useAppSelector(
+    (state: RootState) => state.page.pageContents
+  );
+  const sortedPageContents = [...fetchedPageContents].sort((a, b) => {
+    const dateA = a.pageContentCreatedAt
+      ? new Date(a.pageContentCreatedAt).getTime()
+      : 0;
+    const dateB = b.pageContentCreatedAt
+      ? new Date(b.pageContentCreatedAt).getTime()
+      : 0;
+
+    return dateB - dateA;
+  });
+  // const {
+  //   data: pageContentsData,
+  //   isError: hasPageContentsFetchError,
+  //   isLoading: isPageContentsFetchLoading,
+  //   isFetching: isPageContentFetching,
+  //   status: pageContentFetchStatus,
+  //   error: pageContentsFetchError,
+  //   refetch: refetchPageContent,
+  //   isSuccess: isPageContentsFetchSuccess,
+  // } = useGetPageWithPaginationQuery(
+  //   {
+  //     PG_DisplayURL: pageDisplayURL ?? '',
+  //     PG_PageNumber: pageNumber,
+  //   },
+  //   {
+  //     skip: false,
+  //     refetchOnMountOrArgChange: true,
+  //   }
+  // );
+
+  // useEffect(() => {
+  //   if (!pageContentsData) {
+  //     console.log('No page content data available');
+
+  //     return;
+  //   }
+
+  //   if (pageContentsData.data) {
+  //     const responseData = pageContentsData.data;
+  //     const dynamicPage = normalizeMultiContentPage(responseData, false);
+  //     const newPageContents = dynamicPage.pageContents as IPageContentMain[];
+
+  //     setPageContents((prevContents) => {
+  //       const uniqueNewPageContents = newPageContents.filter(
+  //         (newContent) =>
+  //           !prevContents.some(
+  //             (existingContent) =>
+  //               existingContent.pageContentId === newContent.pageContentId
+  //           )
+  //       );
+
+  //       return uniqueNewPageContents.length > 0
+  //         ? [...prevContents, ...uniqueNewPageContents]
+  //         : prevContents;
+  //     });
+
+  //     const fetchingPageData: IFetchedPage = {
+  //       fetchedPage: dynamicPage,
+  //       isPageFetchLoading: isPageContentFetchLoading,
+  //       hasPageFetchError: hasPageContentFetchError,
+  //       pageFetchError: pageContentFetchError,
+  //     };
+  //     dispatch(setFecthingPageData(fetchingPageData));
+
+  //     if (newPageContents.length < 8) setHasMore(false);
+  //   }
+  // }, [isPageContentsFetchSuccess, pageContentsData?.data]);
 
   const submitPageContent = async (
     pageContent: IPageContentItem,
@@ -117,29 +212,53 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         pageContent.pageContentResource
       ) {
         formData.append('PC_Resource', pageContent.pageContentResource);
+      } else if (pageContent.pageType == EPageType.PageList) {
+        formData.append('PC_DisplayURL', pageContent.pageContentDisplayURL);
       }
-
+      // @ts-ignore
       const response = await createPageContent(formData).unwrap();
+      console.log(response, 'response');
 
-      if (pageContent.pageType != EPageType.SinglePage) {
+      console.log();
+      if (pageContentFetchRefetch) pageContentFetchRefetch();
+
+      // if (pageContent.pageType == EPageType.ResList) {
+      //   router.replace(`/${pageContent.pageName}`);
+      //   setAllowReloadPage(true);
+      // } else if (pageContent.pageType != EPageType.SinglePage) {
+      //   router.replace(
+      //     `/${pageContent.pageName}/${pageContent.pageContentDisplayURL}`
+      //   );
+      // }
+
+      if (pageContent.pageType == EPageType.PageList) {
         router.replace(
-          `/${toKebabCase(pageContent.pageName)}/${toKebabCase(pageContent.pageContentName)}`
+          `/${pageContent.pageName}/${pageContent.pageContentDisplayURL}`
         );
-      } else {
-        if (pageContentFetchRefetch) pageContentFetchRefetch();
       }
-      await pageRefetch();
+
+      dispatch(
+        setCurrentUserPage({
+          isModalOpen: false,
+        })
+      );
+
       notify(
         'Success',
-        response.message || 'The page has been updated successfully.',
+        response.message || 'The page content has been created successfully.',
         'success'
       );
+
+      // if (pageContent.pageType == EPageType.ResList) {
+      //   reloadPage();
+      // }
     } catch (error: any) {
+      console.log(error, 'ERROR');
       notify(
         'Error',
         error?.data?.message ||
           error?.data?.detail ||
-          'Failed to update the page. Please try again later.',
+          'Failed to page content the page. Please try again later.',
         'error'
       );
     }
@@ -151,11 +270,9 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     try {
       const formData = new FormData();
       formData.append('PC_PageContentImg', pageContentImage.pageContentImage);
-
+      // @ts-ignore
       const response = await uploadPageContentImage(formData).unwrap();
       dispatch(setPageContentImageURL(response.data.PC_PageContentURL));
-      //setPageContentImageURL(response.data.PC_PageContentURL);
-      console.log(response.data.PC_PageContentURL, 'RESPONSE');
       notify(
         'Success',
         response.message || 'The page has been updated successfully.',
@@ -173,16 +290,15 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
   };
 
   const submitEditedPageContent = async (
-    pageName: string,
+    pageDisplayURL: string,
     pageType: string,
-    pageContentName: string,
+    pageContentDisplayURL: string,
     pageContentId: string,
     pageContent: Partial<IPageContentItem>,
     singlePageRefetch: () => {}
   ) => {
     try {
       const formData = new FormData();
-      console.log(pageContent, 'pageContent');
       let pageContentObj = {
         ['PC_Content']: pageContent.editorContent,
       };
@@ -193,6 +309,9 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
       if (pageContent.pageContentDisplayImage) {
         formData.append('PC_ThumbImg', pageContent.pageContentDisplayImage);
       }
+      if (pageType != EPageType.ResList && pageContent.pageContentDisplayURL) {
+        formData.append('PC_DisplayURL', pageContent.pageContentDisplayURL);
+      }
       if (pageContent.isPageContentHidden !== undefined) {
         formData.append('PC_IsHidden', String(pageContent.isPageContentHidden));
       }
@@ -201,30 +320,39 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
           formData.append('PC_Content', JSON.stringify(pageContentObj));
         }
       }
-
       if (pageType == EPageType.ResList && pageContent.pageContentResource) {
         formData.append('PC_Resource', pageContent.pageContentResource);
       }
 
       const response = await editPageContent({
         PC_ID: pageContentId,
+        // @ts-ignore
         formData,
       }).unwrap();
 
-      if (pageContent.pageContentName) {
-        router.replace(
-          `/${toKebabCase(pageName)}/${toKebabCase(pageContentName)}`
-        );
-      } else {
-        singlePageRefetch();
+      console.log('After API call:', pageContent.pageContentDisplayURL);
+
+      if (
+        pageContent.pageContentDisplayURL &&
+        pageType !== EPageType.SinglePage &&
+        pageType !== EPageType.ResList
+      ) {
+        const newUrl = `/${pageDisplayURL}/${pageContent.pageContentDisplayURL}`;
+        router.replace(newUrl);
       }
+
+      dispatch(
+        setCurrentUserPage({
+          isModalOpen: false,
+          pageContent: null,
+        })
+      );
 
       notify(
         'Success',
-        response.message || 'The page has been updated successfully.',
+        response.message || 'Changes saved successfully.',
         'success'
       );
-      await pageRefetch();
     } catch (error: any) {
       console.log(error, 'ERROR');
       notify(
@@ -272,8 +400,6 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
         };
         dispatch(setCurrentPageContent(normalizedPage));
       }
-
-      // Do something with normalizedPage if needed
     }
   }, [pageContentData]);
 
@@ -283,20 +409,27 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
 
   const handleRemovePageContent = async (pageContentId: string) => {
     try {
+      console.log('Deleting...');
       const response = await deletePageContent(pageContentId).unwrap();
-
-      await pageRefetch();
-
-      notify(
-        'Success',
-        response.message || 'The page has been successfully deleted.',
-        'success'
-      );
+      // notify(
+      //   'Success',
+      //   response.message || 'The page has been successfully deleted.',
+      //   'success'
+      // );
+      console.log('Complete Deleting...');
+      console.log('About to dispatch...');
+      try {
+        dispatch(removePageContent(pageContentId));
+        console.log('Deleted');
+      } catch (dispatchError) {
+        console.error('Dispatch failed:', dispatchError);
+      }
+      console.log(sortedPageContents, 'sortedPageContents');
     } catch (error: any) {
       notify(
         'Error',
-        error.data.message ||
-          error.data.detail ||
+        error?.data?.message ||
+          error?.data?.detail ||
           'Failed to delete the page content. Please try again later.',
         'error'
       );
@@ -320,6 +453,9 @@ const usePageContent = (pageContent?: IPageContentGetRequest) => {
     submitUploadPageContentImage,
     uploadPageContentImage,
     isUploadPageContentImageLoading,
+    pageContents,
+    hasMore,
+    setPageNumber,
   };
 };
 

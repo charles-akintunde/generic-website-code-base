@@ -5,6 +5,10 @@ import Link from 'next/link';
 import usePageContent from '@/hooks/api-hooks/use-page-content';
 import ActionsButtons from '@/components/common/action-buttons';
 import { Badge } from '@/components/ui/badge';
+import { useAppDispatch } from '@/hooks/redux-hooks';
+import { setCurrentUserPage } from '@/store/slice/pageSlice';
+import { EPageType } from '@/types/enums';
+import { Tooltip } from 'antd';
 
 interface PageContentCardProps {
   pageContent?: IPageContentMain;
@@ -18,8 +22,10 @@ const ResourceListCard: React.FC<PageContentCardProps> = ({
     editingPageContent,
     handleRemovePageContent,
   } = usePageContent();
+
+  const dispatch = useAppDispatch();
   const pageName = pageContent?.pageName ?? '';
-  const href = (pageContent?.pageContentResource as string) || '';
+  const href = (pageContent?.pageContentDisplayURL as string) || '';
   const pageContentName = pageContent && pageContent?.pageContentName;
   const pageContentNameTrimmed =
     pageContentName &&
@@ -37,24 +43,38 @@ const ResourceListCard: React.FC<PageContentCardProps> = ({
       (pageContent && pageContent.pageContentId) as string
     );
   };
-  console.log(pageContent, '(pageContent && pageContent.pageContentResource)');
 
   return (
     <Card className="rounded-lg shadow-lg overflow-hidden border border-gray-200">
       <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-400 to-indigo-500 text-white">
         <h2 className="text-2xl font-extrabold md:text-xl">
-          <a
-            href={href}
+          <Link
+            href={pageContent?.href as string}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center"
           >
-            <span className="font-medium">{pageContentName}</span>
-          </a>
+            <Tooltip placement={'topLeft'} title={`Open: ${pageContentName}`}>
+              {' '}
+              <h2 className="overflow-hidden text-ellipsis whitespace-normal line-clamp-3">
+                {pageContentName}
+              </h2>
+            </Tooltip>
+          </Link>
         </h2>
+
         <ActionsButtons
-          href={pageContent?.href as string}
-          handleEditButtonClick={() => {}}
+          // href={pageContent?.href as string}
+          handleEditButtonClick={() => {
+            dispatch(
+              setCurrentUserPage({
+                isModalOpen: true,
+                isEditingMode: true,
+                pageContent: pageContent,
+                pageType: EPageType.ResList,
+              })
+            );
+          }}
           handleRemove={handleRemovePage}
           record={pageContent}
           entity={pageName?.toLowerCase()}
@@ -62,7 +82,7 @@ const ResourceListCard: React.FC<PageContentCardProps> = ({
       </div>
 
       <div className="relative">
-        <Link href={href} target="_blank">
+        <Link href={pageContent?.href as string} target="_blank">
           <img
             alt={'Page Content Display'}
             src={pageContent?.pageContentDisplayImage as string}
@@ -70,11 +90,13 @@ const ResourceListCard: React.FC<PageContentCardProps> = ({
           />
         </Link>
       </div>
-      {isHidden && (
-        <Badge className="absolute mt-2 bg-red-200 hover:bg-opacity-50 hover:bg-red-200 rounded-sm bg-opacity-50 text-red-600 px-4 py-1 text-xs shadow-md">
-          {'This post is hidden from users'}
-        </Badge>
-      )}
+      <div>
+        {isHidden && (
+          <Badge className="w-full mt-2 bg-red-200 hover:bg-opacity-50 hover:bg-red-200 rounded-sm bg-opacity-50 text-red-600 px-4 py-1 text-xs shadow-md">
+            {'This post is hidden from users'}
+          </Badge>
+        )}
+      </div>
     </Card>
   );
 };

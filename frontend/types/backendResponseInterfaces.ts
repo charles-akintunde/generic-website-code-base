@@ -1,5 +1,4 @@
 import { TElement } from '@udecode/plate-common';
-import internal from 'stream';
 import { EUserRole, EUserStatus } from './enums';
 
 export interface Page {
@@ -7,6 +6,10 @@ export interface Page {
   PG_Name: string;
   PG_Permission: number[];
   PG_Type: number;
+  PG_DisplayURL: string;
+  PC_DisplayURL: string;
+  PC_Excerpt?: string;
+  PC_ReadingTime?: string;
   PG_PageContents?: IPageContentResponse[];
   PG_PageContent?: IPageContentResponse;
 }
@@ -18,6 +21,7 @@ export interface IPageContentResponse {
   UI_LastName: string;
   PG_ID: string;
   PC_Title: string;
+  PG_DisplayURL: string;
   PC_Content: { [key: string]: TElement[] };
   PC_DisplayURL: string;
   PC_ResourceURL?: string;
@@ -32,7 +36,7 @@ export interface UserResponse {
   UI_FirstName: string;
   UI_LastName: string;
   UI_Email: string;
-  UI_Role: EUserRole;
+  UI_Role: EUserRole[];
   UI_Status: EUserStatus;
   UI_City: string | null;
   UI_RegDate: string;
@@ -106,6 +110,10 @@ export interface IPageContentGetResponse extends IGenericResponse {
 export interface ISinglePageResponse extends IGenericResponse {
   data: Page;
 }
+
+// export interface ISinglePageDataOnlyResponse extends IGenericResponse {
+//   data: Page;
+// }
 
 export interface IGetPagesWithOffsetRequest {
   PG_Number: number;
