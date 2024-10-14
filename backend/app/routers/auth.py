@@ -116,7 +116,7 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
             samesite='none',
             secure=True,
             max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-            domain=None
+           # domain='generic-website-app.eastus.azurecontainer.io'
         )
         response.set_cookie(
             key='refresh_token',
@@ -125,7 +125,7 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
             samesite='none',
             secure=True,
             max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
-            domain=None
+           # domain='generic-website-app.eastus.azurecontainer.io'
         )
         print(response.headers,"HEADER")
         return success_response(message='Login Successful',data=token.dict(),status_code=200,headers=response.headers)
@@ -151,14 +151,14 @@ async def refresh_token_endpoint(
     try:
         token = await use_refresh_token(request,db)
         response.set_cookie(
-                key='access_token',
-                value=token,
-                httponly=True,
-                samesite='none',
-                secure=True,
-                max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-                domain=None
-            )
+            key='access_token',
+            value=token,
+            httponly=True,
+            samesite='none',
+            secure=True,
+            max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
+           # domain='generic-website-app.eastus.azurecontainer.io'
+        )
 
         return success_response(message='Token Refreshed Succesfully',status_code=200,headers=response.headers)
     except HTTPException as e:
@@ -169,6 +169,8 @@ from sqlalchemy.orm.attributes import flag_modified
 @router.post("/account/confirm/", response_class=JSONResponse)
 def confirm_email_endpoint(token: BaseToken, db: Session = Depends(get_db)):
     payload = verify_token(token=token.token, db=db)
+    if payload is None:
+        return error_response("Invalid or expired token", status.HTTP_400_BAD_REQUEST)
     email = payload.get("sub")
     if email is None:
         return error_response("Invalid or expired token", status.HTTP_400_BAD_REQUEST)

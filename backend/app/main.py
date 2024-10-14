@@ -90,7 +90,7 @@ def create_app() -> FastAPI:
     # Common prefix for all routes in this microservice
     service_prefix = "/api/v1"
 
-    app.mount("/static", StaticFiles(directory="static"), name="static")
+ 
 
     # Include routers with common prefix
     app.include_router(test_auth.router, prefix="", tags=["tests"])
