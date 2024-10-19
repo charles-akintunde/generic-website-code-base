@@ -11,13 +11,10 @@ import {
   passwordResetSchema,
   resetPasswordWithEmailSchema,
 } from '@/utils/formSchema';
-import Logo from '@/components/common/logo';
 import FormField from '@/components/common/form-field';
-import Link from 'next/link';
 import LoadingButton from '@/components/common/button/loading-button';
 import useUserInfo from '@/hooks/api-hooks/use-user-info';
 import AppRequestResult from '../app-request-result';
-import { Button } from '@/components/ui/button';
 
 interface PasswordResetFormProps {
   token: string;
@@ -118,4 +115,8 @@ const ResetPasswordWithEmailForm = () => {
   );
 };
 
-export { ResetPasswordWithEmailForm, PasswordResetForm };
+const ResetPasswordWithEmailFormComponent = () => {
+  return <ResetPasswordWithEmailForm />;
+};
+
+export { ResetPasswordWithEmailFormComponent, PasswordResetForm };

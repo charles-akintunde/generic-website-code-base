@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../../ui/button';
 import { LoadingOutlined } from '@ant-design/icons';
-import { ILoadingButton } from '@/types/componentInterfaces';
+import { ILoadingButton } from '../../../types/componentInterfaces';
 
 const LoadingButton: React.FC<ILoadingButton> = ({
   buttonText,

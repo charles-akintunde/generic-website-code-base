@@ -1,15 +1,17 @@
 'use client';
-import { useGetUsersAssignedPositionsQuery } from '@/api/userApi';
-import { IUserBase, IUserList } from '@/types/componentInterfaces';
-import { mapToIIUserList, MemberPositionTitles } from '@/utils/helper';
+import { useGetUsersAssignedPositionsQuery } from '../../../../../api/userApi';
+import { IUserBase, IUserList } from '../../../../../types/componentInterfaces';
+import {
+  mapToIIUserList,
+  MemberPositionTitles,
+} from '../../../../../utils/helper';
 import React, { useEffect, useState } from 'react';
 import { Row, Avatar, Typography, Divider, Tooltip } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import AppLoading from '@/components/common/app-loading';
-import backgroundImage from '@/assets/images/page-list-img1.jpg';
+import AppLoading from '../../../../../components/common/app-loading';
+import backgroundImage from '../../../../../assets/images/page-list-img1.jpg';
 import Image from 'next/image';
-import { EUserRole } from '@/types/enums';
+import { EUserRole } from '../../../../../types/enums';
 
 const { Title, Text } = Typography;
 

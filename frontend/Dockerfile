@@ -1,26 +1,33 @@
-# Use official Node.js image as the base image
-FROM node:18
+FROM node:18 AS builder
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Set NODE_ENV to production
 ENV NODE_ENV=production
 
-# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --only=production
+RUN npm install
 
-# Copy the entire project to the working directory inside the container
 COPY . .
 
-# Build the Next.js app
+RUN mkdir -p /app/.next/export /app/.next/server/pages
+
+RUN npm install sharp
+
 RUN npm run build
 
-# Expose port 80
+FROM node:18
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+
+RUN npm install --only=production
+
 EXPOSE 80
 
-# Start the Next.js app on port 80
 CMD ["npm", "run", "start", "--", "-p", "80"]

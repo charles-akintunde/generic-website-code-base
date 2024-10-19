@@ -1,9 +1,8 @@
-import Layout from '@/components/hoc/layout/layout';
-
+import Layout from '../../../components/hoc/layout/layout';
 import dynamic from 'next/dynamic';
 
 const CookieConsentBanner = dynamic(
-  () => import('@/components/common/cookies-consent'),
+  () => import('../../../components/common/cookies-consent'),
   {
     ssr: false,
   }

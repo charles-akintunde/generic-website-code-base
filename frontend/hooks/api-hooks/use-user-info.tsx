@@ -15,7 +15,6 @@ import {
   transformUserInfoToEditUserRequest,
 } from '@/utils/helper';
 import { ExceptionMap } from 'antd/es/result';
-import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-profile/[user-profile-id]/page';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux-hooks';
 import {
@@ -34,6 +33,11 @@ import { useCommentsShowResolvedButton } from '@udecode/plate-comments';
 export interface GetUsersRequest {
   page: number;
   limit: number;
+}
+
+export function sanitizeAndCompare(str1: string, str2: string) {
+  if (!str1 || !str2) return false;
+  return str1.trim().toLowerCase() === str2.trim().toLowerCase();
 }
 
 const useUserInfo = () => {

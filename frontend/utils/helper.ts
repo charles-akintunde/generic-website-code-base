@@ -554,6 +554,11 @@ export const handleRoutingOnError = (
   }
 };
 
+export function sanitizeAndCompare(str1: string, str2: string) {
+  if (!str1 || !str2) return false;
+  return str1.trim().toLowerCase() === str2.trim().toLowerCase();
+}
+
 export const hasNavItems = (
   navMenuItems: MenuItem[],
   pathname: string

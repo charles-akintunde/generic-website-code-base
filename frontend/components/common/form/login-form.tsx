@@ -14,7 +14,7 @@ import useUserLogin from '@/hooks/api-hooks/use-user-login';
 import { IUserLogin } from '@/types/componentInterfaces';
 import TermsAndService from '../dialog/terms-and-service-dialog';
 
-export function LoginForm() {
+function LoginForm() {
   const { sendLoginRequest, isSuccess, isLoading } = useUserLogin();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),

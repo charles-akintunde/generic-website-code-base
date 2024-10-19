@@ -25,7 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-profile/[user-profile-id]/page';
+import { sanitizeAndCompare } from '@/utils/helper';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import {
   setUIIsUserEditingMode,
