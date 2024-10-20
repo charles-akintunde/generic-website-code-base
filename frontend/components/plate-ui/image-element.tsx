@@ -12,8 +12,7 @@ import {
   ResizeHandle,
   mediaResizeHandleVariants,
 } from './resizable';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
-import { useAppSelector } from '@/hooks/redux-hooks';
+import { useAppSelector } from '../../hooks/redux-hooks';
 
 export const ImageElement = withHOC(
   ResizableProvider,

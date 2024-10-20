@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useCreateAccountMutation } from '@/api/authApi';
-import { useNotification } from '@/components/hoc/notification-provider';
-import { ICreatAccountRequest } from '@/types/requestInterfaces';
-import { ICreatAccount } from '@/types/componentInterfaces';
+import { useCreateAccountMutation } from '../../api/authApi';
+import { useNotification } from '../../components/hoc/notification-provider';
+import { ICreatAccount } from '../../types/componentInterfaces';
+import { ICreatAccountRequest } from '../../types/requestInterfaces';
 
 export const useCreateAccount = () => {
   const [createAccount, { isLoading, isError, error, isSuccess }] =

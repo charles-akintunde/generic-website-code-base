@@ -13,13 +13,12 @@ import {
 } from '@udecode/plate-media';
 import { useReadOnly, useSelected } from 'slate-react';
 
-import { Icons } from '@/components/icons';
-
 import { Button, buttonVariants } from './button';
 import { CaptionButton } from './caption';
 import { inputVariants } from './input';
 import { Popover, PopoverAnchor, PopoverContent } from './popover';
 import { Separator } from './separator';
+import { Icons } from '../icons';
 
 export interface MediaPopoverProps {
   children: React.ReactNode;

@@ -1,7 +1,3 @@
-import { setUIActiveUser } from '@/store/slice/userSlice';
-import { IUserInfo } from '@/types/componentInterfaces';
-import { EUserRole } from '@/types/enums';
-import { transformToUserInfo } from '@/utils/helper';
 import {
   BaseQueryFn,
   FetchArgs,

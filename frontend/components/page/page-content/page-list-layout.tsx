@@ -1,13 +1,13 @@
 import React, { ReactNode } from 'react';
 import { UserOutlined } from '@ant-design/icons';
 import { Avatar } from 'antd';
-import { IPageContentMain, IPageMain } from '@/types/componentInterfaces';
-import { estimateReadingTime, formatDate, fromKebabCase } from '@/utils/helper';
-import { pageContentPaddingStyles } from '@/styles/globals';
-import { EPageType } from '@/types/enums';
+import { IPageContentMain } from '../../../types/componentInterfaces';
+import { estimateReadingTime, formatDate } from '../../../utils/helper';
+import { pageContentPaddingStyles } from '../../../styles/globals';
+import { EPageType } from '../../../types/enums';
 import { FloatButton } from 'antd';
 import { Divider } from 'antd';
-import UploadPageContentImage from '@/components/common/upload-page-content-image';
+import UploadPageContentImage from '../../common/upload-page-content-image';
 interface PageListLayoutProps {
   children: ReactNode;
   pageContent: IPageContentMain;

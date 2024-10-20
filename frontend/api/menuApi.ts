@@ -1,5 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { PageMenuApiResponse } from '@/types/backendResponseInterfaces';
+import { PageMenuApiResponse } from '../types/backendResponseInterfaces';
 import publicRouteBaseQuery from './publicRouteBaseQuery';
 
 const url = '/pages';

@@ -1,11 +1,11 @@
-import { useUserLogoutMutation } from '@/api/authApi';
-import { useNotification } from '@/components/hoc/notification-provider';
 import React, { useState } from 'react';
 import { useAppDispatch } from '../redux-hooks';
-import { setUIActiveUser } from '@/store/slice/userSlice';
-import { EUserRole } from '@/types/enums';
 import { useRouter } from 'next/navigation';
-import { reloadPage } from '@/utils/helper';
+import { useNotification } from '../../components/hoc/notification-provider';
+import { useUserLogoutMutation } from '../../api/authApi';
+import { setUIActiveUser } from '../../store/slice/userSlice';
+import { EUserRole } from '../../types/enums';
+import { reloadPage } from '../../utils/helper';
 
 const useLogout = () => {
   const dispatch = useAppDispatch();

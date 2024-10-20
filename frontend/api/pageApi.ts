@@ -1,17 +1,17 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import publicRouteBaseQuery from './publicRouteBaseQuery';
 import {
+  ISinglePageResponse,
   IGenericResponse,
   IGetPagesWithOffsetRequest,
   IPageResponse,
-  ISinglePageResponse,
-} from '@/types/backendResponseInterfaces';
+} from '../types/backendResponseInterfaces';
 import {
   IPageGetRequest,
   IPageRequest,
   IPageRequestWithIdentifier,
   ISinglePageRequest,
-} from '@/types/requestInterfaces';
+} from '../types/requestInterfaces';
 
 const url = '/pages';
 

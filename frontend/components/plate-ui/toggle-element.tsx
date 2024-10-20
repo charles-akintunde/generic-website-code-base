@@ -1,8 +1,7 @@
 import { withRef } from '@udecode/cn';
 import { PlateElement, useElement } from '@udecode/plate-common';
 import { useToggleButton, useToggleButtonState } from '@udecode/plate-toggle';
-
-import { Icons } from '@/components/icons';
+import { Icons } from '../icons';
 
 export const ToggleElement = withRef<typeof PlateElement>(
   ({ children, ...props }, ref) => {
@@ -18,7 +17,7 @@ export const ToggleElement = withRef<typeof PlateElement>(
             contentEditable={false}
             {...buttonProps}
           >
-            {open ? <Icons.chevronDown /> : <Icons.chevronRight />}
+            {open ? <Icons.arrowDown /> : <Icons.chevronRight />}
           </span>
           {children}
         </div>

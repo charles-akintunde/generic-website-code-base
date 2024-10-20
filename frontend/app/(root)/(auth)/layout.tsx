@@ -1,4 +1,4 @@
-import AuthLayout from '@/components/hoc/auth-layout';
+import AuthLayout from '../../../components/hoc/auth-layout';
 
 export default function RootLayout({
   children,

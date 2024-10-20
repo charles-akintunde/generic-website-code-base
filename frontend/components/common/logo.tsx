@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import appLogo from '@/assets/icons/gw-logo.png';
 import Link from 'next/link';
-import { appConfig } from '@/utils/appConfig';
+import { appConfig } from '../../utils/appConfig';
 
 interface ILogoProps {
   width?: number;

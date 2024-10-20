@@ -20,14 +20,13 @@ import {
 } from '@udecode/plate-dnd';
 import { blockSelectionActions } from '@udecode/plate-selection';
 
-import { Icons } from '@/components/icons';
-
 import {
   Tooltip,
   TooltipContent,
   TooltipPortal,
   TooltipTrigger,
 } from './tooltip';
+import { Icons } from '../icons';
 
 export interface DraggableProps
   extends PlateElementProps,

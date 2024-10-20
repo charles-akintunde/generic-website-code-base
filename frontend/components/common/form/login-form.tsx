@@ -3,15 +3,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Form } from '@/components/ui/form';
+import { Form } from '../../ui/form';
 import { useEffect, useState } from 'react';
-import { loginSchema } from '@/utils/formSchema';
+import { loginSchema } from '../../../utils/formSchema';
 import Logo from '../logo';
 import FormField from '../form-field';
 import Link from 'next/link';
 import LoadingButton from '../button/loading-button';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
-import { IUserLogin } from '@/types/componentInterfaces';
+import useUserLogin from '../../../hooks/api-hooks/use-user-login';
+import { IUserLogin } from '../../../types/componentInterfaces';
 import TermsAndService from '../dialog/terms-and-service-dialog';
 
 function LoginForm() {

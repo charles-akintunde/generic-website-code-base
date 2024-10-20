@@ -1,9 +1,8 @@
 import dynamic from 'next/dynamic';
 import React from 'react';
-
 const ResetPasswordWithEmailForm = dynamic(
   () =>
-    import('@/components/common/form/passoword-reset-form').then(
+    import('../../../../components/common/form/passoword-reset-form').then(
       (mod) => mod.ResetPasswordWithEmailFormComponent
     ),
   {

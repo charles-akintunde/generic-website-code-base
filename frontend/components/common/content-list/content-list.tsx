@@ -6,28 +6,28 @@ import { PlusIcon } from 'lucide-react';
 import {
   containerNoFlexPaddingStyles,
   primarySolidButtonStyles,
-} from '@/styles/globals';
+} from '../../../styles/globals';
 import {
   IFetchedPage,
   IPageContentMain,
   RootState,
-} from '@/types/componentInterfaces';
+} from '../../../types/componentInterfaces';
 import { usePathname, useRouter } from 'next/navigation';
-import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
+import { useGetPageWithPaginationQuery } from '../../../api/pageContentApi';
 import {
   handleRoutingOnError,
   normalizeMultiContentPage,
-} from '@/utils/helper';
+} from '../../../utils/helper';
 import AppLoading from '../app-loading';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
-import { EPageType } from '@/types/enums';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux-hooks';
+import { EPageType } from '../../../types/enums';
 import { CreatePageContentModal } from '../form/create-page-content';
 import {
   addPageContents,
   setCurrentUserPage,
   setFecthingPageData,
   setPageContents,
-} from '@/store/slice/pageSlice';
+} from '../../../store/slice/pageSlice';
 
 interface ContentListProps {
   pageType: string;
@@ -73,7 +73,7 @@ const ContentList: React.FC<ContentListProps> = ({
   );
 
   const visiblePageContents = fetchedPageContents.filter(
-    (content) => !content.deleted
+    (content: any) => !content.deleted
   );
   const sortedPageContents = [...visiblePageContents].sort((a, b) => {
     const dateA = a.pageContentCreatedAt

@@ -1,9 +1,4 @@
-import {
-  containerNoFlexPaddingStyles,
-  containerPaddingStyles,
-} from '@/styles/globals';
 import React from 'react';
-import { Divider } from 'antd';
 import { FloatButton } from 'antd';
 import Image from 'next/image';
 import backgroundImage from '../../assets/images/page-list-img1.jpg';

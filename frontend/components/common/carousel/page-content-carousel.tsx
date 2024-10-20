@@ -1,25 +1,20 @@
 'use client';
 import React from 'react';
-import usePage from '@/hooks/api-hooks/use-page';
-import { useAppSelector } from '@/hooks/redux-hooks';
+import usePage from '../../../hooks/api-hooks/use-page';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@/components/ui/carousel';
+} from '../../ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
-import {
-  IFetchedPage,
-  IPageContentItem,
-  IPageContentMain,
-} from '@/types/componentInterfaces';
-import { formatDate, getPageExcerpt } from '@/utils/helper';
+import { IPageContentMain } from '../../../types/componentInterfaces';
+import { formatDate } from '../../../utils/helper';
 import Link from 'next/link';
 import { Empty } from 'antd';
 import { Tooltip } from 'antd';
-import { appConfig } from '@/utils/appConfig';
+import { appConfig } from '../../../utils/appConfig';
 
 interface IPageContent {
   pageContentId: string;
@@ -83,7 +78,6 @@ const PageContentCarousel: React.FC = () => {
   // const fetchingPageData = useAppSelector(
   //   (state) => state.page.fetchingPageData
   // ) as IFetchedPage;
-  console.log(pageContents);
 
   const fetchedPageContents: IPageContentMain[] = pageContents;
 

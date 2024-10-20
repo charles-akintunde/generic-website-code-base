@@ -1,5 +1,5 @@
 import { Result } from 'antd';
-import { IAppRequestResult } from '@/types/componentInterfaces';
+import { IAppRequestResult } from '../../types/componentInterfaces';
 
 const AppRequestResult: React.FC<IAppRequestResult> = ({
   status,

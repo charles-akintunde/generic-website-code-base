@@ -6,13 +6,12 @@ import type { DropdownMenuItemProps } from '@radix-ui/react-dropdown-menu';
 
 import { cn } from '@udecode/cn';
 
-import { Icons } from '@/components/icons';
-
 import type { TColor } from './color-dropdown-menu';
 
 import { buttonVariants } from './button';
 import { DropdownMenuItem } from './dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
+import { Icons } from '../icons';
 
 type ColorDropdownMenuItemProps = {
   isBrightColor: boolean;

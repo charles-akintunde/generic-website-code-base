@@ -6,10 +6,7 @@ import type { VariantProps } from 'class-variance-authority';
 import { cn } from '@udecode/cn';
 import { PlateContent } from '@udecode/plate-common';
 import { cva } from 'class-variance-authority';
-
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
-import { useAppSelector } from '@/hooks/redux-hooks';
+import { useAppSelector } from '../../hooks/redux-hooks';
 
 const editorVariants = cva(
   cn(

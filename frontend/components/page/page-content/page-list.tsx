@@ -1,42 +1,39 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { PlateEditor } from '@/components/plate/plate';
-import PageLayout from '@/components/page/layout';
-import FormField from '@/components/common/form-field';
+import { PlateEditor } from '../../plate/plate';
+import PageLayout from '../layout';
+import FormField from '../../common/form-field';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { pageContentSchema, pageContentSchemaEdit } from '@/utils/formSchema';
-import LoadingButton from '@/components/common/button/loading-button';
-import usePageContent from '@/hooks/api-hooks/use-page-content';
+import {
+  pageContentSchema,
+  pageContentSchemaEdit,
+} from '../../../utils/formSchema';
+import LoadingButton from '../../common/button/loading-button';
+import usePageContent from '../../../hooks/api-hooks/use-page-content';
 import {
   IPageContentItem,
   IPageContentMain,
-} from '@/types/componentInterfaces';
+} from '../../../types/componentInterfaces';
 import { usePathname } from 'next/navigation';
 import {
-  createPageContentItem,
-  fromKebabCase,
   getChangedFields,
-  handleRoutingOnError,
   notifyNoChangesMade,
   pageNormalizer,
-  toKebabCase,
-} from '@/utils/helper';
-
-import { IPageContentGetRequest } from '@/types/requestInterfaces';
+} from '../../../utils/helper';
+import { IPageContentGetRequest } from '../../../types/requestInterfaces';
 import { useSearchParams } from 'next/navigation';
-import { useGetPageContentQuery } from '@/api/pageContentApi';
+import { useGetPageContentQuery } from '../../../api/pageContentApi';
 import _ from 'lodash';
-import { useNotification } from '@/components/hoc/notification-provider';
-import { pageContentPaddingStyles } from '@/styles/globals';
+import { useNotification } from '../../hoc/notification-provider';
+import { pageContentPaddingStyles } from '../../../styles/globals';
 import PageListLayout from './page-list-layout';
 import { TElement } from '@udecode/plate-common';
-import { EPageType } from '@/types/enums';
-import AppLoading from '@/components/common/app-loading';
+import { EPageType } from '../../../types/enums';
+import AppLoading from '../../common/app-loading';
 import { useRouter } from 'next/navigation';
-import { useAppSelector } from '@/hooks/redux-hooks';
-import { toKebabCase2 } from '@/utils/helper';
-import { CreatePageContentForm } from '@/components/common/form/create-page-content';
+import { useAppSelector } from '../../../hooks/redux-hooks';
+import { toKebabCase2 } from '../../../utils/helper';
 
 const CreatePageContent = () => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);

@@ -1,12 +1,12 @@
 'use client';
 import React, { useState } from 'react';
-import { toKebabCase } from '@/utils/helper';
-import { IPageContentMain } from '@/types/componentInterfaces';
-import usePage from '@/hooks/api-hooks/use-page';
+import { toKebabCase } from '../../../utils/helper';
+import { IPageContentMain } from '../../../types/componentInterfaces';
+import usePage from '../../../hooks/api-hooks/use-page';
 import { usePathname } from 'next/navigation';
-import ContentList from '@/components/common/content-list/content-list';
+import ContentList from '../../common/content-list/content-list';
 import ResourceListCard from './resource-list-card';
-import { useAppSelector } from '@/hooks/redux-hooks';
+import { useAppSelector } from '../../../hooks/redux-hooks';
 
 const ResourceLists = () => {
   const pathname = usePathname();
@@ -39,6 +39,7 @@ const ResourceLists = () => {
       canEdit={canEdit}
       queryString={queryString}
       pageNameKebab={pageNameKebab}
+      //@ts-ignore
       ListCardComponent={ResourceListCard}
       createPageHref={createPageHref}
       emptyDescription={`No content for ${page?.pageName.toLowerCase()}`}

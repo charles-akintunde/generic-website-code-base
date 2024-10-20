@@ -1,12 +1,7 @@
 import { Control, Controller } from 'react-hook-form';
-import {
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormControl, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
-import { IFormField } from '@/types/componentInterfaces';
+import { IFormField } from '../../types/componentInterfaces';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import {
@@ -15,11 +10,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '../ui/select';
 import MultiSelect from '../ui/multi-select';
 import { Checkbox } from '../ui/checkbox';
 import { PlateEditor } from '../plate/plate';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from '../ui/textarea';
 
 const FormField: React.FC<IFormField> = ({
   control,

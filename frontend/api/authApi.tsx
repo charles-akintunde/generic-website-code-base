@@ -1,16 +1,15 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import {
-  ICompleteUserResponse,
   ICompleteUserResponseWrapper,
   IGenericResponse,
-} from '@/types/backendResponseInterfaces';
+} from '../types/backendResponseInterfaces';
 import {
   ICreatAccountRequest,
   IPasswordResetConfirmationRequest,
   IPasswordResetRequest,
   IToken,
   IUserLoginRequest,
-} from '@/types/requestInterfaces';
+} from '../types/requestInterfaces';
 import publicRouteBaseQuery from './publicRouteBaseQuery';
 
 const commonUrl = '/auth';

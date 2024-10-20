@@ -1,55 +1,54 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { PlateEditor } from '@/components/plate/plate';
-import PageLayout from '@/components/page/layout';
-import FormField from '@/components/common/form-field';
+import { PlateEditor } from '../../plate/plate';
+import FormField from '../form-field';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { pageContentSchema, pageContentSchemaEdit } from '@/utils/formSchema';
-import LoadingButton from '@/components/common/button/loading-button';
-import usePageContent from '@/hooks/api-hooks/use-page-content';
+import {
+  pageContentSchema,
+  pageContentSchemaEdit,
+} from '../../../utils/formSchema';
+import LoadingButton from '../button/loading-button';
+import usePageContent from '../../../hooks/api-hooks/use-page-content';
 import {
   IPageContentItem,
   IPageContentMain,
-} from '@/types/componentInterfaces';
+} from '../../../types/componentInterfaces';
 import { usePathname } from 'next/navigation';
 import {
-  createPageContentItem,
-  fromKebabCase,
   getChangedFields,
   handleRoutingOnError,
   notifyNoChangesMade,
   pageNormalizer,
-  toKebabCase,
-} from '@/utils/helper';
-
-import { IPageContentGetRequest } from '@/types/requestInterfaces';
+} from '../../../utils/helper';
+import { IPageContentGetRequest } from '../../../types/requestInterfaces';
 import { useSearchParams } from 'next/navigation';
-import { useGetPageContentQuery } from '@/api/pageContentApi';
+import { useGetPageContentQuery } from '../../../api/pageContentApi';
 import _ from 'lodash';
-import { useNotification } from '@/components/hoc/notification-provider';
+import { useNotification } from '../../hoc/notification-provider';
 import {
-  pageContentPaddingStyles,
   primarySolidButtonStyles,
-} from '@/styles/globals';
+  pageContentPaddingStyles,
+} from '../../../styles/globals';
 import { TElement } from '@udecode/plate-common';
-import { EPageType } from '@/types/enums';
+import { EPageType } from '../../../types/enums';
 import { useRouter } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
-import { toKebabCase2 } from '@/utils/helper';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux-hooks';
+import { toKebabCase2 } from '../../../utils/helper';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+} from '../../ui/dialog';
+import { Button } from '../../ui/button';
 import { FileDiff, PlusIcon } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { setCurrentUserPage } from '@/store/slice/pageSlice';
+import { ScrollArea } from '../../ui/scroll-area';
+import {
+  setCurrentPage,
+  setCurrentUserPage,
+} from '../../../store/slice/pageSlice';
 
 interface ICreatePageContentModal {
   pageType: string;

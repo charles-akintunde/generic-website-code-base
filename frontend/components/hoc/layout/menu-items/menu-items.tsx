@@ -5,8 +5,8 @@ import React, {
   useState,
 } from 'react';
 import MenuItem from './menu-item';
-import { IPageMenuItem } from '@/types/componentInterfaces';
-import usePage from '@/hooks/api-hooks/use-page';
+import { IPageMenuItem } from '../../../../types/componentInterfaces';
+import usePage from '../../../../hooks/api-hooks/use-page';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +14,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '../../../ui/dropdown-menu';
 import { Button, Flex, Tooltip } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import Link from 'next/link';

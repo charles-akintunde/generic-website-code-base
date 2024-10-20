@@ -2,12 +2,12 @@ import { configureStore } from '@reduxjs/toolkit';
 import layoutReducer from './slice/layoutSlice';
 import pageSlice from './slice/pageSlice';
 import userSlice from './slice/userSlice';
-import { menuApi } from '@/api/menuApi';
-import { authApi } from '@/api/authApi';
-import { pageApi } from '@/api/pageApi';
-import { userApi } from '@/api/userApi';
-import { pageContentApi } from '@/api/pageContentApi';
 import { setupListeners } from '@reduxjs/toolkit/query';
+import { menuApi } from '../api/menuApi';
+import { pageContentApi } from '../api/pageContentApi';
+import { userApi } from '../api/userApi';
+import { authApi } from '../api/authApi';
+import { pageApi } from '../api/pageApi';
 
 const store = configureStore({
   reducer: {

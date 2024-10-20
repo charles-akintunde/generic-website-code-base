@@ -1,21 +1,19 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import {
+  IPageResponse,
+  ISinglePageResponse,
   IGenericResponse,
   IPageContentGetResponse,
   IPageContentImageResponse,
-  IPageContentResponse,
-  IPageResponse,
-  ISinglePageResponse,
-} from '@/types/backendResponseInterfaces';
+} from '../types/backendResponseInterfaces';
 import publicRouteBaseQuery from './publicRouteBaseQuery';
-import { pageTagTypes } from './apiTags';
 import {
+  IPageGetRequest,
   IEditPageContentRequest,
   IPageContentCreateRequest,
   IPageContentGetRequest,
   IPageContentImageRequest,
-  IPageGetRequest,
-} from '@/types/requestInterfaces';
+} from '../types/requestInterfaces';
 
 const url = '/page-contents';
 const pageUrl = '/pages';

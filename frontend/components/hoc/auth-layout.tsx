@@ -1,4 +1,4 @@
-import { IReactNode } from '@/types/componentInterfaces';
+import { IReactNode } from '../../types/componentInterfaces';
 import React from 'react';
 import Image from 'next/image';
 import authImage from '@/assets/images/auth-image.webp';

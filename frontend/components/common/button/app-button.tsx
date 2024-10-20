@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '../../ui/button';
 import Link from 'next/link';
-import { IButton } from '@/types/componentInterfaces';
+import { IButton } from '../../../types/componentInterfaces';
 
 const AppButton: React.FC<IButton> = ({
   isRightPosition,

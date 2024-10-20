@@ -2,44 +2,43 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux-hooks';
 import {
+  setFetchedSinglePageData,
   addPages,
   setEditingPage,
   toggleCreatePageDialog,
   getPageContents,
   getPage,
-  setFecthingPageData,
-  setFetchedSinglePageData,
-  //setFecthingContentData,
-} from '@/store/slice/pageSlice';
+} from '../../store/slice/pageSlice';
 import {
-  IFetchedPage,
   IPageContentMain,
   IPageMain,
   IPageMenuItem,
-} from '@/types/componentInterfaces';
+} from '../../types/componentInterfaces';
 import {
+  useGetPageColumnsByDisplayUrlQuery,
   useGetPagesQuery,
   useCreatePageMutation,
   useEditPageMutation,
   useDeletePageMutation,
   useGetPageQuery,
-  useGetPageColumnsByDisplayUrlQuery,
-} from '@/api/pageApi';
+} from '../../api/pageApi';
 import {
   normalizeMultiContentPage,
   reloadPage,
   toKebabCase,
   transformPageToIPage,
-} from '@/utils/helper';
-import { Page } from '@/types/backendResponseInterfaces';
-import { IPageRequest } from '@/types/requestInterfaces';
-import { useNotification } from '@/components/hoc/notification-provider';
-import { routes, systemMenuItems } from '@/components/hoc/layout/menu-items';
+} from '../../utils/helper';
 import { MenuProps } from 'antd';
-import Link from 'next/link';
-import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
-import { ChevronDown } from 'lucide-react';
-import { MenuItemComponent } from '@/components/hoc/layout/menu-items/menu-item';
+import { useGetPageWithPaginationQuery } from '../../api/pageContentApi';
+import { useNotification } from '../../components/hoc/notification-provider';
+import { Page } from '../../types/backendResponseInterfaces';
+import {
+  routes,
+  systemMenuItems,
+} from '../../components/hoc/layout/menu-items';
+import { MenuItemComponent } from '../../components/hoc/layout/menu-items/menu-item';
+import { IPageRequest } from '../../types/requestInterfaces';
+
 interface usePageProps {
   pageName?: string;
   pageDisplayURL?: string;
@@ -291,6 +290,7 @@ const usePage = ({
 
       setNavMenuItems(navMenuItems);
       setMenuItems(combinedMenuItems);
+      //@ts-ignore
       setAllAppRoutes(allRoutes);
       dispatch(addPages(normalizedPages));
     }

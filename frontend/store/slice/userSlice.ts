@@ -1,6 +1,6 @@
-import { IUIActiveUser, IUserBase } from '@/types/componentInterfaces';
-import { EUserRole } from '@/types/enums';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IUIActiveUser, IUserBase } from '../../types/componentInterfaces';
+import { EUserRole } from '../../types/enums';
 
 interface IUIActiveUserProfileEdit {
   uiIsUserEditingMode: boolean;

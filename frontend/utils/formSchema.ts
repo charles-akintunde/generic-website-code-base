@@ -1,4 +1,4 @@
-import { EPageType, EUserRole } from '@/types/enums';
+import { EPageType, EUserRole } from '../types/enums';
 import { TElement } from '@udecode/plate-common';
 import { z } from 'zod';
 // import { parsePhoneNumberFromString } from 'libphonenumber-js';
@@ -120,8 +120,10 @@ const ACCEPTED_DOC_MIME_TYPES = [
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
 
+//@ts-ignore
 const descendantSchema = z.lazy(() => z.union([elementSchema, textSchema]));
 
+//@ts-ignore
 const elementSchema = z.object({
   children: z.array(descendantSchema),
   type: z.string(),

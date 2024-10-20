@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useVerifyAccountMutation } from '@/api/authApi';
-import { IToken } from '@/types/requestInterfaces';
+import { useVerifyAccountMutation } from '../../api/authApi';
+import { IToken } from '../../types/requestInterfaces';
 
 const useVerifyAccount = () => {
   const [verifyAccount, { isLoading, isError, isSuccess, error }] =

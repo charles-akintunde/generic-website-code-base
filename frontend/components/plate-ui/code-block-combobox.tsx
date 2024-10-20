@@ -10,8 +10,6 @@ import {
   useCodeBlockComboboxState,
 } from '@udecode/plate-code-block';
 
-import { Icons } from '@/components/icons';
-
 import { Button } from './button';
 import {
   Command,
@@ -21,6 +19,7 @@ import {
   CommandList,
 } from './command';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import { Icons } from '../icons';
 
 const languages: { label: string; value: string }[] = [
   { label: 'Plain Text', value: 'text' },

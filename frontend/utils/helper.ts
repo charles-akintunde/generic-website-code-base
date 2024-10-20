@@ -1,14 +1,14 @@
-import useHelper from '@/hooks/api-hooks/use-helper';
 import {
+  UserResponse,
   ICompleteUserResponse,
-  IPageContentGetResponse,
   IPageContentResponse,
   IUserResponseData,
   Page,
   PagesData,
-  UserResponse,
-} from '@/types/backendResponseInterfaces';
+} from '../types/backendResponseInterfaces';
 import {
+  IPageList,
+  IPage,
   IPageContentItem,
   IPageContentMain,
   IPageMain,
@@ -16,15 +16,13 @@ import {
   IUserList,
   IUserInfo,
   Notify,
-  IPageList,
-  IPage,
-} from '@/types/componentInterfaces';
+} from '../types/componentInterfaces';
 import {
   EMemberPosition,
   EPageType,
   EUserRole,
   EUserStatus,
-} from '@/types/enums';
+} from '../types/enums';
 import { TDescendant, TElement } from '@udecode/plate-common';
 import { MenuProps } from 'antd';
 import { jwtDecode } from 'jwt-decode';
@@ -540,10 +538,9 @@ export const handleRoutingOnError = (
 ) => {
   if (hasError && error) {
     if (error.status === 404) {
-      console.log(`I was called ${from}`);
       router.replace('/404');
     } else if (error.status === 500) {
-      router.replace('/500');
+      router.replace('/internal-server-error');
     } else {
       router.replace('/access-denied');
     }
@@ -593,6 +590,7 @@ export const hasNavItems = (
   // Find the matching item or child
   const currentNavItem = findNavItem(navMenuItems);
 
+  // @ts-ignore
   return currentNavItem ? currentNavItem.key : null;
 };
 

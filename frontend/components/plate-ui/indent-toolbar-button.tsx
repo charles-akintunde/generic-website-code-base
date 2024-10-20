@@ -3,9 +3,8 @@ import React from 'react';
 import { withRef } from '@udecode/cn';
 import { useIndentButton } from '@udecode/plate-indent';
 
-import { Icons } from '@/components/icons';
-
 import { ToolbarButton } from './toolbar';
+import { Icons } from '../icons';
 
 export const IndentToolbarButton = withRef<typeof ToolbarButton>(
   (rest, ref) => {

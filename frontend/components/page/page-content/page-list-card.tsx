@@ -5,17 +5,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+} from '../../ui/card';
+import { Badge } from '../../ui/badge';
 import Link from 'next/link';
-import { IPageContentMain } from '@/types/componentInterfaces';
-import ActionsButtons from '@/components/common/action-buttons';
-import usePageContent from '@/hooks/api-hooks/use-page-content';
-import {
-  estimateReadingTime,
-  formatDate,
-  getPageExcerpt,
-} from '@/utils/helper';
+import { IPageContentMain } from '../../../types/componentInterfaces';
+import ActionsButtons from '../../common/action-buttons';
+import usePageContent from '../../../hooks/api-hooks/use-page-content';
+import { formatDate } from '../../../utils/helper';
 import { Tooltip } from 'antd';
 
 interface IPageContentCardProps {

@@ -1,9 +1,6 @@
 import Image from 'next/image';
-import teamImg from '@/assets/images/team-img.webp';
-import Footer from '../../../components/hoc/layout/footer/footer';
-import usePage from '../../../hooks/api-hooks/use-page';
+import teamImg from '../../../assets/images/team-img.webp';
 import PageContentCarousel from '../../../components/common/carousel/page-content-carousel';
-import { routes } from '../../../components/hoc/layout/menu-items';
 
 export default function Home() {
   return (

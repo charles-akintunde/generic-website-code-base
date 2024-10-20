@@ -7,9 +7,8 @@ import {
   useIndentListToolbarButtonState,
 } from '@udecode/plate-indent-list';
 
-import { Icons } from '@/components/icons';
-
 import { ToolbarButton } from './toolbar';
+import { Icons } from '../icons';
 
 export const IndentListToolbarButton = withRef<
   typeof ToolbarButton,

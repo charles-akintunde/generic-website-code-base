@@ -5,7 +5,7 @@ import { NotificationPlacement } from 'antd/lib/notification/interface';
 import {
   INotificationContextProps,
   NotificationType,
-} from '@/types/componentInterfaces';
+} from '../../types/componentInterfaces';
 
 const NotificationContext = createContext<
   INotificationContextProps | undefined

@@ -1,4 +1,4 @@
-import store from '@/store';
+import store from '../store';
 import { NotificationPlacement } from 'antd/lib/notification/interface';
 import { EPageType, EUserRole } from './enums';
 import React, { ElementType, ReactNode } from 'react';

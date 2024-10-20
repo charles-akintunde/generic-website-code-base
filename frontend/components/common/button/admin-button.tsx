@@ -1,6 +1,6 @@
 import React, { ElementType } from 'react';
 import AppButton from './app-button';
-import { IButton } from '@/types/componentInterfaces';
+import { IButton } from '../../../types/componentInterfaces';
 
 export interface IAdminButton {
   isRightPosition?: boolean;

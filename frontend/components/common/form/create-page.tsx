@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { EPageType, EUserRole } from '@/types/enums';
-import { Form } from '@/components/ui/form';
+import { EPageType, EUserRole } from '../../../types/enums';
+import { Form } from '../../ui/form';
 import FormField from '../form-field';
-import { createPageSchema } from '@/utils/formSchema';
+import { createPageSchema } from '../../../utils/formSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -15,14 +15,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '../../ui/dialog';
 import AppButton from '../button/app-button';
-import { primarySolidButtonStyles } from '@/styles/globals';
+import { primarySolidButtonStyles } from '../../../styles/globals';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { useAppSelector } from '@/hooks/redux-hooks';
-import usePage from '@/hooks/api-hooks/use-page';
-import { toKebabCase2 } from '@/utils/helper';
-import { editPage } from '@/store/slice/pageSlice';
+import { useAppSelector } from '../../../hooks/redux-hooks';
+import usePage from '../../../hooks/api-hooks/use-page';
+import { toKebabCase2 } from '../../../utils/helper';
+import { editPage } from '../../../store/slice/pageSlice';
 
 const CreatePage = () => {
   const {

@@ -1,14 +1,11 @@
 'use-client';
 import React, { useEffect, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { EMemberPosition, EUserRole, EUserStatus } from '@/types/enums';
+import { EUserStatus, EMemberPosition, EUserRole } from '../../../types/enums';
 import { Avatar, Tooltip } from 'antd';
-import ActionsButtons from '@/components/common/action-buttons';
 import { Table } from 'antd';
-import { IUserBase, IUserList } from '@/types/componentInterfaces';
-import { useGetUsersQuery } from '@/api/userApi';
 import { ExternalLink } from 'lucide-react';
 import {
+  userStatusLabels,
   formatDate,
   handleRoutingOnError,
   mapToIIUserList,
@@ -17,18 +14,21 @@ import {
   roleColors,
   statusColors,
   userRoleLabels,
-  userStatusLabels,
-} from '@/utils/helper';
+} from '../../../utils/helper';
 import classNames from 'classnames';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
-import { useAppDispatch } from '@/hooks/redux-hooks';
+import { useRouter } from 'next/navigation';
+import useUserInfo from '../../../hooks/api-hooks/use-user-info';
+import { useGetUsersQuery } from '../../../api/userApi';
+import { IUserBase, IUserList } from '../../../types/componentInterfaces';
+import { useAppDispatch } from '../../../hooks/redux-hooks';
 import {
   setEditingUser,
   toggleCreateUserDialog,
-} from '@/store/slice/userSlice';
-import { UserRoleStatusDialog } from '@/components/common/form/user-profile-form';
-import { useRouter } from 'next/navigation';
-import { transitionStyles } from '@/styles/globals';
+} from '../../../store/slice/userSlice';
+import { Badge } from '../../ui/badge';
+import { transitionStyles } from '../../../styles/globals';
+import ActionsButtons from '../../common/action-buttons';
+import { UserRoleStatusDialog } from '../../common/form/user-profile-form';
 
 const UserListItem = () => {
   const [pagination, setPagination] = useState({

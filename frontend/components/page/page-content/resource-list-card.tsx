@@ -1,13 +1,13 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { IPageContentMain } from '@/types/componentInterfaces';
+import { Card } from '../../ui/card';
+import { IPageContentMain } from '../../../types/componentInterfaces';
 import Link from 'next/link';
-import usePageContent from '@/hooks/api-hooks/use-page-content';
-import ActionsButtons from '@/components/common/action-buttons';
-import { Badge } from '@/components/ui/badge';
-import { useAppDispatch } from '@/hooks/redux-hooks';
-import { setCurrentUserPage } from '@/store/slice/pageSlice';
-import { EPageType } from '@/types/enums';
+import usePageContent from '../../../hooks/api-hooks/use-page-content';
+import ActionsButtons from '../../common/action-buttons';
+import { Badge } from '../../ui/badge';
+import { useAppDispatch } from '../../../hooks/redux-hooks';
+import { setCurrentUserPage } from '../../../store/slice/pageSlice';
+import { EPageType } from '../../../types/enums';
 import { Tooltip } from 'antd';
 
 interface PageContentCardProps {

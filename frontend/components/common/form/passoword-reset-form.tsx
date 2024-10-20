@@ -5,15 +5,15 @@ import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Form } from '@/components/ui/form';
+import { Form } from '../../ui/form';
 import { useState } from 'react';
 import {
   passwordResetSchema,
   resetPasswordWithEmailSchema,
-} from '@/utils/formSchema';
-import FormField from '@/components/common/form-field';
-import LoadingButton from '@/components/common/button/loading-button';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
+} from '../../../utils/formSchema';
+import FormField from '../form-field';
+import LoadingButton from '../button/loading-button';
+import useUserInfo from '../../../hooks/api-hooks/use-user-info';
 import AppRequestResult from '../app-request-result';
 
 interface PasswordResetFormProps {

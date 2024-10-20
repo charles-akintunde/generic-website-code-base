@@ -1,15 +1,18 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Form } from '@/components/ui/form';
+import { Form } from '../../ui/form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { userProfileSchema, userRoleStatusSchema } from '@/utils/formSchema';
+import {
+  userProfileSchema,
+  userRoleStatusSchema,
+} from '../../../utils/formSchema';
 import FormField from '../form-field';
 import { getNames } from 'country-list';
 import LoadingButton from '../button/loading-button';
-import { IUserBase, IUserInfo } from '@/types/componentInterfaces';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
+import { IUserBase, IUserInfo } from '../../../types/componentInterfaces';
+import useUserInfo from '../../../hooks/api-hooks/use-user-info';
 import { TElement } from '@udecode/plate-common';
 import {
   getChangedFields,
@@ -17,24 +20,26 @@ import {
   notifyNoChangesMade,
   ROLE_OPTIONS,
   STATUS_OPTIONS,
-} from '@/utils/helper';
-import { useNotification } from '@/components/hoc/notification-provider';
+} from '../../../utils/helper';
+import { useNotification } from '../../hoc/notification-provider';
+
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { sanitizeAndCompare } from '@/utils/helper';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
+} from '../../ui/dialog';
+import { sanitizeAndCompare } from '../../../utils/helper';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux-hooks';
+
 import {
   setUIIsUserEditingMode,
   toggleCreateUserDialog,
-} from '@/store/slice/userSlice';
-import { EUserRole } from '@/types/enums';
-import { PlateEditor } from '@/components/plate/plate';
+} from '../../../store/slice/userSlice';
+import { EUserRole } from '../../../types/enums';
+import { PlateEditor } from '../../plate/plate';
 import { Divider, Switch } from 'antd';
-import { removeNullValues } from '@/utils/helper';
+import { removeNullValues } from '../../../utils/helper';
 
 interface UserProfileFormProps {
   userInfo: IUserInfo;
@@ -328,7 +333,6 @@ export const UserRoleStatusDialog = () => {
   const onSubmit = async (data: any, event: { preventDefault: () => void }) => {
     event.preventDefault();
     const changedFields = getChangedFields(userInfo, data);
-    console.log(data, userInfo, changedFields);
     if (userInfo && Object.keys(changedFields).length > 0) {
       await submitEditRoleStatus(
         userInfo.id,

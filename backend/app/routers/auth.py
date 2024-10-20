@@ -110,23 +110,25 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
         token = authenticate_user(db=db, email=user_login.UI_Email, password=user_login.UI_Password,response=response)
         
         response.set_cookie(
-            key='access_token',
-            value=token.access_token,
-            httponly=True,
-            samesite='none',
-            secure=True,
-            max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-           domain='.canadacentral-01.azurewebsites.net'
-        )
+        key='access_token',
+        value=token.access_token,
+        httponly=True,
+        samesite='none',
+        secure=True,
+        max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
+      #  domain='.generic-api-app.azurewebsites.net' 
+    )
+
         response.set_cookie(
-            key='refresh_token',
-            value=token.refresh_token,
-            httponly=True,
-            samesite='none',
-            secure=True,
-            max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
-           domain='.canadacentral-01.azurewebsites.net'
-        )
+        key='refresh_token',
+        value=token.refresh_token,
+        httponly=True,
+        samesite='none',
+        secure=True,
+        max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
+        #domain='.generic-api-app.azurewebsites.net'  
+    )
+
         print(response.headers,"HEADER")
         return success_response(message='Login Successful',data=token.dict(),status_code=200,headers=response.headers)
     
@@ -157,7 +159,7 @@ async def refresh_token_endpoint(
             samesite='none',
             secure=True,
             max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-           domain='.canadacentral-01.azurewebsites.net'
+           #domain='.generic-api-app.azurewebsites.net'
         )
 
         return success_response(message='Token Refreshed Succesfully',status_code=200,headers=response.headers)
