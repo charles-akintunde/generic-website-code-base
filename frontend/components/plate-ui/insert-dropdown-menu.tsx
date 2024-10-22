@@ -13,8 +13,6 @@ import {
 import { ELEMENT_H1, ELEMENT_H2, ELEMENT_H3 } from '@udecode/plate-heading';
 import { ELEMENT_PARAGRAPH } from '@udecode/plate-paragraph';
 
-import { Icons } from '@/components/icons';
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +36,7 @@ import { ELEMENT_TABLE, insertTable } from '@udecode/plate-table';
 import { ELEMENT_HR } from '@udecode/plate-horizontal-rule';
 import { ELEMENT_EXCALIDRAW } from '@udecode/plate-excalidraw';
 import { ELEMENT_LINK, triggerFloatingLink } from '@udecode/plate-link';
+import { Icons } from '../icons';
 
 const items = [
   {

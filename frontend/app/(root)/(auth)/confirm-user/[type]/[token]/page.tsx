@@ -1,12 +1,11 @@
 'use client';
-
 import React, { useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import useVerifyAccount from '@/hooks/api-hooks/use-verify-account';
-import AppRequestResult from '@/components/common/app-request-result';
+import useVerifyAccount from '../../../../../../hooks/api-hooks/use-verify-account';
+import AppRequestResult from '../../../../../../components/common/app-request-result';
 import { ArrowRightIcon, ReloadIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button } from '../../../../../../components/ui/button';
 
 const VerifyUserAccount: React.FC = () => {
   const params = useParams();

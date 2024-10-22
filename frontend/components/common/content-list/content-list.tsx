@@ -6,28 +6,28 @@ import { PlusIcon } from 'lucide-react';
 import {
   containerNoFlexPaddingStyles,
   primarySolidButtonStyles,
-} from '@/styles/globals';
+} from '../../../styles/globals';
 import {
   IFetchedPage,
   IPageContentMain,
   RootState,
-} from '@/types/componentInterfaces';
+} from '../../../types/componentInterfaces';
 import { usePathname, useRouter } from 'next/navigation';
-import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
+import { useGetPageWithPaginationQuery } from '../../../api/pageContentApi';
 import {
   handleRoutingOnError,
   normalizeMultiContentPage,
-} from '@/utils/helper';
+} from '../../../utils/helper';
 import AppLoading from '../app-loading';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
-import { EPageType } from '@/types/enums';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux-hooks';
+import { EPageType } from '../../../types/enums';
 import { CreatePageContentModal } from '../form/create-page-content';
 import {
   addPageContents,
   setCurrentUserPage,
   setFecthingPageData,
   setPageContents,
-} from '@/store/slice/pageSlice';
+} from '../../../store/slice/pageSlice';
 
 interface ContentListProps {
   pageType: string;
@@ -73,7 +73,7 @@ const ContentList: React.FC<ContentListProps> = ({
   );
 
   const visiblePageContents = fetchedPageContents.filter(
-    (content) => !content.deleted
+    (content: any) => !content.deleted
   );
   const sortedPageContents = [...visiblePageContents].sort((a, b) => {
     const dateA = a.pageContentCreatedAt
@@ -112,8 +112,6 @@ const ContentList: React.FC<ContentListProps> = ({
     }
   );
 
-  console.log(sortedPageContents, 'sortedPageContents');
-
   useEffect(() => {
     dispatch(setPageContents([]));
     setPageNumber(1);
@@ -132,9 +130,6 @@ const ContentList: React.FC<ContentListProps> = ({
   );
 
   useEffect(() => {
-    console.log(pageContentsData, 'pageContentsData');
-    console.log(sortedPageContents, 'sortedPageContents');
-
     if (!pageContentsData) {
       console.log('No page content data available');
 
@@ -181,7 +176,13 @@ const ContentList: React.FC<ContentListProps> = ({
   }, [handleObserver]);
 
   useEffect(() => {
-    handleRoutingOnError(router, hasPageFetchError as boolean, pageFetchError);
+    handleRoutingOnError(
+      router,
+      hasPageFetchError as boolean,
+      pageFetchError,
+      () => {},
+      'CONTENT LISTS'
+    );
   }, [router, hasPageFetchError, pageFetchError]);
 
   if (isPageFetchLoading) {

@@ -2,14 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import FormField from '../form-field';
-import { Form } from '@/components/ui/form';
+import { Form } from '../../ui/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { accountCreationSchema } from '@/utils/formSchema';
+import { accountCreationSchema } from '../../../utils/formSchema';
 import LoadingButton from '../button/loading-button';
 import Link from 'next/link';
-import { useCreateAccount } from '@/hooks/api-hooks/use-create-account';
-import { ICreatAccount } from '@/types/componentInterfaces';
+import { useCreateAccount } from '../../../hooks/api-hooks/use-create-account';
+import { ICreatAccount } from '../../../types/componentInterfaces';
 import AppRequestResult from '../app-request-result';
 import TermsAndService from '../dialog/terms-and-service-dialog';
 

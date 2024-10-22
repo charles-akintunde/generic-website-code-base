@@ -2,15 +2,17 @@
 import React, { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import usePage from '@/hooks/api-hooks/use-page';
-import { IPageMenuItem } from '@/types/componentInterfaces';
-import { hasPermission, reloadPage } from '@/utils/helper';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
-import { setUIIsUserEditingMode } from '@/store/slice/userSlice';
-import { setFecthingPageData, setPageContents } from '@/store/slice/pageSlice';
-import { appConfig } from '@/utils/appConfig';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
-import { routes } from './layout/menu-items';
+import usePage from '../../hooks/api-hooks/use-page';
+import { IPageMenuItem } from '../../types/componentInterfaces';
+import { hasPermission } from '../../utils/helper';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import { setUIIsUserEditingMode } from '../../store/slice/userSlice';
+import {
+  setFecthingPageData,
+  setPageContents,
+} from '../../store/slice/pageSlice';
+import { appConfig } from '../../utils/appConfig';
+import useUserInfo from '../../hooks/api-hooks/use-user-info';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -145,6 +147,12 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
             currentPage?.pagePermission as string[]
           )
         ) {
+          console.log(
+            uiActiveUserRole,
+            currentPage?.pagePermission,
+            'LLLLLLLLLLLLLLL'
+          );
+          console.log('Accessed Denied!!!');
           router.replace('/access-denied');
         }
       }
@@ -168,10 +176,6 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
     );
 
     activePageRefetch();
-
-    routes.forEach((route) => {
-      router.prefetch(route.href);
-    });
   }, [allAppRoutes, pathname, router, uiIsLoading, currentPage]);
 
   return allAppRoutes && allAppRoutes.length > 0 ? <>{children}</> : null;

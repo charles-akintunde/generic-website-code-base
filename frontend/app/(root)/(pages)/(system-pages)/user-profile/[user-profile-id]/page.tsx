@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { UserProfileForm } from '@/components/common/form/user-profile-form';
+import { UserProfileForm } from '../../../../../../components/common/form/user-profile-form';
 import {
   UserOutlined,
   HomeOutlined,
@@ -9,11 +9,10 @@ import {
   PhoneOutlined,
   MailOutlined,
 } from '@ant-design/icons';
-import { Avatar, Divider, Badge, Tooltip } from 'antd';
-import { useGetUserQuery } from '@/api/userApi';
+import { Avatar, Badge, Tooltip } from 'antd';
+import { useGetUserQuery } from '../../../../../../api/userApi';
 import {
   formatDate,
-  getCookies,
   handleRoutingOnError,
   isValidUUID,
   roleBadgeClasses,
@@ -21,11 +20,11 @@ import {
   transformToUserInfo,
   userRoleLabels,
   userStatusLabels,
-} from '@/utils/helper';
-import { IUserInfo } from '@/types/componentInterfaces';
+} from '../../../../../../utils/helper';
+import { IUserInfo } from '../../../../../../types/componentInterfaces';
 import { usePathname, useRouter } from 'next/navigation';
-import AppLoading from '@/components/common/app-loading';
-import { useAppSelector } from '@/hooks/redux-hooks';
+import AppLoading from '../../../../../../components/common/app-loading';
+import { useAppSelector } from '../../../../../../hooks/redux-hooks';
 
 export function sanitizeAndCompare(str1: string, str2: string) {
   if (!str1 || !str2) return false;

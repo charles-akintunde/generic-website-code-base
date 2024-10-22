@@ -1,15 +1,15 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import publicRouteBaseQuery from './publicRouteBaseQuery';
 import {
+  IUserResponseWrapper,
   ICompleteUserResponseWrapper,
   IGenericResponse,
-  IUserResponseWrapper,
-} from '@/types/backendResponseInterfaces';
-import { GetUsersRequest } from '@/hooks/api-hooks/use-user-info';
+} from '../types/backendResponseInterfaces';
 import {
   IEditUserRequest,
   IEditUserRoleStatusRequest,
-} from '@/types/requestInterfaces';
+} from '../types/requestInterfaces';
+import { GetUsersRequest } from '../hooks/api-hooks/use-user-info';
 
 const url = '/users';
 

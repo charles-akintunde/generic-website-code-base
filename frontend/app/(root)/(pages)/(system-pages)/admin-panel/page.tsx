@@ -1,8 +1,12 @@
 import React from 'react';
-import AdminPanel from '@/components/admin-panel/admin-panel';
-import { systemMenuItems } from '@/components/hoc/layout/menu-items';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
-import { hasPermission } from '@/utils/helper';
+import dynamic from 'next/dynamic';
+
+const AdminPanel = dynamic(
+  () => import('../../../../../components/admin-panel/admin-panel'),
+  {
+    ssr: false,
+  }
+);
 
 const AdminPage = () => {
   return (

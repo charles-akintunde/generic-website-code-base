@@ -1,14 +1,14 @@
-import useHelper from '@/hooks/api-hooks/use-helper';
 import {
+  UserResponse,
   ICompleteUserResponse,
-  IPageContentGetResponse,
   IPageContentResponse,
   IUserResponseData,
   Page,
   PagesData,
-  UserResponse,
-} from '@/types/backendResponseInterfaces';
+} from '../types/backendResponseInterfaces';
 import {
+  IPageList,
+  IPage,
   IPageContentItem,
   IPageContentMain,
   IPageMain,
@@ -16,15 +16,13 @@ import {
   IUserList,
   IUserInfo,
   Notify,
-  IPageList,
-  IPage,
-} from '@/types/componentInterfaces';
+} from '../types/componentInterfaces';
 import {
   EMemberPosition,
   EPageType,
   EUserRole,
   EUserStatus,
-} from '@/types/enums';
+} from '../types/enums';
 import { TDescendant, TElement } from '@udecode/plate-common';
 import { MenuProps } from 'antd';
 import { jwtDecode } from 'jwt-decode';
@@ -535,22 +533,28 @@ export const handleRoutingOnError = (
   router: any,
   hasError: boolean,
   error: any,
-  clearCache?: () => void
+  clearCache?: () => void,
+  from?: string
 ) => {
   if (hasError && error) {
     if (error.status === 404) {
       router.replace('/404');
     } else if (error.status === 500) {
-      router.replace('/500');
+      router.replace('/internal-server-error');
     } else {
       router.replace('/access-denied');
     }
 
-    if (clearCache) {
-      clearCache();
-    }
+    // if (clearCache) {
+    //   clearCache();
+    // }
   }
 };
+
+export function sanitizeAndCompare(str1: string, str2: string) {
+  if (!str1 || !str2) return false;
+  return str1.trim().toLowerCase() === str2.trim().toLowerCase();
+}
 
 export const hasNavItems = (
   navMenuItems: MenuItem[],
@@ -586,6 +590,7 @@ export const hasNavItems = (
   // Find the matching item or child
   const currentNavItem = findNavItem(navMenuItems);
 
+  // @ts-ignore
   return currentNavItem ? currentNavItem.key : null;
 };
 

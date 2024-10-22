@@ -1,5 +1,4 @@
-import AuthLayout from '@/components/hoc/auth-layout';
-import type { Metadata } from 'next';
+import AuthLayout from '../../../components/hoc/auth-layout';
 
 export default function RootLayout({
   children,

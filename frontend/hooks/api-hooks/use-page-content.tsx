@@ -5,38 +5,29 @@ import {
   setCurrentPageContent,
   setCurrentUserPage,
   setEditingPageContent,
-  setFecthingPageData,
   setPageContentImageURL,
-} from '@/store/slice/pageSlice';
+} from '../../store/slice/pageSlice';
 import {
-  IFetchedPage,
   IPageContentImage,
   IPageContentItem,
   IPageContentMain,
   IPageMain,
   RootState,
-} from '@/types/componentInterfaces';
+} from '../../types/componentInterfaces';
 import {
   useCreatePageContentMutation,
   useGetPageContentQuery,
   useDeletePageContentMutation,
   useEditPageContentMutation,
   useUploadPageContentMutation,
-  // useGetPageWithPaginationQuery,
-  pageContentApi,
-  useGetPageWithPaginationQuery,
-} from '@/api/pageContentApi';
-import { IPageContentGetRequest } from '@/types/requestInterfaces';
-import {
-  normalizeMultiContentPage,
-  reloadPage,
-  toKebabCase,
-} from '@/utils/helper';
+} from '../../api/pageContentApi';
 import { useRouter } from 'next/navigation';
-import { useNotification } from '@/components/hoc/notification-provider';
+import { useNotification } from '../../components/hoc/notification-provider';
 import usePage from './use-page';
 import { usePathname } from 'next/navigation';
-import { EPageType } from '@/types/enums';
+import { EPageType } from '../../types/enums';
+import { IPageContentGetRequest } from '../../types/requestInterfaces';
+import { toKebabCase } from '../../utils/helper';
 
 interface IUsePageContentProps {
   pageContent?: IPageContentGetRequest;
@@ -217,9 +208,7 @@ const usePageContent = ({
       }
       // @ts-ignore
       const response = await createPageContent(formData).unwrap();
-      console.log(response, 'response');
 
-      console.log();
       if (pageContentFetchRefetch) pageContentFetchRefetch();
 
       // if (pageContent.pageType == EPageType.ResList) {
@@ -330,8 +319,6 @@ const usePageContent = ({
         formData,
       }).unwrap();
 
-      console.log('After API call:', pageContent.pageContentDisplayURL);
-
       if (
         pageContent.pageContentDisplayURL &&
         pageType !== EPageType.SinglePage &&
@@ -411,20 +398,15 @@ const usePageContent = ({
     try {
       console.log('Deleting...');
       const response = await deletePageContent(pageContentId).unwrap();
-      // notify(
-      //   'Success',
-      //   response.message || 'The page has been successfully deleted.',
-      //   'success'
-      // );
-      console.log('Complete Deleting...');
-      console.log('About to dispatch...');
+      notify(
+        'Success',
+        response.message || 'The page has been successfully deleted.',
+        'success'
+      );
+
       try {
         dispatch(removePageContent(pageContentId));
-        console.log('Deleted');
-      } catch (dispatchError) {
-        console.error('Dispatch failed:', dispatchError);
-      }
-      console.log(sortedPageContents, 'sortedPageContents');
+      } catch (dispatchError) {}
     } catch (error: any) {
       notify(
         'Error',

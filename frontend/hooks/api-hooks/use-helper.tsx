@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppDispatch } from '../redux-hooks';
-import { pageContentApi } from '@/api/pageContentApi';
+import { pageContentApi } from '../../api/pageContentApi';
 
 const useHelper = () => {
   const dispatch = useAppDispatch();

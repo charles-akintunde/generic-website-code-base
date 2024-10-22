@@ -7,9 +7,8 @@ import {
   useMediaToolbarButton,
 } from '@udecode/plate-media';
 
-import { Icons } from '@/components/icons';
-
 import { ToolbarButton } from './toolbar';
+import { Icons } from '../icons';
 
 export const MediaToolbarButton = withRef<
   typeof ToolbarButton,

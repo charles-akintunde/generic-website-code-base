@@ -3,19 +3,19 @@ import React from 'react';
 import { Tabs } from 'antd';
 import UserTab from './user-tab';
 import PageTab from './page-tab';
-import { containerPaddingStyles } from '@/styles/globals';
+import { containerPaddingStyles } from '../../styles/globals';
 import type { TabsProps } from 'antd';
 
 const items: TabsProps['items'] = [
   {
-    key: 'pages',
-    label: 'Pages',
-    children: <PageTab />,
-  },
-  {
     key: 'users',
     label: 'Users',
     children: <UserTab />,
+  },
+  {
+    key: 'pages',
+    label: 'Pages',
+    children: <PageTab />,
   },
 ];
 

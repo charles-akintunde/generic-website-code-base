@@ -1,23 +1,23 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
-import { closeDrawer } from '@/store/slice/layoutSlice';
-import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
+import { useAppDispatch, useAppSelector } from '../../../../hooks/redux-hooks';
+import { closeDrawer } from '../../../../store/slice/layoutSlice';
+import { Sheet, SheetContent, SheetHeader } from '../../../ui/sheet';
 import { MobileMenuItems } from '../menu-items/menu-items';
-import Logo from '@/components/common/logo';
+import Logo from '../../../common/logo';
 import Link from 'next/link';
 import { LogIn, LogOut } from 'lucide-react';
-import LogoutButton from '@/components/common/button/logout-button';
-import AppButton from '@/components/common/button/app-button';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import LogoutButton from '../../../common/button/logout-button';
+import AppButton from '../../../common/button/app-button';
+import { ScrollArea } from '../../../ui/scroll-area';
 import { Avatar, Menu, MenuProps } from 'antd';
-import HoverableCard from '@/components/common/hover-card';
-import { transitionStyles } from '@/styles/globals';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
-import usePage from '@/hooks/api-hooks/use-page';
-import { hasNavItems } from '@/utils/helper';
+import HoverableCard from '../../../common/hover-card';
+import { transitionStyles } from '../../../../styles/globals';
+import useUserInfo from '../../../../hooks/api-hooks/use-user-info';
+import usePage from '../../../../hooks/api-hooks/use-page';
+import { hasNavItems } from '../../../../utils/helper';
 import { usePathname } from 'next/navigation';
-import AppLoading from '@/components/common/app-loading';
+import AppLoading from '../../../common/app-loading';
 
 type MenuItem = Required<MenuProps>['items'][number];
 

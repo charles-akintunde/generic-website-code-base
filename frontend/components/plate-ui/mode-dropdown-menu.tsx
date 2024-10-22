@@ -9,8 +9,6 @@ import {
   usePlateStore,
 } from '@udecode/plate-common';
 
-import { Icons } from '@/components/icons';
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +18,7 @@ import {
   useOpenState,
 } from './dropdown-menu';
 import { ToolbarButton } from './toolbar';
-import useUserLogin from '@/hooks/api-hooks/use-user-login';
+import { Icons } from '../icons';
 
 export function ModeDropdownMenu(props: DropdownMenuProps) {
   const editor = useEditorRef();

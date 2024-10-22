@@ -1,39 +1,39 @@
 'use client';
-import {
-  useDeleteUserMutation,
-  useEditUserMutation,
-  useEditRoleAndStatusMutation,
-} from '@/api/userApi';
-import { useNotification } from '@/components/hoc/notification-provider';
-import {
-  IUIActiveUser,
-  IUserBase,
-  IUserInfo,
-} from '@/types/componentInterfaces';
-import {
-  transformToUserInfo,
-  transformUserInfoToEditUserRequest,
-} from '@/utils/helper';
+
 import { ExceptionMap } from 'antd/es/result';
-import { sanitizeAndCompare } from '@/app/(root)/(pages)/(system-pages)/user-profile/[user-profile-id]/page';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux-hooks';
+
+import { useRouter } from 'next/navigation';
+
+import { useCommentsShowResolvedButton } from '@udecode/plate-comments';
 import {
-  setUIActiveUser,
-  toggleCreateUserDialog,
-} from '@/store/slice/userSlice';
+  useDeleteUserMutation,
+  useEditRoleAndStatusMutation,
+  useEditUserMutation,
+} from '../../api/userApi';
 import {
   useGetActiveUserQuery,
   useResetPasswordWithEmailMutation,
   useResetPasswordWithTokenMutation,
-} from '@/api/authApi';
-import { useRouter } from 'next/navigation';
-import { EUserRole } from '@/types/enums';
-import { useCommentsShowResolvedButton } from '@udecode/plate-comments';
+} from '../../api/authApi';
+import { useNotification } from '../../components/hoc/notification-provider';
+import { IUserBase, IUserInfo } from '../../types/componentInterfaces';
+import { transformToUserInfo } from '../../utils/helper';
+import { EUserRole } from '../../types/enums';
+import {
+  setUIActiveUser,
+  toggleCreateUserDialog,
+} from '../../store/slice/userSlice';
 
 export interface GetUsersRequest {
   page: number;
   limit: number;
+}
+
+export function sanitizeAndCompare(str1: string, str2: string) {
+  if (!str1 || !str2) return false;
+  return str1.trim().toLowerCase() === str2.trim().toLowerCase();
 }
 
 const useUserInfo = () => {
@@ -112,7 +112,7 @@ const useUserInfo = () => {
           uiFullName: '',
           uiInitials: '',
           uiIsAdmin: false,
-          uiIsLoading: false,
+          uiIsLoading: true,
           uiIsSuperAdmin: false,
           uiCanEdit: false,
           uiRole: [EUserRole.Public],

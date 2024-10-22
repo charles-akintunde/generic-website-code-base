@@ -1,9 +1,9 @@
-import { Badge } from '@/components/ui/badge';
-import { IUserBase } from '@/types/componentInterfaces';
-import { EUserRole, EUserStatus } from '@/types/enums';
 import { Avatar } from 'antd';
 import { formatDate, userRoleLabels, userStatusLabels } from './helper';
-import ActionsButtons from '@/components/common/action-buttons';
+import { IUserBase } from '../types/componentInterfaces';
+import { EUserRole, EUserStatus } from '../types/enums';
+import { Badge } from '../components/ui/badge';
+import ActionsButtons from '../components/common/action-buttons';
 
 export const userColumns = [
   {
@@ -12,6 +12,7 @@ export const userColumns = [
     key: 'userName',
     render: (text: string, record: IUserBase) => (
       <div className="flex space-x-2 justify-start items-center">
+        {/* @ts-ignore */}
         <Avatar src={<img src={record.uiPhotoUrl} alt="avatar" />} />
         <a
           href={''}

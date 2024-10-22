@@ -10,8 +10,6 @@ import {
   useCommentEditButtonState,
 } from '@udecode/plate-comments';
 
-import { Icons } from '@/components/icons';
-
 import { Button } from './button';
 import {
   DropdownMenu,
@@ -19,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './dropdown-menu';
+import { Icons } from '../icons';
 
 export function CommentMoreDropdown() {
   const editButtonState = useCommentEditButtonState();

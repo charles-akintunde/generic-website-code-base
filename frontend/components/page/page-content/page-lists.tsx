@@ -1,14 +1,14 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import PageListCard from './page-list-card';
-import { handleRoutingOnError, toKebabCase } from '@/utils/helper';
-import { IPageContentMain } from '@/types/componentInterfaces';
-import usePage from '@/hooks/api-hooks/use-page';
+import { handleRoutingOnError, toKebabCase } from '../../../utils/helper';
+import { IPageContentMain } from '../../../types/componentInterfaces';
+import usePage from '../../../hooks/api-hooks/use-page';
 import { usePathname } from 'next/navigation';
-import ContentList from '@/components/common/content-list/content-list';
-import AppLoading from '@/components/common/app-loading';
+import ContentList from '../../common/content-list/content-list';
+import AppLoading from '../../common/app-loading';
 import { useRouter } from 'next/navigation';
-import { useAppSelector } from '@/hooks/redux-hooks';
+import { useAppSelector } from '../../../hooks/redux-hooks';
 
 const PageLists = () => {
   const pathname = usePathname();
@@ -33,10 +33,16 @@ const PageLists = () => {
   };
   const queryString = new URLSearchParams(queryParams).toString();
   useEffect(() => {
-    handleRoutingOnError(router, hasPageFetchError, pageFetchError);
+    handleRoutingOnError(
+      router,
+      hasPageFetchError,
+      pageFetchError,
+      () => {},
+      'PAGE LISTS'
+    );
   }, [router, hasPageFetchError, pageFetchError]);
 
-  if (isPageFetchLoading) {
+  if (isPageFetchLoading || pageFetchError) {
     return <AppLoading />;
   }
   return (

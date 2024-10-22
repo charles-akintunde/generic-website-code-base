@@ -1,8 +1,23 @@
+import dynamic from 'next/dynamic';
 import React from 'react';
-import { ResetPasswordWithEmailForm } from '@/components/common/form/passoword-reset-form';
+const ResetPasswordWithEmailForm = dynamic(
+  () =>
+    import('../../../../components/common/form/passoword-reset-form').then(
+      (mod) => mod.ResetPasswordWithEmailFormComponent
+    ),
+  {
+    ssr: false,
+  }
+);
 
-const ResetPassword = () => {
-  return <ResetPasswordWithEmailForm />;
-};
-
-export default ResetPassword;
+export default function ResetPassword() {
+  return (
+    <div>
+      {typeof window !== 'undefined' ? (
+        <ResetPasswordWithEmailForm />
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+  );
+}

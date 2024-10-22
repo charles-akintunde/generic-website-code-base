@@ -1,9 +1,9 @@
 'use-client';
 import React from 'react';
 import { Button, Result } from 'antd';
-import AppButton from '@/components/common/button/app-button';
+import AppButton from '../../components/common/button/app-button';
 import { Mouse } from 'lucide-react';
-import { primarySolidButtonStyles } from '@/styles/globals';
+import { primarySolidButtonStyles } from '../../styles/globals';
 import { HomeOutlined } from '@ant-design/icons';
 
 const NotFound = () => {

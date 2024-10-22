@@ -46,7 +46,8 @@ def create_app() -> FastAPI:
     origins = [
         settings.FRONTEND_URL,  # Your Next.js frontend
        'https://localhost',
-       'https://127.0.0.1'
+       'https://127.0.0.1',
+       'https://localhost:3000',
         # Add other origins as needed
     ]
 

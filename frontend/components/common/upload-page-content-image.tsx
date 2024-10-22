@@ -10,22 +10,22 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from '@/components/ui/dialog';
+} from '../ui/dialog';
 import { Button } from '../ui/button';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { pageContentImageSchema } from '@/utils/formSchema';
-import FormField from '@/components/common/form-field';
-import usePageContent from '@/hooks/api-hooks/use-page-content';
-import { IPageContentImage } from '@/types/componentInterfaces';
+import { pageContentImageSchema } from '../../utils/formSchema';
+import FormField from './form-field';
+import usePageContent from '../../hooks/api-hooks/use-page-content';
+import { IPageContentImage } from '../../types/componentInterfaces';
 import AppButton from './button/app-button';
 import { Clipboard } from 'lucide-react';
-import { primarySolidButtonStyles } from '@/styles/globals';
-import { copyToClipboard } from '@/utils/helper';
+import { primarySolidButtonStyles } from '../../styles/globals';
+import { copyToClipboard } from '../../utils/helper';
 import { useNotification } from '../hoc/notification-provider';
 import LoadingButton from './button/loading-button';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
-import { setPageContentImageURL } from '@/store/slice/pageSlice';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import { setPageContentImageURL } from '../../store/slice/pageSlice';
 import { UploadOutlined } from '@ant-design/icons';
 // import { ToolbarButton } from '@/components/plate-ui/t';
 
@@ -62,7 +62,7 @@ const UploadPageContentImage = () => {
   };
 
   useEffect(() => {
-    form.setValue('pageContentImageURL', pageContentImageURL);
+    form.setValue('pageContentImageURL', pageContentImageURL as never);
   }, [pageContentImageURL, form]);
 
   const copyTextToClipBoard = () => {

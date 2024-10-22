@@ -6,10 +6,9 @@ import * as ToolbarPrimitive from '@radix-ui/react-toolbar';
 import { cn, withCn, withRef, withVariants } from '@udecode/cn';
 import { type VariantProps, cva } from 'class-variance-authority';
 
-import { Icons } from '@/components/icons';
-
 import { Separator } from './separator';
 import { withTooltip } from './tooltip';
+import { Icons } from '../icons';
 
 export const Toolbar = withCn(
   ToolbarPrimitive.Root,

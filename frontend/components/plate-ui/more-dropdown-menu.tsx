@@ -5,8 +5,6 @@ import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
 import { MARK_SUBSCRIPT, MARK_SUPERSCRIPT } from '@udecode/plate-basic-marks';
 import { focusEditor, toggleMark, useEditorRef } from '@udecode/plate-common';
 
-import { Icons } from '@/components/icons';
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +13,7 @@ import {
   useOpenState,
 } from './dropdown-menu';
 import { ToolbarButton } from './toolbar';
+import { Icons } from '../icons';
 
 export function MoreDropdownMenu(props: DropdownMenuProps) {
   const editor = useEditorRef();

@@ -1,4 +1,4 @@
-import { pageContentPaddingStyles } from '@/styles/globals';
+import { pageContentPaddingStyles } from '../../../styles/globals';
 import {
   createPageContentItem,
   fromKebabCase,
@@ -7,25 +7,25 @@ import {
   normalizeMultiContentPage,
   notifyNoChangesMade,
   toKebabCase,
-} from '@/utils/helper';
+} from '../../../utils/helper';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { PlateEditor } from '@/components/plate/plate';
-import LoadingButton from '@/components/common/button/loading-button';
+import { PlateEditor } from '../../plate/plate';
+import LoadingButton from '../../common/button/loading-button';
 import {
   IPageContentItem,
   IPageContentMain,
   IPageMain,
-} from '@/types/componentInterfaces';
-import { useNotification } from '@/components/hoc/notification-provider';
-import usePageContent from '@/hooks/api-hooks/use-page-content';
-import AppLoading from '@/components/common/app-loading';
-import PageLayout from '@/components/page/layout';
+} from '../../../types/componentInterfaces';
+import { useNotification } from '../../hoc/notification-provider';
+import usePageContent from '../../../hooks/api-hooks/use-page-content';
+import AppLoading from '../../common/app-loading';
+import PageLayout from '../layout';
 import { TElement } from '@udecode/plate-common';
-import { useGetPageQuery } from '@/api/pageApi';
-import { Page } from '@/types/backendResponseInterfaces';
-import { useAppSelector } from '@/hooks/redux-hooks';
-import { useGetPageWithPaginationQuery } from '@/api/pageContentApi';
+import { useGetPageQuery } from '../../../api/pageApi';
+import { Page } from '../../../types/backendResponseInterfaces';
+import { useAppSelector } from '../../../hooks/redux-hooks';
+import { useGetPageWithPaginationQuery } from '../../../api/pageContentApi';
 
 const SinglePage = () => {
   const router = useRouter();

@@ -27,9 +27,9 @@ import { LinkToolbarButton } from './link-toolbar-button';
 import { MediaToolbarButton } from './media-toolbar-button';
 import { IndentToolbarButton } from './indent-toolbar-button';
 
-import { Icons, iconVariants } from '@/components/icons';
-import { useAppSelector } from '@/hooks/redux-hooks';
 import UploadPageContentImage from '../common/upload-page-content-image';
+import { useAppSelector } from '../../hooks/redux-hooks';
+import { Icons, iconVariants } from '../icons';
 
 export function FixedToolbarButtons() {
   const readOnly = useEditorReadOnly();

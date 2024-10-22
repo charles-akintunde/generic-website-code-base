@@ -19,12 +19,11 @@ import {
   useFloatingLinkInsertState,
 } from '@udecode/plate-link';
 
-import { Icons } from '@/components/icons';
-
 import { buttonVariants } from './button';
 import { inputVariants } from './input';
 import { popoverVariants } from './popover';
 import { Separator } from './separator';
+import { Icons } from '../icons';
 
 const floatingOptions: UseVirtualFloatingOptions = {
   middleware: [

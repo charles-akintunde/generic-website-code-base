@@ -1,18 +1,19 @@
 'use client';
-import { useNotification } from '@/components/hoc/notification-provider';
 import React, { useEffect, useState } from 'react';
+
+import { useRouter } from 'next/navigation';
+import { useAppDispatch } from '../redux-hooks';
 import {
-  useUserLoginMutation,
   useGetActiveUserQuery,
   useRefreshTokenMutation,
-} from '@/api/authApi';
-import { IUserInfo, IUserLogin } from '@/types/componentInterfaces';
-import { IUserLoginRequest } from '@/types/requestInterfaces';
-import { useRouter } from 'next/navigation';
-import { decodeJwt, getTokens, transformToUserInfo } from '@/utils/helper';
-import { EUserRole } from '@/types/enums';
-import { setUIActiveUser } from '@/store/slice/userSlice';
-import { useAppDispatch } from '../redux-hooks';
+  useUserLoginMutation,
+} from '../../api/authApi';
+import { IUserInfo, IUserLogin } from '../../types/componentInterfaces';
+import { IUserLoginRequest } from '../../types/requestInterfaces';
+import { EUserRole } from '../../types/enums';
+import { transformToUserInfo } from '../../utils/helper';
+import { setUIActiveUser } from '../../store/slice/userSlice';
+import { useNotification } from '../../components/hoc/notification-provider';
 
 const useUserLogin = () => {
   const dispatch = useAppDispatch();
@@ -51,7 +52,10 @@ const useUserLogin = () => {
       notify('Success', response.message || successMessage, 'success');
       router.replace('/');
     } catch (error: any) {
-      notify('Error', error.data.message, 'error');
+      const errorMessage =
+        error?.data?.message ||
+        'An unexpected error occurred. Please try again.';
+      notify('Error', errorMessage, 'error');
     }
   };
 

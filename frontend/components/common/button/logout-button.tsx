@@ -8,16 +8,12 @@ import {
   DialogTrigger,
   DialogFooter,
   DialogClose,
-} from '@/components/ui/dialog';
-import { closeDrawer } from '@/store/slice/layoutSlice';
+} from '../../ui/dialog';
+import { closeDrawer } from '../../../store/slice/layoutSlice';
 import AppButton from './app-button';
-import { useAppDispatch } from '@/hooks/redux-hooks';
-import { Button } from '@/components/ui/button';
-import {
-  destructiveSolidButtonStyles,
-  outlinedButtonStyles,
-} from '@/styles/globals';
-import useLogout from '@/hooks/api-hooks/use-logout';
+import { useAppDispatch } from '../../../hooks/redux-hooks';
+import { Button } from '../../ui/button';
+import useLogout from '../../../hooks/api-hooks/use-logout';
 
 interface ILogoutProps {
   trigger: React.ReactNode;

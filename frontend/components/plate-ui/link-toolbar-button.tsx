@@ -6,9 +6,8 @@ import {
   useLinkToolbarButtonState,
 } from '@udecode/plate-link';
 
-import { Icons } from '@/components/icons';
-
 import { ToolbarButton } from './toolbar';
+import { Icons } from '../icons';
 
 export const LinkToolbarButton = withRef<typeof ToolbarButton>((rest, ref) => {
   const state = useLinkToolbarButtonState();

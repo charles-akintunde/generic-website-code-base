@@ -1,20 +1,20 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '../../ui/badge';
 import { Table, Tooltip } from 'antd';
-import { EPageType, EUserRole } from '@/types/enums';
+import { EPageType, EUserRole } from '../../../types/enums';
 import {
   handleRoutingOnError,
   mapPageToIPageMain,
   pageTypeLabels,
   userRoleLabels,
-} from '@/utils/helper';
-import { IPageList, IPageMain } from '@/types/componentInterfaces';
-import usePage from '@/hooks/api-hooks/use-page';
-import ActionsButtons from '@/components/common/action-buttons';
-import { useGetPagesWithOffsetQuery } from '@/api/pageApi';
+} from '../../../utils/helper';
+import { IPageList, IPageMain } from '../../../types/componentInterfaces';
+import usePage from '../../../hooks/api-hooks/use-page';
+import ActionsButtons from '../../common/action-buttons';
+import { useGetPagesWithOffsetQuery } from '../../../api/pageApi';
 import { useRouter } from 'next/navigation';
-import { useAppSelector } from '@/hooks/redux-hooks';
+import { useAppSelector } from '../../../hooks/redux-hooks';
 import { ExternalLink } from 'lucide-react';
 
 const PageListItem: React.FC = () => {
@@ -42,8 +42,6 @@ const PageListItem: React.FC = () => {
     PG_Number: fetchParams.current,
   });
 
-  console.log(pagesResponse, 'pagesResponse');
-
   useEffect(() => {
     if (pagesResponse && pagesResponse.data) {
       const { data } = pagesResponse;
@@ -59,7 +57,8 @@ const PageListItem: React.FC = () => {
   }, [pagesResponse]);
 
   useEffect(() => {
-    if (!isPagesFetchSuccess) {
+    if (hasPagesFetchError) {
+      console.log('Accessed Denied From Page List!!!');
       handleRoutingOnError(router, hasPagesFetchError, pagesFetchError);
     }
   }, [hasPagesFetchError, pagesFetchError, router]);

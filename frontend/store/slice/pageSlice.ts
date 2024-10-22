@@ -1,12 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
+  IPageMain,
   IFetchedPage,
   IFetchedSinglePage,
   IPageContentItem,
   IPageContentMain,
-  IPageMain,
-} from '@/types/componentInterfaces';
-
+} from '../../types/componentInterfaces';
 interface ICurrentUserPage {
   pageId?: string | null;
   pageType?: string | null;

@@ -1,13 +1,15 @@
 'use client';
 import React, { useEffect } from 'react';
-import { useGetActiveUserQuery, useRefreshTokenMutation } from '@/api/authApi';
-import { useAppDispatch } from '@/hooks/redux-hooks';
-import { setUIActiveUser } from '@/store/slice/userSlice';
-import { IUserInfo } from '@/types/componentInterfaces';
-import { EUserRole } from '@/types/enums';
-import { transformToUserInfo } from '@/utils/helper';
+import {
+  useGetActiveUserQuery,
+  useRefreshTokenMutation,
+} from '../../api/authApi';
+import { useAppDispatch } from '../../hooks/redux-hooks';
+import { setUIActiveUser } from '../../store/slice/userSlice';
+import { IUserInfo } from '../../types/componentInterfaces';
+import { EUserRole } from '../../types/enums';
+import { transformToUserInfo } from '../../utils/helper';
 import { usePathname } from 'next/navigation';
-import { getCookies } from '@/utils/helper';
 
 interface IAuthGuardProps {
   children: React.ReactNode;

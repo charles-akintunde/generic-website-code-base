@@ -1,15 +1,13 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import menuIcon from '@/assets/icons/menu.svg';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
-import { toggleDrawer } from '@/store/slice/layoutSlice';
+import menuIcon from '../../../../assets/icons/menu.svg';
+import { useAppDispatch, useAppSelector } from '../../../../hooks/redux-hooks';
+import { toggleDrawer } from '../../../../store/slice/layoutSlice';
 import Drawer from '../drawer/drawer';
 import Image from 'next/image';
-import { MenuItems } from '../menu-items/menu-items';
 import { Menu, MenuProps, Tooltip } from 'antd';
-import Logo from '@/components/common/logo';
+import Logo from '../../../common/logo';
 import { Avatar } from 'antd';
-import { containerPaddingStyles } from '@/styles/globals';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,20 +16,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '../../../ui/dropdown-menu';
 import { User, RefreshCw, LogOut, LogIn, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
-import LogoutButton from '@/components/common/button/logout-button';
-import { Separator } from '@/components/ui/separator';
-import HoverableCard from '@/components/common/hover-card';
-import useUserInfo from '@/hooks/api-hooks/use-user-info';
-import { IUIActiveUser } from '@/types/componentInterfaces';
-import usePage from '@/hooks/api-hooks/use-page';
-import { cx } from 'class-variance-authority';
+import LogoutButton from '../../../common/button/logout-button';
+import { Separator } from '../../../ui/separator';
+import HoverableCard from '../../../common/hover-card';
+import useUserInfo from '../../../../hooks/api-hooks/use-user-info';
+import { IUIActiveUser } from '../../../../types/componentInterfaces';
+import usePage from '../../../../hooks/api-hooks/use-page';
 import { usePathname } from 'next/navigation';
-import AppLoading from '@/components/common/app-loading';
-import { hasNavItems } from '@/utils/helper';
+import AppLoading from '../../../common/app-loading';
+import { hasNavItems } from '../../../../utils/helper';
 
 interface UserProfileDropDownProps {
   uiActiveUser: IUIActiveUser;
@@ -90,32 +87,28 @@ export const UserProfile = () => {
 
   if (!uiId) {
     return (
-      <HoverableCard>
-        <Link
-          href={'/sign-in'}
-          className="text-md cursor-pointer flex text-primary items-center transition duration-300 ease-in-out"
-        >
+      <Link
+        href={'/sign-in'}
+        className="text-md justify-between cursor-pointer flex text-primary items-center transition duration-300 ease-in-out"
+      >
+        <HoverableCard>
           <LogIn className="mr-2 h-4 w-4" /> Log in
-        </Link>
-      </HoverableCard>
+        </HoverableCard>
+      </Link>
     );
   }
 
   return (
     <div className="flex items-center space-x-1">
-      <HoverableCard>
-        <LogoutButton
-          trigger={
-            <div>
-              <Tooltip title="Logout">
-                <div className="">
-                  <LogOut className="mr-2 h-4 w-4" />
-                </div>
-              </Tooltip>
-            </div>
-          }
-        />
-      </HoverableCard>
+      <LogoutButton
+        trigger={
+          <div className="hover-card">
+            <Tooltip title="Logout">
+              <LogOut className="mr-2 h-4 w-4" />
+            </Tooltip>
+          </div>
+        }
+      />
       <Separator orientation="vertical" />
       <HoverableCard>
         <UserProfileDropDown
@@ -165,7 +158,6 @@ const Header: React.FC = () => {
     } else if (keysNavItem.includes(e.key)) {
       setActiveNavItem(e.key);
     } else {
-      console.log('I WAS CALED');
       const key = hasNavItems(navMenuItems, pathname);
 
       setActiveNavItem(key);
@@ -202,6 +194,7 @@ const Header: React.FC = () => {
                 onClick={onClickNavMenuItem}
                 mode="horizontal"
                 expandIcon={<></>}
+                //@ts-ignore
                 itemPaddingInline={200}
                 selectedKeys={activeNavItem ? [activeNavItem] : []}
                 items={navMenuItems}

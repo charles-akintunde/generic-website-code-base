@@ -1,9 +1,8 @@
 'use client';
-import AppRequestResult from '@/components/common/app-request-result';
-import { PasswordResetForm } from '@/components/common/form/passoword-reset-form';
+import AppRequestResult from '../../../../../components/common/app-request-result';
+import { PasswordResetForm } from '../../../../../components/common/form/passoword-reset-form';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import path from 'path';
 import React from 'react';
 
 const ConfirmUser = () => {

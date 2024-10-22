@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import StoreProvider from '@/components/hoc/store-provider';
-import '@/styles/globals.css';
-import RouteGuard from '@/components/hoc/route-guard';
-import { NotificationProvider } from '@/components/hoc/notification-provider';
-import AuthGuard from '@/components/hoc/auth-guard';
+import StoreProvider from '../../components/hoc/store-provider';
+import '../../styles/globals.css';
+import RouteGuard from '../../components/hoc/route-guard';
+import { NotificationProvider } from '../../components/hoc/notification-provider';
+import AuthGuard from '../../components/hoc/auth-guard';
 
 // export const metadata: Metadata = {
 //   title: 'Generic Website',
