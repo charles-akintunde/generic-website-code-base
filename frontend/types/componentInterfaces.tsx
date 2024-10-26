@@ -98,7 +98,6 @@ export interface IPageContentBase {
 export interface IPageContentMain extends IPageContentItem {
   pageContentId: string;
   pageContentLastUpdatedAt?: string;
-  pageContentCreatedAt?: string;
   pageContentExcerpt?: string;
   pageContentReadingTime?: string;
   creatorFullName?: string;
@@ -109,6 +108,7 @@ export interface IPageContentItem extends IPageContentBase {
   pageType?: string;
   pageName: string;
   pageDisplayURL: string;
+  pageContentCreatedAt?: Date | string;
   pageContentDisplayURL: string;
   userId: string;
   href: string;

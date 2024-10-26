@@ -76,7 +76,7 @@ export const systemMenuItems: IPageMenuItem[] = [
     pageName: 'News',
     href: '/news',
     isHidden: false,
-    pagePermission: ['3', '1', '4', '2', '0', '5'],
+    pagePermission: ['0'],
     pageType: '1',
     description: '',
     type: 'item',
@@ -162,15 +162,15 @@ export const routes = [
     type: 'item',
   },
 
-  {
-    pageName: 'Terms and Services',
-    href: '/terms-and-services',
-    isHidden: true,
-    pagePermission: ['0', '1', '2'],
-    pageType: '3',
-    description: '',
-    type: 'item',
-  },
+  // {
+  //   pageName: 'Terms and Services',
+  //   href: '/terms-and-services',
+  //   isHidden: true,
+  //   pagePermission: ['0', '1', '2'],
+  //   pageType: '3',
+  //   description: '',
+  //   type: 'item',
+  // },
   {
     pageName: 'User Profile',
     href: '/user-profile',

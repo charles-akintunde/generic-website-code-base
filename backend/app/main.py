@@ -17,6 +17,7 @@ from app.routers import page, page_content, auth, user_info
 from app.tests import test_auth
 from app.scheduler.token_cleaner import start_token_cleaner_scheduler
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 from app.routers import developer
 
@@ -40,7 +41,6 @@ def create_app() -> FastAPI:
     # Initialize FastAPI application with lifespan
     app = FastAPI(lifespan=lifespan)
 
-    # Add the middleware
     app.add_middleware(ExceptionHandlingMiddleware)
 
     origins = [

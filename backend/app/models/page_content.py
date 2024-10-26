@@ -4,7 +4,9 @@ from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from typing import Optional
+# from .associations import T_UsersPageContents
+
+
 
 from app.types.page_content import PageContentTypeAnnotations
 from . import Base 
@@ -28,6 +30,7 @@ class T_PageContent(Base):
     PC_IsHidden = Column(Boolean, default=False)
     PC_Other = Column(String(255), nullable=True)
 
+    #PC_UsersPageContents = relationship("T_UserInfo", secondary=T_UsersPageContents, back_populates="UI_UsersPageContents")
     PC_UserInfo = relationship("T_UserInfo", back_populates="UI_PageContents")
     PC_Page = relationship("T_Page", back_populates="PG_PageContents")
 

@@ -3,7 +3,10 @@ import { useAppDispatch } from '../redux-hooks';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '../../components/hoc/notification-provider';
 import { useUserLogoutMutation } from '../../api/authApi';
-import { setUIActiveUser } from '../../store/slice/userSlice';
+import {
+  setUIActiveUser,
+  setUIIsUserEditingMode,
+} from '../../store/slice/userSlice';
 import { EUserRole } from '../../types/enums';
 import { reloadPage } from '../../utils/helper';
 
@@ -34,6 +37,13 @@ const useLogout = () => {
           uiCanEdit: false,
           uiRole: [EUserRole.Public],
           uiPhotoURL: null,
+        })
+      );
+
+      dispatch(
+        setUIIsUserEditingMode({
+          uiIsUserEditingMode: false,
+          uiEditorInProfileMode: false,
         })
       );
 

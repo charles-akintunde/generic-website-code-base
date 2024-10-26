@@ -214,13 +214,15 @@ async def delete_user_endpoint(
 #     except HTTPException as e:
 #         return error_response(message=e.detail, status_code=e.status_code)
 
-@router.get("/", response_model=StandardResponse)
+@router.get("/users-list", response_model=StandardResponse)
 async def get_users_endpoint(
     page: int = Query(1),
     limit: int = Query(5, gt=0),
     db: Session = Depends(get_db),
-    current_user: T_UserInfo = Depends(get_current_user)):
-    try: 
+    current_user: T_UserInfo = Depends(get_current_user)
+  ):
+    try:
+        #is_super_admin(current_user)
         users_response = get_users(db=db, page=page, limit=limit)
         return success_response(data = users_response.model_dump(), message='Users fetched successfully')
     except HTTPException as e:
@@ -235,6 +237,19 @@ async def get_member_users_endpoint(
         return success_response(data = users_response.model_dump(), message='Users fetched successfully')
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
+
+
+# @router.get("/users-list",  response_model=StandardResponse)
+# async def test_route(
+#     page: int = Query(1),
+#     limit: int = Query(5, gt=0),
+#     db: Session = Depends(get_db),
+#     current_user: T_UserInfo = Depends(get_current_user)
+# ):
+#     """
+#     Test route that does nothing for debugging purposes.
+#     """
+#     return  success_response( message='Pages fetched successfully')
     
 @router.get("/{user_id}", response_model=StandardResponse)
 async def get_user_endpoint( user_id: str, db: Session = Depends(get_db)):

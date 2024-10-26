@@ -18,6 +18,7 @@ import {
 import { usePathname } from 'next/navigation';
 import {
   getChangedFields,
+  handleRoutingOnError,
   notifyNoChangesMade,
   pageNormalizer,
 } from '../../../utils/helper';
@@ -66,6 +67,7 @@ const CreatePageContent = () => {
     defaultValues: {
       pageContentName: '',
       pageContentDisplayURL: '',
+      pageContentCreatedAt: '',
       pageContentDisplayImage: undefined,
       pageContentResource: undefined,
       isPageContentHidden: false,
@@ -79,6 +81,7 @@ const CreatePageContent = () => {
       pageContentName: data.pageContentName,
       pageContentDisplayImage: data.pageContentDisplayImage,
       pageContentResource: data.pageContentResource,
+      pageContentCreatedAt: data.pageContentCreatedAt,
       isPageContentHidden: data.isPageContentHidden,
       pageContentDisplayURL: data.pageContentDisplayURL,
       editorContent: plateEditor,
@@ -167,6 +170,16 @@ const CreatePageContent = () => {
                       type="document"
                     />
                   )}
+
+                  {pageType == EPageType.PageList && (
+                    <FormField
+                      control={form.control}
+                      name="pageContentCreatedAt"
+                      label="Content Creation Date"
+                      placeholder=""
+                      type="datetime"
+                    />
+                  )}
                   <FormField
                     control={form.control}
                     name="isPageContentHidden"
@@ -247,6 +260,7 @@ const EditPageContent = () => {
       const pageContent = page.PG_PageContent;
       if (pageContent) {
         const normalizedPage = pageNormalizer(page, pageContent);
+        console.log('normalizedPage', normalizedPage);
         setPageType(normalizedPage.pageType);
         setContentData(normalizedPage.pageContent);
         setOriginalData(normalizedPage.pageContent);
@@ -272,6 +286,7 @@ const EditPageContent = () => {
       pageContentDisplayImage: undefined,
       pageContentDisplayURL: '',
       isPageContentHidden: false,
+      pageContentCreatedAt: '',
       // editorContent: plateEditor,
     },
   });
@@ -285,6 +300,10 @@ const EditPageContent = () => {
 
   useEffect(() => {
     if (isPageContentFetchSuccess && contentData) {
+      // @ts-ignore
+      contentData.pageContentCreatedAt = new Date(
+        contentData.pageContentCreatedAt as Date
+      );
       // @ts-ignore
       form.reset(contentData);
       setPlateEditor(contentData.editorContent || plateEditor);
@@ -317,13 +336,13 @@ const EditPageContent = () => {
     }
   };
 
-  // useEffect(() => {
-  //   handleRoutingOnError(
-  //     router,
-  //     hasPageContentFetchError,
-  //     pageContentFetchError
-  //   );
-  // }, [hasPageContentFetchError, pageContentFetchError, router]);
+  useEffect(() => {
+    handleRoutingOnError(
+      router,
+      hasPageContentFetchError,
+      pageContentFetchError
+    );
+  }, [hasPageContentFetchError, pageContentFetchError, router]);
 
   if (isPageContentFetchLoading) {
     return <AppLoading />;
@@ -371,6 +390,15 @@ const EditPageContent = () => {
                             label="Display Document"
                             placeholder=""
                             type="document"
+                          />
+                        )}
+                        {pageType == EPageType.PageList && (
+                          <FormField
+                            control={form.control}
+                            name="pageContentCreatedAt"
+                            label="Content Creation Date"
+                            placeholder=""
+                            type="datetime"
                           />
                         )}
                         <FormField

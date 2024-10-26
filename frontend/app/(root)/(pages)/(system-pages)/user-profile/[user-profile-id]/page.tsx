@@ -91,7 +91,7 @@ const UserProfilePage = () => {
     <>
       {userInfo && (
         <div className="pt-10 text-sm bg-pg px-6">
-          <div className="max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+          <div className="max-w-5xl mx-auto p-6 bg-white shadow-sm rounded-md">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="col-span-1 flex justify-center md:justify-start">
                 <Avatar
@@ -196,7 +196,6 @@ const UserProfilePage = () => {
               </div>
             </div>
 
-            {/* Place the UserProfileForm inside the card */}
             <div className="mt-10">
               <UserProfileForm userInfo={userInfo} />
             </div>

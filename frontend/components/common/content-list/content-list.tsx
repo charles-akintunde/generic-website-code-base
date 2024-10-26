@@ -141,6 +141,7 @@ const ContentList: React.FC<ContentListProps> = ({
       const dynamicPage = normalizeMultiContentPage(responseData, false);
       const newPageContents = dynamicPage.pageContents as IPageContentMain[];
       //  console.log(newPageContents, 'newPageContents');
+      //@ts-ignore
       dispatch(addPageContents(newPageContents));
       const fetchingPageData: IFetchedPage = {
         fetchedPage: dynamicPage,

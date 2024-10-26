@@ -28,7 +28,12 @@ import { MenuProps } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import _ from 'lodash';
 import nookies from 'nookies';
+import moment from 'moment';
 type MenuItem = Required<MenuProps>['items'][number];
+
+export function formatDateWithZeroTime(date: Date): string {
+  return moment(date).format('YYYY-MM-DD 00:00:00.000');
+}
 
 export const toKebabCase = (str: string): string => {
   str = str.toLowerCase();
@@ -229,14 +234,38 @@ export function formatDate(dateString: string): string {
   return date.toLocaleDateString('en-US', options);
 }
 
+// export const hasPermission = (
+//   currentUserRole: string,
+//   pagePermission: string[]
+// ): boolean => {
+//   if (pagePermission == undefined || pagePermission == null) {
+//     return false;
+//   }
+//   return pagePermission.includes(currentUserRole);
+// };
+
 export const hasPermission = (
   currentUserRole: string,
   pagePermission: string[]
 ): boolean => {
-  if (pagePermission == undefined || pagePermission == null) {
+  if (!pagePermission) {
     return false;
   }
-  return pagePermission.includes(currentUserRole);
+
+  const roleHierarchy: Record<string, number> = {
+    [EUserRole.SuperAdmin]: 0,
+    [EUserRole.Admin]: 1,
+    [EUserRole.Member]: 2,
+    [EUserRole.User]: 3,
+    [EUserRole.Alumni]: 4,
+    [EUserRole.Public]: 5,
+  };
+
+  const lowestPermissiveRole = Math.min(
+    ...pagePermission.map((role) => roleHierarchy[role])
+  );
+
+  return roleHierarchy[currentUserRole] <= lowestPermissiveRole;
 };
 
 export const getChangedFields = (
@@ -541,6 +570,7 @@ export const handleRoutingOnError = (
       router.replace('/404');
     } else if (error.status === 500) {
       router.replace('/internal-server-error');
+    } else if (error.status === 307) {
     } else {
       router.replace('/access-denied');
     }

@@ -3,6 +3,7 @@ Applications router for the User Management Service.
 This module defines the API endpoints for application-related operations.
 """
 
+from datetime import datetime
 import json
 from typing import Optional
 from urllib.parse import unquote
@@ -29,6 +30,7 @@ async def create_page_content_endpoint(
     PC_Title: str = Form(...),
     PC_DisplayURL: Optional[str] = Form(None),
     PC_Content: Optional[str] = Form(None), 
+    PC_CreatedAt: Optional[str] = Form(None),
     PC_ThumbImg: Optional[UploadFile] = File(None),
     PC_Resource: Optional[UploadFile] = File(None),
     PC_IsHidden: bool = Form(...),
@@ -51,12 +53,19 @@ async def create_page_content_endpoint(
         UI_ID=UI_ID,
         PG_ID=PG_ID,
         PC_Title=PC_Title,
+        PC_CreatedAt=PC_CreatedAt,
         PC_Content=json.loads(PC_Content) if PC_Content else None,  # Convert JSON string to dict
         PC_IsHidden=PC_IsHidden,
         PC_ThumbImg=PC_ThumbImg,
         PC_Resource=PC_Resource,
         PC_DisplayURL=PC_DisplayURL
     )
+        
+        print(PC_CreatedAt,"PC_CreatedAt")
+        # parsed_PC_CreatedAt = None
+        # if PC_CreatedAt:
+        #     parsed_PC_CreatedAt = datetime.strptime(PC_CreatedAt, "%Y-%m-%d %H:%M:%S.%f")
+        #     PC_CreatedAt = parsed_PC_CreatedAt # type: ignore
 
         new_page_content = await create_page_content(
             db=db,
@@ -131,6 +140,7 @@ async def update_page_content_endpoint(
     PC_Title: Optional[str] = Form(None),
     PC_Content: Optional[str] = Form(None),  
     PC_DisplayURL: Optional[str] = Form(None),
+    PC_CreatedAt: Optional[str] = Form(None),
     PC_ThumbImg: Optional[UploadFile] = File(None),
     PC_Resource: Optional[UploadFile] = File(None),
     PC_IsHidden: Optional[bool] = Form(None),
@@ -152,6 +162,7 @@ async def update_page_content_endpoint(
         PC_Title=PC_Title,
         PC_ThumbImg=PC_ThumbImg,
         PC_Resource=PC_Resource,
+        PC_CreatedAt=PC_CreatedAt,
         PC_Content=json.loads(PC_Content) if PC_Content else None,
         PC_IsHidden=PC_IsHidden
         )

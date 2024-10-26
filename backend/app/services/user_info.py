@@ -2,7 +2,7 @@
 User service for handling business logic related to users.
 """
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status
 from app.crud.user_info import user_crud
 from app.schemas.user_info import  UserRoleStatusUpdate, UserProfileUpdate, UserDelete, UserStatusUpdate, UsersResponse
 from app.models.user_info import T_UserInfo
@@ -10,6 +10,8 @@ from app.config import settings
 from app.utils.file_utils import  delete_and_save_file_azure, delete_file_from_azure, save_file_to_azure
 from app.utils.response_json import create_user_response, create_users_response
 from app.models.enums import E_UserRole
+from app.core.auth import get_current_user
+from app.utils.utils import is_super_admin
 
 
 
@@ -161,9 +163,13 @@ async def delete_user(db: Session, delete_user_id: str, current_user: T_UserInfo
 #     users_response = create_users_response(users, total_user_count,new_last_key)
 #     return users_response
 
-def get_users(db: Session, page: int = 1, limit: int = 10):
+def get_users(db: Session, page: int = 1, limit: int = 10, current_user: T_UserInfo = Depends(get_current_user)):
+    #is_super_admin(current_user)
+    
+    
     total_user_count = user_crud.get_total_user_count(db=db)
     total_pages = (total_user_count + limit - 1) 
+
 
     if total_user_count == 0:
         return create_users_response(users=[], total_users_count=total_user_count, new_last_key=None)

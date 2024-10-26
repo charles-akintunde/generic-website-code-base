@@ -27,7 +27,7 @@ import usePage from './use-page';
 import { usePathname } from 'next/navigation';
 import { EPageType } from '../../types/enums';
 import { IPageContentGetRequest } from '../../types/requestInterfaces';
-import { toKebabCase } from '../../utils/helper';
+import { formatDateWithZeroTime, toKebabCase } from '../../utils/helper';
 
 interface IUsePageContentProps {
   pageContent?: IPageContentGetRequest;
@@ -194,6 +194,15 @@ const usePageContent = ({
         formData.append('PC_ThumbImg', pageContent.pageContentDisplayImage);
       }
       formData.append('PC_IsHidden', String(pageContent.isPageContentHidden));
+      if (
+        pageContent.pageContentCreatedAt &&
+        pageContent.pageType == EPageType.PageList
+      ) {
+        const date = new Date(pageContent.pageContentCreatedAt);
+        const formattedDate = formatDateWithZeroTime(date);
+
+        formData.append('PC_CreatedAt', formattedDate);
+      }
       if (pageContent.pageType && pageContent.pageType != EPageType.ResList) {
         formData.append('PC_Content', JSON.stringify(pageContentObj));
       }
@@ -210,15 +219,6 @@ const usePageContent = ({
       const response = await createPageContent(formData).unwrap();
 
       if (pageContentFetchRefetch) pageContentFetchRefetch();
-
-      // if (pageContent.pageType == EPageType.ResList) {
-      //   router.replace(`/${pageContent.pageName}`);
-      //   setAllowReloadPage(true);
-      // } else if (pageContent.pageType != EPageType.SinglePage) {
-      //   router.replace(
-      //     `/${pageContent.pageName}/${pageContent.pageContentDisplayURL}`
-      //   );
-      // }
 
       if (pageContent.pageType == EPageType.PageList) {
         router.replace(
@@ -308,6 +308,12 @@ const usePageContent = ({
         if (pageContent.editorContent) {
           formData.append('PC_Content', JSON.stringify(pageContentObj));
         }
+      }
+      if (pageContent.pageContentCreatedAt && pageType == EPageType.PageList) {
+        const date = new Date(pageContent.pageContentCreatedAt);
+        const formattedDate = formatDateWithZeroTime(date);
+
+        formData.append('PC_CreatedAt', formattedDate);
       }
       if (pageType == EPageType.ResList && pageContent.pageContentResource) {
         formData.append('PC_Resource', pageContent.pageContentResource);

@@ -27,8 +27,8 @@ const store = configureStore({
       menuApi.middleware,
       authApi.middleware,
       pageApi.middleware,
-      pageContentApi.middleware,
-      userApi.middleware
+      userApi.middleware,
+      pageContentApi.middleware
     ),
 });
 

@@ -118,6 +118,13 @@ const ACCEPTED_DOC_MIME_TYPES = [
   'application/pdf',
   'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'text/csv',
+  'application/zip',
+  'application/x-zip-compressed',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 ];
 
 //@ts-ignore
@@ -174,6 +181,10 @@ export const pageContentSchema = z.object({
     `Page Name must be at most 100 characters long`
   ),
   pageContentDisplayImage: imageSchema,
+  pageContentCreatedAt: z
+    .union([z.date(), z.string()])
+    .transform((val) => (typeof val === 'string' ? new Date(val) : val))
+    .optional(),
   pageContentDisplayURL: requiredTextSchemaAllowDash('Page Display URL').max(
     255,
     `Page Name must be at most 254 characters long`
@@ -188,6 +199,7 @@ export const pageContentSchemaEdit = z.object({
     200,
     `Page Name must be at most 100 characters long`
   ),
+  pageContentCreatedAt: z.date().optional(),
   pageContentDisplayURL: requiredTextSchemaAllowDash('Page Display URL').max(
     255,
     `Page Name must be at most 254 characters long`

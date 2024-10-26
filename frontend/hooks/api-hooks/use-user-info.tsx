@@ -182,9 +182,9 @@ const useUserInfo = () => {
       const defaultErrorMessage =
         'Failed to reset password. Please try again later.';
 
-      // const errorMessage =
-      //   error.data?.message || error.data?.detail || defaultErrorMessage;
-      // notify('Error', errorMessage, 'error');
+      const errorMessage =
+        error?.data?.message || error?.data?.detail || defaultErrorMessage;
+      notify('Error', errorMessage, 'error');
     }
   };
 

@@ -15,6 +15,7 @@ import MultiSelect from '../ui/multi-select';
 import { Checkbox } from '../ui/checkbox';
 import { PlateEditor } from '../plate/plate';
 import { Textarea } from '../ui/textarea';
+import { DatePicker } from '../ui/datepicker';
 
 const FormField: React.FC<IFormField> = ({
   control,
@@ -60,6 +61,7 @@ const FormField: React.FC<IFormField> = ({
                       if (onBlur) onBlur(e);
                     }}
                   />
+
                   {type === 'password' && (
                     <div
                       onClick={togglePasswordVisibility}
@@ -74,6 +76,8 @@ const FormField: React.FC<IFormField> = ({
                   )}
                 </>
               )}
+
+              {type === 'datetime' && <DatePicker field={field} />}
               {type === 'select' && (
                 <Select {...field} onValueChange={field.onChange}>
                   <SelectTrigger>
@@ -140,7 +144,15 @@ const FormField: React.FC<IFormField> = ({
                 <Input
                   id="document"
                   type="file"
-                  accept=".pdf, .doc, .docx, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  accept="
+                .pdf, .doc, .docx, 
+                application/pdf, application/msword, 
+                application/vnd.openxmlformats-officedocument.wordprocessingml.document,
+                .xls, .xlsx, .csv,
+                application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+                .zip, application/zip, application/x-zip-compressed,
+                application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation
+              "
                   onChange={(e) => {
                     const file = e.target.files && e.target.files[0];
                     if (file) {

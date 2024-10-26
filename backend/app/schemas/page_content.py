@@ -47,6 +47,7 @@ class PageContentResponse(PageContent):
 
 class PageContentUpdateRequest(BaseModel):
     PC_Title: Optional[str] = None
+    PC_CreatedAt: Optional[str] = None
     PC_ThumbImgURL: Optional[str] = None
     PC_ThumbImg: Optional[UploadFile] = None
     PC_Resource: Optional[UploadFile] = None

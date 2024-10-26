@@ -116,7 +116,7 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
         samesite='none',
         secure=True,
         max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-      #  domain='.generic-api-app.azurewebsites.net' 
+        domain='.generic-api-app.azurewebsites.net' 
     )
 
         response.set_cookie(
@@ -126,7 +126,27 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
         samesite='none',
         secure=True,
         max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
-        #domain='.generic-api-app.azurewebsites.net'  
+        domain='.generic-api-app.azurewebsites.net'  
+    )
+        
+        response.set_cookie(
+        key='refresh_token',
+        value=token.refresh_token,
+        httponly=True,
+        samesite='none',
+        secure=True,
+        max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
+        domain='localhost'  
+    )
+        
+        response.set_cookie(
+        key='access_token',
+        value=token.access_token,
+        httponly=True,
+        samesite='none',
+        secure=True,
+        max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
+        domain='locahost' 
     )
 
         print(response.headers,"HEADER")
