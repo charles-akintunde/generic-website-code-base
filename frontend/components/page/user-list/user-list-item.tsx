@@ -29,7 +29,7 @@ import { Badge } from '../../ui/badge';
 import { transitionStyles } from '../../../styles/globals';
 import ActionsButtons from '../../common/action-buttons';
 import { UserRoleStatusDialog } from '../../common/form/user-profile-form';
-import { useGetUsersQuery } from '../../../api/pageApi';
+import { useGetUsersQuery } from '../../../api/userApi';
 
 const UserListItem = () => {
   const [pagination, setPagination] = useState({

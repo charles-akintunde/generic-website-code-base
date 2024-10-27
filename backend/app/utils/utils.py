@@ -31,40 +31,40 @@ def is_admin(current_user: T_UserInfo, detail: str):
     
 # Page Utils
 
-def check_page_permission(page_accessible_to: List[E_UserRole] , user_roles: List[E_UserRole]):
-    """
-    Check page permission.
-    """
-    for role in user_roles:
-        if role in page_accessible_to:
-            return 
-    raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail="You are not authorized to access this page.")
-
-# def check_page_permission(page_accessible_to: List[E_UserRole], user_roles: List[E_UserRole]):
+# def check_page_permission(page_accessible_to: List[E_UserRole] , user_roles: List[E_UserRole]):
 #     """
-#     Check page permission with hierarchical access.
+#     Check page permission.
 #     """
-#     role_hierarchy = {
-#         E_UserRole.SuperAdmin: 0, 
-#         E_UserRole.Admin: 1,
-#         E_UserRole.Member: 2,
-#         E_UserRole.User: 3,
-#         E_UserRole.Alumni: 4,     
-#         E_UserRole.Public: 5       
-#     }
-
-#     lowest_permissive_role = min(role_hierarchy[role] for role in page_accessible_to)
-
 #     for role in user_roles:
-#         if role_hierarchy[role] <= lowest_permissive_role:
-#             return  
-
+#         if role in page_accessible_to:
+#             return 
 #     raise HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="You are not authorized to access this page."
-#     )
+#             status_code=status.HTTP_401_UNAUTHORIZED, 
+#             detail="You are not authorized to access this page.")
+
+def check_page_permission(page_accessible_to: List[E_UserRole], user_roles: List[E_UserRole]):
+    """
+    Check page permission with hierarchical access.
+    """
+    role_hierarchy = {
+        E_UserRole.SuperAdmin: 0, 
+        E_UserRole.Admin: 1,
+        E_UserRole.Member: 2,
+        E_UserRole.User: 3,
+        E_UserRole.Alumni: 4,     
+        E_UserRole.Public: 5       
+    }
+
+    lowest_permissive_role = max(role_hierarchy[role] for role in page_accessible_to)
+
+    for role in user_roles:
+        if role_hierarchy[role] <= lowest_permissive_role:
+            return  
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="You are not authorized to access this page."
+    )
 
 
 def to_kebab_case(s: str) -> str:

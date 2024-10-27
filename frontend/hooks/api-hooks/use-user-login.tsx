@@ -11,7 +11,7 @@ import {
 import { IUserInfo, IUserLogin } from '../../types/componentInterfaces';
 import { IUserLoginRequest } from '../../types/requestInterfaces';
 import { EUserRole } from '../../types/enums';
-import { transformToUserInfo } from '../../utils/helper';
+import { reloadPage, transformToUserInfo } from '../../utils/helper';
 import { setUIActiveUser } from '../../store/slice/userSlice';
 import { useNotification } from '../../components/hoc/notification-provider';
 

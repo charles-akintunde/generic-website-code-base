@@ -67,7 +67,7 @@ export const systemMenuItems: IPageMenuItem[] = [
     pageName: 'Teams',
     href: '/teams',
     isHidden: false,
-    pagePermission: ['0', '1', '2', '3', '4'],
+    pagePermission: ['0'],
     pageType: '3',
     description: '',
     type: 'item',

@@ -416,7 +416,7 @@ const usePage = ({
         response.message || 'The page has been successfully deleted.',
         'success'
       );
-      reloadPage();
+      // reloadPage();
     } catch (error: any) {
       notify(
         'Error',

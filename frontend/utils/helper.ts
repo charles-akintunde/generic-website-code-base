@@ -261,9 +261,11 @@ export const hasPermission = (
     [EUserRole.Public]: 5,
   };
 
-  const lowestPermissiveRole = Math.min(
+  const lowestPermissiveRole = Math.max(
     ...pagePermission.map((role) => roleHierarchy[role])
   );
+
+  console.log(roleHierarchy[currentUserRole], 'roleHierarchy[currentUserRole]');
 
   return roleHierarchy[currentUserRole] <= lowestPermissiveRole;
 };
@@ -660,7 +662,7 @@ export function removeNullValues(obj: any) {
 }
 
 export const reloadPage = () => {
-  //window.location.reload();
+  window.location.reload();
 };
 
 export const transformPageToIPage = (page: Page): IPage => {

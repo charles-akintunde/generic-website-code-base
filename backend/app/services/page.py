@@ -165,7 +165,7 @@ def get_page(
         )
     return existing_page
 
-def update_page(db: Session, page_id: str, page_update: PageUpdateRequest, user: T_UserInfo) -> PageResponse:
+async def update_page(db: Session, page_id: str, page_update: PageUpdateRequest, user: T_UserInfo) -> PageResponse:
     """
     Service to update page.
     """
@@ -183,7 +183,7 @@ def update_page(db: Session, page_id: str, page_update: PageUpdateRequest, user:
         detail="You do not have permission to update this page")
     
     if page_update.PG_Type is not None and  page_update.PG_Type != existing_page.PG_Type:
-            page_crud.remove_page_content(db=db, page=existing_page)
+            await page_crud.remove_page_content(db=db, page=existing_page)
      
     page_data = page_update.model_dump(exclude_unset=True)
     updated_page: dict[str, Any] = page_crud.update_page(
@@ -201,7 +201,7 @@ def update_page(db: Session, page_id: str, page_update: PageUpdateRequest, user:
         )
     return page_response
     
-def delete_page(db: Session, page_id: str, user: T_UserInfo) -> bool:
+async def delete_page(db: Session, page_id: str, user: T_UserInfo) -> bool:
     """
      Service to delete page.
     """
@@ -219,7 +219,7 @@ def delete_page(db: Session, page_id: str, user: T_UserInfo) -> bool:
         detail="You do not have permission to delete this page"
         )
     print(existing_page,"existing_page")
-    is_success = page_crud.delete_page(
+    is_success = await page_crud.delete_page(
         db, 
         page=existing_page)
     

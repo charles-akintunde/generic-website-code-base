@@ -122,7 +122,7 @@ const PageListItem: React.FC = () => {
       fixed: 'right',
       render: (_: any, record: IPageMain) => (
         <>
-          {canEdit && uiIsSuperAdmin && (
+          {canEdit && (
             <>
               <ActionsButtons
                 entity="page"

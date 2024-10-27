@@ -86,7 +86,6 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   const { allAppRoutes } = usePage();
   const router = useRouter();
   const pathname = usePathname();
-  const [showChildren, setShowChildren] = React.useState<boolean>(false);
   const currentPage = findPage(allAppRoutes, pathname);
 
   // const currentPage = allAppRoutes.find(
@@ -176,9 +175,7 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   useEffect(() => {
     console.log('ROUTE GUARD-v01');
     if (uiIsLoading || !currentPage) return;
-    console.log('ROUTE GUARD-v02');
     if (allAppRoutes && allAppRoutes.length > 0) {
-      console.log('I was callled');
       const isValidRoute =
         currentPage ||
         pathname.split('/')[1].startsWith('user-profile') ||
@@ -191,21 +188,21 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
         });
       if (!isValidRoute) {
         router.replace('/404');
-      }
-
-      if (
-        !hasPermission(
-          uiActiveUserRole,
-          currentPage?.pagePermission as string[]
-        )
-      ) {
-        console.log(
-          uiActiveUserRole,
-          currentPage?.pagePermission,
-          'LLLLLLLLLLLLLLL'
-        );
-        console.log('Accessed Denied!!!');
-        router.replace('/access-denied');
+      } else {
+        if (
+          !hasPermission(
+            uiActiveUserRole,
+            currentPage?.pagePermission as string[]
+          )
+        ) {
+          console.log(
+            uiActiveUserRole,
+            currentPage?.pagePermission,
+            'LLLLLLLLLLLLLLL'
+          );
+          console.log('Accessed Denied!!!');
+          router.replace('/access-denied');
+        }
       }
     }
     dispatch(
@@ -225,19 +222,9 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
         pageFetchError: undefined,
       })
     );
+  }, [allAppRoutes, pathname, router, uiIsLoading, currentPage]);
 
-    activePageRefetch();
-    setShowChildren(true);
-  }, [
-    allAppRoutes,
-    pathname,
-    router,
-    uiIsLoading,
-    currentPage,
-    activeUserData,
-  ]);
-
-  return showChildren ? <>{children}</> : null;
+  return allAppRoutes && allAppRoutes.length > 0 ? <>{children}</> : null;
 };
 
 export default RouteGuard;
