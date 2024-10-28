@@ -203,9 +203,9 @@ const UserProfilePage = () => {
               </div>
             </div>
 
-            <div className="mt-10">
+            <section className="mt-10">
               <UserProfileForm userInfo={userInfo} />
-            </div>
+            </section>
           </div>
           <section className="max-w-5xl mx-auto mt-6 ">
             <h2 className="text-2xl font-bold mb-6 text-center">

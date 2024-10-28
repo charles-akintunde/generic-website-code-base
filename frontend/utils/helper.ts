@@ -396,14 +396,7 @@ export const normalizeUserPageContents = (response: any) => {
         pageDisplayURL: pageContent.PG_DisplayURL,
         pageName: pageContent.PG_Name,
         userId: pageContent.UI_ID,
-        href:
-          EPageType.SinglePage == String(response.PG_Type)
-            ? response.PG_DisplayURL
-            : EPageType.ResList == String(response.PG_Type)
-              ? `${pageContent.PC_DisplayURL}`
-              : EPageType.PageList == String(response.PG_Type)
-                ? `/${response.PG_DisplayURL}/${pageContent.PC_DisplayURL}`
-                : '',
+        href: `/${pageContent.PG_DisplayURL}/${pageContent.PC_DisplayURL}`,
         pageContentName: pageContent.PC_Title,
         pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
         isPageContentHidden: pageContent.PC_IsHidden,
