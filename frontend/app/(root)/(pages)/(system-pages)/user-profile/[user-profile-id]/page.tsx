@@ -21,10 +21,14 @@ import {
   userRoleLabels,
   userStatusLabels,
 } from '../../../../../../utils/helper';
-import { IUserInfo } from '../../../../../../types/componentInterfaces';
+import {
+  IPageContentMain,
+  IUserInfo,
+} from '../../../../../../types/componentInterfaces';
 import { usePathname, useRouter } from 'next/navigation';
 import AppLoading from '../../../../../../components/common/app-loading';
 import { useAppSelector } from '../../../../../../hooks/redux-hooks';
+import { PageContentCarouselCard } from '../../../../../../components/common/carousel/page-content-carousel';
 
 export function sanitizeAndCompare(str1: string, str2: string) {
   if (!str1 || !str2) return false;
@@ -66,11 +70,13 @@ const UserProfilePage = () => {
   const [isSameUser, setIsSameUser] = useState(
     sanitizeAndCompare(uiActiveUser?.uiId as string, userInfo?.id as string)
   );
+  const [pageContents, setPageContents] = useState<IPageContentMain[]>([]);
 
   useEffect(() => {
     if (userData?.data) {
       const userProfile: IUserInfo = transformToUserInfo(userData?.data);
       setUserInfo(userProfile);
+      setPageContents(userProfile.uiUserPageContents as IPageContentMain[]);
       const isSameUser = sanitizeAndCompare(
         uiActiveUser?.uiId as string,
         userProfile?.id
@@ -87,6 +93,7 @@ const UserProfilePage = () => {
     return <AppLoading />;
   }
 
+  console.log(userInfo, 'userInfo');
   return (
     <>
       {userInfo && (
@@ -200,6 +207,19 @@ const UserProfilePage = () => {
               <UserProfileForm userInfo={userInfo} />
             </div>
           </div>
+          <section className="max-w-5xl mx-auto mt-6 ">
+            <h2 className="text-2xl font-bold mb-6 text-center">
+              Related Posts
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {pageContents.map((pageContent) => (
+                <PageContentCarouselCard
+                  pageContent={pageContent}
+                  key={pageContent.pageContentId}
+                />
+              ))}
+            </div>
+          </section>
         </div>
       )}
     </>

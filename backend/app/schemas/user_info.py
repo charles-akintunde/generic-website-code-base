@@ -10,6 +10,7 @@ import uuid
 
 from sqlalchemy import UUID
 from app.models.enums import E_MemberPosition, E_Status, E_UserRole
+from app.schemas.page_content import PageContentResponse, UserPageContentResponse
 
 class UserBase(BaseModel):
     """
@@ -58,6 +59,8 @@ class UserResponse(UserBase):
     UI_RegDate: str
     UI_About: Optional[Dict] = None
     UI_MemberPosition: Optional[int] = None
+    UI_UserPageContents: Optional[List[PageContentResponse]] = None
+
 
 
 class UserDelete(BaseModel):

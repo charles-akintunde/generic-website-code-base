@@ -48,6 +48,7 @@ export interface IPageContentCreateRequest {
   PC_ThumbImg: File | string;
   PC_IsHidden: boolean;
   PC_CreatedAt: string;
+  PC_UsersId: string[];
 }
 
 export interface IEditPageContentRequest {

@@ -12,13 +12,17 @@ import {
 import LoadingButton from '../../common/button/loading-button';
 import usePageContent from '../../../hooks/api-hooks/use-page-content';
 import {
+  IOptionType,
   IPageContentItem,
   IPageContentMain,
+  IUserBase,
+  IUserList,
 } from '../../../types/componentInterfaces';
 import { usePathname } from 'next/navigation';
 import {
   getChangedFields,
   handleRoutingOnError,
+  mapToIIUserList,
   notifyNoChangesMade,
   pageNormalizer,
 } from '../../../utils/helper';
@@ -30,13 +34,15 @@ import { useNotification } from '../../hoc/notification-provider';
 import { pageContentPaddingStyles } from '../../../styles/globals';
 import PageListLayout from './page-list-layout';
 import { TElement } from '@udecode/plate-common';
-import { EPageType } from '../../../types/enums';
+import { EPageType, EUserRole } from '../../../types/enums';
 import AppLoading from '../../common/app-loading';
 import { useRouter } from 'next/navigation';
 import { useAppSelector } from '../../../hooks/redux-hooks';
 import { toKebabCase2 } from '../../../utils/helper';
+import { useGetUsersAssignedPositionsQuery } from '../../../api/userApi';
 
 const CreatePageContent = () => {
+  const [users, setUsers] = useState<IUserBase[]>();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
   const [isManualEdit, setIsManualEdit] = useState(false);
@@ -61,17 +67,24 @@ const CreatePageContent = () => {
   const { submitPageContent, isCreatePageContentSuccess } = usePageContent({
     pageDisplayURL,
   });
+  const [OPTIONS, setOptions] = useState<any>(null);
+  const {
+    data: usersResponseData,
+    isLoading: isUsersFetchLoading,
+    refetch: refetchUsersList,
+  } = useGetUsersAssignedPositionsQuery();
 
   const form = useForm({
     resolver: zodResolver(pageContentSchema),
     defaultValues: {
       pageContentName: '',
       pageContentDisplayURL: '',
-      pageContentCreatedAt: '',
+      pageContentCreatedAt: new Date(),
       pageContentDisplayImage: undefined,
       pageContentResource: undefined,
       isPageContentHidden: false,
       editorContent: plateEditor,
+      pageContentUsersId: [],
     },
   });
 
@@ -84,6 +97,7 @@ const CreatePageContent = () => {
       pageContentCreatedAt: data.pageContentCreatedAt,
       isPageContentHidden: data.isPageContentHidden,
       pageContentDisplayURL: data.pageContentDisplayURL,
+      pageContentUsersId: data.pageContentUsersId,
       editorContent: plateEditor,
       pageId: pageId as string,
       pageName: pageName,
@@ -93,6 +107,23 @@ const CreatePageContent = () => {
     };
     await submitPageContent(pageContent);
   };
+  useEffect(() => {
+    if (usersResponseData && usersResponseData.data) {
+      const usersData: IUserList = mapToIIUserList(usersResponseData.data);
+
+      if (usersData.users) {
+        setUsers(usersData?.users);
+
+        const options = usersData?.users?.map((user) => {
+          return {
+            label: `${user.uiFullName}`,
+            value: user.id,
+          };
+        });
+        setOptions(options);
+      }
+    }
+  }, [usersResponseData]);
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
@@ -115,6 +146,10 @@ const CreatePageContent = () => {
     setIsManualEdit(true);
     form.setValue('pageContentDisplayURL', trimmedValue);
   };
+
+  if (isUsersFetchLoading) {
+    return <AppLoading />;
+  }
 
   return (
     <PageLayout title="Create Page Content">
@@ -171,6 +206,18 @@ const CreatePageContent = () => {
                     />
                   )}
 
+                  {pageType == EPageType.PageList && OPTIONS && (
+                    <FormField
+                      placeholder="Select page contents users"
+                      control={form.control}
+                      name="pageContentUsersId"
+                      label="Page Content Users"
+                      type="multiple-select"
+                      options={OPTIONS}
+                      multiple={true}
+                    />
+                  )}
+
                   {pageType == EPageType.PageList && (
                     <FormField
                       control={form.control}
@@ -180,6 +227,7 @@ const CreatePageContent = () => {
                       type="datetime"
                     />
                   )}
+
                   <FormField
                     control={form.control}
                     name="isPageContentHidden"
@@ -253,6 +301,31 @@ const EditPageContent = () => {
   const searchParams = useSearchParams();
   const pageId = searchParams.get('pageId');
   const [pageType, setPageType] = useState<string>('');
+  const [users, setUsers] = useState<IUserBase[]>();
+  const [OPTIONS, setOptions] = useState<any>(null);
+  const {
+    data: usersResponseData,
+    isLoading: isUsersFetchLoading,
+    refetch: refetchUsersList,
+  } = useGetUsersAssignedPositionsQuery();
+
+  useEffect(() => {
+    if (usersResponseData && usersResponseData.data) {
+      const usersData: IUserList = mapToIIUserList(usersResponseData.data);
+
+      if (usersData.users) {
+        setUsers(usersData?.users);
+
+        const options = usersData?.users?.map((user) => {
+          return {
+            label: `${user.uiFullName}`,
+            value: user.id,
+          };
+        });
+        setOptions(options);
+      }
+    }
+  }, [usersResponseData]);
 
   useEffect(() => {
     if (pageContentData && pageContentData.data.PG_PageContent) {
@@ -260,7 +333,6 @@ const EditPageContent = () => {
       const pageContent = page.PG_PageContent;
       if (pageContent) {
         const normalizedPage = pageNormalizer(page, pageContent);
-        console.log('normalizedPage', normalizedPage);
         setPageType(normalizedPage.pageType);
         setContentData(normalizedPage.pageContent);
         setOriginalData(normalizedPage.pageContent);
@@ -287,6 +359,7 @@ const EditPageContent = () => {
       pageContentDisplayURL: '',
       isPageContentHidden: false,
       pageContentCreatedAt: '',
+      pageContentUsersId: [],
       // editorContent: plateEditor,
     },
   });
@@ -304,6 +377,12 @@ const EditPageContent = () => {
       contentData.pageContentCreatedAt = new Date(
         contentData.pageContentCreatedAt as Date
       );
+
+      console.log(contentData.pageContenAssociatedUsers, 'LIST');
+      contentData.pageContentUsersId =
+        contentData.pageContenAssociatedUsers.map(
+          (option: any) => option.value
+        );
       // @ts-ignore
       form.reset(contentData);
       setPlateEditor(contentData.editorContent || plateEditor);
@@ -382,6 +461,18 @@ const EditPageContent = () => {
                           placeholder=""
                           type="picture"
                         />
+
+                        {pageType == EPageType.PageList && OPTIONS && (
+                          <FormField
+                            placeholder="Select page contents users"
+                            control={form.control}
+                            name="pageContentUsersId"
+                            label="Page Content Users"
+                            type="multiple-select"
+                            options={OPTIONS}
+                            multiple={true}
+                          />
+                        )}
 
                         {pageType == EPageType.ResList && (
                           <FormField

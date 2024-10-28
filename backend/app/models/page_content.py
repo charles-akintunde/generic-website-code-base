@@ -4,7 +4,7 @@ from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-# from .associations import T_UsersPageContents
+from .associations import T_UsersPageContents
 
 
 
@@ -30,7 +30,7 @@ class T_PageContent(Base):
     PC_IsHidden = Column(Boolean, default=False)
     PC_Other = Column(String(255), nullable=True)
 
-    #PC_UsersPageContents = relationship("T_UserInfo", secondary=T_UsersPageContents, back_populates="UI_UsersPageContents")
+    PC_UsersPageContents = relationship("T_UserInfo", secondary=T_UsersPageContents, back_populates="UI_UsersPageContents")
     PC_UserInfo = relationship("T_UserInfo", back_populates="UI_PageContents")
     PC_Page = relationship("T_Page", back_populates="PG_PageContents")
 

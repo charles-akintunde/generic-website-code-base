@@ -98,15 +98,26 @@ async def create_page_content(
             page_content.PC_DisplayURL = str(resource_url) 
     delattr(page_content, "PC_Resource")
 
+    user_ids = page_content.PC_UsersId 
+    if user_ids:  
+        users = user_crud.get_users_by_ids(db, user_ids)
+        if users and  len(users) != len(user_ids):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="One or more users not found"
+            )
+
     new_page_content = page_content_crud.create_page_content(
         db=db,
         page_content= page_content)
     
-    if page_content is None:
+    if new_page_content is None:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error creating page content"
         )
+    
+
     
     page = page_crud.get_page_by_id(db=db, page_id=str(page_content.PG_ID))
     
@@ -159,6 +170,7 @@ def get_page_content_by_display_url(
         page= page,
         user=page_content_creator
     )
+
 
     page_response_json = build_page_json_with_single_content(
         page=page,
@@ -228,6 +240,8 @@ async def update_page_content(
     )
     
     page = page_crud.get_page_by_id(db=db, page_id=str(updated_page_content.PG_ID))
+
+  
     
     return build_page_content_json(
         page_content= updated_page_content,

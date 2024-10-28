@@ -310,6 +310,12 @@ export const pageNormalizer = (
       editorContent: pageContent.PC_Content?.PC_Content,
       pageContentCreatedAt: pageContent.PC_CreatedAt as string,
       creatorFullName: `${pageContent.UI_FirstName} ${pageContent.UI_LastName}`,
+      pageContenAssociatedUsers: pageContent.PC_UsersPageContents
+        ? pageContent.PC_UsersPageContents.map((pageContent) => ({
+            value: pageContent.UI_ID,
+            label: pageContent.UI_FullName,
+          }))
+        : [],
     },
   };
 
@@ -334,6 +340,7 @@ export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
     uiPhoneNumber: data.UI_PhoneNumber,
     uiOrganization: data.UI_Organization,
     uiAbout: data.UI_About?.UI_About,
+    uiUserPageContents: normalizeUserPageContents(data.UI_UserPageContents),
   };
 };
 
@@ -375,6 +382,39 @@ export const createPageContentItem = (
     userId: currentUserId,
     pageType: pageType,
   };
+};
+
+export const normalizeUserPageContents = (response: any) => {
+  const pageContents: IPageContentMain[] | undefined = response?.map(
+    (pageContent: any) => {
+      return {
+        pageContentId: pageContent.PC_ID,
+        pageId: pageContent.PG_ID,
+        pageContentExcerpt: pageContent.PC_Excerpt,
+        pageContentReadingTime: pageContent.PC_ReadingTime,
+        pageContentDisplayURL: `/${pageContent.PG_DisplayURL}/${pageContent.PC_DisplayURL}`,
+        pageDisplayURL: pageContent.PG_DisplayURL,
+        pageName: pageContent.PG_Name,
+        userId: pageContent.UI_ID,
+        href:
+          EPageType.SinglePage == String(response.PG_Type)
+            ? response.PG_DisplayURL
+            : EPageType.ResList == String(response.PG_Type)
+              ? `${pageContent.PC_DisplayURL}`
+              : EPageType.PageList == String(response.PG_Type)
+                ? `/${response.PG_DisplayURL}/${pageContent.PC_DisplayURL}`
+                : '',
+        pageContentName: pageContent.PC_Title,
+        pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
+        isPageContentHidden: pageContent.PC_IsHidden,
+        pageContentCreatedAt: pageContent.PC_CreatedAt as string,
+        pageContentLastUpdatedAt: pageContent.PC_LastUpdatedAt as string,
+        editorContent: pageContent.PC_Content?.PC_Content,
+      };
+    }
+  );
+
+  return pageContents;
 };
 
 export const normalizeMultiContentPage = (

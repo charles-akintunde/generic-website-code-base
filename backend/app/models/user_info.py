@@ -9,7 +9,7 @@ from typing import Optional, List
 from app.types.user_info import UserInfoTypeAnnotations
 from .enums import E_MemberPosition, E_Status, E_UserRole
 from . import Base 
-# from .associations import T_UsersPageContents
+from .associations import T_UsersPageContents
 
 class T_UserInfo(Base):
     """User information table."""
@@ -36,7 +36,7 @@ class T_UserInfo(Base):
     UI_About = Column(JSON, nullable=True)
     UI_MemberPosition = Column(Enum(E_MemberPosition), nullable=True)
 
-    #UI_UsersPageContents = relationship("T_PageContent", secondary=T_UsersPageContents,back_populates="PC_UsersPageContents")
+    UI_UsersPageContents = relationship("T_PageContent", secondary=T_UsersPageContents,back_populates="PC_UsersPageContents")
     UI_PageContents = relationship("T_PageContent", back_populates="PC_UserInfo")
 
     def __repr__(self):

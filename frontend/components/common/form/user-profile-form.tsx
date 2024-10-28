@@ -149,7 +149,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
   return (
     <Form {...form}>
       <form
-        className="space-y-6 min-h-screen  pb-20"
+        className="space-y-6 "
         // @ts-ignore
         onSubmit={form.handleSubmit(onSubmit)}
       >

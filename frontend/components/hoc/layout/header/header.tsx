@@ -176,7 +176,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 overflow-hidden  h-20 shadow-sm w-full bg-white">
+      <header className="sticky top-0 z-50 overflow-hidden  h-20 shadow-sm w-full bg-white">
         <div className={'container mx-auto flex h-full px-4 sm:px-6 lg:px-8'}>
           <div className="flex items-center space-x-4">
             <div className="flex items-center">

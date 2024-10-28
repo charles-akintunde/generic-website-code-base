@@ -203,8 +203,15 @@ const usePageContent = ({
 
         formData.append('PC_CreatedAt', formattedDate);
       }
-      if (pageContent.pageType && pageContent.pageType != EPageType.ResList) {
-        formData.append('PC_Content', JSON.stringify(pageContentObj));
+
+      if (
+        pageContent.pageContentUsersId &&
+        Array.isArray(pageContent.pageContentUsersId)
+      ) {
+        formData.append(
+          'PC_UsersId',
+          JSON.stringify(pageContent.pageContentUsersId)
+        );
       }
 
       if (
@@ -317,6 +324,16 @@ const usePageContent = ({
       }
       if (pageType == EPageType.ResList && pageContent.pageContentResource) {
         formData.append('PC_Resource', pageContent.pageContentResource);
+      }
+
+      if (
+        pageContent.pageContentUsersId &&
+        Array.isArray(pageContent.pageContentUsersId)
+      ) {
+        formData.append(
+          'PC_UsersId',
+          JSON.stringify(pageContent.pageContentUsersId)
+        );
       }
 
       const response = await editPageContent({

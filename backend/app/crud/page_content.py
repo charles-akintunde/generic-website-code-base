@@ -13,7 +13,8 @@ from app.schemas.page_content import PageContentCreateRequest, PageContentUpdate
 from app.models.page_content import T_PageContent
 from app.models.page import T_Page
 from app.models.page_content import T_PageContent
-from app.utils.file_utils import  delete_file_from_azure, extract_path_from_url
+from app.utils.file_utils import  delete_file_from_azure
+from app.crud.user_info import user_crud
 
 
 class PageContentCRUD:
@@ -32,13 +33,15 @@ class PageContentCRUD:
     Returns:
         Page content object created.
     """
+    user_ids = page_content.PC_UsersId
+    delattr(page_content, "PC_UsersId")
     page_content_data = page_content.model_dump(exclude_unset=True)
 
-    # Create a database model instance
     db_page_content = T_PageContent(**page_content_data)
-    
-    # Add to session and commit
     db.add(db_page_content)
+    db.flush()
+    if user_ids:
+        user_crud.add_users_to_page_content(db, str(db_page_content.PC_ID), user_ids)
     db.commit()
     db.refresh(db_page_content)
     
@@ -168,6 +171,8 @@ class PageContentCRUD:
     Returns:
         db_page_content (T_PageContent) Page content object updated.
     """
+    user_ids = page_content_update.PC_UsersId
+    delattr(page_content_update, "PC_UsersId")
     db_page_content = self.get_page_content_by_id(
         db=db,
         page_content_id=page_content_id
@@ -183,6 +188,8 @@ class PageContentCRUD:
         setattr(db_page_content, key, value)
     
     db_page_content.PC_LastUpdatedAt = datetime.now(timezone.utc)  # type: ignore
+    if user_ids:
+        user_crud.update_user_page_contents(db, page_content_id, user_ids)
     db.commit()
     db.refresh(db_page_content)
     return db_page_content

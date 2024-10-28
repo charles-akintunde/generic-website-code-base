@@ -27,9 +27,9 @@ interface IPageContentCarouselCardProps {
   pageContent: IPageContentMain;
 }
 
-const PageContentCarouselCard: React.FC<IPageContentCarouselCardProps> = ({
-  pageContent,
-}) => {
+export const PageContentCarouselCard: React.FC<
+  IPageContentCarouselCardProps
+> = ({ pageContent }) => {
   const date = formatDate(pageContent.pageContentCreatedAt as string);
   return (
     <div className="p-4 bg-white shadow-sm rounded-lg hover:shadow-md transition-shadow duration-300">

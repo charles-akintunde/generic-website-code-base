@@ -5,7 +5,7 @@ This module defines the API endpoints for application-related operations.
 
 from datetime import datetime
 import json
-from typing import Optional
+from typing import List, Optional
 from urllib.parse import unquote
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session
@@ -34,6 +34,7 @@ async def create_page_content_endpoint(
     PC_ThumbImg: Optional[UploadFile] = File(None),
     PC_Resource: Optional[UploadFile] = File(None),
     PC_IsHidden: bool = Form(...),
+    PC_UsersId: Optional[str] = Form(None),  
     db: Session = Depends(get_db),
     current_user: T_UserInfo = Depends(get_current_user)
 ):
@@ -49,33 +50,35 @@ async def create_page_content_endpoint(
         StandardResponse: The response indicating the result of the create operation.
     """
     try:
-        page_content_data = PageContentCreateRequest(
-        UI_ID=UI_ID,
-        PG_ID=PG_ID,
-        PC_Title=PC_Title,
-        PC_CreatedAt=PC_CreatedAt,
-        PC_Content=json.loads(PC_Content) if PC_Content else None,  # Convert JSON string to dict
-        PC_IsHidden=PC_IsHidden,
-        PC_ThumbImg=PC_ThumbImg,
-        PC_Resource=PC_Resource,
-        PC_DisplayURL=PC_DisplayURL
-    )
-        
-        print(PC_CreatedAt,"PC_CreatedAt")
-        # parsed_PC_CreatedAt = None
-        # if PC_CreatedAt:
-        #     parsed_PC_CreatedAt = datetime.strptime(PC_CreatedAt, "%Y-%m-%d %H:%M:%S.%f")
-        #     PC_CreatedAt = parsed_PC_CreatedAt # type: ignore
+        user_ids = json.loads(PC_UsersId) if PC_UsersId else []
+        if not isinstance(user_ids, list):
+            raise ValueError("PC_UsersId should be a list.")
 
+        page_content_data = PageContentCreateRequest(
+            UI_ID=UI_ID,
+            PG_ID=PG_ID,
+            PC_Title=PC_Title,
+            PC_CreatedAt=PC_CreatedAt,
+            PC_Content=json.loads(PC_Content) if PC_Content else None,  # Convert JSON string to dict
+            PC_IsHidden=PC_IsHidden,
+            PC_ThumbImg=PC_ThumbImg,
+            PC_Resource=PC_Resource,
+            PC_DisplayURL=PC_DisplayURL,
+            PC_UsersId=user_ids  
+        )
+        
         new_page_content = await create_page_content(
             db=db,
-            user = current_user,
+            user=current_user,
             page_content=page_content_data
         )
         
-
-        print(new_page_content)
         return success_response("Page content created successfully", data=new_page_content.model_dump())
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     
@@ -145,6 +148,7 @@ async def update_page_content_endpoint(
     PC_Resource: Optional[UploadFile] = File(None),
     PC_IsHidden: Optional[bool] = Form(None),
     db: Session = Depends(get_db),
+    PC_UsersId: Optional[str] = Form(None),  
     current_user: T_UserInfo = Depends(get_current_user)):
     """
     Update page content by ID.
@@ -158,13 +162,18 @@ async def update_page_content_endpoint(
         StandardResponse: The response indicating the result of the update operation.
     """ 
     try:
+        user_ids = json.loads(PC_UsersId) if PC_UsersId else []
+        if not isinstance(user_ids, list):
+            raise ValueError("PC_UsersId should be a list.")
+
         page_content_update= PageContentUpdateRequest(
         PC_Title=PC_Title,
         PC_ThumbImg=PC_ThumbImg,
         PC_Resource=PC_Resource,
         PC_CreatedAt=PC_CreatedAt,
         PC_Content=json.loads(PC_Content) if PC_Content else None,
-        PC_IsHidden=PC_IsHidden
+        PC_IsHidden=PC_IsHidden,
+        PC_UsersId=user_ids
         )
 
         if PC_DisplayURL:
@@ -176,7 +185,11 @@ async def update_page_content_endpoint(
             page_content_update=page_content_update
         ) # type: ignore
         return success_response(message="Page content updated successfully",data=updated_page_content.model_dump())
-
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
 

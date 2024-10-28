@@ -4,14 +4,16 @@ User service for handling business logic related to users.
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
 from app.crud.user_info import user_crud
+from app.crud import  page
 from app.schemas.user_info import  UserRoleStatusUpdate, UserProfileUpdate, UserDelete, UserStatusUpdate, UsersResponse
 from app.models.user_info import T_UserInfo
 from app.config import settings
 from app.utils.file_utils import  delete_and_save_file_azure, delete_file_from_azure, save_file_to_azure
-from app.utils.response_json import create_user_response, create_users_response
+from app.utils.response_json import build_page_content_json_with_excerpt, build_user_page_content_json, create_user_response, create_users_response
 from app.models.enums import E_UserRole
 from app.core.auth import get_current_user
 from app.utils.utils import is_super_admin
+from app.crud import page
 
 
 
@@ -200,7 +202,17 @@ def get_user_by_id(db: Session, user_id):
         Retrieve a user by their ID from the database.
     """
     user = user_crud.get_user_by_id(db=db, user_id=user_id)
-    
+    user_page_contents = user.UI_UsersPageContents
+    transformed_user_page_contents = []
+
+    for user_page_content in user_page_contents:
+        user  = user_crud.get_user_by_id(db=db,user_id=user_page_content.UI_ID)
+        existing_page = page.page_crud.get_page_by_id(db=db,page_id=user_page_content.PG_ID)
+        transformed_user_page_content = build_page_content_json_with_excerpt(user_page_content, user, page=existing_page) 
+        transformed_user_page_contents.append(transformed_user_page_content)
+
+
+    print(user.UI_UsersPageContents)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -208,4 +220,4 @@ def get_user_by_id(db: Session, user_id):
         )
     
     
-    return create_user_response(user=user)
+    return create_user_response(user=user, page_contents=transformed_user_page_contents)

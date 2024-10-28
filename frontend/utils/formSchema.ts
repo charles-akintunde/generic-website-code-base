@@ -185,6 +185,7 @@ export const pageContentSchema = z.object({
     .union([z.date(), z.string()])
     .transform((val) => (typeof val === 'string' ? new Date(val) : val))
     .optional(),
+  pageContentUsersId: z.array(z.string()).optional(),
   pageContentDisplayURL: requiredTextSchemaAllowDash('Page Display URL').max(
     255,
     `Page Name must be at most 254 characters long`
@@ -200,6 +201,7 @@ export const pageContentSchemaEdit = z.object({
     `Page Name must be at most 100 characters long`
   ),
   pageContentCreatedAt: z.date().optional(),
+  pageContentUsersId: z.array(z.string()).optional(),
   pageContentDisplayURL: requiredTextSchemaAllowDash('Page Display URL').max(
     255,
     `Page Name must be at most 254 characters long`

@@ -24,6 +24,11 @@ export interface IPageMain {
   href: string;
 }
 
+export interface IOptionType {
+  label: string;
+  value: string | number;
+}
+
 export interface IUserBase {
   id: string;
   uiFirstName: string;
@@ -49,6 +54,7 @@ export interface IUserInfo extends IUserBase {
   uiPhoneNumber: string | null;
   uiOrganization: string | null;
   uiAbout: TElement[] | null;
+  uiUserPageContents?: IPageContentMain[];
 }
 
 export interface IUIActiveUser {
@@ -101,7 +107,13 @@ export interface IPageContentMain extends IPageContentItem {
   pageContentExcerpt?: string;
   pageContentReadingTime?: string;
   creatorFullName?: string;
+  pageContenAssociatedUsers: IOptionType[] | [];
 }
+
+// export interface IPageContenAssociatedUsers {
+//   userId: string;
+//   userFullName: string;
+// }
 
 export interface IPageContentItem extends IPageContentBase {
   pageId: string;
@@ -110,6 +122,7 @@ export interface IPageContentItem extends IPageContentBase {
   pageDisplayURL: string;
   pageContentCreatedAt?: Date | string;
   pageContentDisplayURL: string;
+  pageContentUsersId?: string[];
   userId: string;
   href: string;
 }
