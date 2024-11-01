@@ -5,7 +5,6 @@ import { EllipsisVertical } from 'lucide-react';
 import AppPopconfirm from './app-popup-confirm';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import useUserInfo from '../../hooks/api-hooks/use-user-info';
 import { useAppSelector } from '../../hooks/redux-hooks';
 
 interface IActionProps {

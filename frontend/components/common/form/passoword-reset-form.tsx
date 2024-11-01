@@ -13,8 +13,8 @@ import {
 } from '../../../utils/formSchema';
 import FormField from '../form-field';
 import LoadingButton from '../button/loading-button';
-import useUserInfo from '../../../hooks/api-hooks/use-user-info';
 import AppRequestResult from '../app-request-result';
+import { useUserInfo } from '../../../hooks/api-hooks/use-user-info';
 
 interface PasswordResetFormProps {
   token: string;

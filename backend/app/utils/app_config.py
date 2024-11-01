@@ -1,6 +1,6 @@
 import os
 
-from backend.app.config import Settings
+from app.config import settings
 
 class Config:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -9,8 +9,8 @@ class Config:
 
 app_config = {
     "app_logo_url": Config.ASSET_IMAGE_PATH,  
-    "company_name": Settings.FRONTEND_URL,
-    "frontend_url": Settings.FRONTEND_URL,
+    "company_name": settings.FRONTEND_URL,
+    "frontend_url": settings.FRONTEND_URL,
 
 }
 

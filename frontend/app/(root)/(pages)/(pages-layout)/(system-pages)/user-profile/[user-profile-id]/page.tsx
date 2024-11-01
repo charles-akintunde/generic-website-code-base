@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { UserProfileForm } from '../../../../../../components/common/form/user-profile-form';
+import { UserProfileForm } from '../../../../../../../components/common/form/user-profile-form';
 import {
   UserOutlined,
   HomeOutlined,
@@ -9,8 +9,8 @@ import {
   PhoneOutlined,
   MailOutlined,
 } from '@ant-design/icons';
-import { Avatar, Badge, Tooltip } from 'antd';
-import { useGetUserQuery } from '../../../../../../api/userApi';
+import { Avatar, Badge, Empty, Tooltip } from 'antd';
+import { useGetUserQuery } from '../../../../../../../api/userApi';
 import {
   formatDate,
   handleRoutingOnError,
@@ -20,15 +20,15 @@ import {
   transformToUserInfo,
   userRoleLabels,
   userStatusLabels,
-} from '../../../../../../utils/helper';
+} from '../../../../../../../utils/helper';
 import {
   IPageContentMain,
   IUserInfo,
-} from '../../../../../../types/componentInterfaces';
+} from '../../../../../../../types/componentInterfaces';
 import { usePathname, useRouter } from 'next/navigation';
-import AppLoading from '../../../../../../components/common/app-loading';
-import { useAppSelector } from '../../../../../../hooks/redux-hooks';
-import { PageContentCarouselCard } from '../../../../../../components/common/carousel/page-content-carousel';
+import AppLoading from '../../../../../../../components/common/app-loading';
+import { useAppSelector } from '../../../../../../../hooks/redux-hooks';
+import { PageContentCarouselCard } from '../../../../../../../components/common/carousel/page-content-carousel';
 
 export function sanitizeAndCompare(str1: string, str2: string) {
   if (!str1 || !str2) return false;
@@ -102,7 +102,7 @@ const UserProfilePage = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="col-span-1 flex justify-center md:justify-start">
                 <Avatar
-                  size={200}
+                  size={150}
                   src={userInfo.uiPhoto as string}
                   alt={`${userInfo.uiFirstName} ${userInfo.uiLastName}`}
                   icon={!userInfo.uiPhoto && <UserOutlined />}
@@ -211,14 +211,22 @@ const UserProfilePage = () => {
             <h2 className="text-2xl font-bold mb-6 text-center">
               Related Posts
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {pageContents.map((pageContent) => (
-                <PageContentCarouselCard
-                  pageContent={pageContent}
-                  key={pageContent.pageContentId}
-                />
-              ))}
-            </div>
+
+            {!pageContents || pageContents.length == 0 ? (
+              <Empty
+                description="No content available"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {pageContents.map((pageContent) => (
+                  <PageContentCarouselCard
+                    pageContent={pageContent}
+                    key={pageContent.pageContentId}
+                  />
+                ))}
+              </div>
+            )}
           </section>
         </div>
       )}

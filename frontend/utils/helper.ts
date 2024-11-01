@@ -234,6 +234,10 @@ export function formatDate(dateString: string): string {
   return date.toLocaleDateString('en-US', options);
 }
 
+export const isScheduledDateGreaterThanCurrent = (date1: string) => {
+  return new Date(date1).getTime() > new Date().getTime();
+};
+
 // export const hasPermission = (
 //   currentUserRole: string,
 //   pagePermission: string[]
@@ -265,7 +269,7 @@ export const hasPermission = (
     ...pagePermission.map((role) => roleHierarchy[role])
   );
 
-  console.log(roleHierarchy[currentUserRole], 'roleHierarchy[currentUserRole]');
+  console.log(currentUserRole, 'roleHierarchy[currentUserRole]');
 
   return roleHierarchy[currentUserRole] <= lowestPermissiveRole;
 };

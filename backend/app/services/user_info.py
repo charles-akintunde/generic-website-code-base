@@ -202,6 +202,7 @@ def get_user_by_id(db: Session, user_id):
         Retrieve a user by their ID from the database.
     """
     user = user_crud.get_user_by_id(db=db, user_id=user_id)
+    print(user,"USER INFO")
     user_page_contents = user.UI_UsersPageContents
     transformed_user_page_contents = []
 

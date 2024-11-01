@@ -12,7 +12,6 @@ import FormField from '../form-field';
 import { getNames } from 'country-list';
 import LoadingButton from '../button/loading-button';
 import { IUserBase, IUserInfo } from '../../../types/componentInterfaces';
-import useUserInfo from '../../../hooks/api-hooks/use-user-info';
 import { TElement } from '@udecode/plate-common';
 import {
   getChangedFields,
@@ -40,6 +39,7 @@ import { EUserRole } from '../../../types/enums';
 import { PlateEditor } from '../../plate/plate';
 import { Divider, Switch } from 'antd';
 import { removeNullValues } from '../../../utils/helper';
+import { useUserInfo } from '../../../hooks/api-hooks/use-user-info';
 
 interface UserProfileFormProps {
   userInfo: IUserInfo;

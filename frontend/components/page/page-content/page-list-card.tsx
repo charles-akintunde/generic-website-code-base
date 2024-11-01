@@ -11,7 +11,11 @@ import Link from 'next/link';
 import { IPageContentMain } from '../../../types/componentInterfaces';
 import ActionsButtons from '../../common/action-buttons';
 import usePageContent from '../../../hooks/api-hooks/use-page-content';
-import { formatDate } from '../../../utils/helper';
+import {
+  formatDate,
+  isScheduledDateGreaterThanCurrent,
+} from '../../../utils/helper';
+import { EyeOff, Clock } from 'lucide-react';
 import { Tooltip } from 'antd';
 
 interface IPageContentCardProps {
@@ -28,12 +32,18 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
   const handleEditButtonClick = () => {
     handlePageContentEditButtonClick(pageContent);
   };
+
   const title = pageContent.pageContentName;
   //const excerpt = getPageExcerpt(pageContent.editorContent);
   const excerpt = pageContent.pageContentExcerpt;
   const imageSrc = pageContent.pageContentDisplayImage;
   const readTime = `${pageContent.pageContentReadingTime} mins Read`;
   const date = formatDate(pageContent.pageContentCreatedAt as string);
+  const isScheduled =
+    pageContent.pageContentCreatedAt &&
+    isScheduledDateGreaterThanCurrent(
+      pageContent.pageContentCreatedAt as string
+    );
   const href = pageContent.href;
   //const category = pageName;
   const isHidden = pageContent.isPageContentHidden;
@@ -54,14 +64,20 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
         </Link>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-wrap">
-          {/* <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-blue-200 rounded-sm bg-opacity-50 text-blue-400 px-6 py-1 hover:bg-blue-200 hover:bg-opacity-50 shadow-sm">
-            {category}
-          </Badge> */}
+        <div className="flex flex-wrap space-x-2">
           {isHidden && (
-            <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-red-200 rounded-sm bg-opacity-50 text-red-600 px-6 py-1 hover:bg-red-200 hover:bg-opacity-50 shadow-sm">
-              {'This post is hidden from users'}
-            </Badge>
+            <Tooltip placement={'top'} title={`Hidden Post`}>
+              <div className="p-1 border bg-opacity-50 cursor-pointer border-gray-300 rounded-md ">
+                <EyeOff className="h-4 w-4 text-gray-500" />
+              </div>
+            </Tooltip>
+          )}
+          {isScheduled && (
+            <Tooltip placement={'top'} title={`Scheduled Post`}>
+              <div className="p-1 border bg-opacity-50  cursor-pointer border-gray-300 rounded-md ">
+                <Clock className="h-4 w-4 text-gray-500" />
+              </div>
+            </Tooltip>
           )}
         </div>
 

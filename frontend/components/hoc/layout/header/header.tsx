@@ -23,12 +23,18 @@ import { ChevronDown } from 'lucide-react';
 import LogoutButton from '../../../common/button/logout-button';
 import { Separator } from '../../../ui/separator';
 import HoverableCard from '../../../common/hover-card';
-import useUserInfo from '../../../../hooks/api-hooks/use-user-info';
-import { IUIActiveUser } from '../../../../types/componentInterfaces';
+import {
+  IUIActiveUser,
+  IUserInfo,
+} from '../../../../types/componentInterfaces';
 import usePage from '../../../../hooks/api-hooks/use-page';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import AppLoading from '../../../common/app-loading';
-import { hasNavItems } from '../../../../utils/helper';
+import { hasNavItems, transformToUserInfo } from '../../../../utils/helper';
+import { useGetActiveUserQuery } from '../../../../api/authApi';
+import { EUserRole } from '../../../../types/enums';
+import { setUIActiveUser } from '../../../../store/slice/userSlice';
+import { useUserInfo } from '../../../../hooks/api-hooks/use-user-info';
 
 interface UserProfileDropDownProps {
   uiActiveUser: IUIActiveUser;
@@ -136,10 +142,12 @@ export const UserProfile = () => {
   );
 };
 
-const Header: React.FC = () => {
+const Header: React.FC = ({}) => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const uiUser = useUserInfo();
   const pathname = usePathname();
+
   const handleDrawerToggle = () => {
     dispatch(toggleDrawer());
   };
@@ -169,6 +177,42 @@ const Header: React.FC = () => {
     setActiveNavItem(key);
     setIsLoading(false);
   }, [pathname, navMenuItems]);
+
+  // useEffect(() => {
+  //   if (activeUserData?.data) {
+  //     const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
+
+  //     dispatch(
+  //       setUIActiveUser({
+  //         uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+  //         uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+  //         uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
+  //         uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
+  //         uiIsLoading: isActiveUserFetchLoading,
+  //         uiId: userProfile.id,
+  //         uiCanEdit:
+  //           userProfile.uiRole.includes(EUserRole.Admin) ||
+  //           userProfile.uiRole.includes(EUserRole.SuperAdmin),
+  //         uiRole: userProfile.uiRole,
+  //         uiPhotoURL: userProfile.uiPhoto,
+  //       })
+  //     );
+  //   } else {
+  //     dispatch(
+  //       setUIActiveUser({
+  //         uiId: null,
+  //         uiFullName: '',
+  //         uiInitials: '',
+  //         uiIsAdmin: false,
+  //         uiIsLoading: isActiveUserFetchLoading,
+  //         uiIsSuperAdmin: false,
+  //         uiCanEdit: false,
+  //         uiRole: [EUserRole.Public],
+  //         uiPhotoURL: null,
+  //       })
+  //     );
+  //   }
+  // }, []);
 
   if (isLoading) {
     return <AppLoading />;

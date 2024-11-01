@@ -1,10 +1,9 @@
 'use-client';
 import React from 'react';
-import { Button, Result } from 'antd';
-import { Mouse } from 'lucide-react';
+import { Result } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
-import AppButton from '../../../../../components/common/button/app-button';
-import { primarySolidButtonStyles } from '../../../../../styles/globals';
+import AppButton from '../../../../../../components/common/button/app-button';
+import { primarySolidButtonStyles } from '../../../../../../styles/globals';
 
 interface AccessDeniedProps {
   currentUserRole: string;

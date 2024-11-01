@@ -42,6 +42,17 @@ def is_admin(current_user: T_UserInfo, detail: str):
 #             status_code=status.HTTP_401_UNAUTHORIZED, 
 #             detail="You are not authorized to access this page.")
 
+
+def check_user_role(user_roles: List[E_UserRole], roles: List[E_UserRole]):
+    """
+    Check if the user has the specified role.
+    """
+    for role in roles:
+        if role in user_roles:
+            return True
+    return False
+
+
 def check_page_permission(page_accessible_to: List[E_UserRole], user_roles: List[E_UserRole]):
     """
     Check page permission with hierarchical access.

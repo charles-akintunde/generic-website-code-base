@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from app.services.page_content import create_page_content, delete_page_content, get_page_content_by_display_url, update_page_content
 from app.schemas.page_content import PageContentCreateRequest, PageContentUpdateRequest
 from app.schemas.response import StandardResponse
-from app.core.auth import get_current_user
+from app.core.auth import get_current_user, get_current_user_without_exception
 from app.models.user_info import T_UserInfo
 from app.database import get_db
 from app.utils.response import error_response, success_response
@@ -86,7 +86,9 @@ async def create_page_content_endpoint(
 async def get_page_content_by_display_url_endpoint(
     page_content_display_url: str,
     page_display_url: str,
-    db: Session = Depends(get_db)):
+    db: Session = Depends(get_db),
+    current_user: T_UserInfo = Depends(get_current_user_without_exception)
+):
     """
     Get page content by title.
 
@@ -103,7 +105,8 @@ async def get_page_content_by_display_url_endpoint(
         page_content = get_page_content_by_display_url(
             db=db, 
             page_content_display_url=decoded_page_content_display_url,
-            page_display_url=decoded_page_display_url)
+            page_display_url=decoded_page_display_url,
+            current_user=current_user)
         return success_response(message="Page content fetched successfully", data=page_content.model_dump())
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)

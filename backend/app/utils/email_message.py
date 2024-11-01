@@ -1,8 +1,7 @@
 
 
 from typing import Optional
-from app_config import app_config
-
+from app.utils.app_config import app_config
 
 def email_html_content(
     confirmation_link: str,

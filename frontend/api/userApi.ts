@@ -40,13 +40,13 @@ export const userApi = createApi({
     }),
     getUser: builder.query<ICompleteUserResponseWrapper, string>({
       query: (UI_ID) => `${url}/${UI_ID}`,
-      providesTags: (result) =>
-        result
-          ? [
-              { type: 'User', id: result.data.UI_ID },
-              { type: 'User', id: 'LIST' },
-            ]
-          : [{ type: 'User', id: 'LIST' }],
+      // providesTags: (result) =>
+      //   result
+      //     ? [
+      //         { type: 'User', id: result.data.UI_ID },
+      //         { type: 'User', id: 'LIST' },
+      //       ]
+      //     : [{ type: 'User', id: 'LIST' }],
     }),
     editUser: builder.mutation<
       IGenericResponse,

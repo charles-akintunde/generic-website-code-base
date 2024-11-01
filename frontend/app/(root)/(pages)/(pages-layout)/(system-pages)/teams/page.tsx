@@ -1,17 +1,20 @@
 'use client';
-import { useGetUsersAssignedPositionsQuery } from '../../../../../api/userApi';
-import { IUserBase, IUserList } from '../../../../../types/componentInterfaces';
+import { useGetUsersAssignedPositionsQuery } from '../../../../../../api/userApi';
+import {
+  IUserBase,
+  IUserList,
+} from '../../../../../../types/componentInterfaces';
 import {
   mapToIIUserList,
   MemberPositionTitles,
-} from '../../../../../utils/helper';
+} from '../../../../../../utils/helper';
 import React, { useEffect, useState } from 'react';
-import { Row, Avatar, Typography, Divider, Tooltip } from 'antd';
+import { Row, Avatar, Typography, Divider, Tooltip, Empty } from 'antd';
 import Link from 'next/link';
-import AppLoading from '../../../../../components/common/app-loading';
-import backgroundImage from '../../../../../assets/images/page-list-img1.jpg';
+import AppLoading from '../../../../../../components/common/app-loading';
+import backgroundImage from '../../../../../../assets/images/page-list-img1.jpg';
 import Image from 'next/image';
-import { EUserRole } from '../../../../../types/enums';
+import { EUserRole } from '../../../../../../types/enums';
 
 const { Title, Text } = Typography;
 
@@ -144,58 +147,90 @@ const Teams = () => {
         </div>
       </header>
       <div className="container mx-auto">
-        <section className="mb-12 mt-20">
-          <Title level={3} className="text-center mb-6 text-primary">
-            Director
-          </Title>
-          <Row gutter={[16, 16]} className="flex justify-center">
-            {groupedUsers[EMemberPosition.Director]?.map(renderUserCard)}
-          </Row>
-        </section>
+        {users ? (
+          <>
+            {groupedUsers[EMemberPosition.Director] &&
+              groupedUsers[EMemberPosition.Director].length > 0 && (
+                <section className="mb-12 mt-20">
+                  <Title level={3} className="text-center mb-6 text-primary">
+                    Director
+                  </Title>
+                  <Row gutter={[16, 16]} className="flex justify-center">
+                    {groupedUsers[EMemberPosition.Director]?.map(
+                      renderUserCard
+                    )}
+                  </Row>
+                </section>
+              )}
 
-        <section className="mb-12">
-          <Title level={3} className="text-center mb-6 text-primary">
-            <Divider>Postdoctoral Research Associate & Fellow</Divider>
-          </Title>
-          <Row gutter={[16, 16]} className="flex justify-center">
-            {groupedUsers[EMemberPosition.PostDoc]?.map(renderUserCard)}
-          </Row>
-        </section>
+            {groupedUsers[EMemberPosition.PostDoc] &&
+              groupedUsers[EMemberPosition.PostDoc].length > 0 && (
+                <section className="mb-12">
+                  <Title level={3} className="text-center mb-6 text-primary">
+                    <Divider>Postdoctoral Research Associate & Fellow</Divider>
+                  </Title>
+                  <Row gutter={[16, 16]} className="flex justify-center">
+                    {groupedUsers[EMemberPosition.PostDoc]?.map(renderUserCard)}
+                  </Row>
+                </section>
+              )}
 
-        <section className="mb-12">
-          <Title level={3} className="text-center mb-6 text-primary">
-            <Divider>PhD Students</Divider>
-          </Title>
-          <Row gutter={[16, 16]} className="flex justify-center ">
-            {groupedUsers[EMemberPosition.Phd]?.map(renderUserCard)}
-          </Row>
-        </section>
+            {groupedUsers[EMemberPosition.Phd] &&
+              groupedUsers[EMemberPosition.Phd].length > 0 && (
+                <section className="mb-12">
+                  <Title level={3} className="text-center mb-6 text-primary">
+                    <Divider>PhD Students</Divider>
+                  </Title>
+                  <Row gutter={[16, 16]} className="flex justify-center ">
+                    {groupedUsers[EMemberPosition.Phd]?.map(renderUserCard)}
+                  </Row>
+                </section>
+              )}
 
-        <section className="mb-12">
-          <Title level={3} className="text-center mb-6 text-primary">
-            <Divider>Master Students</Divider>
-          </Title>
-          <Row gutter={[16, 16]} className="flex justify-center">
-            {groupedUsers[EMemberPosition.Master]?.map(renderUserCard)}
-          </Row>
-        </section>
+            {groupedUsers[EMemberPosition.Master] &&
+              groupedUsers[EMemberPosition.Master].length > 0 && (
+                <section className="mb-12">
+                  <Title level={3} className="text-center mb-6 text-primary">
+                    <Divider>Master Students</Divider>
+                  </Title>
+                  <Row gutter={[16, 16]} className="flex justify-center">
+                    {groupedUsers[EMemberPosition.Master]?.map(renderUserCard)}
+                  </Row>
+                </section>
+              )}
 
-        <section className="mb-12">
-          <Title level={3} className="text-center mb-6 text-primary">
-            <Divider>Undergraduate Students</Divider>
-          </Title>
-          <Row gutter={[16, 16]} className="flex justify-center">
-            {groupedUsers[EMemberPosition.Undergrad]?.map(renderUserCard)}
-          </Row>
-        </section>
-        <section className="mb-12">
-          <Title level={3} className="text-center mb-6 text-primary">
-            <Divider>Alumni</Divider>
-          </Title>
-          <Row gutter={[16, 16]} className="flex justify-center">
-            {groupedUsers[EMemberPosition.Alumni]?.map(renderUserCard)}
-          </Row>
-        </section>
+            {groupedUsers[EMemberPosition.Undergrad] &&
+              groupedUsers[EMemberPosition.Undergrad].length > 0 && (
+                <section className="mb-12">
+                  <Title level={3} className="text-center mb-6 text-primary">
+                    <Divider>Undergraduate Students</Divider>
+                  </Title>
+                  <Row gutter={[16, 16]} className="flex justify-center">
+                    {groupedUsers[EMemberPosition.Undergrad]?.map(
+                      renderUserCard
+                    )}
+                  </Row>
+                </section>
+              )}
+
+            {groupedUsers[EMemberPosition.Alumni] &&
+              groupedUsers[EMemberPosition.Alumni].length > 0 && (
+                <section className="mb-12">
+                  <Title level={3} className="text-center mb-6 text-primary">
+                    <Divider>Alumni</Divider>
+                  </Title>
+                  <Row gutter={[16, 16]} className="flex justify-center">
+                    {groupedUsers[EMemberPosition.Alumni]?.map(renderUserCard)}
+                  </Row>
+                </section>
+              )}
+          </>
+        ) : (
+          <Empty
+            description="No team members available"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
+        )}
       </div>
     </main>
   );

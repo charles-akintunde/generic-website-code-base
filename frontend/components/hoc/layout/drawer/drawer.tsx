@@ -13,7 +13,6 @@ import { ScrollArea } from '../../../ui/scroll-area';
 import { Avatar, Menu, MenuProps } from 'antd';
 import HoverableCard from '../../../common/hover-card';
 import { transitionStyles } from '../../../../styles/globals';
-import useUserInfo from '../../../../hooks/api-hooks/use-user-info';
 import usePage from '../../../../hooks/api-hooks/use-page';
 import { hasNavItems } from '../../../../utils/helper';
 import { usePathname } from 'next/navigation';

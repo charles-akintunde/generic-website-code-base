@@ -2,7 +2,7 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 
 const AdminPanel = dynamic(
-  () => import('../../../../../components/admin-panel/admin-panel'),
+  () => import('../../../../../../components/admin-panel/admin-panel'),
   {
     ssr: false,
   }

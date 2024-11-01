@@ -17,6 +17,9 @@ import {
 import { appConfig } from '../../utils/appConfig';
 import { useGetActiveUserQuery } from '../../api/authApi';
 import { EUserRole } from '../../types/enums';
+import { App } from 'antd';
+import AppLoading from '../common/app-loading';
+import { CommentResolveButton } from '../plate-ui/comment-resolve-button';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -71,7 +74,6 @@ const findPage = (
 };
 
 const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
-  // const { activePageRefetch } = useUserInfo();
   const {
     data: activeUserData,
     isError: hasActiveUserFetchError,
@@ -97,6 +99,8 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   useEffect(() => {
     if (activeUserData?.data) {
       const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
+
+      console.log(userProfile);
 
       dispatch(
         setUIActiveUser({
@@ -189,20 +193,20 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       if (!isValidRoute) {
         router.replace('/404');
       } else {
-        if (
-          !hasPermission(
-            uiActiveUserRole,
-            currentPage?.pagePermission as string[]
-          )
-        ) {
-          console.log(
-            uiActiveUserRole,
-            currentPage?.pagePermission,
-            'LLLLLLLLLLLLLLL'
-          );
-          console.log('Accessed Denied!!!');
-          router.replace('/access-denied');
-        }
+        // if (
+        //   !hasPermission(
+        //     uiActiveUserRole,
+        //     currentPage?.pagePermission as string[]
+        //   )
+        // ) {
+        //   console.log(
+        //     uiActiveUserRole,
+        //     currentPage?.pagePermission,
+        //     'LLLLLLLLLLLLLLL'
+        //   );
+        //   console.log('Accessed Denied!!!');
+        //   router.replace('/access-denied');
+        // }
       }
     }
     dispatch(
