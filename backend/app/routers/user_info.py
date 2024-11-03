@@ -252,7 +252,8 @@ async def get_member_users_endpoint(
 #     return  success_response( message='Pages fetched successfully')
     
 @router.get("/{user_id}", response_model=StandardResponse)
-async def get_user_endpoint( user_id: str, db: Session = Depends(get_db)):
+async def get_user_endpoint( user_id: str, pg_page_number: int = Query(1),
+    pg_offset: int = Query(8), db: Session = Depends(get_db)):
     """
     Fetch user details by user ID.
 
@@ -269,7 +270,7 @@ async def get_user_endpoint( user_id: str, db: Session = Depends(get_db)):
         HTTPException: If the user is not found or any other error occurs.
     """
     try:
-        user_response = get_user_by_id(db=db,user_id=user_id)
+        user_response = get_user_by_id(db=db,user_id=user_id, pg_page_number=pg_page_number, pg_offset=pg_offset)
         return success_response(data= user_response.model_dump(), message="User fetched successfully.")
     except HTTPException as e:
         return error_response(message=e.detail,status_code=e.status_code)
