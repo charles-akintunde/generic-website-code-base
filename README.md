@@ -2,19 +2,27 @@
 
 This repository contains a full-stack application with frontend and backend services, using Docker Compose to simplify the setup. Follow the instructions below to get everything up and running.
 
+### Skip Prerequisites WSL and Docker Desktop are already installed
+
 ## Prerequisites
+
 
 1. **Windows Subsystem for Linux (WSL)**: This guide assumes you have WSL installed. If not, follow [Microsoft's instructions to install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 2.  **Video References** :
    - Watch these for additional Docker setup help:
-     - [WSL + Docker Setup](https://www.youtube.com/watch?v=HrAsmXy1-78)
-     - [Docker + WSL Integration](https://www.youtube.com/watch?v=ZyBBv1JmnWQ&ab_channel=CodeBear)
-
+     - [WSL Setup](https://www.youtube.com/watch?v=HrAsmXy1-78)
+     - [Docker Desktop Setup](https://www.youtube.com/watch?v=ZyBBv1JmnWQ&ab_channel=CodeBear)
 
 3. **Docker and Docker Desktop**:
    - Install Docker Desktop: [Docker Desktop Installation](https://docs.docker.com/desktop/windows/install/).
    - Make sure **WSL integration** is enabled in Docker Desktop to allow Docker to work within WSL.
+
+4. **Enable WSL Integration in Docker Desktop:** (Optional):
+   - Open Docker Desktop.
+   - Go to Settings > Resources > WSL Integration.
+   - Ensure Enable integration with my default (Ubuntu) WSL distro is checked.
+   - Click Apply & Restart to enable the integration.
    
 
 ## Setup Steps
