@@ -9,13 +9,11 @@ This repository contains a full-stack application with frontend and backend serv
 1. **Windows Subsystem for Linux (WSL)**: This guide assumes you have WSL installed. If not, follow [Microsoft's instructions to install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 2. **Video References**:
-
    - Watch these for additional Docker setup help:
      - [WSL Setup](https://www.youtube.com/watch?v=HrAsmXy1-78)
      - [Docker Desktop Setup](https://www.youtube.com/watch?v=ZyBBv1JmnWQ&ab_channel=CodeBear)
 
 3. **Docker and Docker Desktop**:
-
    - Install Docker Desktop: [Docker Desktop Installation](https://docs.docker.com/desktop/windows/install/).
    - Make sure **WSL integration** is enabled in Docker Desktop to allow Docker to work within WSL.
 
@@ -24,7 +22,7 @@ This repository contains a full-stack application with frontend and backend serv
    - Go to **Settings** > **Resources** > **WSL Integration**.
    - Ensure **Enable integration with my default (Ubuntu) WSL distro** is checked.
    - Click **Apply & Restart** to enable the integration.
-
+   
 ## Setup Steps
 
 ### 1. Clone the Repository
@@ -77,7 +75,6 @@ This project requires specific environment variables for both the frontend and b
    ```
 
 2. Create a `.env.local` file:
-
    ```bash
    touch .env.local
    ```
@@ -95,7 +92,6 @@ docker-compose up --build
 ```
 
 This command will:
-
 - Build and start both the frontend and backend services.
 - Set up the necessary database within the Docker network.
 
@@ -123,12 +119,10 @@ This command applies the necessary database migrations to the new database.
 ## Service-Specific Configuration
 
 - **Frontend**:
-
   - Images and static assets are located in the `frontend/assets` folder.
   - To configure the application settings, edit `frontend/utils/appConfig.ts` with any necessary frontend configuration values.
 
 - **Backend**:
-
   - Navigate to `backend/utils/app_config.py` to set backend-specific configurations.
   - In `app_config.py`, add the name(s) and email(s) of the super admin(s) under the appropriate configuration variable.
 
