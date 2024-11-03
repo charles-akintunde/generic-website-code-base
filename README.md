@@ -1,3 +1,4 @@
+
 # Generic Website Code Base
 
 This repository contains a full-stack application with frontend and backend services, using Docker Compose to simplify the setup. Follow the instructions below to get everything up and running.
@@ -99,7 +100,30 @@ This project requires specific environment variables for both the frontend and b
 
 4. Save the file.
 
-### 4. Run the Application with Docker Compose
+### 4. Generate SSL Certificates 
+
+To set up HTTPS for local development, create a `certificates` folder and generate self-signed SSL certificates:
+
+1. In the `backend` directory, create a `certificates` folder:
+
+   ```bash
+   mkdir certificates
+   ```
+
+2. Generate the SSL certificates by running the following command:
+
+   ```bash
+   openssl req -x509 -newkey rsa:4096 -keyout ./certificates/privkey.pem -out ./certificates/fullchain.pem -days 365 -nodes -subj "/CN=localhost"
+   ```
+
+This command will:
+- Generate a 4096-bit RSA private key (`privkey.pem`) in `./backend/certificates`.
+- Create a self-signed certificate (`fullchain.pem`) valid for 365 days in the same folder.
+- Set the common name (CN) to `localhost`, suitable for local development.
+
+Make sure the paths to `privkey.pem` and `fullchain.pem` align with your backend configuration.
+
+### 5. Run the Application with Docker Compose
 
 From the root directory of the project, execute:
 
@@ -112,7 +136,7 @@ This command will:
 - Build and start both the frontend and backend services.
 - Set up the necessary database within the Docker network.
 
-### 5. Starting the Application After the First Build
+### 6. Starting the Application After the First Build
 
 After the initial build, you can start the application without rebuilding it by running:
 
@@ -132,7 +156,7 @@ Once Docker Compose has successfully started, open a new terminal in WSL and ent
    docker-compose ps
    ```
 
-2. Enter the backend container :
+2. Enter the backend container:
 
    ```bash
    docker exec -it generic_website_backend /bin/bash
@@ -162,4 +186,3 @@ After setting up the super admin in `app_config.py`, go to [https://localhost:30
 
 ---
 
-This guide should help you run the application smoothly.
