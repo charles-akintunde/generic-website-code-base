@@ -2,14 +2,13 @@
 
 This repository contains a full-stack application with frontend and backend services, using Docker Compose to simplify the setup. Follow the instructions below to get everything up and running.
 
-### Skip Prerequisites WSL and Docker Desktop are already installed
+### Skip Prerequisites if WSL and Docker Desktop are already installed
 
 ## Prerequisites
 
-
 1. **Windows Subsystem for Linux (WSL)**: This guide assumes you have WSL installed. If not, follow [Microsoft's instructions to install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
 
-2.  **Video References** :
+2. **Video References**:
    - Watch these for additional Docker setup help:
      - [WSL Setup](https://www.youtube.com/watch?v=HrAsmXy1-78)
      - [Docker Desktop Setup](https://www.youtube.com/watch?v=ZyBBv1JmnWQ&ab_channel=CodeBear)
@@ -18,13 +17,12 @@ This repository contains a full-stack application with frontend and backend serv
    - Install Docker Desktop: [Docker Desktop Installation](https://docs.docker.com/desktop/windows/install/).
    - Make sure **WSL integration** is enabled in Docker Desktop to allow Docker to work within WSL.
 
-4. **Enable WSL Integration in Docker Desktop:** (Optional):
+4. **Enable WSL Integration in Docker Desktop** (Optional):
    - Open Docker Desktop.
-   - Go to Settings > Resources > WSL Integration.
-   - Ensure Enable integration with my default (Ubuntu) WSL distro is checked.
-   - Click Apply & Restart to enable the integration.
+   - Go to **Settings** > **Resources** > **WSL Integration**.
+   - Ensure **Enable integration with my default (Ubuntu) WSL distro** is checked.
+   - Click **Apply & Restart** to enable the integration.
    
-
 ## Setup Steps
 
 ### 1. Clone the Repository
@@ -127,11 +125,24 @@ This command applies the necessary database migrations to the new database.
 
 - **Backend**:
   - Navigate to `backend/utils/app_config.py` to set backend-specific configurations.
+  - In `app_config.py`, add the name(s) and email(s) of the super admin(s) under the appropriate configuration variable.
+
+  ```python
+   "super_admin_email": "admin@example.com", # Change this to the super admin's email
+    "super_admin_first_name": "Super First Name", # Change this to the super admin's first name
+    "super_admin_last_name": "Super Last Name", # Change this to the super admin's last
+  ```
+
+  After configuring the super admin, you can reset the password by going to the frontend reset page.
 
 ## Accessing the Application
 
 - **Frontend**: Open [https://localhost:3000](https://localhost:3000) in your browser.
 - **Backend**: The API is available at [https://localhost:8443](https://localhost:8443).
+
+### Resetting Super Admin Password
+
+After setting up the super admin in `app_config.py`, go to [https://localhost:3000/reset-password](https://localhost:3000/reset-password), enter the super admin's email, and follow the instructions to reset the password.
 
 ## Troubleshooting
 
@@ -140,4 +151,4 @@ This command applies the necessary database migrations to the new database.
 
 ---
 
-This guide should help new users set up and run your application smoothly. Let me know if you'd like further adjustments!
+This guide should help you run the application smoothly.
