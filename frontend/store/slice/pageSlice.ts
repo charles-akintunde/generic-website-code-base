@@ -168,6 +168,7 @@ const pageSlice = createSlice({
       };
     },
     setPageContents: (state, action: PayloadAction<IPageContentMain[]>) => {
+      //@ts-ignore
       state.pageContents = action.payload;
     },
     // addPageContents: (state, action: PayloadAction<IPageContentMain[]>) => {
@@ -282,6 +283,7 @@ const pageSlice = createSlice({
         });
 
         if (hasChanged) {
+          //@ts-ignore
           state.pageContents[existingIndex] = newContent;
         }
       } else {

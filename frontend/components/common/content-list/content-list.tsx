@@ -236,6 +236,7 @@ const ContentList: React.FC<ContentListProps> = ({
                 <ListCardComponent
                   pageName={pageName}
                   key={index}
+                  // @ts-ignore
                   pageContent={pageContent}
                 />
               ))}
