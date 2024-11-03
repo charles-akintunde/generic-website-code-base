@@ -1,7 +1,3 @@
-Here's the updated README with the additional instruction for running the application after the first build:
-
----
-
 # Generic Website Code Base
 
 This repository contains a full-stack application with frontend and backend services, using Docker Compose to simplify the setup. Follow the instructions below to get everything up and running.
