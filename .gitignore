@@ -19,6 +19,7 @@ parts/
 sdist/
 var/
 wheels/
+certificates/
 share/python-wheels/
 *.egg-info/
 .installed.cfg
@@ -113,3 +114,13 @@ yarn-error.log
 
 backend/static/
 backend/static/**
+
+backend/certificates/
+backend/certificates/**
+
+frontend/certificates/
+frontend/certificates/**
+backend/certificates/certificate.crt
+backend/certificates/fullchain.pem
+backend/certificates/private.key
+backend/certificates/privkey.pem
