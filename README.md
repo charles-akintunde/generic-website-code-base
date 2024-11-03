@@ -75,7 +75,6 @@ This project requires specific environment variables for both the frontend and b
    ```
 
 2. Create a `.env.local` file:
-
    ```bash
    touch .env.local
    ```

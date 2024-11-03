@@ -240,10 +240,7 @@ class UserCRUD:
             user_ids (List[str]): List of user IDs to update.
         """
 
-        if not updated_user_ids:
-            print("No user ids")
-            db.query(T_UsersPageContents).filter_by(PC_ID=page_content_id).delete()
-            return
+    
         current_user_ids = {
         association.UI_ID for association in db.query(T_UsersPageContents).filter_by(PC_ID=page_content_id)
         }
