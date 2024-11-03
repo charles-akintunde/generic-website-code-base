@@ -3,7 +3,7 @@ import React from 'react';
 import { Result } from 'antd';
 
 import { HomeOutlined } from '@ant-design/icons';
-import AppButton from '../../../../components/common/button/app-button';
+import AppButton from '../../../../../components/common/button/app-button';
 
 const NotFoundPage = () => {
   return (

@@ -11,7 +11,7 @@ from app.database import get_db
 from app.core.auth import get_current_user
 from app.schemas.response import StandardResponse
 from app.schemas.user_info import UserDelete, UserProfileUpdate, UserRoleStatusUpdate, UserStatusUpdate
-from app.utils.utils import is_super_admin
+from app.utils.utils import is_admin, is_super_admin
 from app.models.user_info import T_UserInfo
 from app.services.user_info import delete_user, get_user_by_id, get_users, get_users_assigned_with_positions, update_user_profile, update_user_role_status, update_user_status
 from app.utils.response import error_response, success_response
@@ -120,7 +120,7 @@ async def update_user_role_status_endpoint(
 
     """
 
-    is_super_admin(current_user)
+    is_admin(current_user, "You do not have permission to update user role.")
     try:
         update_user_role_status(db=db,user_role_status_update=user_role_status_update,current_user=current_user)
         return success_response("User role update successfully")

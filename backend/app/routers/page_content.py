@@ -170,8 +170,8 @@ async def update_page_content_endpoint(
         StandardResponse: The response indicating the result of the update operation.
     """ 
     try:
-        user_ids = json.loads(PC_UsersId) if PC_UsersId else []
-        if not isinstance(user_ids, list):
+        user_ids = json.loads(PC_UsersId) if PC_UsersId else None
+        if PC_UsersId and not isinstance(user_ids, list):
             raise ValueError("PC_UsersId should be a list.")
 
         page_content_update= PageContentUpdateRequest(
@@ -183,6 +183,7 @@ async def update_page_content_endpoint(
         PC_IsHidden=PC_IsHidden,
         PC_UsersId=user_ids
         )
+
 
         if PC_DisplayURL:
             page_content_update.PC_DisplayURL = PC_DisplayURL

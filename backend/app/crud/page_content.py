@@ -15,6 +15,7 @@ from app.models.page import T_Page
 from app.models.page_content import T_PageContent
 from app.utils.file_utils import  delete_file_from_azure
 from app.crud.user_info import user_crud
+from app.models.associations import T_UsersPageContents
 
 
 class PageContentCRUD:
@@ -190,6 +191,9 @@ class PageContentCRUD:
     db_page_content.PC_LastUpdatedAt = datetime.now(timezone.utc)  # type: ignore
     if user_ids:
         user_crud.update_user_page_contents(db, page_content_id, user_ids)
+    else:
+        if user_ids is not None and  len(user_ids) == 0:
+            db.query(T_UsersPageContents).filter_by(PC_ID=page_content_id).delete()
     db.commit()
     db.refresh(db_page_content)
     return db_page_content

@@ -20,6 +20,7 @@ import {
   useDeletePageContentMutation,
   useEditPageContentMutation,
   useUploadPageContentMutation,
+  pageContentApi,
 } from '../../api/pageContentApi';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '../../components/hoc/notification-provider';
@@ -330,6 +331,8 @@ const usePageContent = ({
         formData.append('PC_Resource', pageContent.pageContentResource);
       }
 
+      console.log(pageContent.pageContentUsersId, 'USERS ID');
+
       if (
         pageContent.pageContentUsersId &&
         Array.isArray(pageContent.pageContentUsersId)
@@ -346,17 +349,16 @@ const usePageContent = ({
         formData,
       }).unwrap();
 
-      // setTimeout(() => {
-
-      // }, 200);
-
-      if (
-        pageContent.pageContentDisplayURL &&
-        pageType == EPageType.PageList &&
-        isPageContentFetchSuccess
-      ) {
+      if (pageContent.pageContentDisplayURL && pageType == EPageType.PageList) {
         const newUrl = `/${pageDisplayURL}/${pageContent.pageContentDisplayURL}`;
         router.replace(newUrl);
+      } else {
+        dispatch(
+          pageContentApi.util.invalidateTags([
+            { type: 'SinglePageContent', id: pageContentId },
+            { type: 'SinglePageContent', id: 'SINGLE_PAGE_CONTENT' },
+          ])
+        );
       }
 
       dispatch(

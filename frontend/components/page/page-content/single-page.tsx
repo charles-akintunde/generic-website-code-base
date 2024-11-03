@@ -188,7 +188,7 @@ const SinglePage = () => {
         <div
           className={`flex flex-col mt-10 min-h-screen w-full ${pageContentPaddingStyles}`}
         >
-          <div className={`space-y-6 mb-10 min-h-screen shadow-md`}>
+          <div className={`space-y-6 mb-10 min-h-screen  shadow-md`}>
             <PlateEditor
               key={plateEditorKey}
               value={plateEditor}

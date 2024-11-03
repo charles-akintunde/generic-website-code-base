@@ -606,7 +606,8 @@ export const handleRoutingOnError = (
   hasError: boolean,
   error: any,
   clearCache?: () => void,
-  from?: string
+  from?: string,
+  clearState?: () => void
 ) => {
   if (hasError && error) {
     if (error.status === 404) {
@@ -618,9 +619,9 @@ export const handleRoutingOnError = (
       router.replace('/access-denied');
     }
 
-    // if (clearCache) {
-    //   clearCache();
-    // }
+    if (clearState) {
+      clearState();
+    }
   }
 };
 

@@ -56,11 +56,13 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
     <Card className="bg-white flex flex-col h-full transition-shadow duration-300 hover:shadow-md">
       <CardHeader>
         <Link onClick={handleEditButtonClick} href={href}>
-          <img
-            src={imageSrc as string}
-            alt="Article"
-            className="w-full h-72 rounded-t-sm object-cover"
-          />
+          <div className="w-full h-72 pt-6 px-6 overflow-hidden rounded-md">
+            <img
+              src={imageSrc as string}
+              alt="Article"
+              className="w-full h-full rounded-md transition-opacity duration-300 object-cover hover:opacity-90"
+            />
+          </div>
         </Link>
       </CardHeader>
       <CardContent>

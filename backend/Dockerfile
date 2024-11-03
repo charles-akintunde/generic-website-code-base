@@ -49,4 +49,4 @@ COPY . .
 EXPOSE 443
 
 # Start FastAPI on port 443 with SSL
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "443", "--ssl-keyfile", "/app/certificates/privkey.pem", "--ssl-certfile", "/app/certificates/fullchain.pem"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "443", "--ssl-keyfile", "/app/certificates/privkey.pem", "--ssl-certfile", "/app/certificates/fullchain.pem", "--reload"]
