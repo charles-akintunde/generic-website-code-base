@@ -1,78 +1,139 @@
-# Generic Website Code-base
+Here's the updated README with the additional instruction for running the application after the first build:
 
-## Project Overview
+---
 
-The Generic Website Code-base is a content management system designed to facilitate the rapid deployment of websites with similar structures. This project is structured using microservices to handle different functionalities independently, ensuring scalability and ease of maintenance.
+# Generic Website Code Base
 
-### Features
+This repository contains a full-stack application with frontend and backend services, using Docker Compose to simplify the setup. Follow the instructions below to get everything up and running.
 
-- Admin interface to create and manage web pages (both static and dynamic)
-- User registration and management
-- Team member management with application and approval process
-- Modular design for easy extension and customization
+## Prerequisites
 
-## Technologies Used
+1. **Windows Subsystem for Linux (WSL)**: This guide assumes you have WSL installed. If not, follow [Microsoft's instructions to install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
 
-### Backend
-
-- **FastAPI**: A modern, fast (high-performance), web framework for building APIs with Python 3.7+.
-- **PostgreSQL**: An advanced, enterprise-class, and open-source relational database system.
-- **Alembic**: A lightweight database migration tool for SQLAlchemy.
-- **Docker**: A platform to develop, ship, and run applications inside containers.
-
-### Frontend
-
-- **Next.js**: A React framework for building server-side rendering and static web applications.
+2.  **Video References** :
+   - Watch these for additional Docker setup help:
+     - [WSL + Docker Setup](https://www.youtube.com/watch?v=HrAsmXy1-78)
+     - [Docker + WSL Integration](https://www.youtube.com/watch?v=ZyBBv1JmnWQ&ab_channel=CodeBear)
 
 
+3. **Docker and Docker Desktop**:
+   - Install Docker Desktop: [Docker Desktop Installation](https://docs.docker.com/desktop/windows/install/).
+   - Make sure **WSL integration** is enabled in Docker Desktop to allow Docker to work within WSL.
+   
 
-## Setup and Installation
+## Setup Steps
 
-### Prerequisites
+### 1. Clone the Repository
 
-- Docker and Docker Compose installed
-- Python 3.8 or higher installed
-- Node.js and npm (or yarn) installed
+Open your terminal in WSL and navigate to your desired directory, then run:
 
-### Backend Setup
+```bash
+git clone https://github.com/charles-akintunde/generic-website-code-base.git
+cd generic-website-code-base
+```
 
-1. **Clone the Repository**:
+### 2. Confirm WSL is Active
 
-    ```sh
-    git clone https://github.com/charles-akintunde/generic-website-code-base.git
-    cd generic-website-code-base/backend/user_management
-    ```
+To verify WSL is properly set up, run the following command:
 
-2. **Set Up Virtual Environment**:
+```bash
+uname -a
+```
 
-    ```sh
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```
+If you see a Linux-based output, your WSL environment is ready.
 
-3. **Install Dependencies**:
+### 3. Configure Environment Variables
 
-    ```sh
-    pip install -r requirements.txt
-    ```
+This project requires specific environment variables for both the frontend and backend. These should be provided by the admin.
 
-4. **Set Up Environment Variables**:
+#### Backend Environment Setup
 
-    Create a `.env` file in the `backend/user_management` directory and add the following:
+1. Change into the backend directory:
 
-    ```plaintext
-    DATABASE_URL=postgresql://{user}:{password}@{host}:{port}/{database}
-    ```
+   ```bash
+   cd backend
+   ```
 
-5. **Run Docker Containers**:
+2. Create a `.env` file:
 
-    ```sh
-    docker-compose up --build
-    ```
+   ```bash
+   touch .env
+   ```
 
-6. **Run Database Migrations**:
+3. Add the required environment variables to `.env`. You can request these values from the admin.
 
-    ```sh
-    docker exec -it user-management /bin/sh
-    alembic upgrade head
-    ```
+4. Save the file.
+
+#### Frontend Environment Setup
+
+1. Navigate to the frontend directory:
+
+   ```bash
+   cd ../frontend
+   ```
+
+2. Create a `.env.local` file:
+
+   ```bash
+   touch .env.local
+   ```
+
+3. Add the required environment variables for the frontend, also provided by the admin.
+
+4. Save the file.
+
+### 4. Run the Application with Docker Compose
+
+From the root directory of the project, execute:
+
+```bash
+docker-compose up --build
+```
+
+This command will:
+- Build and start both the frontend and backend services.
+- Set up the necessary database within the Docker network.
+
+### 5. Starting the Application After the First Build
+
+After the initial build, you can start the application without rebuilding it by running:
+
+```bash
+docker-compose up
+```
+
+Use this command unless you’ve made changes to the Docker configuration or code that require a rebuild.
+
+### 6. Apply Database Migrations
+
+Once Docker Compose has successfully started, open a new terminal in WSL, navigate to the backend folder, and run the Alembic migrations:
+
+```bash
+cd backend
+alembic upgrade head
+```
+
+This command applies the necessary database migrations to the new database.
+
+## Service-Specific Configuration
+
+- **Frontend**:
+  - Images and static assets are located in the `frontend/assets` folder.
+  - To configure the application settings, edit `frontend/utils/appConfig.ts` with any necessary frontend configuration values.
+
+- **Backend**:
+  - Navigate to `backend/utils/app_config.py` to set backend-specific configurations.
+
+## Accessing the Application
+
+- **Frontend**: Open [https://localhost:3000](https://localhost:3000) in your browser.
+- **Backend**: The API is available at [https://localhost:8443](https://localhost:8443).
+
+## Troubleshooting
+
+- **Environment Variables**: Ensure `.env` and `.env.local` files contain all required values.
+- **Docker WSL Integration**: Verify WSL integration is enabled in Docker Desktop if you experience issues.
+
+---
+
+This guide should help new users set up and run your application smoothly. Let me know if you'd like further adjustments!
