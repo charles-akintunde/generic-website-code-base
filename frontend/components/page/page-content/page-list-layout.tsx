@@ -36,24 +36,28 @@ const PageListLayout: React.FC<PageListLayoutProps> = ({
   const pageType = pageContent && pageContent.pageType;
 
   return (
-    <div className="">
-      <header className={`${pageContentPaddingStyles} mt-10`}>
-        <h1 className="text-3xl font-bold mb-2">{contentName}</h1>
-        {pageType != EPageType.ResList && (
-          <div className="flex items-center mb-4">
-            {/* <Avatar size="large" icon={<UserOutlined />} /> */}
-            <div className="ml-3">
-              <div className="font-medium">{creatorFullName}</div>
-              <div className="text-gray-500 text-sm">
-                {estimatedReadTime} min{estimatedReadTime > 1 ? 's' : ''} read ·{' '}
-                {createdAt}
+    <div className="bg-pg p-10">
+      <div
+        className={`container items-center max-w-screen-lg mx-auto px-4 sm:px-12 lg:px-16 shadow-md  rounded-sm bg-white`}
+      >
+        <header>
+          <h1 className="text-3xl pt-10 font-bold mb-2">{contentName}</h1>
+          {pageType != EPageType.ResList && (
+            <div className="flex items-center mb-4">
+              {/* <Avatar size="large" icon={<UserOutlined />} /> */}
+              <div className="ml-3">
+                <div className="font-medium">{creatorFullName}</div>
+                <div className="text-gray-500 text-sm">
+                  {estimatedReadTime} min{estimatedReadTime > 1 ? 's' : ''} read
+                  · {createdAt}
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </header>
-      <Divider />
-      <div>{children}</div>
+          )}
+        </header>
+        <Divider />
+        <div>{children}</div>
+      </div>
 
       <FloatButton.BackTop visibilityHeight={400} />
     </div>

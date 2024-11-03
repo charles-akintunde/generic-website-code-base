@@ -63,8 +63,8 @@ export const pageContentApi = createApi({
         body: (patch as any).formData,
       }),
       invalidatesTags: (result, error, { PC_ID }) => [
-        { type: 'SinglePageContent', id: PC_ID },
-        { type: 'SinglePageContent', id: 'SINGLE_PAGE_CONTENT' },
+        // { type: 'SinglePageContent', id: PC_ID },
+        // { type: 'SinglePageContent', id: 'SINGLE_PAGE_CONTENT' },
         { type: 'PageContent' as const, id: 'LIST' },
       ],
     }),

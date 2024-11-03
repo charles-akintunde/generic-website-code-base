@@ -14,12 +14,13 @@ import { GetUsersRequest } from '../hooks/api-hooks/use-user-info';
 const url = '/users';
 
 export const userApi = createApi({
-  reducerPath: 'api',
+  reducerPath: 'userApi',
   baseQuery: publicRouteBaseQuery,
   tagTypes: ['Users', 'User'],
   endpoints: (builder) => ({
     getUsers: builder.query<IUserResponseWrapper, GetUsersRequest>({
-      query: ({ page, limit }) => `${url}?page=${page}&limit=${limit}`,
+      query: ({ page, limit }) =>
+        `${url}/users-list?page=${page}&limit=${limit}`,
       providesTags: (result) =>
         result
           ? [
@@ -40,9 +41,9 @@ export const userApi = createApi({
         result
           ? [
               { type: 'User', id: result.data.UI_ID },
-              { type: 'User', id: 'LIST' },
+              { type: 'User', id: 'USER_PROFILE' },
             ]
-          : [{ type: 'User', id: 'LIST' }],
+          : [{ type: 'User', id: 'USER_PROFILE' }],
     }),
     editUser: builder.mutation<
       IGenericResponse,

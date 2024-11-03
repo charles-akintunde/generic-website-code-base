@@ -17,8 +17,6 @@ import {
 } from '../../../utils/helper';
 import classNames from 'classnames';
 import { useRouter } from 'next/navigation';
-import useUserInfo from '../../../hooks/api-hooks/use-user-info';
-import { useGetUsersQuery } from '../../../api/userApi';
 import { IUserBase, IUserList } from '../../../types/componentInterfaces';
 import { useAppDispatch } from '../../../hooks/redux-hooks';
 import {
@@ -29,6 +27,8 @@ import { Badge } from '../../ui/badge';
 import { transitionStyles } from '../../../styles/globals';
 import ActionsButtons from '../../common/action-buttons';
 import { UserRoleStatusDialog } from '../../common/form/user-profile-form';
+import { useGetUsersQuery } from '../../../api/userApi';
+import { useUserInfo } from '../../../hooks/api-hooks/use-user-info';
 
 const UserListItem = () => {
   const [pagination, setPagination] = useState({

@@ -14,6 +14,11 @@ export interface Page {
   PG_PageContent?: IPageContentResponse;
 }
 
+export interface IUsersPageContents {
+  UI_ID: string;
+  UI_FullName: string;
+}
+
 export interface IPageContentResponse {
   PC_ID: string;
   UI_ID: string;
@@ -29,6 +34,7 @@ export interface IPageContentResponse {
   PC_IsHidden: boolean;
   PC_CreatedAt?: string | null;
   PC_LastUpdatedAt?: string | null;
+  PC_UsersPageContents?: IUsersPageContents[];
 }
 
 export interface UserResponse {
@@ -51,6 +57,7 @@ export interface ICompleteUserResponse extends UserResponse {
   UI_PostalCode: string | null;
   UI_PhoneNumber: string | null;
   UI_Organization: string | null;
+  UI_UserPageContents: any;
   UI_About: { UI_About: TElement[] | null };
 }
 

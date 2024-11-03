@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { AnyAction, configureStore } from '@reduxjs/toolkit';
 import layoutReducer from './slice/layoutSlice';
 import pageSlice from './slice/pageSlice';
 import userSlice from './slice/userSlice';
@@ -27,8 +27,8 @@ const store = configureStore({
       menuApi.middleware,
       authApi.middleware,
       pageApi.middleware,
-      pageContentApi.middleware,
-      userApi.middleware
+      userApi.middleware,
+      pageContentApi.middleware
     ),
 });
 

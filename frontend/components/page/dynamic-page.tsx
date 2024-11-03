@@ -10,22 +10,20 @@ import SinglePage from './page-content/single-page';
 import ResourceLists from './page-content/resource-lists';
 import AppLoading from '../common/app-loading';
 import { EPageType } from '../../types/enums';
-import { useAppSelector } from '../../hooks/redux-hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 import useHelper from '../../hooks/api-hooks/use-helper';
-import { appConfig } from '../../utils/appConfig';
-import Head from 'next/head';
+import { setFetchedSinglePageData } from '../../store/slice/pageSlice';
+import { IPage } from '../../types/componentInterfaces';
 
 const DynamicPage = () => {
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
   const { clearCache } = useHelper();
   const router = useRouter();
   const [pageDisplayURLForDynamicPage, setPageDisplayURL] = useState(
     pathname.split('/')['1']
   );
   const {} = usePage({ pageDisplayURLForDynamicPage });
-  const fetchingPageData = useAppSelector(
-    (state) => state.page.fetchingPageData
-  );
   const fetchedSinglePageData = useAppSelector(
     (state) => state.page.fetchedSinglePageData
   );
@@ -36,18 +34,24 @@ const DynamicPage = () => {
   const hasPageFetchError = fetchedSinglePageData?.hasPageFetchError;
   const pageFetchError = fetchedSinglePageData?.pageFetchError;
   const pageName = fetchedPage && (fetchedPage.pageName as string);
-  const currentRouteMeta = allAppRoutes.find(
-    (route) => route.href === fetchedPage?.pageDisplayURL
-  );
 
   useEffect(() => {
     if (hasPageFetchError) {
       handleRoutingOnError(
         router,
-        hasPageFetchError as boolean,
+        hasPageFetchError,
         pageFetchError,
         clearCache,
-        'DYNAMIC PAGE'
+        'DYNAMIC PAGE',
+        () =>
+          dispatch(
+            setFetchedSinglePageData({
+              fetchedPage: fetchedPage as IPage,
+              isPageFetchLoading: true,
+              hasPageFetchError: false,
+              pageFetchError: null,
+            })
+          )
       );
     }
   }, [router, hasPageFetchError, pageFetchError, pageDisplayURLForDynamicPage]);

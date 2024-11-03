@@ -2,19 +2,21 @@
     Business logic to handle page content creation.
 """
 from urllib.parse import unquote
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.crud.user_info import user_crud
 from app.crud.page import page_crud
 from app.crud.page_content import page_content_crud
 from app.schemas.page_content import PageContentCreateRequest, PageContentUpdateRequest
-from app.utils.utils import is_admin
+from app.utils.utils import check_user_role, is_admin
 from app.models.user_info import T_UserInfo
 from app.utils.response_json import build_page_content_json, build_page_json_with_single_content
 from app.schemas.page import  PageSingleContent
 from app.utils.file_utils import  delete_and_save_file_azure, save_file_to_azure
 from app.config import settings
-from app.models.enums import E_PageType
+from app.models.enums import E_PageType, E_UserRole
+from app.core.auth import get_current_user_without_exception
+from datetime import datetime
 
 async def create_page_content(
         db: Session,
@@ -98,15 +100,26 @@ async def create_page_content(
             page_content.PC_DisplayURL = str(resource_url) 
     delattr(page_content, "PC_Resource")
 
+    user_ids = page_content.PC_UsersId 
+    if user_ids:  
+        users = user_crud.get_users_by_ids(db, user_ids)
+        if users and  len(users) != len(user_ids):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="One or more users not found"
+            )
+
     new_page_content = page_content_crud.create_page_content(
         db=db,
         page_content= page_content)
     
-    if page_content is None:
+    if new_page_content is None:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error creating page content"
         )
+    
+
     
     page = page_crud.get_page_by_id(db=db, page_id=str(page_content.PG_ID))
     
@@ -119,7 +132,8 @@ async def create_page_content(
 def get_page_content_by_display_url(
         db: Session,
         page_content_display_url: str,
-        page_display_url: str) -> PageSingleContent:
+        page_display_url: str,
+       current_user: T_UserInfo) -> PageSingleContent:
     """
     Handles retrieving page content.
 
@@ -131,6 +145,8 @@ def get_page_content_by_display_url(
     Returns:
         PageSingleContent: Page content response.
     """
+    user_roles = (current_user.UI_Role if current_user else [E_UserRole.Public])
+    current_time = datetime.now()
     page = page_crud.get_page_by_display_url(db=db, pg_display_url=page_display_url)
     if page is None:
         raise HTTPException(
@@ -146,8 +162,24 @@ def get_page_content_by_display_url(
     if page_content is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"This page does not have content with displau URL '{page_content_display_url}'."
+            detail=f"This page does not have content with display URL '{page_content_display_url}'."
         )
+
+    
+    if not check_user_role(user_roles, [E_UserRole.SuperAdmin, E_UserRole.Admin]): # type: ignore
+        if page_content.PC_IsHidden: # type: ignore
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="You are not authorized to access this page."
+            )
+        
+        if page_content.PC_CreatedAt > current_time: # type: ignore
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Page content cannot be accessed yet."
+            )
+    
+        pass
 
     page_content_creator = user_crud.get_user_by_id(
         db=db,
@@ -159,6 +191,7 @@ def get_page_content_by_display_url(
         page= page,
         user=page_content_creator
     )
+
 
     page_response_json = build_page_json_with_single_content(
         page=page,
@@ -228,6 +261,8 @@ async def update_page_content(
     )
     
     page = page_crud.get_page_by_id(db=db, page_id=str(updated_page_content.PG_ID))
+
+  
     
     return build_page_content_json(
         page_content= updated_page_content,

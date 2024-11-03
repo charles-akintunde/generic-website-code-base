@@ -17,6 +17,9 @@
         "name": "next"
       }
     ],
+    // "paths": {
+    //   "@/*": ["./*"]
+    // },
     "target": "es2015",
     "downlevelIteration": true
   },

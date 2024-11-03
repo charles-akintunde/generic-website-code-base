@@ -1,12 +1,9 @@
 'use client';
 
-import { ExceptionMap } from 'antd/es/result';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux-hooks';
 
 import { useRouter } from 'next/navigation';
-
-import { useCommentsShowResolvedButton } from '@udecode/plate-comments';
 import {
   useDeleteUserMutation,
   useEditRoleAndStatusMutation,
@@ -36,7 +33,7 @@ export function sanitizeAndCompare(str1: string, str2: string) {
   return str1.trim().toLowerCase() === str2.trim().toLowerCase();
 }
 
-const useUserInfo = () => {
+export const useUserInfo = () => {
   const [deleteUser] = useDeleteUserMutation();
   const [
     resetPasswordWithEmail,
@@ -112,7 +109,7 @@ const useUserInfo = () => {
           uiFullName: '',
           uiInitials: '',
           uiIsAdmin: false,
-          uiIsLoading: true,
+          uiIsLoading: isActiveUserFetchLoading,
           uiIsSuperAdmin: false,
           uiCanEdit: false,
           uiRole: [EUserRole.Public],
@@ -182,9 +179,9 @@ const useUserInfo = () => {
       const defaultErrorMessage =
         'Failed to reset password. Please try again later.';
 
-      // const errorMessage =
-      //   error.data?.message || error.data?.detail || defaultErrorMessage;
-      // notify('Error', errorMessage, 'error');
+      const errorMessage =
+        error?.data?.message || error?.data?.detail || defaultErrorMessage;
+      notify('Error', errorMessage, 'error');
     }
   };
 
@@ -392,8 +389,7 @@ const useUserInfo = () => {
     resetPasswordSuccessMessage,
     submitPasswordResetWithToken,
     uiActiveUser,
+    isActiveUserFetchLoading,
     activePageRefetch,
   };
 };
-
-export default useUserInfo;

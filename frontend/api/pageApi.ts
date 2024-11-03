@@ -5,6 +5,7 @@ import {
   IGenericResponse,
   IGetPagesWithOffsetRequest,
   IPageResponse,
+  IUserResponseWrapper,
 } from '../types/backendResponseInterfaces';
 import {
   IPageGetRequest,
@@ -12,14 +13,29 @@ import {
   IPageRequestWithIdentifier,
   ISinglePageRequest,
 } from '../types/requestInterfaces';
+import { GetUsersRequest } from '../hooks/api-hooks/use-user-info';
 
 const url = '/pages';
 
 export const pageApi = createApi({
   reducerPath: 'pageApi',
-  tagTypes: ['Pages', 'Menus', 'Page', 'PageContent'],
+  tagTypes: ['Pages', 'Menus', 'Page', 'PageContent', 'Users'],
   baseQuery: publicRouteBaseQuery,
   endpoints: (builder) => ({
+    getUsers: builder.query<IUserResponseWrapper, GetUsersRequest>({
+      query: ({ page, limit }) =>
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/users-list?page=${page}&limit=${limit}`,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result?.data?.users?.map(({ UI_ID }) => ({
+                type: 'Users' as const,
+                id: UI_ID,
+              })),
+              { type: 'Users', id: 'LIST' },
+            ]
+          : [{ type: 'Users', id: 'LIST' }],
+    }),
     getPages: builder.query<IPageResponse, void>({
       query: () => url,
       providesTags: (result) => {
@@ -49,7 +65,7 @@ export const pageApi = createApi({
       providesTags: (result) => {
         return result?.data?.Pages
           ? [
-              ...result.data.Pages.map((page) => ({
+              ...result?.data?.Pages.map((page) => ({
                 type: 'Pages' as const,
                 id: page.PG_ID,
               })),
@@ -138,6 +154,7 @@ export const {
   useDeletePageMutation,
   useGetPageQuery,
   useGetPagesWithOffsetQuery,
+  useGetUsersQuery,
   // useGetPageWithPaginationQuery,
   useGetPageColumnsByDisplayUrlQuery,
 } = pageApi;

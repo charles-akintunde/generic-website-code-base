@@ -47,6 +47,8 @@ export interface IPageContentCreateRequest {
   PC_DisplayURL: string;
   PC_ThumbImg: File | string;
   PC_IsHidden: boolean;
+  PC_CreatedAt: string;
+  PC_UsersId: string[];
 }
 
 export interface IEditPageContentRequest {
@@ -57,6 +59,7 @@ export interface IEditPageContentRequest {
   PC_Resource?: string;
   PC_IsHidden?: boolean;
   PC_DisplayURL?: boolean;
+  PC_CreatedAt?: string;
 }
 
 export interface IEditUserRequest {

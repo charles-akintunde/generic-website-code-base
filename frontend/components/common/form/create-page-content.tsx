@@ -93,25 +93,21 @@ export const CreatePageContentModal = ({
       </DialogTrigger>
       <DialogContent
         className="
-      w-full 
-      sm:max-w-[425px] 
-      md:max-w-[600px] 
-      lg:max-w-[800px] 
-      xl:max-w-[1000px] 
-      2xl:max-w-[1200px] 
-      h-auto
-      sm:h-[50vh]
-      md:h-[60vh]
-      lg:h-[70vh]
-      xl:h-[80vh]
-      2xl:h-[90vh]"
+       w-[90vw] max-w-[400px]
+      sm:w-[80vw] sm:max-w-[500px]
+      md:w-[70vw] md:max-w-[600px]
+      lg:w-[60vw] lg:max-w-[700px]
+      xl:w-[50vw] xl:max-w-[800px]
+      2xl:w-[40vw] 2xl:max-w-[900px]
+      max-h-[70vh] p-4
+      "
       >
         <DialogHeader>
           <DialogTitle>
             {`${isEditingMode ? 'Edit' : 'Create'} Content`}
           </DialogTitle>
         </DialogHeader>
-        <ScrollArea className="w-full h-auto">
+        <ScrollArea className="w-full">
           <CreatePageContentForm />
         </ScrollArea>
       </DialogContent>
@@ -164,6 +160,14 @@ export const CreatePageContentForm = ({}) => {
       editorContent: plateEditor,
     },
   });
+
+  const {
+    formState: { errors },
+  } = form;
+
+  useEffect(() => {
+    console.log(errors);
+  }, [errors]);
 
   const onSubmit = async (data: any) => {
     let newpageContent = {
@@ -298,18 +302,16 @@ export const CreatePageContentForm = ({}) => {
                 )}
               </>
             )}
+            {canEdit && (
+              <div className={``}>
+                <LoadingButton
+                  className=""
+                  buttonText={`${isEditingMode ? 'Save Changes' : 'Post'}`}
+                  loading={false}
+                />
+              </div>
+            )}
           </div>
-          {canEdit && (
-            <div
-              className={`w-full sticky bg-white flex mx-auto bottom-0 z-40 h-20 shadow2xl`}
-            >
-              <LoadingButton
-                className=""
-                buttonText={`${isEditingMode ? 'Save Changes' : 'Post'}`}
-                loading={false}
-              />
-            </div>
-          )}
         </form>
       </FormProvider>
     </>

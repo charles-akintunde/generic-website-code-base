@@ -22,7 +22,6 @@ const PageListItem: React.FC = () => {
   const { handleEditButtonClick, handleRemovePage } = usePage();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
-  const uiIsSuperAdmin = uiActiveUser.uiIsSuperAdmin;
   const [pages, setPages] = useState<IPageMain[]>();
   const [totalPageCount, setTotalPageCount] = useState<number>();
   const [pagination, setPagination] = useState({
@@ -122,7 +121,7 @@ const PageListItem: React.FC = () => {
       fixed: 'right',
       render: (_: any, record: IPageMain) => (
         <>
-          {canEdit && uiIsSuperAdmin && (
+          {canEdit && (
             <>
               <ActionsButtons
                 entity="page"

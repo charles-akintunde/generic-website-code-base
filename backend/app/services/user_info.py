@@ -2,14 +2,18 @@
 User service for handling business logic related to users.
 """
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status
 from app.crud.user_info import user_crud
+from app.crud import  page
 from app.schemas.user_info import  UserRoleStatusUpdate, UserProfileUpdate, UserDelete, UserStatusUpdate, UsersResponse
 from app.models.user_info import T_UserInfo
 from app.config import settings
 from app.utils.file_utils import  delete_and_save_file_azure, delete_file_from_azure, save_file_to_azure
-from app.utils.response_json import create_user_response, create_users_response
+from app.utils.response_json import build_page_content_json_with_excerpt, build_user_page_content_json, create_user_response, create_users_response
 from app.models.enums import E_UserRole
+from app.core.auth import get_current_user
+from app.utils.utils import is_super_admin
+from app.crud import page
 
 
 
@@ -161,9 +165,13 @@ async def delete_user(db: Session, delete_user_id: str, current_user: T_UserInfo
 #     users_response = create_users_response(users, total_user_count,new_last_key)
 #     return users_response
 
-def get_users(db: Session, page: int = 1, limit: int = 10):
+def get_users(db: Session, page: int = 1, limit: int = 10, current_user: T_UserInfo = Depends(get_current_user)):
+    #is_super_admin(current_user)
+    
+    
     total_user_count = user_crud.get_total_user_count(db=db)
     total_pages = (total_user_count + limit - 1) 
+
 
     if total_user_count == 0:
         return create_users_response(users=[], total_users_count=total_user_count, new_last_key=None)
@@ -193,13 +201,23 @@ def get_user_by_id(db: Session, user_id):
     """
         Retrieve a user by their ID from the database.
     """
-    user = user_crud.get_user_by_id(db=db, user_id=user_id)
+    user_fetched = user_crud.get_user_by_id(db=db, user_id=user_id)
+    user_page_contents = user_fetched.UI_UsersPageContents
+    transformed_user_page_contents = []
+
     
-    if not user:
+    if not user_fetched:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'User with ID {user_id} not found.'
         )
+
+    for user_page_content in user_page_contents:
+        user  = user_crud.get_user_by_id(db=db,user_id=user_page_content.UI_ID)
+        existing_page = page.page_crud.get_page_by_id(db=db,page_id=user_page_content.PG_ID)
+        transformed_user_page_content = build_page_content_json_with_excerpt(user_page_content, user, page=existing_page) 
+        transformed_user_page_contents.append(transformed_user_page_content)
+
     
     
-    return create_user_response(user=user)
+    return create_user_response(user=user_fetched, page_contents=transformed_user_page_contents)

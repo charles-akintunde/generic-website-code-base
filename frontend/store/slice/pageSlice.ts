@@ -151,11 +151,21 @@ const pageSlice = createSlice({
     setFecthingPageData(state, action: PayloadAction<IFetchedPage | null>) {
       state.fetchingPageData = action.payload;
     },
-    setFetchedSinglePageData(
+    // setFetchedSinglePageData(
+    //   state,
+    //   action: PayloadAction<IFetchedSinglePage | null>
+    // ) {
+    //   state.fetchedSinglePageData = action.payload;
+    // },
+
+    setFetchedSinglePageData: (
       state,
-      action: PayloadAction<IFetchedSinglePage | null>
-    ) {
-      state.fetchedSinglePageData = action.payload;
+      action: PayloadAction<Partial<IFetchedSinglePage>>
+    ) => {
+      state.fetchedSinglePageData = {
+        ...(state.fetchedSinglePageData as IFetchedSinglePage),
+        ...action.payload,
+      };
     },
     setPageContents: (state, action: PayloadAction<IPageContentMain[]>) => {
       state.pageContents = action.payload;

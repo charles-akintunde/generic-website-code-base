@@ -212,7 +212,7 @@ async def delete_page_endpoint(
         StandardResponse: The response indicating the result of the delete operation.
     """
     try:
-        success = delete_page(db=db, page_id=page_id, user=current_user)
+        success = await delete_page(db=db, page_id=page_id, user=current_user)
         if success:
             return success_response(message="Page deleted successfully")
         else:

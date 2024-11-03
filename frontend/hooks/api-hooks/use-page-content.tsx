@@ -20,6 +20,7 @@ import {
   useDeletePageContentMutation,
   useEditPageContentMutation,
   useUploadPageContentMutation,
+  pageContentApi,
 } from '../../api/pageContentApi';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '../../components/hoc/notification-provider';
@@ -27,7 +28,7 @@ import usePage from './use-page';
 import { usePathname } from 'next/navigation';
 import { EPageType } from '../../types/enums';
 import { IPageContentGetRequest } from '../../types/requestInterfaces';
-import { toKebabCase } from '../../utils/helper';
+import { formatDateWithZeroTime, toKebabCase } from '../../utils/helper';
 
 interface IUsePageContentProps {
   pageContent?: IPageContentGetRequest;
@@ -199,6 +200,26 @@ const usePageContent = ({
       }
 
       if (
+        pageContent.pageContentCreatedAt &&
+        pageContent.pageType == EPageType.PageList
+      ) {
+        const date = new Date(pageContent.pageContentCreatedAt);
+        const formattedDate = formatDateWithZeroTime(date);
+
+        formData.append('PC_CreatedAt', formattedDate);
+      }
+
+      if (
+        pageContent.pageContentUsersId &&
+        Array.isArray(pageContent.pageContentUsersId)
+      ) {
+        formData.append(
+          'PC_UsersId',
+          JSON.stringify(pageContent.pageContentUsersId)
+        );
+      }
+
+      if (
         pageContent.pageType == EPageType.ResList &&
         pageContent.pageContentResource
       ) {
@@ -210,15 +231,6 @@ const usePageContent = ({
       const response = await createPageContent(formData).unwrap();
 
       if (pageContentFetchRefetch) pageContentFetchRefetch();
-
-      // if (pageContent.pageType == EPageType.ResList) {
-      //   router.replace(`/${pageContent.pageName}`);
-      //   setAllowReloadPage(true);
-      // } else if (pageContent.pageType != EPageType.SinglePage) {
-      //   router.replace(
-      //     `/${pageContent.pageName}/${pageContent.pageContentDisplayURL}`
-      //   );
-      // }
 
       if (pageContent.pageType == EPageType.PageList) {
         router.replace(
@@ -309,8 +321,26 @@ const usePageContent = ({
           formData.append('PC_Content', JSON.stringify(pageContentObj));
         }
       }
+      if (pageContent.pageContentCreatedAt && pageType == EPageType.PageList) {
+        const date = new Date(pageContent.pageContentCreatedAt);
+        const formattedDate = formatDateWithZeroTime(date);
+
+        formData.append('PC_CreatedAt', formattedDate);
+      }
       if (pageType == EPageType.ResList && pageContent.pageContentResource) {
         formData.append('PC_Resource', pageContent.pageContentResource);
+      }
+
+      console.log(pageContent.pageContentUsersId, 'USERS ID');
+
+      if (
+        pageContent.pageContentUsersId &&
+        Array.isArray(pageContent.pageContentUsersId)
+      ) {
+        formData.append(
+          'PC_UsersId',
+          JSON.stringify(pageContent.pageContentUsersId)
+        );
       }
 
       const response = await editPageContent({
@@ -319,13 +349,16 @@ const usePageContent = ({
         formData,
       }).unwrap();
 
-      if (
-        pageContent.pageContentDisplayURL &&
-        pageType !== EPageType.SinglePage &&
-        pageType !== EPageType.ResList
-      ) {
+      if (pageContent.pageContentDisplayURL && pageType == EPageType.PageList) {
         const newUrl = `/${pageDisplayURL}/${pageContent.pageContentDisplayURL}`;
         router.replace(newUrl);
+      } else {
+        dispatch(
+          pageContentApi.util.invalidateTags([
+            { type: 'SinglePageContent', id: pageContentId },
+            { type: 'SinglePageContent', id: 'SINGLE_PAGE_CONTENT' },
+          ])
+        );
       }
 
       dispatch(

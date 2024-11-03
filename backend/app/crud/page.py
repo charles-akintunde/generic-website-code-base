@@ -242,13 +242,13 @@ class PageCRUD:
             PG_DisplayURL=str(row.PG_DisplayURL)
         ) for row in page_rows]
 
-    def remove_page_content(self, db: Session, page: T_Page):
+    async def remove_page_content(self, db: Session, page: T_Page):
         """
         Remove page content from db.
         """
         for page_content in page.PG_PageContents:
             print(page_content,"page_conetnt")
-            page_content_crud.delete_page_content(db=db,page_content_to_delete=page_content)
+            await page_content_crud.delete_page_content(db=db,page_content_to_delete=page_content)
   
     def update_page(self, db: Session, page_id, page_data) -> T_Page:
         """"
@@ -268,13 +268,13 @@ class PageCRUD:
             db.refresh(page)
         return page
     
-    def delete_page(self, db: Session, page: T_Page):
+    async def delete_page(self, db: Session, page: T_Page):
         """
         Delete page
         """
         try:
             print(page,"THE PAGE")
-            self.remove_page_content(db=db, page=page)
+            await  self.remove_page_content(db=db, page=page)
             db.delete(page)
             db.commit()
             return True

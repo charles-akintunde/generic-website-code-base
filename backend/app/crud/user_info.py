@@ -10,7 +10,8 @@ from sqlalchemy.orm import Session
 from app.models.user_info import T_UserInfo
 from app.schemas.user_info import UserCreate, UserPartial
 import uuid
-from app.models.enums import E_Status, E_UserRole
+from app.models.enums import E_Status
+from app.models.associations import T_UsersPageContents
 
 class UserCRUD:
     def update_user_status(self,db: Session, user_id: str, new_status: E_Status):
@@ -168,38 +169,18 @@ class UserCRUD:
         db.refresh(db_user)
         return db_user
     
-    # def get_users(self, db: Session,  last_key: Optional[Tuple[str, str, str]] = None, limit: int = 10) -> List[UserPartial]:
-    #     query = db.query(
-    #         T_UserInfo.UI_ID,
-    #         T_UserInfo.UI_FirstName,
-    #         T_UserInfo.UI_LastName,
-    #         T_UserInfo.UI_Email,
-    #         T_UserInfo.UI_Role,
-    #         T_UserInfo.UI_Status,
-    #         T_UserInfo.UI_RegDate,
-    #         T_UserInfo.UI_PhotoURL
-    #     )
-    
-    #     if last_key is not None:
-    #         last_first_name, last_last_name, last_uuid = last_key
-    #         query = query.filter(
-    #             (T_UserInfo.UI_FirstName > last_first_name) |
-    #             ((T_UserInfo.UI_FirstName == last_first_name) & (T_UserInfo.UI_LastName > last_last_name)) |
-    #             ((T_UserInfo.UI_FirstName == last_first_name) & (T_UserInfo.UI_LastName == last_last_name) & (T_UserInfo.UI_ID > last_uuid))
-    #         )
-    
-    #     results = query.order_by(T_UserInfo.UI_FirstName, T_UserInfo.UI_LastName, T_UserInfo.UI_ID).limit(limit).all()
-    #     return [UserPartial(
-    #         UI_ID=str(row.UI_ID),
-    #         UI_FirstName=row.UI_FirstName,
-    #         UI_LastName=row.UI_LastName,
-    #         UI_Email=row.UI_Email,
-    #         UI_Role=row.UI_Role, 
-    #         UI_Status=row.UI_Status,
-    #         UI_RegDate=row.UI_RegDate.isoformat(),
-    #         UI_PhotoURL=row.UI_PhotoURL
-    #     ) for row in results]
-    
+    def get_users_by_ids(self, db: Session, user_ids: List[str]) -> Optional[List[T_UserInfo]]:
+        """
+        Retrieve a list of users based on their IDs.
+        
+        Args:
+            db (Session): The database session.
+            user_ids (List[UUID]): A list of user IDs to retrieve.
+        
+        Returns:
+            Optional[List[T_UserInfo]]: A list of T_UserInfo instances that match the given IDs.
+        """
+        return db.query(T_UserInfo).filter(T_UserInfo.UI_ID.in_(user_ids)).all()
 
     def get_users(self, db: Session, page: int = 1, limit: int = 10) -> List[UserPartial]:
         offset = (page - 1) * limit
@@ -232,5 +213,48 @@ class UserCRUD:
             UI_MemberPosition=row.UI_MemberPosition if row.UI_MemberPosition else row.UI_MemberPosition
 
         ) for row in results]
+    
+    def add_users_to_page_content(self, db: Session, page_content_id: str, user_ids: List[str]) -> None:
+        """
+        Add users to a page content.
+
+        Args:
+            db (Session): Database session.
+            page_content (T_PageContent): Page content .
+            user_ids (List[str]): List of user IDs to add.
+        """
+        for user_id in user_ids:
+            association_exists = db.query(T_UsersPageContents).filter_by(UI_ID=user_id, PC_ID=page_content_id).first()
+            if not association_exists:
+                db.execute(
+                    T_UsersPageContents.insert().values(UI_ID=user_id, PC_ID=page_content_id)
+                )
+    
+    def update_user_page_contents(self, db: Session, page_content_id: str, updated_user_ids: List[str]) -> None:
+        """
+        Update users assigned to a page content.
+
+        Args:
+            db (Session): Database session.
+            page_content_id (str): Page content ID.
+            user_ids (List[str]): List of user IDs to update.
+        """
+
+        if not updated_user_ids:
+            print("No user ids")
+            db.query(T_UsersPageContents).filter_by(PC_ID=page_content_id).delete()
+            return
+        current_user_ids = {
+        association.UI_ID for association in db.query(T_UsersPageContents).filter_by(PC_ID=page_content_id)
+        }
+
+        new_user_ids = set(updated_user_ids)  - current_user_ids
+        removed_user_ids = current_user_ids - set(updated_user_ids)
+
+        for user_id in removed_user_ids:
+            db.query(T_UsersPageContents).filter_by(UI_ID=user_id, PC_ID=page_content_id).delete()
+
+        self.add_users_to_page_content(db, page_content_id, list(new_user_ids))
+
     
 user_crud = UserCRUD()

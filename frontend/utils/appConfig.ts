@@ -6,4 +6,6 @@ export const appConfig = {
   appLogoURL: './../assets/icons/gw-logo.png',
   appLogo: appLogo,
   urlForPageToDisplayOnHome: 'news',
+  pathToHomeVideo: '/videos/home-bg-vid.mp4',
+  useHomePageWithFooter: false,
 };

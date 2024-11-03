@@ -11,7 +11,7 @@ from app.database import get_db
 from app.core.auth import get_current_user
 from app.schemas.response import StandardResponse
 from app.schemas.user_info import UserDelete, UserProfileUpdate, UserRoleStatusUpdate, UserStatusUpdate
-from app.utils.utils import is_super_admin
+from app.utils.utils import is_admin, is_super_admin
 from app.models.user_info import T_UserInfo
 from app.services.user_info import delete_user, get_user_by_id, get_users, get_users_assigned_with_positions, update_user_profile, update_user_role_status, update_user_status
 from app.utils.response import error_response, success_response
@@ -120,7 +120,7 @@ async def update_user_role_status_endpoint(
 
     """
 
-    is_super_admin(current_user)
+    is_admin(current_user, "You do not have permission to update user role.")
     try:
         update_user_role_status(db=db,user_role_status_update=user_role_status_update,current_user=current_user)
         return success_response("User role update successfully")
@@ -214,13 +214,15 @@ async def delete_user_endpoint(
 #     except HTTPException as e:
 #         return error_response(message=e.detail, status_code=e.status_code)
 
-@router.get("/", response_model=StandardResponse)
+@router.get("/users-list", response_model=StandardResponse)
 async def get_users_endpoint(
     page: int = Query(1),
     limit: int = Query(5, gt=0),
     db: Session = Depends(get_db),
-    current_user: T_UserInfo = Depends(get_current_user)):
-    try: 
+    current_user: T_UserInfo = Depends(get_current_user)
+  ):
+    try:
+        #is_super_admin(current_user)
         users_response = get_users(db=db, page=page, limit=limit)
         return success_response(data = users_response.model_dump(), message='Users fetched successfully')
     except HTTPException as e:
@@ -235,6 +237,19 @@ async def get_member_users_endpoint(
         return success_response(data = users_response.model_dump(), message='Users fetched successfully')
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
+
+
+# @router.get("/users-list",  response_model=StandardResponse)
+# async def test_route(
+#     page: int = Query(1),
+#     limit: int = Query(5, gt=0),
+#     db: Session = Depends(get_db),
+#     current_user: T_UserInfo = Depends(get_current_user)
+# ):
+#     """
+#     Test route that does nothing for debugging purposes.
+#     """
+#     return  success_response( message='Pages fetched successfully')
     
 @router.get("/{user_id}", response_model=StandardResponse)
 async def get_user_endpoint( user_id: str, db: Session = Depends(get_db)):

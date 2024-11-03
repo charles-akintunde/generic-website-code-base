@@ -37,6 +37,7 @@ const CreatePage = () => {
   const [isManualEdit, setIsManualEdit] = useState(false);
   const form = useForm<z.infer<typeof createPageSchema>>({
     resolver: zodResolver(createPageSchema),
+
     defaultValues: editingPage || {
       pageName: '',
       pageType: '',

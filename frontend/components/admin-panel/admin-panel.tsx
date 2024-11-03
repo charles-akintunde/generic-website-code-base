@@ -8,14 +8,14 @@ import type { TabsProps } from 'antd';
 
 const items: TabsProps['items'] = [
   {
-    key: 'users',
-    label: 'Users',
-    children: <UserTab />,
-  },
-  {
     key: 'pages',
     label: 'Pages',
     children: <PageTab />,
+  },
+  {
+    key: 'users',
+    label: 'Users',
+    children: <UserTab />,
   },
 ];
 

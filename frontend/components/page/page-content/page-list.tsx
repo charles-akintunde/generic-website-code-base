@@ -12,12 +12,17 @@ import {
 import LoadingButton from '../../common/button/loading-button';
 import usePageContent from '../../../hooks/api-hooks/use-page-content';
 import {
+  IOptionType,
   IPageContentItem,
   IPageContentMain,
+  IUserBase,
+  IUserList,
 } from '../../../types/componentInterfaces';
 import { usePathname } from 'next/navigation';
 import {
   getChangedFields,
+  handleRoutingOnError,
+  mapToIIUserList,
   notifyNoChangesMade,
   pageNormalizer,
 } from '../../../utils/helper';
@@ -29,13 +34,15 @@ import { useNotification } from '../../hoc/notification-provider';
 import { pageContentPaddingStyles } from '../../../styles/globals';
 import PageListLayout from './page-list-layout';
 import { TElement } from '@udecode/plate-common';
-import { EPageType } from '../../../types/enums';
+import { EPageType, EUserRole } from '../../../types/enums';
 import AppLoading from '../../common/app-loading';
 import { useRouter } from 'next/navigation';
 import { useAppSelector } from '../../../hooks/redux-hooks';
 import { toKebabCase2 } from '../../../utils/helper';
+import { useGetUsersAssignedPositionsQuery } from '../../../api/userApi';
 
 const CreatePageContent = () => {
+  const [users, setUsers] = useState<IUserBase[]>();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
   const [isManualEdit, setIsManualEdit] = useState(false);
@@ -60,16 +67,24 @@ const CreatePageContent = () => {
   const { submitPageContent, isCreatePageContentSuccess } = usePageContent({
     pageDisplayURL,
   });
+  const [OPTIONS, setOptions] = useState<any>(null);
+  const {
+    data: usersResponseData,
+    isLoading: isUsersFetchLoading,
+    refetch: refetchUsersList,
+  } = useGetUsersAssignedPositionsQuery();
 
   const form = useForm({
     resolver: zodResolver(pageContentSchema),
     defaultValues: {
       pageContentName: '',
       pageContentDisplayURL: '',
+      pageContentCreatedAt: new Date(),
       pageContentDisplayImage: undefined,
       pageContentResource: undefined,
       isPageContentHidden: false,
       editorContent: plateEditor,
+      pageContentUsersId: [],
     },
   });
 
@@ -79,8 +94,10 @@ const CreatePageContent = () => {
       pageContentName: data.pageContentName,
       pageContentDisplayImage: data.pageContentDisplayImage,
       pageContentResource: data.pageContentResource,
+      pageContentCreatedAt: data.pageContentCreatedAt,
       isPageContentHidden: data.isPageContentHidden,
       pageContentDisplayURL: data.pageContentDisplayURL,
+      pageContentUsersId: data.pageContentUsersId,
       editorContent: plateEditor,
       pageId: pageId as string,
       pageName: pageName,
@@ -90,6 +107,23 @@ const CreatePageContent = () => {
     };
     await submitPageContent(pageContent);
   };
+  useEffect(() => {
+    if (usersResponseData && usersResponseData.data) {
+      const usersData: IUserList = mapToIIUserList(usersResponseData.data);
+
+      if (usersData.users) {
+        setUsers(usersData?.users);
+
+        const options = usersData?.users?.map((user) => {
+          return {
+            label: `${user.uiFullName}`,
+            value: user.id,
+          };
+        });
+        setOptions(options);
+      }
+    }
+  }, [usersResponseData]);
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
@@ -113,14 +147,18 @@ const CreatePageContent = () => {
     form.setValue('pageContentDisplayURL', trimmedValue);
   };
 
+  if (isUsersFetchLoading) {
+    return <AppLoading />;
+  }
+
   return (
     <PageLayout title="Create Page Content">
       <div
-        className={`flex flex-col mt-10 min-h-screen w-full ${pageContentPaddingStyles}`}
+        className={`flex flex-col mt-10 min-h-screen w-full ${pageContentPaddingStyles} shadow-md rounded-sm bg-white`}
       >
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="">
-            <div className={`space-y-6 mb-10 min-h-screen }`}>
+            <div className={`space-y-6 my-10 min-h-screen }`}>
               {canEdit && (
                 <>
                   <FormField
@@ -167,6 +205,29 @@ const CreatePageContent = () => {
                       type="document"
                     />
                   )}
+
+                  {pageType == EPageType.PageList && OPTIONS && (
+                    <FormField
+                      placeholder="Select page contents users"
+                      control={form.control}
+                      name="pageContentUsersId"
+                      label="Page Content Users"
+                      type="multiple-select"
+                      options={OPTIONS}
+                      multiple={true}
+                    />
+                  )}
+
+                  {pageType == EPageType.PageList && (
+                    <FormField
+                      control={form.control}
+                      name="pageContentCreatedAt"
+                      label="Content Creation Date"
+                      placeholder=""
+                      type="datetime"
+                    />
+                  )}
+
                   <FormField
                     control={form.control}
                     name="isPageContentHidden"
@@ -240,6 +301,31 @@ const EditPageContent = () => {
   const searchParams = useSearchParams();
   const pageId = searchParams.get('pageId');
   const [pageType, setPageType] = useState<string>('');
+  const [users, setUsers] = useState<IUserBase[]>();
+  const [OPTIONS, setOptions] = useState<any>(null);
+  const {
+    data: usersResponseData,
+    isLoading: isUsersFetchLoading,
+    refetch: refetchUsersList,
+  } = useGetUsersAssignedPositionsQuery();
+
+  useEffect(() => {
+    if (usersResponseData && usersResponseData.data) {
+      const usersData: IUserList = mapToIIUserList(usersResponseData.data);
+
+      if (usersData.users) {
+        setUsers(usersData?.users);
+
+        const options = usersData?.users?.map((user) => {
+          return {
+            label: `${user.uiFullName}`,
+            value: user.id,
+          };
+        });
+        setOptions(options);
+      }
+    }
+  }, [usersResponseData]);
 
   useEffect(() => {
     if (pageContentData && pageContentData.data.PG_PageContent) {
@@ -247,6 +333,7 @@ const EditPageContent = () => {
       const pageContent = page.PG_PageContent;
       if (pageContent) {
         const normalizedPage = pageNormalizer(page, pageContent);
+
         setPageType(normalizedPage.pageType);
         setContentData(normalizedPage.pageContent);
         setOriginalData(normalizedPage.pageContent);
@@ -272,6 +359,8 @@ const EditPageContent = () => {
       pageContentDisplayImage: undefined,
       pageContentDisplayURL: '',
       isPageContentHidden: false,
+      pageContentCreatedAt: '',
+      pageContentUsersId: [],
       // editorContent: plateEditor,
     },
   });
@@ -285,6 +374,15 @@ const EditPageContent = () => {
 
   useEffect(() => {
     if (isPageContentFetchSuccess && contentData) {
+      // @ts-ignore
+      contentData.pageContentCreatedAt = new Date(
+        contentData.pageContentCreatedAt as Date
+      );
+
+      contentData.pageContentUsersId =
+        contentData.pageContenAssociatedUsers.map(
+          (option: any) => option.value
+        );
       // @ts-ignore
       form.reset(contentData);
       setPlateEditor(contentData.editorContent || plateEditor);
@@ -317,13 +415,13 @@ const EditPageContent = () => {
     }
   };
 
-  // useEffect(() => {
-  //   handleRoutingOnError(
-  //     router,
-  //     hasPageContentFetchError,
-  //     pageContentFetchError
-  //   );
-  // }, [hasPageContentFetchError, pageContentFetchError, router]);
+  useEffect(() => {
+    handleRoutingOnError(
+      router,
+      hasPageContentFetchError,
+      pageContentFetchError
+    );
+  }, [hasPageContentFetchError, pageContentFetchError, pathname]);
 
   if (isPageContentFetchLoading) {
     return <AppLoading />;
@@ -333,9 +431,7 @@ const EditPageContent = () => {
     <>
       {isPageContentFetchSuccess && originalData ? (
         <PageListLayout pageContent={originalData}>
-          <div
-            className={`flex flex-col min-h-screen w-full ${pageContentPaddingStyles}`}
-          >
+          <div className={`flex flex-col min-h-screen w-full `}>
             <FormProvider {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <div className={`space-y-6 mb-10 min-h-screen `}>
@@ -364,6 +460,18 @@ const EditPageContent = () => {
                           type="picture"
                         />
 
+                        {pageType == EPageType.PageList && OPTIONS && (
+                          <FormField
+                            placeholder="Select page contents users"
+                            control={form.control}
+                            name="pageContentUsersId"
+                            label="Page Content Users"
+                            type="multiple-select"
+                            options={OPTIONS}
+                            multiple={true}
+                          />
+                        )}
+
                         {pageType == EPageType.ResList && (
                           <FormField
                             control={form.control}
@@ -371,6 +479,15 @@ const EditPageContent = () => {
                             label="Display Document"
                             placeholder=""
                             type="document"
+                          />
+                        )}
+                        {pageType == EPageType.PageList && (
+                          <FormField
+                            control={form.control}
+                            name="pageContentCreatedAt"
+                            label="Content Creation Date"
+                            placeholder=""
+                            type="datetime"
                           />
                         )}
                         <FormField

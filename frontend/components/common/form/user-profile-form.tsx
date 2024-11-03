@@ -12,7 +12,6 @@ import FormField from '../form-field';
 import { getNames } from 'country-list';
 import LoadingButton from '../button/loading-button';
 import { IUserBase, IUserInfo } from '../../../types/componentInterfaces';
-import useUserInfo from '../../../hooks/api-hooks/use-user-info';
 import { TElement } from '@udecode/plate-common';
 import {
   getChangedFields,
@@ -40,6 +39,7 @@ import { EUserRole } from '../../../types/enums';
 import { PlateEditor } from '../../plate/plate';
 import { Divider, Switch } from 'antd';
 import { removeNullValues } from '../../../utils/helper';
+import { useUserInfo } from '../../../hooks/api-hooks/use-user-info';
 
 interface UserProfileFormProps {
   userInfo: IUserInfo;
@@ -53,7 +53,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
-  const uiId = uiActiveUser.uiId;
+  const activeUserId = uiActiveUser.uiId;
   const countries = getNames();
   const { notify } = useNotification();
   const { submitEditUser } = useUserInfo();
@@ -72,7 +72,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
     JSON.stringify(plateEditor)
   );
   const [isSameUser, setIsSameUser] = useState(
-    sanitizeAndCompare(uiId as string, userInfo?.id as string)
+    sanitizeAndCompare(activeUserId as string, userInfo?.id as string)
   );
   const handleModeChange = (checked: boolean) => {
     dispatch(
@@ -107,8 +107,10 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
   });
 
   useEffect(() => {
-    sanitizeAndCompare(uiId as string, userInfo?.id as string);
-    setIsSameUser(sanitizeAndCompare(uiId as string, userInfo?.id as string));
+    sanitizeAndCompare(activeUserId as string, userInfo?.id as string);
+    setIsSameUser(
+      sanitizeAndCompare(activeUserId as string, userInfo?.id as string)
+    );
     dispatch(
       setUIIsUserEditingMode({
         uiIsUserEditingMode: false,
@@ -147,11 +149,11 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
   return (
     <Form {...form}>
       <form
-        className="space-y-6 w-full h-full overflow-y-auto pb-20"
+        className="space-y-6 "
         // @ts-ignore
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        {isSameUser && (
+        {isSameUser && activeUserId && (
           <div className="flex justify-end">
             <Switch
               checkedChildren="Editing Mode"
@@ -244,9 +246,21 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
             }}
           />
         </div>
-        {isSameUser && uiIsUserEditingMode && (
+        {/* {isSameUser && uiIsUserEditingMode && (
           <div className="fixed z-50 mt-20 bottom-0 left-0 right-0 bg-white p-4 flex justify-center">
             <LoadingButton loading={false} buttonText={'Save changes'} />
+          </div>
+        )} */}
+
+        {isSameUser && uiIsUserEditingMode && (
+          <div
+            className={`w-full sticky bg-white flex mx-auto bottom-0 z-40 h-20 shadow2xl`}
+          >
+            <LoadingButton
+              className=""
+              buttonText="Save Changes"
+              loading={false}
+            />
           </div>
         )}
       </form>
@@ -302,14 +316,14 @@ type UserRoleStatusFormData = z.infer<typeof userRoleStatusSchema>;
 
 export const UserRoleStatusDialog = () => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
-  const uiId = uiActiveUser.uiId;
+  const activeUserId = uiActiveUser.uiId;
   const { submitEditRoleStatus } = useUserInfo();
   const dispatch = useAppDispatch();
   const isDialogOpen = useAppSelector((state) => state.userSlice.isDialogOpen);
   const userInfo = useAppSelector((state) => state.userSlice.editingUser);
   const uiIsSuperAdmin = uiActiveUser.uiIsSuperAdmin;
   const [isSameUser, setIsSameUser] = useState(
-    sanitizeAndCompare(uiId as string, userInfo?.id as string)
+    sanitizeAndCompare(activeUserId as string, userInfo?.id as string)
   );
   const { notify } = useNotification();
 

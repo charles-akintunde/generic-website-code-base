@@ -3,16 +3,20 @@ import React, { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import usePage from '../../hooks/api-hooks/use-page';
-import { IPageMenuItem } from '../../types/componentInterfaces';
-import { hasPermission } from '../../utils/helper';
+import { IPageMenuItem, IUserInfo } from '../../types/componentInterfaces';
+import { hasPermission, transformToUserInfo } from '../../utils/helper';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
-import { setUIIsUserEditingMode } from '../../store/slice/userSlice';
+import {
+  setUIActiveUser,
+  setUIIsUserEditingMode,
+} from '../../store/slice/userSlice';
 import {
   setFecthingPageData,
   setPageContents,
 } from '../../store/slice/pageSlice';
 import { appConfig } from '../../utils/appConfig';
-import useUserInfo from '../../hooks/api-hooks/use-user-info';
+import { useGetActiveUserQuery } from '../../api/authApi';
+import { EUserRole } from '../../types/enums';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -67,7 +71,13 @@ const findPage = (
 };
 
 const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
-  const { activePageRefetch } = useUserInfo();
+  const {
+    data: activeUserData,
+    isError: hasActiveUserFetchError,
+    isSuccess: isActiveUserFetchSuccess,
+    isLoading: isActiveUserFetchLoading,
+    refetch: activePageRefetch,
+  } = useGetActiveUserQuery();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const uiActiveUserRole = String(uiActiveUser.uiRole);
   const uiIsLoading = uiActiveUser.uiIsLoading;
@@ -82,6 +92,42 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   //     item.href === decodeURIComponent(`/${pathname.split('/')[1]}`) ||
   //     item.href.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`))
   // );
+
+  useEffect(() => {
+    if (activeUserData?.data) {
+      const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
+
+      dispatch(
+        setUIActiveUser({
+          uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+          uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+          uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
+          uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
+          uiIsLoading: isActiveUserFetchLoading,
+          uiId: userProfile.id,
+          uiCanEdit:
+            userProfile.uiRole.includes(EUserRole.Admin) ||
+            userProfile.uiRole.includes(EUserRole.SuperAdmin),
+          uiRole: userProfile.uiRole,
+          uiPhotoURL: userProfile.uiPhoto,
+        })
+      );
+    } else {
+      dispatch(
+        setUIActiveUser({
+          uiId: null,
+          uiFullName: '',
+          uiInitials: '',
+          uiIsAdmin: false,
+          uiIsLoading: isActiveUserFetchLoading,
+          uiIsSuperAdmin: false,
+          uiCanEdit: false,
+          uiRole: [EUserRole.Public],
+          uiPhotoURL: null,
+        })
+      );
+    }
+  }, [activeUserData, pathname]);
 
   useEffect(() => {
     if (currentPage) {
@@ -141,20 +187,20 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       if (!isValidRoute) {
         router.replace('/404');
       } else {
-        if (
-          !hasPermission(
-            uiActiveUserRole,
-            currentPage?.pagePermission as string[]
-          )
-        ) {
-          console.log(
-            uiActiveUserRole,
-            currentPage?.pagePermission,
-            'LLLLLLLLLLLLLLL'
-          );
-          console.log('Accessed Denied!!!');
-          router.replace('/access-denied');
-        }
+        // if (
+        //   !hasPermission(
+        //     uiActiveUserRole,
+        //     currentPage?.pagePermission as string[]
+        //   )
+        // ) {
+        //   console.log(
+        //     uiActiveUserRole,
+        //     currentPage?.pagePermission,
+        //     'LLLLLLLLLLLLLLL'
+        //   );
+        //   console.log('Accessed Denied!!!');
+        //   router.replace('/access-denied');
+        // }
       }
     }
     dispatch(
@@ -174,8 +220,6 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
         pageFetchError: undefined,
       })
     );
-
-    activePageRefetch();
   }, [allAppRoutes, pathname, router, uiIsLoading, currentPage]);
 
   return allAppRoutes && allAppRoutes.length > 0 ? <>{children}</> : null;

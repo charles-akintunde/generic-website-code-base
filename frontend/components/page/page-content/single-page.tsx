@@ -186,9 +186,9 @@ const SinglePage = () => {
         title={`${!isSinglePageCreated ? 'Edit' : ''} ${fromKebabCase(pageDisplayURL)}`}
       >
         <div
-          className={`flex flex-col min-h-screen w-full ${pageContentPaddingStyles}`}
+          className={`flex flex-col mt-10 min-h-screen w-full ${pageContentPaddingStyles}`}
         >
-          <div className={`space-y-6 mb-10 min-h-screen `}>
+          <div className={`space-y-6 mb-10 min-h-screen  shadow-md`}>
             <PlateEditor
               key={plateEditorKey}
               value={plateEditor}

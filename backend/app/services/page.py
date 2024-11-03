@@ -3,6 +3,7 @@
 """
 
 
+from datetime import datetime
 from typing import Any, List, Optional
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -12,7 +13,7 @@ from app.crud.user_info import user_crud
 from app.models.enums import E_UserRole
 from app.models.page import T_Page
 from app.core.auth import get_current_user_without_exception
-from app.utils.utils import check_page_permission, is_admin
+from app.utils.utils import check_page_permission, check_user_role, is_admin
 from app.models.user_info import T_UserInfo
 from app.utils.response_json import build_page_content_json, build_multiple_page_response, build_page_content_json_with_excerpt, create_page_with_offset_response, transform_page_to_response
 
@@ -129,6 +130,7 @@ def get_page(
         PageResponse: Page data with paginated content.
     """
     user_roles = (current_user.UI_Role if current_user else [E_UserRole.Public])
+    current_time = datetime.now()
 
     existing_page = page_crud.get_page_by_display_url_with_offest(
         db=db,
@@ -151,7 +153,10 @@ def get_page(
     converted_page_contents = []
 
     for page_content in existing_page.PG_PageContents:
-        user  = user_crud.get_user_by_id(db=db,user_id=page_content.UI_ID)
+        if not check_user_role(user_roles, [E_UserRole.SuperAdmin, E_UserRole.Admin]): # type: ignore
+            if page_content.PC_IsHidden or page_content.PC_CreatedAt > current_time:  
+                continue
+        user = user_crud.get_user_by_id(db=db,user_id=page_content.UI_ID)
         converted_page_content = build_page_content_json_with_excerpt(page_content, user, page=existing_page)
         converted_page_contents.append(converted_page_content)
         
@@ -165,7 +170,7 @@ def get_page(
         )
     return existing_page
 
-def update_page(db: Session, page_id: str, page_update: PageUpdateRequest, user: T_UserInfo) -> PageResponse:
+async def update_page(db: Session, page_id: str, page_update: PageUpdateRequest, user: T_UserInfo) -> PageResponse:
     """
     Service to update page.
     """
@@ -183,7 +188,7 @@ def update_page(db: Session, page_id: str, page_update: PageUpdateRequest, user:
         detail="You do not have permission to update this page")
     
     if page_update.PG_Type is not None and  page_update.PG_Type != existing_page.PG_Type:
-            page_crud.remove_page_content(db=db, page=existing_page)
+            await page_crud.remove_page_content(db=db, page=existing_page)
      
     page_data = page_update.model_dump(exclude_unset=True)
     updated_page: dict[str, Any] = page_crud.update_page(
@@ -201,7 +206,7 @@ def update_page(db: Session, page_id: str, page_update: PageUpdateRequest, user:
         )
     return page_response
     
-def delete_page(db: Session, page_id: str, user: T_UserInfo) -> bool:
+async def delete_page(db: Session, page_id: str, user: T_UserInfo) -> bool:
     """
      Service to delete page.
     """
@@ -219,7 +224,7 @@ def delete_page(db: Session, page_id: str, user: T_UserInfo) -> bool:
         detail="You do not have permission to delete this page"
         )
     print(existing_page,"existing_page")
-    is_success = page_crud.delete_page(
+    is_success = await page_crud.delete_page(
         db, 
         page=existing_page)
     

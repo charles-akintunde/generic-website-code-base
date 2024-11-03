@@ -16,7 +16,7 @@ const PageLayout: React.FC<LayoutProps> = ({
   type = 'pageList',
 }) => {
   return (
-    <div className={type === 'singlePage' ? 'bg-white' : 'bg-white'}>
+    <div className={type === 'singlePage' ? 'bg-pg' : 'bg-pg'}>
       <div className="flex flex-col items-center justify-center min-h-screen p-6">
         <header className="relative w-full h-64 rounded-sm overflow-hidden">
           <Image
@@ -33,7 +33,7 @@ const PageLayout: React.FC<LayoutProps> = ({
           </div>
         </header>
         {/* <Divider /> */}
-        <main className="w-full rounded-xl min-h-screen z-20 ">
+        <main className="w-full  rounded-xl min-h-screen z-20 ">
           <div>{children}</div>
           <FloatButton.BackTop visibilityHeight={400} />
         </main>

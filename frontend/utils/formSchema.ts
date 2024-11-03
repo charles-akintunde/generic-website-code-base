@@ -60,7 +60,7 @@ export const accountCreationSchema = z
 
 export const passwordResetSchema = z
   .object({
-    token: requiredTextSchema('Token'),
+    token: z.string().min(1, 'Token is required'),
     newPassword: passwordSchema(),
     confirmPassword: passwordSchema(),
   })
@@ -118,6 +118,13 @@ const ACCEPTED_DOC_MIME_TYPES = [
   'application/pdf',
   'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'text/csv',
+  'application/zip',
+  'application/x-zip-compressed',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 ];
 
 //@ts-ignore
@@ -133,13 +140,14 @@ const plateJsSchema = z
   .array(elementSchema)
   .min(1, { message: 'Page content cannot be empty' });
 
-const imageFileSchema = z.instanceof(File).superRefine((file, ctx) => {
+const imageFileSchema = z.instanceof(Blob).superRefine((file, ctx) => {
   if (file.size > MAX_FILE_SIZE) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Image size exceeds 5MB limit',
     });
   }
+
   if (!ACCEPTED_IMAGE_MIME_TYPES.includes(file.type)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -148,13 +156,16 @@ const imageFileSchema = z.instanceof(File).superRefine((file, ctx) => {
   }
 });
 
-const docFileSchema = z.instanceof(File).superRefine((file, ctx) => {
+const docFileSchema = z.instanceof(Blob).superRefine((file, ctx) => {
+  // Check file size
   if (file.size > MAX_DOC_FILE_SIZE) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Document size exceeds 10MB limit',
     });
   }
+
+  // Check MIME type
   if (!ACCEPTED_DOC_MIME_TYPES.includes(file.type)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -174,6 +185,11 @@ export const pageContentSchema = z.object({
     `Page Name must be at most 100 characters long`
   ),
   pageContentDisplayImage: imageSchema,
+  pageContentCreatedAt: z
+    .union([z.date(), z.string()])
+    .transform((val) => (typeof val === 'string' ? new Date(val) : val))
+    .optional(),
+  pageContentUsersId: z.array(z.string()).optional(),
   pageContentDisplayURL: requiredTextSchemaAllowDash('Page Display URL').max(
     255,
     `Page Name must be at most 254 characters long`
@@ -188,6 +204,8 @@ export const pageContentSchemaEdit = z.object({
     200,
     `Page Name must be at most 100 characters long`
   ),
+  pageContentCreatedAt: z.date().optional(),
+  pageContentUsersId: z.array(z.string()).optional(),
   pageContentDisplayURL: requiredTextSchemaAllowDash('Page Display URL').max(
     255,
     `Page Name must be at most 254 characters long`

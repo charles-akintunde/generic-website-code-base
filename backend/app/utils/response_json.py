@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Union,Tuple
 
 from uuid import UUID
 from app.models.user_info import T_UserInfo
-from app.schemas.page_content import PC_PageContentImgResponse, PageContentResponse
+from app.schemas.page_content import PC_PageContentImgResponse, PageContentResponse, PageContentUsers, UserPageContentResponse
 from app.models.page_content import T_PageContent
 from app.models.page import T_Page
 from app.schemas.page import PG_PagesResponse, PageResponse, PageSingleContent, Page
@@ -39,8 +39,36 @@ def build_page_content_json(page_content : T_PageContent,user: T_UserInfo,page:T
     PC_DisplayURL=str(page_content.PC_DisplayURL),
     PC_CreatedAt=page_content.PC_CreatedAt.isoformat() if page_content.PC_CreatedAt else None,  # type: ignore
     PC_LastUpdatedAt=page_content.PC_LastUpdatedAt.isoformat() if page_content.PC_LastUpdatedAt else None, # type: ignore
-    PC_IsHidden=bool(page_content.PC_IsHidden)
+    PC_IsHidden=bool(page_content.PC_IsHidden),
+    PC_UsersPageContents = [PageContentUsers(
+        UI_ID=str(user.UI_ID),
+        UI_FullName=f"{user.UI_FirstName} {user.UI_LastName}"
+
+    )  for user in page_content.PC_UsersPageContents]
+  
     )
+
+
+def build_user_page_content_json(page_content: T_PageContent) -> UserPageContentResponse:
+    if page_content is None:
+        return None
+    
+    PC_Excerpt = PC_Excerpt = get_excerpt(page_content.PC_Content["PC_Content"]) if page_content.PC_Content and "PC_Content" in page_content.PC_Content else '' # type: ignore
+    PC_ReadingTime =  PC_ReadingTime = estimate_reading_time(page_content.PC_Content["PC_Content"]) if page_content.PC_Content and "PC_Content" in page_content.PC_Content else 0  # type: ignore
+
+    return UserPageContentResponse(
+        PC_ID=str(page_content.PC_ID),
+        PC_Title=str(page_content.PC_Title),
+        PC_DisplayURL=str(page_content.PC_DisplayURL),
+        PC_ThumbImgURL=str(page_content.PC_ThumbImgURL) if page_content.PC_ThumbImgURL else None, # type: ignore
+        PC_Excerpt=PC_Excerpt,
+        PC_ReadingTime=PC_ReadingTime,
+        PC_CreatedAt=page_content.PC_CreatedAt.isoformat() if page_content.PC_CreatedAt else None, # type: ignore
+        PC_LastUpdatedAt=page_content.PC_LastUpdatedAt.isoformat() if page_content.PC_LastUpdatedAt else None, # type: ignore
+        PC_IsHidden=bool(page_content.PC_IsHidden)
+    )
+
+
 
 
 def build_page_content_json_with_excerpt(page_content: T_PageContent, user: T_UserInfo, page: T_Page) -> Union[PageContentResponse, Any]:
@@ -127,7 +155,7 @@ def create_users_response(users: List[UserPartial], total_users_count: int ,new_
         total_users_count= total_users_count
     )
 
-def create_user_response(user: T_UserInfo) -> UserResponse:
+def create_user_response(user: T_UserInfo, page_contents : Optional[List[PageContentResponse]] = None) -> UserResponse:
     return UserResponse(
         UI_ID=str(user.UI_ID),
         UI_FirstName=str(user.UI_FirstName),
@@ -144,7 +172,8 @@ def create_user_response(user: T_UserInfo) -> UserResponse:
         UI_Province=user.UI_Province if user.UI_Province is not None else None, # type: ignore
         UI_Organization=user.UI_Organization if user.UI_Organization is not None else None, # type: ignore
         UI_About=user.UI_About if user.UI_About is not None else None, # type: ignore
-        UI_MemberPosition=user.UI_MemberPosition.value if user.UI_MemberPosition is not None else None
+        UI_MemberPosition=user.UI_MemberPosition.value if user.UI_MemberPosition is not None else None,
+        UI_UserPageContents=page_contents if page_contents is not None else None
     )
 
 

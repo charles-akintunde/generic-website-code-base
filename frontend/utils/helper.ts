@@ -28,7 +28,16 @@ import { MenuProps } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import _ from 'lodash';
 import nookies from 'nookies';
+import moment from 'moment';
+import { Dispatch } from '@reduxjs/toolkit';
+import { userApi } from '../api/userApi';
+import { pageContentApi } from '../api/pageContentApi';
+import { pageApi } from '../api/pageApi';
 type MenuItem = Required<MenuProps>['items'][number];
+
+export function formatDateWithZeroTime(date: Date): string {
+  return moment(date).format('YYYY-MM-DD 00:00:00.000');
+}
 
 export const toKebabCase = (str: string): string => {
   str = str.toLowerCase();
@@ -229,14 +238,44 @@ export function formatDate(dateString: string): string {
   return date.toLocaleDateString('en-US', options);
 }
 
+export const isScheduledDateGreaterThanCurrent = (date1: string) => {
+  return new Date(date1).getTime() > new Date().getTime();
+};
+
+// export const hasPermission = (
+//   currentUserRole: string,
+//   pagePermission: string[]
+// ): boolean => {
+//   if (pagePermission == undefined || pagePermission == null) {
+//     return false;
+//   }
+//   return pagePermission.includes(currentUserRole);
+// };
+
 export const hasPermission = (
   currentUserRole: string,
   pagePermission: string[]
 ): boolean => {
-  if (pagePermission == undefined || pagePermission == null) {
+  if (!pagePermission) {
     return false;
   }
-  return pagePermission.includes(currentUserRole);
+
+  const roleHierarchy: Record<string, number> = {
+    [EUserRole.SuperAdmin]: 0,
+    [EUserRole.Admin]: 1,
+    [EUserRole.Member]: 2,
+    [EUserRole.User]: 3,
+    [EUserRole.Alumni]: 4,
+    [EUserRole.Public]: 5,
+  };
+
+  const lowestPermissiveRole = Math.max(
+    ...pagePermission.map((role) => roleHierarchy[role])
+  );
+
+  console.log(currentUserRole, 'roleHierarchy[currentUserRole]');
+
+  return roleHierarchy[currentUserRole] <= lowestPermissiveRole;
 };
 
 export const getChangedFields = (
@@ -279,6 +318,12 @@ export const pageNormalizer = (
       editorContent: pageContent.PC_Content?.PC_Content,
       pageContentCreatedAt: pageContent.PC_CreatedAt as string,
       creatorFullName: `${pageContent.UI_FirstName} ${pageContent.UI_LastName}`,
+      pageContenAssociatedUsers: pageContent.PC_UsersPageContents
+        ? pageContent.PC_UsersPageContents.map((pageContent) => ({
+            value: pageContent.UI_ID,
+            label: pageContent.UI_FullName,
+          }))
+        : [],
     },
   };
 
@@ -303,6 +348,7 @@ export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
     uiPhoneNumber: data.UI_PhoneNumber,
     uiOrganization: data.UI_Organization,
     uiAbout: data.UI_About?.UI_About,
+    uiUserPageContents: normalizeUserPageContents(data.UI_UserPageContents),
   };
 };
 
@@ -344,6 +390,32 @@ export const createPageContentItem = (
     userId: currentUserId,
     pageType: pageType,
   };
+};
+
+export const normalizeUserPageContents = (response: any) => {
+  const pageContents: IPageContentMain[] | undefined = response?.map(
+    (pageContent: any) => {
+      return {
+        pageContentId: pageContent.PC_ID,
+        pageId: pageContent.PG_ID,
+        pageContentExcerpt: pageContent.PC_Excerpt,
+        pageContentReadingTime: pageContent.PC_ReadingTime,
+        pageContentDisplayURL: `/${pageContent.PG_DisplayURL}/${pageContent.PC_DisplayURL}`,
+        pageDisplayURL: pageContent.PG_DisplayURL,
+        pageName: pageContent.PG_Name,
+        userId: pageContent.UI_ID,
+        href: `/${pageContent.PG_DisplayURL}/${pageContent.PC_DisplayURL}`,
+        pageContentName: pageContent.PC_Title,
+        pageContentDisplayImage: pageContent.PC_ThumbImgURL as string,
+        isPageContentHidden: pageContent.PC_IsHidden,
+        pageContentCreatedAt: pageContent.PC_CreatedAt as string,
+        pageContentLastUpdatedAt: pageContent.PC_LastUpdatedAt as string,
+        editorContent: pageContent.PC_Content?.PC_Content,
+      };
+    }
+  );
+
+  return pageContents;
 };
 
 export const normalizeMultiContentPage = (
@@ -534,20 +606,22 @@ export const handleRoutingOnError = (
   hasError: boolean,
   error: any,
   clearCache?: () => void,
-  from?: string
+  from?: string,
+  clearState?: () => void
 ) => {
   if (hasError && error) {
     if (error.status === 404) {
       router.replace('/404');
     } else if (error.status === 500) {
-      router.replace('/internal-server-error');
+      router.replace('/500');
+    } else if (error.status === 307) {
     } else {
       router.replace('/access-denied');
     }
 
-    // if (clearCache) {
-    //   clearCache();
-    // }
+    if (clearState) {
+      clearState();
+    }
   }
 };
 
@@ -630,7 +704,7 @@ export function removeNullValues(obj: any) {
 }
 
 export const reloadPage = () => {
-  //window.location.reload();
+  window.location.reload();
 };
 
 export const transformPageToIPage = (page: Page): IPage => {
@@ -643,4 +717,27 @@ export const transformPageToIPage = (page: Page): IPage => {
     ),
     pageType: page.PG_Type.toString(),
   };
+};
+
+export const clearAllCaches = (dispatch: Dispatch) => {
+  dispatch(userApi.util.invalidateTags(['Users', 'User']));
+  dispatch(
+    pageApi.util.invalidateTags([
+      'Pages',
+      'Menus',
+      'Page',
+      'PageContent',
+      'Users',
+    ])
+  );
+  dispatch(
+    pageContentApi.util.invalidateTags([
+      'Pages',
+      'Menus',
+      'Page',
+      'PageContent',
+      'SinglePageContent',
+    ])
+  );
+  // Add other APIs and tags as needed
 };

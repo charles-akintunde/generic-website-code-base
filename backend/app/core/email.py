@@ -37,87 +37,6 @@ async def send_confirmation_email(email: EmailStr, token: str):
         token (str): Confirmation token.
     """
     confirmation_link = f"{FRONTEND_URL}/confirm-user/account-creation/{token}"
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 0;
-                background-color: #f4f4f4;
-            }}
-            .container {{
-                max-width: 600px;
-                margin: 40px auto;
-                padding: 20px;
-                background-color: #fff;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                border-radius: 10px;
-            }}
-            .header {{
-                background-color: #007bff;
-                color: #fff;
-                padding: 20px 0;
-                text-align: center;
-                border-top-left-radius: 10px;
-                border-top-right-radius: 10px;
-            }}
-            .logo {{
-                max-width: 120px;
-                margin-bottom: 10px;
-            }}
-            h1 {{
-                margin-bottom: 10px;
-                font-size: 24px;
-            }}
-            .content {{
-                padding: 20px;
-                text-align: center;
-            }}
-            p {{
-                font-size: 16px;
-                line-height: 1.5;
-                color: #555;
-            }}
-            .button {{
-                background-color: #28a745;
-                color: white !important;
-                padding: 15px 30px;
-                text-decoration: none;
-                border-radius: 5px;
-                display: inline-block;
-                font-size: 16px;
-                margin-top: 20px;
-            }}
-            .footer {{
-                margin-top: 20px;
-                font-size: 12px;
-                color: #888;
-                text-align: center;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <img src="your-company-logo.png" alt="Your Company Logo" class="logo">
-                <h1>Welcome to Your Company</h1>
-            </div>
-            <div class="content">
-                <p>Thank you for signing up! To complete your registration, please verify your email address by clicking the button below:</p>
-                <a href="{confirmation_link}" class="button">Verify Email Address</a>
-                <p>If you did not request this email, please ignore it.</p>
-            </div>
-            <div class="footer">
-                <p>Your Company Inc. | <a href="https://your-company-website.com" style="color: #007bff; text-decoration: none;">www.your-company-website.com</a></p>
-            </div>
-        </div>
-    </body>
-    </html>
-    """
-
     
     message = MessageSchema(
         subject="Email Confirmation",
@@ -126,13 +45,10 @@ async def send_confirmation_email(email: EmailStr, token: str):
             message="Thank you for signing up! To complete your registration, please verify your email address by clicking the button below:",
             confirmation_link=confirmation_link,
             button_text="Verify Email Address",
-            company_name=COMPANY_NAME,
-            frontend_url=FRONTEND_URL,
-            logo='app/assets/logo-white.png'
         ),
         subtype="html"
     )
-    print(f'{cwd}/assets/logo-white.png',"PWDDDDDDDDD")
+
     await fm.send_message(message)
 
 async def send_password_reset_email(email: str, token: str):
@@ -144,9 +60,6 @@ async def send_password_reset_email(email: str, token: str):
         message="We received a request to reset your password. If you did not make this request, please ignore this email. Otherwise, you can reset your password by clicking the button below:",
         confirmation_link=reset_url,
         button_text="Reset Password",
-        company_name=COMPANY_NAME,
-        frontend_url=FRONTEND_URL,
-        logo='app/assets/logo-white.png'
     )
 ,
         subtype="html"

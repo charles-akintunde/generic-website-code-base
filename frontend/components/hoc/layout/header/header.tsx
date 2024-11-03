@@ -23,12 +23,19 @@ import { ChevronDown } from 'lucide-react';
 import LogoutButton from '../../../common/button/logout-button';
 import { Separator } from '../../../ui/separator';
 import HoverableCard from '../../../common/hover-card';
-import useUserInfo from '../../../../hooks/api-hooks/use-user-info';
-import { IUIActiveUser } from '../../../../types/componentInterfaces';
+import {
+  IUIActiveUser,
+  IUserInfo,
+} from '../../../../types/componentInterfaces';
 import usePage from '../../../../hooks/api-hooks/use-page';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import AppLoading from '../../../common/app-loading';
-import { hasNavItems } from '../../../../utils/helper';
+import { hasNavItems, transformToUserInfo } from '../../../../utils/helper';
+import { useGetActiveUserQuery } from '../../../../api/authApi';
+import { EUserRole } from '../../../../types/enums';
+import { setUIActiveUser } from '../../../../store/slice/userSlice';
+import { useUserInfo } from '../../../../hooks/api-hooks/use-user-info';
+import useUserLogin from '../../../../hooks/api-hooks/use-user-login';
 
 interface UserProfileDropDownProps {
   uiActiveUser: IUIActiveUser;
@@ -136,10 +143,13 @@ export const UserProfile = () => {
   );
 };
 
-const Header: React.FC = () => {
+const Header: React.FC = ({}) => {
   const dispatch = useAppDispatch();
+  const { isActiveUserFetchLoading } = useUserLogin();
+  const router = useRouter();
   const uiUser = useUserInfo();
   const pathname = usePathname();
+
   const handleDrawerToggle = () => {
     dispatch(toggleDrawer());
   };
@@ -170,53 +180,67 @@ const Header: React.FC = () => {
     setIsLoading(false);
   }, [pathname, navMenuItems]);
 
-  if (isLoading) {
-    return <AppLoading />;
+  if (isActiveUserFetchLoading) {
+    return;
   }
 
   return (
     <>
-      <header className="sticky top-0 z-40 overflow-hidden  h-20 shadow-sm w-full bg-white">
-        <div className={'container mx-auto flex h-full px-4 sm:px-6 lg:px-8'}>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center">
-              <Logo />
-            </div>
-            <div className="hidden lg:block max-w-[600px] space-x-4">
-              <Menu
-                style={{
-                  flex: 'auto',
-                  minWidth: 800,
-                  borderBottom: 'none',
-                  lineHeight: '80px',
-                }}
-                className="border-0 bottom-0 py-4 custom-menu"
-                onClick={onClickNavMenuItem}
-                mode="horizontal"
-                expandIcon={<></>}
-                //@ts-ignore
-                itemPaddingInline={200}
-                selectedKeys={activeNavItem ? [activeNavItem] : []}
-                items={navMenuItems}
-              />
-            </div>
-          </div>
-          <div className="flex-1 flex justify-end items-center space-x-4">
-            <div className="hidden lg:block">
-              <UserProfile />
-            </div>
+      {true ? (
+        <>
+          {' '}
+          <header className="sticky top-0 z-50 overflow-hidden  h-20 shadow-sm w-full bg-white">
             <div
-              className="block lg:hidden cursor-pointer"
-              onClick={handleDrawerToggle}
+              className={'container mx-auto flex h-full px-4 sm:px-6 lg:px-8'}
             >
-              <Image src={menuIcon} alt="hamburger" width={30} height={30} />
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  <Logo />
+                </div>
+                <div className="hidden lg:block max-w-[600px] space-x-4">
+                  <Menu
+                    style={{
+                      flex: 'auto',
+                      minWidth: 800,
+                      borderBottom: 'none',
+                      lineHeight: '80px',
+                    }}
+                    className="border-0 bottom-0 py-4 custom-menu"
+                    onClick={onClickNavMenuItem}
+                    mode="horizontal"
+                    expandIcon={<></>}
+                    //@ts-ignore
+                    itemPaddingInline={200}
+                    selectedKeys={activeNavItem ? [activeNavItem] : []}
+                    items={navMenuItems}
+                  />
+                </div>
+              </div>
+              <div className="flex-1 flex justify-end items-center space-x-4">
+                <div className="hidden lg:block">
+                  <UserProfile />
+                </div>
+                <div
+                  className="block lg:hidden cursor-pointer"
+                  onClick={handleDrawerToggle}
+                >
+                  <Image
+                    src={menuIcon}
+                    alt="hamburger"
+                    width={30}
+                    height={30}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </header>
-      <div className="md:block z-50">
-        <Drawer />
-      </div>
+          </header>
+          <div className="md:block z-50">
+            <Drawer />
+          </div>{' '}
+        </>
+      ) : (
+        <AppLoading />
+      )}
     </>
   );
 };

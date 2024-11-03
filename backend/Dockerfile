@@ -46,8 +46,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
-# Expose port 80 for HTTP
-EXPOSE 80
+EXPOSE 443
 
-# Start FastAPI on port 80 without SSL
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+# Start FastAPI on port 443 with SSL
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "443", "--ssl-keyfile", "/app/certificates/privkey.pem", "--ssl-certfile", "/app/certificates/fullchain.pem", "--reload"]
