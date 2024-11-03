@@ -1,6 +1,7 @@
 """
 User service for handling business logic related to users.
 """
+from typing import Optional
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
 from app.crud.user_info import user_crud
@@ -197,27 +198,35 @@ def get_users_assigned_with_positions(db: Session):
 
 
 
-def get_user_by_id(db: Session, user_id):
+def get_user_by_id(db: Session, user_id, pg_offset: Optional[int] = 8, pg_page_number: Optional[int] = 1):
     """
-        Retrieve a user by their ID from the database.
+    Retrieve a user by their ID from the database.
     """
-    user_fetched = user_crud.get_user_by_id(db=db, user_id=user_id)
-    user_page_contents = user_fetched.UI_UsersPageContents
-    transformed_user_page_contents = []
+    pg_offset = pg_offset or 8
+    pg_page_number = pg_page_number or 1
 
+    user_fetched = user_crud.get_user_by_id(db=db, user_id=user_id)
     
     if not user_fetched:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'User with ID {user_id} not found.'
         )
+    
+    user_page_contents = user_fetched.UI_UsersPageContents
+    transformed_user_page_contents = []
 
+    # start_index = (pg_page_number - 1) * pg_offset
+    # end_index = start_index + pg_offset
+    
+    #paginated_user_page_contents = user_page_contents[start_index:end_index]
+    
     for user_page_content in user_page_contents:
-        user  = user_crud.get_user_by_id(db=db,user_id=user_page_content.UI_ID)
-        existing_page = page.page_crud.get_page_by_id(db=db,page_id=user_page_content.PG_ID)
-        transformed_user_page_content = build_page_content_json_with_excerpt(user_page_content, user, page=existing_page) 
+        user = user_crud.get_user_by_id(db=db, user_id=user_page_content.UI_ID)
+        existing_page = page.page_crud.get_page_by_id(db=db, page_id=user_page_content.PG_ID)
+        transformed_user_page_content = build_page_content_json_with_excerpt(
+            user_page_content, user, page=existing_page
+        )
         transformed_user_page_contents.append(transformed_user_page_content)
 
-    
-    
     return create_user_response(user=user_fetched, page_contents=transformed_user_page_contents)

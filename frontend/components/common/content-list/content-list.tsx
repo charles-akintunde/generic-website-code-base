@@ -131,8 +131,6 @@ const ContentList: React.FC<ContentListProps> = ({
 
   useEffect(() => {
     if (!pageContentsData) {
-      console.log('No page content data available');
-
       return;
     }
 
@@ -236,6 +234,7 @@ const ContentList: React.FC<ContentListProps> = ({
                 <ListCardComponent
                   pageName={pageName}
                   key={index}
+                  // @ts-ignore
                   pageContent={pageContent}
                 />
               ))}

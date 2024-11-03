@@ -30,6 +30,12 @@ export interface IPageGetRequest {
   PG_PageOffset?: number;
 }
 
+export interface IUserGetRequest {
+  UI_ID: string;
+  PG_PageNumber: number;
+  PG_PageOffset?: number;
+}
+
 export interface IPageContentGetRequest {
   PG_DisplayURL: string;
   PC_DisplayURL: string;

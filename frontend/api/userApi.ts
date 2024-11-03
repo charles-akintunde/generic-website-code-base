@@ -8,6 +8,7 @@ import {
 import {
   IEditUserRequest,
   IEditUserRoleStatusRequest,
+  IUserGetRequest,
 } from '../types/requestInterfaces';
 import { GetUsersRequest } from '../hooks/api-hooks/use-user-info';
 
@@ -35,8 +36,15 @@ export const userApi = createApi({
     getUsersAssignedPositions: builder.query<IUserResponseWrapper, void>({
       query: () => `${url}/members`,
     }),
-    getUser: builder.query<ICompleteUserResponseWrapper, string>({
-      query: (UI_ID) => `${url}/${UI_ID}`,
+    getUser: builder.query<ICompleteUserResponseWrapper, IUserGetRequest>({
+      query: ({ UI_ID, PG_PageNumber, PG_PageOffset }) => {
+        let queryString = `${url}/${UI_ID}?pg_page_number=${PG_PageNumber}`;
+        if (PG_PageOffset !== undefined) {
+          queryString += `&pg_offset=${PG_PageOffset}`;
+        }
+        return queryString;
+      },
+
       providesTags: (result) =>
         result
           ? [

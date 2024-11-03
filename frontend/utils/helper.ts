@@ -422,6 +422,7 @@ export const normalizeMultiContentPage = (
   response: Page,
   isSinglePage: boolean
 ): IPageMain => {
+  // @ts-ignore
   const pageContents: IPageContentMain[] | undefined =
     response.PG_PageContents?.map((pageContent: any) => {
       return {

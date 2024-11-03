@@ -91,6 +91,10 @@ export const pageApi = createApi({
     }),
     getPageWithPagination: builder.query<ISinglePageResponse, IPageGetRequest>({
       query: ({ PG_DisplayURL, PG_PageNumber, PG_PageOffset }) => {
+        if (PG_DisplayURL == 'user-profile') {
+          return `${url}/with-pagination/${'news'}?pg_page_number=${PG_PageNumber}`;
+        }
+
         let queryString = `${url}/with-pagination/${PG_DisplayURL}?pg_page_number=${PG_PageNumber}`;
         if (PG_PageOffset !== undefined) {
           queryString += `&pg_page_offset=${PG_PageOffset}`;

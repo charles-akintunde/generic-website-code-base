@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { UserProfileForm } from '../../../../../../../components/common/form/user-profile-form';
 import {
   UserOutlined,
@@ -9,7 +9,7 @@ import {
   PhoneOutlined,
   MailOutlined,
 } from '@ant-design/icons';
-import { Avatar, Badge, Empty, Tooltip } from 'antd';
+import { Avatar, Badge, Empty, Spin, Tooltip } from 'antd';
 import { useGetUserQuery, userApi } from '../../../../../../../api/userApi';
 import {
   formatDate,
@@ -40,6 +40,9 @@ export function sanitizeAndCompare(str1: string, str2: string) {
 
 const UserProfilePage = () => {
   const router = useRouter();
+  const [pageNumber, setPageNumber] = useState(1);
+  const observerRef = useRef<HTMLDivElement>(null);
+  const [hasMore, setHasMore] = useState(true);
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const uiIsAdmin = uiActiveUser ? uiActiveUser.uiIsAdmin : false;
   const pathname = usePathname();
@@ -47,7 +50,11 @@ const UserProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const userQueryResult =
     userId && isValidUUID(userId)
-      ? useGetUserQuery(userId)
+      ? useGetUserQuery({
+          UI_ID: userId,
+          PG_PageNumber: pageNumber,
+          PG_PageOffset: 4,
+        })
       : {
           data: undefined,
           isError: true,
@@ -65,6 +72,48 @@ const UserProfilePage = () => {
     refetch: userProfileRefetch,
     error: userFetchError,
   } = userQueryResult;
+
+  useEffect(() => {
+    setPageNumber(1);
+    setHasMore(true);
+  }, [userId]);
+
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      console.log(
+        'hasMore:',
+        hasMore,
+        'isUserFetchLoading:',
+        isUserFetchLoading
+      ); // Debugging log
+      if (target.isIntersecting && hasMore && !isUserFetchLoading) {
+        console.log('Page number incremented');
+        setPageNumber((prevPage) => prevPage + 1);
+      }
+    },
+    [hasMore, isUserFetchLoading, setPageNumber]
+  );
+
+  console.log(pageNumber, 'pageNumber');
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleObserver, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1.0,
+    });
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    console.log('I want called once', pageNumber);
+
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current);
+    };
+  }, [handleObserver, observerRef]);
 
   const [userInfo, setUserInfo] = useState<IUserInfo>();
   const handleEditToggle = () => {
@@ -85,6 +134,10 @@ const UserProfilePage = () => {
         userProfile?.id
       );
       setIsSameUser(isSameUser);
+
+      if ((userProfile.uiUserPageContents as IPageContentMain[]).length < 4) {
+        setHasMore(false);
+      }
     }
   }, [userData, isUserFetchLoading]);
 
@@ -213,22 +266,44 @@ const UserProfilePage = () => {
             <h2 className="text-2xl font-bold mb-6 text-center">
               Related Posts
             </h2>
-
             {!pageContents || pageContents.length == 0 ? (
               <Empty
                 description="No content available"
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {pageContents.map((pageContent) => (
-                  <PageContentCarouselCard
-                    pageContent={pageContent}
-                    key={pageContent.pageContentId}
-                  />
-                ))}
-              </div>
-            )}
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {pageContents.map((pageContent) => (
+                    <PageContentCarouselCard
+                      pageContent={pageContent}
+                      key={pageContent.pageContentId}
+                    />
+                  ))}
+                </div>
+                <div className="flex w-full  p-10 bg-red justify-center">
+                  {/* {hasMore && (
+                    <div
+                      ref={observerRef}
+                      className="h-20 bg-blue-500 flex items-center justify-center"
+                      style={{
+                        height: '20px',
+                        color: 'white',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      Loading more content...
+                    </div>
+                  )} */}
+
+                  {/* {(hasMore || isUserFetchLoading) && (
+                    <>
+                      <Spin size="small" />
+                    </>
+                  )} */}
+                </div>
+              </>
+            )}{' '}
           </section>
         </div>
       )}
