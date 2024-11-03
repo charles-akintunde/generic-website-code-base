@@ -146,7 +146,7 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
         samesite='none',
         secure=True,
         max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-        domain='locahost' 
+        domain='localhost' 
     )
 
         print(response.headers,"HEADER")
