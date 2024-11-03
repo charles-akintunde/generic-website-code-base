@@ -113,7 +113,7 @@ To set up HTTPS for local development, create a `certificates` folder and genera
 2. Generate the SSL certificates by running the following command:
 
    ```bash
-   openssl req -x509 -newkey rsa:4096 -keyout ./certificates/privkey.pem -out ./certificates/fullchain.pem -days 365 -nodes -subj "/CN=localhost"
+   openssl req -x509 -newkey rsa:4096 -keyout ./certificates/privkey.pem -out ./certificates/fullchain.crt -days 365 -nodes -subj "/CN=localhost"
    ```
 
 This command will:
