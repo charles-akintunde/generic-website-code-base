@@ -18,6 +18,9 @@ azure_storage_container_name = settings.AZURE_STORAGE_CONTAINER_NAME
 container_name = "uploads"
 
 url = f"{settings.BASE_URL}/"
+file_url_for_dev = f"{url}static/uploads"
+is_production = settings.PRODUCTION_MODE
+cwd = os.getcwd()
 
 
 async def save_file_to_azure(file: UploadFile, delimiter: str = '-') -> str:
@@ -35,19 +38,22 @@ async def save_file_to_azure(file: UploadFile, delimiter: str = '-') -> str:
         HTTPException: If there's an error during the upload process.
     """
     try:
-        unique_filename = f"{uuid.uuid4()}{delimiter}{file.filename}"
-        blob_client = blob_service_client.get_blob_client(container=container_name, blob=unique_filename)
-        
-        content_type = file.content_type
-        
-        blob_client.upload_blob(
-            await file.read(),
-            content_settings=ContentSettings(content_type=content_type)
-        )
-        
-        file_url = blob_client.url
+        if is_production:
+            unique_filename = f"{uuid.uuid4()}{delimiter}{file.filename}"
+            blob_client = blob_service_client.get_blob_client(container=container_name, blob=unique_filename)
+            
+            content_type = file.content_type
+            
+            blob_client.upload_blob(
+                await file.read(),
+                content_settings=ContentSettings(content_type=content_type)
+            )
+            
+            file_url = blob_client.url
 
-        return file_url
+            return file_url
+        else:
+            return await save_file(file)
 
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error saving file: {e}")
@@ -64,22 +70,25 @@ async def delete_file_from_azure(file_url: str) -> None:
         HTTPException: If there's an error deleting the file or if the file doesn't exist.
     """
     try:
-        parsed_url = urlparse(file_url)
-        file_path = parsed_url.path.lstrip('/')  
+        if is_production:
+            parsed_url = urlparse(file_url)
+            file_path = parsed_url.path.lstrip('/')  
+            
+            blob_name = file_path.split('/', 1)[1]  
+            decoded_blob_name = unquote(blob_name)
+            blob_client = blob_service_client.get_blob_client(container=container_name, blob=decoded_blob_name)
+            
+            blob_client.delete_blob()
+        else:
+            delete_file(file_url)
         
-        blob_name = file_path.split('/', 1)[1]  
-        decoded_blob_name = unquote(blob_name)
-        blob_client = blob_service_client.get_blob_client(container=container_name, blob=decoded_blob_name)
-        
-        blob_client.delete_blob()
-    
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error deleting file: {e}")
 
 
 
 
-async def save_file(file: UploadFile, folder: str, delimiter: str = '***') -> str:
+async def save_file(file: UploadFile, folder: str = 'static/uploads', delimiter: str = '-') -> str:
     """
     Save the uploaded file to the specified folder and return the file URL.
 
@@ -93,31 +102,40 @@ async def save_file(file: UploadFile, folder: str, delimiter: str = '***') -> st
     os.makedirs(folder, exist_ok=True)
     file_name, file_extension = os.path.splitext(file.filename or '')
     unique_filename = f"{file_name}{delimiter}{uuid.uuid4()}{file_extension}"
-    file_path = os.path.join(folder, unique_filename)
+    file_path = os.path.join(cwd,'app',folder, unique_filename)
 
     with open(file_path, "wb") as buffer:
         buffer.write(await file.read())
     
-    file_url  = url + os.path.join(folder, unique_filename)
+    file_url  = f'{file_url_for_dev}/{unique_filename}' 
     return file_url
 
-def extract_path_from_url(file_url: str):
+def extract_path_from_url(file_url: str) -> str:
+    """
+    Converts a file URL to a local file path on the server.
+
+    Args:
+        file_url (str): The URL of the file.
+
+    Returns:
+        str: The full local file path corresponding to the file URL.
+    """
     try:
         parsed_url = urlparse(file_url)
         file_path = parsed_url.path
 
-        # Remove leading slash if present
         if file_path.startswith("/"):
             file_path = file_path[1:]
 
-        return file_path
+        local_path = os.path.join("app", file_path)
+        return local_path
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error extracting file path: {e}")
 
 
 
 
-def delete_file(file_path: str) -> None:
+def delete_file(file_url: str) -> None:
     """Deletes the specified file.
 
     Args:
@@ -127,9 +145,9 @@ def delete_file(file_path: str) -> None:
         HTTPException: If there's an error deleting the file or if the file doesn't exist.
     """
     try:
+        file_path = extract_path_from_url(file_url)
         if os.path.exists(file_path):
             os.remove(file_path)
-            print("IMG Remove Successfully")
         else:
             raise FileNotFoundError("File not found")
     except (FileNotFoundError, PermissionError, OSError) as e:

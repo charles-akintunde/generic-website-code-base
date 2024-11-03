@@ -7,7 +7,6 @@ def email_html_content(
     confirmation_link: str,
     button_text: str,
     message: str,
-    company_name:  Optional[str] = None
 ):
     return f"""
     <!DOCTYPE html>
@@ -95,7 +94,7 @@ def email_html_content(
         <div class="container">
             <div class="header">
                 <img src="{app_config['app_logo_url']}" alt="Your Company Logo" class="logo">
-                <h1>{company_name}</h1>
+                <h1>{app_config['company_name']}</h1>
             </div>
             <div class="content">
                 <p>{message}</p>
@@ -103,7 +102,7 @@ def email_html_content(
                 <p>If you did not request this email, please ignore it.</p>
             </div>
             <div class="footer">
-                <p>{company_name} Inc. | <a href="{app_config['frontend_url']}">www.{app_config['frontend_url']}</a></p>
+                <p>{app_config['company_name']} Inc. | <a href="{app_config['frontend_url']}">www.{app_config['frontend_url']}</a></p>
             </div>
         </div>
     </body>

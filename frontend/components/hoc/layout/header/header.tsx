@@ -35,6 +35,7 @@ import { useGetActiveUserQuery } from '../../../../api/authApi';
 import { EUserRole } from '../../../../types/enums';
 import { setUIActiveUser } from '../../../../store/slice/userSlice';
 import { useUserInfo } from '../../../../hooks/api-hooks/use-user-info';
+import useUserLogin from '../../../../hooks/api-hooks/use-user-login';
 
 interface UserProfileDropDownProps {
   uiActiveUser: IUIActiveUser;
@@ -144,6 +145,7 @@ export const UserProfile = () => {
 
 const Header: React.FC = ({}) => {
   const dispatch = useAppDispatch();
+  const { isActiveUserFetchLoading } = useUserLogin();
   const router = useRouter();
   const uiUser = useUserInfo();
   const pathname = usePathname();
@@ -178,89 +180,67 @@ const Header: React.FC = ({}) => {
     setIsLoading(false);
   }, [pathname, navMenuItems]);
 
-  // useEffect(() => {
-  //   if (activeUserData?.data) {
-  //     const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
-
-  //     dispatch(
-  //       setUIActiveUser({
-  //         uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
-  //         uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
-  //         uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
-  //         uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
-  //         uiIsLoading: isActiveUserFetchLoading,
-  //         uiId: userProfile.id,
-  //         uiCanEdit:
-  //           userProfile.uiRole.includes(EUserRole.Admin) ||
-  //           userProfile.uiRole.includes(EUserRole.SuperAdmin),
-  //         uiRole: userProfile.uiRole,
-  //         uiPhotoURL: userProfile.uiPhoto,
-  //       })
-  //     );
-  //   } else {
-  //     dispatch(
-  //       setUIActiveUser({
-  //         uiId: null,
-  //         uiFullName: '',
-  //         uiInitials: '',
-  //         uiIsAdmin: false,
-  //         uiIsLoading: isActiveUserFetchLoading,
-  //         uiIsSuperAdmin: false,
-  //         uiCanEdit: false,
-  //         uiRole: [EUserRole.Public],
-  //         uiPhotoURL: null,
-  //       })
-  //     );
-  //   }
-  // }, []);
-
-  if (isLoading) {
-    return <AppLoading />;
+  if (isActiveUserFetchLoading) {
+    return;
   }
 
   return (
     <>
-      <header className="sticky top-0 z-50 overflow-hidden  h-20 shadow-sm w-full bg-white">
-        <div className={'container mx-auto flex h-full px-4 sm:px-6 lg:px-8'}>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center">
-              <Logo />
-            </div>
-            <div className="hidden lg:block max-w-[600px] space-x-4">
-              <Menu
-                style={{
-                  flex: 'auto',
-                  minWidth: 800,
-                  borderBottom: 'none',
-                  lineHeight: '80px',
-                }}
-                className="border-0 bottom-0 py-4 custom-menu"
-                onClick={onClickNavMenuItem}
-                mode="horizontal"
-                expandIcon={<></>}
-                //@ts-ignore
-                itemPaddingInline={200}
-                selectedKeys={activeNavItem ? [activeNavItem] : []}
-                items={navMenuItems}
-              />
-            </div>
-          </div>
-          <div className="flex-1 flex justify-end items-center space-x-4">
-            <div className="hidden lg:block">
-              <UserProfile />
-            </div>
+      {true ? (
+        <>
+          {' '}
+          <header className="sticky top-0 z-50 overflow-hidden  h-20 shadow-sm w-full bg-white">
             <div
-              className="block lg:hidden cursor-pointer"
-              onClick={handleDrawerToggle}
+              className={'container mx-auto flex h-full px-4 sm:px-6 lg:px-8'}
             >
-              <Image src={menuIcon} alt="hamburger" width={30} height={30} />
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  <Logo />
+                </div>
+                <div className="hidden lg:block max-w-[600px] space-x-4">
+                  <Menu
+                    style={{
+                      flex: 'auto',
+                      minWidth: 800,
+                      borderBottom: 'none',
+                      lineHeight: '80px',
+                    }}
+                    className="border-0 bottom-0 py-4 custom-menu"
+                    onClick={onClickNavMenuItem}
+                    mode="horizontal"
+                    expandIcon={<></>}
+                    //@ts-ignore
+                    itemPaddingInline={200}
+                    selectedKeys={activeNavItem ? [activeNavItem] : []}
+                    items={navMenuItems}
+                  />
+                </div>
+              </div>
+              <div className="flex-1 flex justify-end items-center space-x-4">
+                <div className="hidden lg:block">
+                  <UserProfile />
+                </div>
+                <div
+                  className="block lg:hidden cursor-pointer"
+                  onClick={handleDrawerToggle}
+                >
+                  <Image
+                    src={menuIcon}
+                    alt="hamburger"
+                    width={30}
+                    height={30}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </header>
-      <div className="md:block z-50">
-        <Drawer />
-      </div>
+          </header>
+          <div className="md:block z-50">
+            <Drawer />
+          </div>{' '}
+        </>
+      ) : (
+        <AppLoading />
+      )}
     </>
   );
 };

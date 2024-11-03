@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -31,6 +31,15 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ token }) => {
   });
   const [loading, setLoading] = useState(false);
   const { submitPasswordResetWithToken } = useUserInfo();
+
+  // const errors = form.formState.errors;
+
+  // // Log form errors in real-time
+  // useEffect(() => {
+  //   if (Object.keys(errors).length > 0) {
+  //     console.log('Form errors:', errors);
+  //   }
+  // }, [errors]);
 
   const onSubmit = async (data: any) => {
     await submitPasswordResetWithToken(data);

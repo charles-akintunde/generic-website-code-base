@@ -17,9 +17,6 @@ import {
 import { appConfig } from '../../utils/appConfig';
 import { useGetActiveUserQuery } from '../../api/authApi';
 import { EUserRole } from '../../types/enums';
-import { App } from 'antd';
-import AppLoading from '../common/app-loading';
-import { CommentResolveButton } from '../plate-ui/comment-resolve-button';
 
 interface IRouteGuardProps {
   children: React.ReactNode;
@@ -100,8 +97,6 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
     if (activeUserData?.data) {
       const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
 
-      console.log(userProfile);
-
       dispatch(
         setUIActiveUser({
           uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
@@ -124,7 +119,7 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
           uiFullName: '',
           uiInitials: '',
           uiIsAdmin: false,
-          uiIsLoading: true,
+          uiIsLoading: isActiveUserFetchLoading,
           uiIsSuperAdmin: false,
           uiCanEdit: false,
           uiRole: [EUserRole.Public],
@@ -132,7 +127,7 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
         })
       );
     }
-  }, [activeUserData, router]);
+  }, [activeUserData, pathname]);
 
   useEffect(() => {
     if (currentPage) {
@@ -177,7 +172,6 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   }, [pathname, currentPage]);
 
   useEffect(() => {
-    console.log('ROUTE GUARD-v01');
     if (uiIsLoading || !currentPage) return;
     if (allAppRoutes && allAppRoutes.length > 0) {
       const isValidRoute =

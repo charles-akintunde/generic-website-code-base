@@ -154,11 +154,11 @@ const CreatePageContent = () => {
   return (
     <PageLayout title="Create Page Content">
       <div
-        className={`flex flex-col mt-10 min-h-screen w-full ${pageContentPaddingStyles}`}
+        className={`flex flex-col mt-10 min-h-screen w-full ${pageContentPaddingStyles} shadow-md rounded-sm bg-white`}
       >
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="">
-            <div className={`space-y-6 mb-10 min-h-screen }`}>
+            <div className={`space-y-6 my-10 min-h-screen }`}>
               {canEdit && (
                 <>
                   <FormField
@@ -333,6 +333,7 @@ const EditPageContent = () => {
       const pageContent = page.PG_PageContent;
       if (pageContent) {
         const normalizedPage = pageNormalizer(page, pageContent);
+
         setPageType(normalizedPage.pageType);
         setContentData(normalizedPage.pageContent);
         setOriginalData(normalizedPage.pageContent);
@@ -378,7 +379,6 @@ const EditPageContent = () => {
         contentData.pageContentCreatedAt as Date
       );
 
-      console.log(contentData.pageContenAssociatedUsers, 'LIST');
       contentData.pageContentUsersId =
         contentData.pageContenAssociatedUsers.map(
           (option: any) => option.value
@@ -421,7 +421,7 @@ const EditPageContent = () => {
       hasPageContentFetchError,
       pageContentFetchError
     );
-  }, [hasPageContentFetchError, pageContentFetchError, router]);
+  }, [hasPageContentFetchError, pageContentFetchError, pathname]);
 
   if (isPageContentFetchLoading) {
     return <AppLoading />;
@@ -431,9 +431,7 @@ const EditPageContent = () => {
     <>
       {isPageContentFetchSuccess && originalData ? (
         <PageListLayout pageContent={originalData}>
-          <div
-            className={`flex flex-col min-h-screen w-full ${pageContentPaddingStyles}`}
-          >
+          <div className={`flex flex-col min-h-screen w-full `}>
             <FormProvider {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <div className={`space-y-6 mb-10 min-h-screen `}>

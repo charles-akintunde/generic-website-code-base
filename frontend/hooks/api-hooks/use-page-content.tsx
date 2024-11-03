@@ -194,6 +194,10 @@ const usePageContent = ({
         formData.append('PC_ThumbImg', pageContent.pageContentDisplayImage);
       }
       formData.append('PC_IsHidden', String(pageContent.isPageContentHidden));
+      if (pageContent.pageType && pageContent.pageType != EPageType.ResList) {
+        formData.append('PC_Content', JSON.stringify(pageContentObj));
+      }
+
       if (
         pageContent.pageContentCreatedAt &&
         pageContent.pageType == EPageType.PageList
@@ -342,10 +346,14 @@ const usePageContent = ({
         formData,
       }).unwrap();
 
+      // setTimeout(() => {
+
+      // }, 200);
+
       if (
         pageContent.pageContentDisplayURL &&
-        pageType !== EPageType.SinglePage &&
-        pageType !== EPageType.ResList
+        pageType == EPageType.PageList &&
+        isPageContentFetchSuccess
       ) {
         const newUrl = `/${pageDisplayURL}/${pageContent.pageContentDisplayURL}`;
         router.replace(newUrl);

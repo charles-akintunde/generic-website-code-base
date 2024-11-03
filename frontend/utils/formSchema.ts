@@ -60,7 +60,7 @@ export const accountCreationSchema = z
 
 export const passwordResetSchema = z
   .object({
-    token: requiredTextSchema('Token'),
+    token: z.string().min(1, 'Token is required'),
     newPassword: passwordSchema(),
     confirmPassword: passwordSchema(),
   })
@@ -140,13 +140,14 @@ const plateJsSchema = z
   .array(elementSchema)
   .min(1, { message: 'Page content cannot be empty' });
 
-const imageFileSchema = z.instanceof(File).superRefine((file, ctx) => {
+const imageFileSchema = z.instanceof(Blob).superRefine((file, ctx) => {
   if (file.size > MAX_FILE_SIZE) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Image size exceeds 5MB limit',
     });
   }
+
   if (!ACCEPTED_IMAGE_MIME_TYPES.includes(file.type)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -155,13 +156,16 @@ const imageFileSchema = z.instanceof(File).superRefine((file, ctx) => {
   }
 });
 
-const docFileSchema = z.instanceof(File).superRefine((file, ctx) => {
+const docFileSchema = z.instanceof(Blob).superRefine((file, ctx) => {
+  // Check file size
   if (file.size > MAX_DOC_FILE_SIZE) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Document size exceeds 10MB limit',
     });
   }
+
+  // Check MIME type
   if (!ACCEPTED_DOC_MIME_TYPES.includes(file.type)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,

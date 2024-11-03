@@ -13,11 +13,7 @@ const ResetPasswordWithEmailForm = dynamic(
 export default function ResetPassword() {
   return (
     <div>
-      {typeof window !== 'undefined' ? (
-        <ResetPasswordWithEmailForm />
-      ) : (
-        <p>Loading...</p>
-      )}
+      <ResetPasswordWithEmailForm />
     </div>
   );
 }

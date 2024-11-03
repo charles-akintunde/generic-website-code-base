@@ -10,7 +10,7 @@ import {
   MailOutlined,
 } from '@ant-design/icons';
 import { Avatar, Badge, Empty, Tooltip } from 'antd';
-import { useGetUserQuery } from '../../../../../../../api/userApi';
+import { useGetUserQuery, userApi } from '../../../../../../../api/userApi';
 import {
   formatDate,
   handleRoutingOnError,
@@ -27,7 +27,10 @@ import {
 } from '../../../../../../../types/componentInterfaces';
 import { usePathname, useRouter } from 'next/navigation';
 import AppLoading from '../../../../../../../components/common/app-loading';
-import { useAppSelector } from '../../../../../../../hooks/redux-hooks';
+import {
+  useAppDispatch,
+  useAppSelector,
+} from '../../../../../../../hooks/redux-hooks';
 import { PageContentCarouselCard } from '../../../../../../../components/common/carousel/page-content-carousel';
 
 export function sanitizeAndCompare(str1: string, str2: string) {
@@ -93,7 +96,6 @@ const UserProfilePage = () => {
     return <AppLoading />;
   }
 
-  console.log(userInfo, 'userInfo');
   return (
     <>
       {userInfo && (

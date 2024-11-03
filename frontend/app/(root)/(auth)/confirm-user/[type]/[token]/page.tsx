@@ -6,6 +6,7 @@ import AppRequestResult from '../../../../../../components/common/app-request-re
 import { ArrowRightIcon, ReloadIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import { Button } from '../../../../../../components/ui/button';
+import AppLoading from '../../../../../../components/common/app-loading';
 
 const VerifyUserAccount: React.FC = () => {
   const params = useParams();
@@ -23,6 +24,10 @@ const VerifyUserAccount: React.FC = () => {
   useEffect(() => {
     sendAccountVerificationToken(token);
   }, [token]);
+
+  if (isLoading || !isError) {
+    return <AppLoading />;
+  }
 
   return (
     <>

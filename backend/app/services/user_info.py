@@ -201,10 +201,16 @@ def get_user_by_id(db: Session, user_id):
     """
         Retrieve a user by their ID from the database.
     """
-    user = user_crud.get_user_by_id(db=db, user_id=user_id)
-    print(user,"USER INFO")
-    user_page_contents = user.UI_UsersPageContents
+    user_fetched = user_crud.get_user_by_id(db=db, user_id=user_id)
+    user_page_contents = user_fetched.UI_UsersPageContents
     transformed_user_page_contents = []
+
+    
+    if not user_fetched:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'User with ID {user_id} not found.'
+        )
 
     for user_page_content in user_page_contents:
         user  = user_crud.get_user_by_id(db=db,user_id=user_page_content.UI_ID)
@@ -212,13 +218,6 @@ def get_user_by_id(db: Session, user_id):
         transformed_user_page_content = build_page_content_json_with_excerpt(user_page_content, user, page=existing_page) 
         transformed_user_page_contents.append(transformed_user_page_content)
 
-
-    print(user.UI_UsersPageContents)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'User with ID {user_id} not found.'
-        )
     
     
-    return create_user_response(user=user, page_contents=transformed_user_page_contents)
+    return create_user_response(user=user_fetched, page_contents=transformed_user_page_contents)

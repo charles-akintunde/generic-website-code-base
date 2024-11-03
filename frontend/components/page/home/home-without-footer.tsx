@@ -1,7 +1,5 @@
 import React from 'react';
 import { appConfig } from '../../../utils/appConfig';
-// import vid from '../../../public/videos/home-bg-vid.mp4';
-import video from '../../../public/videos/home-bg-vid.mp4';
 
 const HomeWithoutFooter = () => {
   return (
@@ -12,15 +10,14 @@ const HomeWithoutFooter = () => {
         loop
         muted
       >
-        <source
-          src={'../../../public/videos/home-bg-vid.mp4'}
-          type="video/mp4"
-        />
+        <source src={appConfig.pathToHomeVideo} />
         Your browser does not support the video tag.
       </video>
-      {/* <div className="relative z-10 flex items-center justify-center h-full bg-black bg-opacity-30">
-        <h1 className="text-white text-4xl font-bold">Welcome to Our Page</h1>
-      </div> */}
+      <div className="relative z-10 flex items-center justify-center h-full bg-black bg-opacity-30">
+        <h1 className="text-white text-4xl font-bold">
+          Welcome to Generic Website
+        </h1>
+      </div>
     </div>
   );
 };

@@ -29,6 +29,10 @@ import { jwtDecode } from 'jwt-decode';
 import _ from 'lodash';
 import nookies from 'nookies';
 import moment from 'moment';
+import { Dispatch } from '@reduxjs/toolkit';
+import { userApi } from '../api/userApi';
+import { pageContentApi } from '../api/pageContentApi';
+import { pageApi } from '../api/pageApi';
 type MenuItem = Required<MenuProps>['items'][number];
 
 export function formatDateWithZeroTime(date: Date): string {
@@ -608,7 +612,7 @@ export const handleRoutingOnError = (
     if (error.status === 404) {
       router.replace('/404');
     } else if (error.status === 500) {
-      router.replace('/internal-server-error');
+      router.replace('/500');
     } else if (error.status === 307) {
     } else {
       router.replace('/access-denied');
@@ -712,4 +716,27 @@ export const transformPageToIPage = (page: Page): IPage => {
     ),
     pageType: page.PG_Type.toString(),
   };
+};
+
+export const clearAllCaches = (dispatch: Dispatch) => {
+  dispatch(userApi.util.invalidateTags(['Users', 'User']));
+  dispatch(
+    pageApi.util.invalidateTags([
+      'Pages',
+      'Menus',
+      'Page',
+      'PageContent',
+      'Users',
+    ])
+  );
+  dispatch(
+    pageContentApi.util.invalidateTags([
+      'Pages',
+      'Menus',
+      'Page',
+      'PageContent',
+      'SinglePageContent',
+    ])
+  );
+  // Add other APIs and tags as needed
 };

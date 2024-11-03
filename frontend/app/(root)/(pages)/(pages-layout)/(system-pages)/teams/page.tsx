@@ -16,7 +16,7 @@ import backgroundImage from '../../../../../../assets/images/page-list-img1.jpg'
 import Image from 'next/image';
 import { EUserRole } from '../../../../../../types/enums';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const EMemberPosition = {
   Director: '0',
@@ -147,7 +147,7 @@ const Teams = () => {
         </div>
       </header>
       <div className="container mx-auto">
-        {users ? (
+        {users && users.length > 0 ? (
           <>
             {groupedUsers[EMemberPosition.Director] &&
               groupedUsers[EMemberPosition.Director].length > 0 && (

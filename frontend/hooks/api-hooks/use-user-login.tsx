@@ -48,9 +48,14 @@ const useUserLogin = () => {
         UI_Password: userLoginData.password,
       };
       const response = await userLogin(userLoginRequestData).unwrap();
-      activePageRefetch();
       notify('Success', response.message || successMessage, 'success');
+
+      activePageRefetch();
       router.replace('/');
+
+      setTimeout(() => {
+        reloadPage();
+      }, 1000);
     } catch (error: any) {
       const errorMessage =
         error?.data?.message ||
@@ -60,7 +65,7 @@ const useUserLogin = () => {
   };
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUserData = () => {
       if (activeUserData?.data) {
         const userProfile: IUserInfo = transformToUserInfo(
           activeUserData?.data
@@ -72,7 +77,7 @@ const useUserLogin = () => {
             uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
             uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
             uiId: userProfile.id,
-            uiIsLoading: false,
+            uiIsLoading: isActiveUserFetchLoading,
             uiCanEdit:
               userProfile.uiRole.includes(EUserRole.Admin) ||
               userProfile.uiRole.includes(EUserRole.SuperAdmin),
@@ -80,13 +85,25 @@ const useUserLogin = () => {
             uiPhotoURL: userProfile.uiPhoto,
           })
         );
-      } else {
-        await refreshToken();
+      } else if (!isActiveUserFetchLoading && !hasActiveUserFetchError) {
+        dispatch(
+          setUIActiveUser({
+            uiId: null,
+            uiFullName: '',
+            uiInitials: '',
+            uiIsAdmin: false,
+            uiIsLoading: isActiveUserFetchLoading,
+            uiIsSuperAdmin: false,
+            uiCanEdit: false,
+            uiRole: [EUserRole.Public],
+            uiPhotoURL: null,
+          })
+        );
       }
     };
 
     fetchUserData();
-  }, [activeUserData, dispatch]);
+  }, [activeUserData, dispatch, isActiveUserFetchLoading]);
 
   return {
     isSuccess,
@@ -95,6 +112,7 @@ const useUserLogin = () => {
     errorMessage,
     isLoading,
     sendLoginRequest,
+    isActiveUserFetchLoading,
   };
 };
 

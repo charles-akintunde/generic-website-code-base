@@ -53,6 +53,9 @@ async def create_page_content_endpoint(
         user_ids = json.loads(PC_UsersId) if PC_UsersId else []
         if not isinstance(user_ids, list):
             raise ValueError("PC_UsersId should be a list.")
+        
+
+
 
         page_content_data = PageContentCreateRequest(
             UI_ID=UI_ID,
@@ -66,6 +69,8 @@ async def create_page_content_endpoint(
             PC_DisplayURL=PC_DisplayURL,
             PC_UsersId=user_ids  
         )
+
+        print(page_content_data,"page_content_data")
         
         new_page_content = await create_page_content(
             db=db,

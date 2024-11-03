@@ -15,10 +15,7 @@ const url = '/users';
 
 export const userApi = createApi({
   reducerPath: 'userApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-    credentials: 'include',
-  }),
+  baseQuery: publicRouteBaseQuery,
   tagTypes: ['Users', 'User'],
   endpoints: (builder) => ({
     getUsers: builder.query<IUserResponseWrapper, GetUsersRequest>({
@@ -40,13 +37,13 @@ export const userApi = createApi({
     }),
     getUser: builder.query<ICompleteUserResponseWrapper, string>({
       query: (UI_ID) => `${url}/${UI_ID}`,
-      // providesTags: (result) =>
-      //   result
-      //     ? [
-      //         { type: 'User', id: result.data.UI_ID },
-      //         { type: 'User', id: 'LIST' },
-      //       ]
-      //     : [{ type: 'User', id: 'LIST' }],
+      providesTags: (result) =>
+        result
+          ? [
+              { type: 'User', id: result.data.UI_ID },
+              { type: 'User', id: 'USER_PROFILE' },
+            ]
+          : [{ type: 'User', id: 'USER_PROFILE' }],
     }),
     editUser: builder.mutation<
       IGenericResponse,
