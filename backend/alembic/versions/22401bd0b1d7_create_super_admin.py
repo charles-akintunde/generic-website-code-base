@@ -19,6 +19,7 @@ from sqlalchemy.orm import Session
 
 from app.models.enums import E_Status, E_UserRole
 from app.models.user_info import T_UserInfo
+from app.utils.app_config import app_config
 
 
 
@@ -35,9 +36,9 @@ def upgrade():
 
     super_admin = T_UserInfo(
         UI_ID=uuid4(),
-        UI_FirstName="Super First Name", # Change this to the super admin's first name
-        UI_LastName="Sumer Last Name", # Change this to the super admin's last
-        UI_Email="admin@example.com", # Change this to the super admin's email
+        UI_FirstName=app_config['super_admin_first_name'], # Change this to the super admin's first name
+        UI_LastName=app_config['super_admin_last_name'], # Change this to the super admin's last
+        UI_Email=app_config['super_admin_email'], # Change this to the super admin's email
         UI_PasswordHash="", 
         UI_Role=[E_UserRole.SuperAdmin],
         UI_Status=E_Status.Active,
@@ -52,6 +53,6 @@ def downgrade():
     bind = op.get_bind()
     session = Session(bind=bind)
 
-    session.query(T_UserInfo).filter(T_UserInfo.UI_Email == "admin@example.com").delete()
+    session.query(T_UserInfo).filter(T_UserInfo.UI_Email == app_config['super_admin_first_name']).delete()
     session.commit()
     session.close()
