@@ -2,7 +2,7 @@
 
 This repository contains a full-stack application with frontend and backend services, using Docker Compose to simplify the setup. Follow the instructions below to get everything up and running.
 
-### Skip Prerequisites if WSL, Docker Desktop, and VS Code are already installed
+### Skip Prerequisites if WSL and Docker Desktop are already installed
 
 ## Prerequisites
 
@@ -18,28 +18,6 @@ This repository contains a full-stack application with frontend and backend serv
 
    - Install Docker Desktop: [Docker Desktop Installation](https://docs.docker.com/desktop/windows/install/).
    - Make sure **WSL integration** is enabled in Docker Desktop to allow Docker to work within WSL.
-
-1. **Windows Subsystem for Linux (WSL)**: 
-   - This guide assumes you have WSL installed. If not, follow [Microsoft's instructions to install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
-   - Video Guide: [WSL Setup](https://www.youtube.com/watch?v=HrAsmXy1-78)
-
-2. **VS Code with Remote - WSL Extension**:
- 
-  - Video Guide: [VS Code](https://www.youtube.com/watch?v=cu_ykIfBprI&ab_channel=ProgrammingKnowledge)
-  - Links
-    1. Download and install **Visual Studio Code**: [VS Code Download](https://code.visualstudio.com/).
-  - Install the **Remote - WSL** extension for VS Code:
-     1. Open VS Code.
-     2. Go to the Extensions view by clicking on the Extensions icon in the Activity Bar (or pressing `Ctrl+Shift+X`).
-     3. Search for **Remote - WSL** and click **Install**.
-
-3. . **Docker and Docker Desktop**:
-   - Video Guide:
-        - [WSL Setup](https://www.youtube.com/watch?v=HrAsmXy1-78)
-        - [Docker Desktop Setup](https://www.youtube.com/watch?v=ZyBBv1JmnWQ&ab_channel=CodeBear)
-   - Links:
-      - Install Docker Desktop: [Docker Desktop Installation](https://docs.docker.com/desktop/windows/install/).
-      - Make sure **WSL integration** is enabled in Docker Desktop to allow Docker to work within WSL.
 
 4. **Enable WSL Integration in Docker Desktop** (Optional):
    - Open Docker Desktop.
@@ -68,23 +46,7 @@ uname -a
 
 If you see a Linux-based output, your WSL environment is ready.
 
-### 3. Open the Project in VS Code
-
-1. In your WSL terminal, navigate to the project directory if you’re not already there:
-
-   ```bash
-   cd /path/to/generic-website-code-base
-   ```
-
-2. Open the project in VS Code by running:
-
-   ```bash
-   code .
-   ```
-
-   This command will launch VS Code with the project opened directly from WSL. Make sure the **Remote - WSL** extension is active to work seamlessly with files in the WSL environment.
-
-### 4. Configure Environment Variables
+### 3. Configure Environment Variables
 
 This project requires specific environment variables for both the frontend and backend. These should be provided by the admin.
 
@@ -137,7 +99,7 @@ This project requires specific environment variables for both the frontend and b
 
 4. Save the file.
 
-### 5. Run the Application with Docker Compose
+### 4. Run the Application with Docker Compose
 
 From the root directory of the project, execute:
 
@@ -150,7 +112,7 @@ This command will:
 - Build and start both the frontend and backend services.
 - Set up the necessary database within the Docker network.
 
-### 6. Starting the Application After the First Build
+### 5. Starting the Application After the First Build
 
 After the initial build, you can start the application without rebuilding it by running:
 
@@ -182,11 +144,6 @@ Once Docker Compose has successfully started, open a new terminal in WSL and ent
    alembic upgrade head
    ```
 
-  ```python
-  SUPER_ADMIN_EMAILS = ["admin@example.com"]
-  ```
-
-
 This command applies the necessary database migrations to the new database.
 
 ## Accessing the Application
@@ -205,4 +162,4 @@ After setting up the super admin in `app_config.py`, go to [https://localhost:30
 
 ---
 
-This guide should help new users set up and run your application smoothly.
+This guide should help you run the application smoothly.
