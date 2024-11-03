@@ -6,6 +6,19 @@ This repository contains a full-stack application with frontend and backend serv
 
 ## Prerequisites
 
+1. **Windows Subsystem for Linux (WSL)**: This guide assumes you have WSL installed. If not, follow [Microsoft's instructions to install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+
+2. **Video References**:
+
+   - Watch these for additional Docker setup help:
+     - [WSL Setup](https://www.youtube.com/watch?v=HrAsmXy1-78)
+     - [Docker Desktop Setup](https://www.youtube.com/watch?v=ZyBBv1JmnWQ&ab_channel=CodeBear)
+
+3. **Docker and Docker Desktop**:
+
+   - Install Docker Desktop: [Docker Desktop Installation](https://docs.docker.com/desktop/windows/install/).
+   - Make sure **WSL integration** is enabled in Docker Desktop to allow Docker to work within WSL.
+
 1. **Windows Subsystem for Linux (WSL)**: 
    - This guide assumes you have WSL installed. If not, follow [Microsoft's instructions to install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
    - Video Guide: [WSL Setup](https://www.youtube.com/watch?v=HrAsmXy1-78)
@@ -91,7 +104,20 @@ This project requires specific environment variables for both the frontend and b
 
 3. Add the required environment variables to `.env`. You can request these values from the admin.
 
-4. Save the file.
+4. Configure super admin details:
+
+   - Open `backend/utils/app_config.py`.
+   - Add the super admin's name and email under the appropriate configuration variables:
+
+     ```python
+     "super_admin_email": "admin@example.com", # Change this to the super admin's email
+     "super_admin_first_name": "Super First Name", # Change this to the super admin's first name
+     "super_admin_last_name": "Super Last Name", # Change this to the super admin's last name
+     ```
+
+   After configuring the super admin, you can reset the password by going to the frontend reset page.
+
+5. Save the file.
 
 #### Frontend Environment Setup
 
@@ -120,6 +146,7 @@ docker-compose up --build
 ```
 
 This command will:
+
 - Build and start both the frontend and backend services.
 - Set up the necessary database within the Docker network.
 
@@ -135,30 +162,32 @@ Use this command unless you’ve made changes to the Docker configuration or cod
 
 ### 7. Apply Database Migrations
 
-Once Docker Compose has successfully started, open a new terminal in WSL, navigate to the backend folder, and run the Alembic migrations:
+Once Docker Compose has successfully started, open a new terminal in WSL and enter the backend container to run the Alembic migrations:
 
-```bash
-cd backend
-alembic upgrade head
-```
+1. List the running containers to find the backend container’s name:
 
-This command applies the necessary database migrations to the new database.
+   ```bash
+   docker-compose ps
+   ```
 
-## Service-Specific Configuration
+2. Enter the backend container :
 
-- **Frontend**:
-  - Images and static assets are located in the `frontend/assets` folder.
-  - To configure the application settings, edit `frontend/utils/appConfig.ts` with any necessary frontend configuration values.
+   ```bash
+   docker exec -it generic_website_backend /bin/bash
+   ```
 
-- **Backend**:
-  - Navigate to `backend/utils/app_config.py` to set backend-specific configurations.
-  - In `app_config.py`, add the name(s) and email(s) of the super admin(s) under the appropriate configuration variable.
+3. Run the Alembic migrations inside the container:
+
+   ```bash
+   alembic upgrade head
+   ```
 
   ```python
   SUPER_ADMIN_EMAILS = ["admin@example.com"]
   ```
 
-  After configuring the super admin, you can reset the password by going to the frontend reset page.
+
+This command applies the necessary database migrations to the new database.
 
 ## Accessing the Application
 
