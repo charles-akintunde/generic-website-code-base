@@ -124,3 +124,4 @@ backend/certificates/certificate.crt
 backend/certificates/fullchain.pem
 backend/certificates/private.key
 backend/certificates/privkey.pem
+backend/app/static/uploads/
