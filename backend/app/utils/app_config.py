@@ -11,7 +11,7 @@ class Config:
 
 app_config = {
     "app_logo_url": "app/assets/logo-white.png",  
-    "company_name": settings.FRONTEND_URL,
+    "company_name": settings.MAIL_FROM_NAME,
     "frontend_url": settings.FRONTEND_URL,
     "super_admin_email": "icakintunde@upei.ca", # Change this to the super admin's email
     "super_admin_first_name": "Charles", # Change this to the super admin's first name

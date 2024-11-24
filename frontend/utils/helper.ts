@@ -89,7 +89,14 @@ export const memberPositionLabels: { [key in EMemberPosition]: string } = {
   [EMemberPosition.Phd]: 'PhD',
   [EMemberPosition.Master]: 'Masters',
   [EMemberPosition.Undergrad]: 'Undergrad',
+  [EMemberPosition.PrincipalInvestigator]: 'Principal Investigator',
+  [EMemberPosition.Applicant]: 'Applicant',
+  [EMemberPosition.CoApplicant]: 'Co-Applicant',
+  [EMemberPosition.ResearchManager]: 'Research Manager',
+  [EMemberPosition.ResearchAssistant]: 'Research Assistant',
+  [EMemberPosition.ResearchAssociate]: 'Research Associate',
 };
+
 
 export const roleColors: { [key in EUserRole]: string } = {
   [EUserRole.SuperAdmin]: 'superadmin-badge',
@@ -112,6 +119,12 @@ export const positionColors: { [key in EMemberPosition]: string } = {
   [EMemberPosition.Phd]: 'phd-position',
   [EMemberPosition.Master]: 'postdoc-position',
   [EMemberPosition.Undergrad]: 'postdoc-position',
+  [EMemberPosition.PrincipalInvestigator]: 'postdoc-position',
+  [EMemberPosition.Applicant]: 'postdoc-position',
+  [EMemberPosition.CoApplicant]: 'postdoc-position',
+  [EMemberPosition.ResearchManager]: 'postdoc-position',
+  [EMemberPosition.ResearchAssistant]: 'postdoc-position',
+  [EMemberPosition.ResearchAssociate]: 'postdoc-position',
 };
 
 export const roleBadgeClasses: { [key in EUserRole]: string } = {
@@ -161,6 +174,9 @@ export const notifyNoChangesMade = (notify: Notify) => {
 export const clipCopiedSucessfully = (notify: Notify) => {
   notify('Notice', 'Text copied to clipboard', 'success');
 };
+
+
+
 
 export const getPageExcerpt = (contents: TElement[] | null): string => {
   if (!contents || contents.length === 0) {
@@ -575,6 +591,12 @@ export const MEMBERPOSITION_OPTIONS = [
   { label: 'PhD', value: EMemberPosition.Phd },
   { label: 'Master', value: EMemberPosition.Master },
   { label: 'Undergraduate', value: EMemberPosition.Undergrad },
+  { label: 'Principal Investigator', value: EMemberPosition.PrincipalInvestigator },
+  { label: 'Applicant', value: EMemberPosition.Applicant },
+  { label: 'Co-Applicant', value: EMemberPosition.CoApplicant },
+  { label: 'Research Manager', value: EMemberPosition.ResearchManager },
+  { label: 'Research Assistant', value: EMemberPosition.ResearchAssistant },
+  { label: 'Research Associate', value: EMemberPosition.ResearchAssociate },
 ];
 
 export const STATUS_OPTIONS = [
@@ -589,7 +611,14 @@ export const MemberPositionTitles: { [key in EMemberPosition]: string } = {
   [EMemberPosition.Phd]: 'PhD',
   [EMemberPosition.Master]: 'Master',
   [EMemberPosition.Undergrad]: 'Undergraduate',
+  [EMemberPosition.PrincipalInvestigator]: 'Principal Investigator',
+  [EMemberPosition.Applicant]: 'Applicant',
+  [EMemberPosition.CoApplicant]: 'Co-Applicant',
+  [EMemberPosition.ResearchManager]: 'Research Manager',
+  [EMemberPosition.ResearchAssistant]: 'Research Assistant',
+  [EMemberPosition.ResearchAssociate]: 'Research Associate',
 };
+
 
 export const isValidUUID = (id: string): boolean => {
   const uuidRegex =

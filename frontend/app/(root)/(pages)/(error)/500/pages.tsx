@@ -12,7 +12,8 @@ interface AccessDeniedProps {
 
 const InternalServerError: React.FC<AccessDeniedProps> = ({}) => {
   return (
-    <div className="min-h-screen bg-gradient-to-r from-red-50 to-white flex flex-col items-center justify-center">
+    <div className='overflow-hidden'>
+   <div className="min-h-screen bg-gradient-to-r from-red-50 to-white flex flex-col items-center justify-center">
       <Result
         status="500"
         title="Internal Server Error"
@@ -27,6 +28,8 @@ const InternalServerError: React.FC<AccessDeniedProps> = ({}) => {
         }
       />
     </div>
+    </div>
+ 
   );
 };
 

@@ -95,7 +95,7 @@ const PageListCard: React.FC<IPageContentCardProps> = ({
         </CardTitle>
         <p className="mt-2 text-md text-gray-600 line-clamp-3">{excerpt}</p>
         <Link onClick={handleEditButtonClick} href={href}>
-          <span className="text-blue-500 text-sm hover:underline">
+          <span className="text-primary text-sm hover:underline">
             Read more
           </span>
         </Link>

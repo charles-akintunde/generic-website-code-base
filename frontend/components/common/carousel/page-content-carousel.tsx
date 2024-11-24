@@ -47,7 +47,7 @@ export const PageContentCarouselCard: React.FC<
       >
         <div className="mt-4">
           <Link href={pageContent.href}>
-            <h2 className="text-lg font-semibold transition-colors duration-300 hover:text-blue-500 overflow-hidden text-ellipsis whitespace-nowrap">
+            <h2 className="text-lg font-semibold transition-colors duration-300 hover:text-primary overflow-hidden text-ellipsis whitespace-nowrap">
               {pageContent.pageContentName}
             </h2>
           </Link>
@@ -59,7 +59,7 @@ export const PageContentCarouselCard: React.FC<
       </div>
 
       <Link href={pageContent.href}>
-        <span className="text-blue-500 text-sm mt-2 block hover:opacity-70 transition-opacity duration-300">
+        <span className="text-primary text-sm mt-2 block hover:opacity-70 transition-opacity duration-300">
           Read More
         </span>
       </Link>
@@ -92,33 +92,42 @@ const PageContentCarousel: React.FC = () => {
 
   return (
     <div className="relative w-full">
-      <Carousel
-        opts={{
-          align: 'start',
-          slidesToScroll: 1,
-          containScroll: 'trimSnaps',
-        }}
-        plugins={[
-          Autoplay({
-            delay: 5000,
-          }),
-        ]}
-        className="w-full"
-      >
-        <CarouselContent className="flex pb-12 w-full">
-          {fetchedPageContents.map((pageContent) => (
-            <CarouselItem
-              key={pageContent.pageContentId}
-              className="w-full sm:w-full md:w-1/2 lg:w-1/3 px-2 lg:basis-1/3 md:basis-1/2 basis-3/3"
-            >
-              <PageContentCarouselCard pageContent={pageContent} />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2" />
-        <CarouselNext className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2" />
-      </Carousel>
-    </div>
+  <Carousel
+    opts={{
+      align: 'start',
+      slidesToScroll: 1,
+      containScroll: 'trimSnaps',
+    }}
+    plugins={[
+      Autoplay({
+        delay: 5000,
+      }),
+    ]}
+    className="w-full"
+  >
+    <CarouselContent className="flex pb-12 w-full">
+      {fetchedPageContents.map((pageContent) => (
+        <CarouselItem
+          key={pageContent.pageContentId}
+          className="w-full sm:w-full md:w-1/2 lg:w-1/3 px-2 lg:basis-1/3 md:basis-1/2 basis-3/3"
+        >
+          <PageContentCarouselCard pageContent={pageContent} />
+        </CarouselItem>
+      ))}
+    </CarouselContent>
+    {fetchedPageContents.length > 2 && (
+      <>
+        <CarouselPrevious
+          className="absolute left-[-2rem] top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2"
+        />
+        <CarouselNext
+          className="absolute right-[-2rem] top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2"
+        />
+      </>
+    )}
+  </Carousel>
+</div>
+
   );
 };
 

@@ -22,7 +22,6 @@ import { PlusIcon } from '@radix-ui/react-icons';
 import { useAppSelector } from '../../../hooks/redux-hooks';
 import usePage from '../../../hooks/api-hooks/use-page';
 import { toKebabCase2 } from '../../../utils/helper';
-import { editPage } from '../../../store/slice/pageSlice';
 
 const CreatePage = () => {
   const {
@@ -37,7 +36,7 @@ const CreatePage = () => {
   const [isManualEdit, setIsManualEdit] = useState(false);
   const form = useForm<z.infer<typeof createPageSchema>>({
     resolver: zodResolver(createPageSchema),
-
+    //@ts-ignore
     defaultValues: editingPage || {
       pageName: '',
       pageType: '',
@@ -49,11 +48,13 @@ const CreatePage = () => {
 
   const onSubmit = (data: z.infer<typeof createPageSchema>) => {
     if (editingPage) {
+      //@ts-ignore
       submitEditedPage(editingPage.pageId, data);
       if (isEditPageSuccess) {
         form.reset();
       }
     } else {
+      //@ts-ignore
       submitCreatedPage(data);
       if (isCreatePageSuccess) {
         form.reset();
@@ -85,7 +86,7 @@ const CreatePage = () => {
     { label: 'Public', value: EUserRole.Public },
     { label: 'Alumni', value: EUserRole.Alumni },
   ];
-
+  //@ts-ignore
   const handlePageDisplayUrlChange = (e) => {
     setIsManualEdit(true);
     form.setValue('pageDisplayURL', e.target.value);

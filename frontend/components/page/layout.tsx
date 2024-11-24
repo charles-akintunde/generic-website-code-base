@@ -33,7 +33,7 @@ const PageLayout: React.FC<LayoutProps> = ({
           </div>
         </header>
         {/* <Divider /> */}
-        <main className="w-full  rounded-xl min-h-screen z-20 ">
+        <main className={` w-full  rounded-xl min-h-screen z-20 `}>
           <div>{children}</div>
           <FloatButton.BackTop visibilityHeight={400} />
         </main>

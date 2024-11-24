@@ -3,11 +3,13 @@ import Image from 'next/image';
 import teamImg from '../../../assets/images/team-img.webp';
 import PageContentCarousel from '../../common/carousel/page-content-carousel';
 import Footer from '../../hoc/layout/footer/footer';
+import { containerNoFlexPaddingStyles } from '../../../styles/globals';
 
 const HomeComponent = () => {
   return (
-    <div className="bg-pg">
-      <section className="container mx-auto px-4 py-12">
+  <div className='bg-pg'>
+      <div className={`${containerNoFlexPaddingStyles}`}>
+      <section className="">
         <div className="flex flex-col lg:flex-row items-center">
           <div className="lg:w-1/2 py-12">
             <h1 className="text-4xl font-bold mb-4">
@@ -18,7 +20,7 @@ const HomeComponent = () => {
               precise flood modeling solutions, helping communities and
               organizations better prepare for and respond to flooding events.
             </p>
-            <button className="bg-primary text-white px-8 py-4 rounded-sm hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transform active:scale-95 transition-transform duration-150">
+            <button className="bg-primary text-white px-8 py-4 rounded-sm hover:bg-primary focus:outline-none focus:ring-4 focus:ring-blue-300 transform active:scale-95 transition-transform duration-150">
               Discover Our Solutions
             </button>
           </div>
@@ -49,7 +51,7 @@ const HomeComponent = () => {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-12 bg-white">
+      <section className="container mx-auto  py-12 bg-white">
         <div className="flex flex-col lg:flex-row items-center">
           <div className="lg:w-1/2">
             <Image
@@ -70,14 +72,14 @@ const HomeComponent = () => {
               and protect lives. Our innovative solutions are backed by years of
               research and real-world application.
             </p>
-            <button className="bg-primary text-white px-8 py-2 rounded-sm hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transform active:scale-95 transition-transform duration-150">
+            <button className="bg-primary text-white px-8 py-2 rounded-sm hover:bg-primary focus:outline-none focus:ring-4 focus:ring-blue-300 transform active:scale-95 transition-transform duration-150">
               Learn More
             </button>
           </div>
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto  py-12">
         <h2 className="text-2xl font-bold mb-6 text-center">
           Our Core Services
         </h2>
@@ -94,7 +96,7 @@ const HomeComponent = () => {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-12 bg-white">
+      <section className="container mx-auto  py-12 bg-white">
         <h2 className="text-2xl font-bold mb-6 text-center">
           Frequently Asked Questions
         </h2>
@@ -131,11 +133,12 @@ const HomeComponent = () => {
         </div>
       </section>
 
-      <section className="container w-full mx-auto px-4 py-12 pb-12 ">
+      <section className="container w-full mx-auto py-12 pb-12 ">
         <h2 className="text-2xl font-bold mb-6 text-center">Latest News</h2>
         <PageContentCarousel />
       </section>
     </div>
+  </div>
   );
 };
 

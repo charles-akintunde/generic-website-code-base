@@ -7,7 +7,8 @@ import AppButton from '../../../../../components/common/button/app-button';
 
 const NotFoundPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-50 to-white flex flex-col items-center justify-center space-y-6 animate-fadeIn">
+    <div className='h-[calc(100vh-5rem)] overflow-hidden'>
+    <div className="min-h-screen bg-gradient-to-r  from-blue-50 to-white flex flex-col items-center justify-center space-y-6 animate-fadeIn">
       <Result
         status="404"
         title={
@@ -30,6 +31,8 @@ const NotFoundPage = () => {
         }
       />
     </div>
+    </div>
+
   );
 };
 

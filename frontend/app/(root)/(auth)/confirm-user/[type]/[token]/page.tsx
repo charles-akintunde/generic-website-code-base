@@ -38,7 +38,7 @@ const VerifyUserAccount: React.FC = () => {
           subTitle={successMessage}
           extra={[
             <Button
-              className="text-white bg-blue-500 flex items-center hover:bg-blue-600 hover:text-white"
+              className="text-white bg-primary flex items-center hover:bg-primary hover:text-white"
               asChild
             >
               <Link href={'/sign-in'}>
@@ -56,7 +56,7 @@ const VerifyUserAccount: React.FC = () => {
             <div className="flex flex-nowrap  justify-center space-x-4">
               <Button
                 variant={'outline'}
-                className="border border-blue-500 hover:bg-blue-500 text-blue-500 hover:text-white font-medium py-2 px-4 rounded-md transition duration-200 ease-in-out flex items-center"
+                className="border border-primary hover:bg-primary text-primary hover:text-white font-medium py-2 px-4 rounded-md transition duration-200 ease-in-out flex items-center"
                 asChild
               >
                 <Link href={''}>
@@ -64,7 +64,7 @@ const VerifyUserAccount: React.FC = () => {
                 </Link>
               </Button>
               <Button
-                className="text-white text-sm bg-blue-500 hover:bg-blue-600 hover:text-white font-medium py-2 px-4  rounded-md transition duration-200 ease-in-out flex items-center"
+                className="text-white text-sm bg-primary hover:bg-primary hover:text-white font-medium py-2 px-4  rounded-md transition duration-200 ease-in-out flex items-center"
                 asChild
               >
                 <Link href={'/sign-in'}>

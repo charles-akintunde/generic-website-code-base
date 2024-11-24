@@ -3,11 +3,10 @@ import '../../styles/globals.css';
 import RouteGuard from '../../components/hoc/route-guard';
 import { NotificationProvider } from '../../components/hoc/notification-provider';
 import AuthGuard from '../../components/hoc/auth-guard';
+import { ConfigProvider } from 'antd';
+import { globalTheme } from '../../styles/globals';
 
-// export const metadata: Metadata = {
-//   title: 'Generic Website',
-//   description: '',
-// };
+
 
 export default function RootLayout({
   children,
@@ -17,13 +16,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans">
-        <StoreProvider>
-          <NotificationProvider>
-            <RouteGuard>
-              <AuthGuard>{children}</AuthGuard>
-            </RouteGuard>
-          </NotificationProvider>
-        </StoreProvider>
+        <ConfigProvider theme={globalTheme}>
+          <StoreProvider>
+            <NotificationProvider>
+              <RouteGuard>
+                <AuthGuard>{children}</AuthGuard>
+              </RouteGuard>
+            </NotificationProvider>
+          </StoreProvider>
+        </ConfigProvider>
       </body>
     </html>
   );

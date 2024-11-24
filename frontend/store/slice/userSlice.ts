@@ -4,7 +4,9 @@ import { EUserRole } from '../../types/enums';
 
 interface IUIActiveUserProfileEdit {
   uiIsUserEditingMode: boolean;
-  uiEditorInProfileMode: boolean;
+  uiEditorInProfileMode: boolean; 
+  uiIsAdminInEditingMode: boolean;
+  uiIsPageContentEditingMode: boolean
 }
 
 interface UserState {
@@ -14,6 +16,8 @@ interface UserState {
   uiActiveUserProfileEdit: {
     uiIsUserEditingMode: boolean;
     uiEditorInProfileMode: boolean;
+    uiIsAdminInEditingMode: boolean ;
+    uiIsPageContentEditingMode: boolean;
   };
 }
 
@@ -34,6 +38,8 @@ const initialState: UserState = {
   uiActiveUserProfileEdit: {
     uiIsUserEditingMode: false,
     uiEditorInProfileMode: false,
+    uiIsAdminInEditingMode: false,
+    uiIsPageContentEditingMode: false
   },
 };
 

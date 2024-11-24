@@ -79,7 +79,7 @@ const PageListItem: React.FC = () => {
             href={record.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-blue-500 flex items-center space-x-2"
+            className="hover:text-primary flex items-center space-x-2"
           >
             <p className="font-medium truncate w-30"> {text}</p>
             <ExternalLink className="h-3 w-3" />

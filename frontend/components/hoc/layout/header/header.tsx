@@ -25,17 +25,16 @@ import { Separator } from '../../../ui/separator';
 import HoverableCard from '../../../common/hover-card';
 import {
   IUIActiveUser,
-  IUserInfo,
+
 } from '../../../../types/componentInterfaces';
 import usePage from '../../../../hooks/api-hooks/use-page';
 import { usePathname, useRouter } from 'next/navigation';
 import AppLoading from '../../../common/app-loading';
-import { hasNavItems, transformToUserInfo } from '../../../../utils/helper';
-import { useGetActiveUserQuery } from '../../../../api/authApi';
-import { EUserRole } from '../../../../types/enums';
-import { setUIActiveUser } from '../../../../store/slice/userSlice';
+import { hasNavItems } from '../../../../utils/helper';
 import { useUserInfo } from '../../../../hooks/api-hooks/use-user-info';
 import useUserLogin from '../../../../hooks/api-hooks/use-user-login';
+import { containerNoFlexPaddingStyles } from '../../../../styles/globals';
+import useLogout from '../../../../hooks/api-hooks/use-logout';
 
 interface UserProfileDropDownProps {
   uiActiveUser: IUIActiveUser;
@@ -50,6 +49,11 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
 }) => {
   const uiId = uiActiveUser.uiId;
   const canEdit = uiActiveUser.uiCanEdit;
+  const { sendLogoutRequest } = useLogout();
+  const userFullName = uiActiveUser.uiFullName;
+  const transformedName = userFullName
+  .toLowerCase() 
+  .replace(/\s+/g, '-');
 
   return (
     <DropdownMenu>
@@ -60,7 +64,7 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href={`/user-profile/${uiId}`}>
+          <Link href={`/profile/${transformedName}?id=${uiId}`}>
             <DropdownMenuItem className="cursor-pointer">
               <User className="mr-2 h-4 w-4" />
               Profile
@@ -80,6 +84,15 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
               </DropdownMenuItem>
             </Link>
           )}
+           <DropdownMenuItem  className="cursor-pointer">
+            <div className='flex items-center' onClick={() => {
+             sendLogoutRequest();
+          }}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Log out
+              </div>
+               
+              </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -107,16 +120,7 @@ export const UserProfile = () => {
 
   return (
     <div className="flex items-center space-x-1">
-      <LogoutButton
-        trigger={
-          <div className="hover-card">
-            <Tooltip title="Logout">
-              <LogOut className="mr-2 h-4 w-4" />
-            </Tooltip>
-          </div>
-        }
-      />
-      <Separator orientation="vertical" />
+     
       <HoverableCard>
         <UserProfileDropDown
           trigger={
@@ -146,8 +150,6 @@ export const UserProfile = () => {
 const Header: React.FC = ({}) => {
   const dispatch = useAppDispatch();
   const { isActiveUserFetchLoading } = useUserLogin();
-  const router = useRouter();
-  const uiUser = useUserInfo();
   const pathname = usePathname();
 
   const handleDrawerToggle = () => {
@@ -191,7 +193,7 @@ const Header: React.FC = ({}) => {
           {' '}
           <header className="sticky top-0 z-50 overflow-hidden  h-20 shadow-sm w-full bg-white">
             <div
-              className={'container mx-auto flex h-full px-4 sm:px-6 lg:px-8'}
+              className={`flex h-full ${containerNoFlexPaddingStyles}`}
             >
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">

@@ -102,7 +102,7 @@ def email_html_content(
                 <p>If you did not request this email, please ignore it.</p>
             </div>
             <div class="footer">
-                <p>{app_config['company_name']} Inc. | <a href="{app_config['frontend_url']}">www.{app_config['frontend_url']}</a></p>
+                <p>{app_config['company_name']} | <a href="{app_config['frontend_url']}"> {app_config['frontend_url']}</a></p>
             </div>
         </div>
     </body>

@@ -9,7 +9,7 @@ export const useCreateAccount = () => {
     useCreateAccountMutation();
   const { notify } = useNotification();
   const [successMessage, setSuccessMessage] = useState<string>(
-    'Your account has been created. Go to you mail to complete verification.'
+    'Your account has been created. Please go to you mail to complete verification.'
   );
   const [errorMessage, setErrorMessage] = useState<string>('An error occurred');
 

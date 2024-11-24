@@ -36,45 +36,67 @@ function LoginForm() {
 
   return (
     <>
-      <div className="max-w-md mx-auto">
-        <h2 className="text-md font-bold mb-3  text-gray-800">Login</h2>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="email"
-              label="Email"
-              placeholder=""
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              label="Password"
-              placeholder=""
-              type="password"
-            />
-            <LoadingButton
-              buttonText="Login"
-              loading={isLoading}
-              type="submit"
-            />
-          </form>
-        </Form>
-        <div className="mt-6 text-center">
-          <p className="text-gray-600">
-            Don’t have an account yet?{' '}
-            <Link href="/sign-up" legacyBehavior passHref>
-              <a className="text-blue-500 font-medium hover:underline">
-                Create Account
-              </a>
-            </Link>
-          </p>
-          <p className="text-gray-500 text-sm mt-2">
-            By clicking you agree to our <TermsAndService />
-          </p>
-        </div>
+    <div className="max-w-md mx-auto space-y-4">
+      <h2 className="text-lg text-center font-bold  text-gray-800">Login</h2>
+      <div className='text-center text-sm'>
+        <p className=''>
+          Don't have an account? {' '}
+        <Link href="/sign-up" legacyBehavior passHref>
+   <a className="text-primary text-sm font-medium hover:underline">
+     Create Account
+   </a>
+ </Link>
+        </p>
+   
       </div>
-    </>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="email"
+            label="Email"
+            placeholder=""
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            label="Password"
+            placeholder=""
+            type="password"
+          />
+         
+          <LoadingButton
+            buttonText="Login"
+            loading={isLoading}
+            type="submit"
+          />
+        </form>
+      </Form>
+      <div className="mt-6">
+      <p className="text-gray-500 text-center text-sm mt-2">
+          By clicking you agree to our <TermsAndService />
+        </p>
+        <span className="text-gray-600 flex justify-around">
+      
+   <div className='text-sm mt-2'>
+   <p className=''>
+  Forgot Password? {' '}
+<Link href="/reset-password" legacyBehavior passHref>
+            <a className="text-primary text-sm font-medium hover:underline">
+              Reset Password
+            </a>
+          </Link>
+</p>
+    </div>       
+
+       
+        </span>
+     
+      </div>
+    </div>
+  </>
+  
   );
 }
 

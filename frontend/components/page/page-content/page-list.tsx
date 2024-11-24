@@ -31,15 +31,18 @@ import { useSearchParams } from 'next/navigation';
 import { useGetPageContentQuery } from '../../../api/pageContentApi';
 import _ from 'lodash';
 import { useNotification } from '../../hoc/notification-provider';
-import { pageContentPaddingStyles } from '../../../styles/globals';
+import { containerNoFlexPaddingStyles, pageContentPaddingStyles } from '../../../styles/globals';
 import PageListLayout from './page-list-layout';
 import { TElement } from '@udecode/plate-common';
 import { EPageType, EUserRole } from '../../../types/enums';
 import AppLoading from '../../common/app-loading';
 import { useRouter } from 'next/navigation';
-import { useAppSelector } from '../../../hooks/redux-hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux-hooks';
 import { toKebabCase2 } from '../../../utils/helper';
 import { useGetUsersAssignedPositionsQuery } from '../../../api/userApi';
+import { setUIIsUserEditingMode } from '../../../store/slice/userSlice';
+import { Switch } from 'antd';
+import { useDispatch } from 'react-redux';
 
 const CreatePageContent = () => {
   const [users, setUsers] = useState<IUserBase[]>();
@@ -57,6 +60,7 @@ const CreatePageContent = () => {
   const [plateEditorKey, setPlateEditorKey] = useState<string>(
     JSON.stringify(plateEditor)
   );
+  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const pageId = searchParams.get('pageId');
   const pageType = searchParams.get('pageType');
@@ -64,6 +68,12 @@ const CreatePageContent = () => {
   const page = pathname.split('/');
   const pageName = page[1];
   const pageDisplayURL = pageName;
+  const activeUserProfileEdit = useAppSelector(
+    (state) => state.userSlice.uiActiveUserProfileEdit
+  );
+
+  const uiIsUserEditingMode = activeUserProfileEdit.uiIsUserEditingMode;
+
   const { submitPageContent, isCreatePageContentSuccess } = usePageContent({
     pageDisplayURL,
   });
@@ -139,6 +149,29 @@ const CreatePageContent = () => {
     return () => subscription.unsubscribe();
   }, [form, isManualEdit]);
 
+  useEffect(() => {
+    dispatch(
+      setUIIsUserEditingMode({
+        uiIsAdminInEditingMode: false,
+        uiIsPageContentEditingMode: true,
+        uiIsUserEditingMode: false,
+        uiEditorInProfileMode: false,
+       
+      })
+    );
+  },[]);
+
+  const handleModeChange = (checked: boolean) => {
+    dispatch(
+      setUIIsUserEditingMode({
+        uiIsAdminInEditingMode: !uiIsAdminInEditingMode,
+        uiIsPageContentEditingMode: true,
+        uiIsUserEditingMode: false,
+        uiEditorInProfileMode: false,
+      })
+    );
+  };
+
   const handlePageDisplayUrlChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -154,12 +187,20 @@ const CreatePageContent = () => {
   return (
     <PageLayout title="Create Page Content">
       <div
-        className={`flex flex-col mt-10 min-h-screen w-full ${pageContentPaddingStyles} shadow-md rounded-sm bg-white`}
+        className={`flex flex-col mt-10 min-h-screen w-full ${containerNoFlexPaddingStyles} pt-8 shadow-md rounded-sm bg-white`}
       >
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="">
+          <div className="flex justify-end">
+            <Switch
+              checkedChildren="Editing Mode"
+              unCheckedChildren="Viewing Mode"
+              checked={uiIsAdminInEditingMode}
+              onChange={handleModeChange}
+            />
+          </div>
             <div className={`space-y-6 my-10 min-h-screen }`}>
-              {canEdit && (
+              {canEdit && uiIsAdminInEditingMode && (
                 <>
                   <FormField
                     control={form.control}
@@ -247,7 +288,7 @@ const CreatePageContent = () => {
                 </>
               )}
             </div>
-            {canEdit && (
+            {canEdi && uiIsAdminInEditingMode && (
               <div
                 className={`w-full sticky bg-white flex mx-auto bottom-0 z-40 h-20 shadow2xl`}
               >
@@ -263,9 +304,9 @@ const CreatePageContent = () => {
 
 const EditPageContent = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
-  const uiId = uiActiveUser.uiId;
   const [contentData, setContentData] = useState<IPageContentMain>();
   const pathname = usePathname();
   const page = pathname.split('/');
@@ -285,6 +326,11 @@ const EditPageContent = () => {
     PC_DisplayURL: pageContentName,
     PG_DisplayURL: pageName,
   } as IPageContentGetRequest);
+   const activeUserProfileEdit = useAppSelector(
+    (state) => state.userSlice.uiActiveUserProfileEdit
+  );
+
+  const uiIsAdminInEditingMode = activeUserProfileEdit.uiIsAdminInEditingMode;
 
   const [plateEditor, setPlateEditor] = useState<TElement[]>([
     {
@@ -326,6 +372,29 @@ const EditPageContent = () => {
       }
     }
   }, [usersResponseData]);
+
+  useEffect(() => {
+    dispatch(
+      setUIIsUserEditingMode({
+        uiIsAdminInEditingMode: false,
+        uiIsPageContentEditingMode: true,
+        uiIsUserEditingMode: false,
+        uiEditorInProfileMode: false,
+       
+      })
+    );
+  },[]);
+
+  const handleModeChange = (checked: boolean) => {
+    dispatch(
+      setUIIsUserEditingMode({
+        uiIsAdminInEditingMode: !uiIsAdminInEditingMode,
+        uiIsPageContentEditingMode: true,
+        uiIsUserEditingMode: false,
+        uiEditorInProfileMode: false,
+      })
+    );
+  };
 
   useEffect(() => {
     if (pageContentData && pageContentData.data.PG_PageContent) {
@@ -431,12 +500,20 @@ const EditPageContent = () => {
     <>
       {isPageContentFetchSuccess && originalData ? (
         <PageListLayout pageContent={originalData}>
-          <div className={`flex flex-col min-h-screen w-full `}>
+          <div className={`flex flex-col min-h-screen w-full }`}>
             <FormProvider {...form}>
+            <div className="flex my-6 justify-end">
+            <Switch
+              checkedChildren="Editing Mode"
+              unCheckedChildren="Viewing Mode"
+              checked={uiIsAdminInEditingMode}
+              onChange={handleModeChange}
+            />
+          </div>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <div className={`space-y-6 mb-10 min-h-screen `}>
                   <>
-                    {canEdit && (
+                    {canEdit && uiIsAdminInEditingMode && (
                       <>
                         <FormField
                           control={form.control}
@@ -511,7 +588,7 @@ const EditPageContent = () => {
                     )}
                   </>
                 </div>
-                {canEdit && (
+                {canEdit && uiIsAdminInEditingMode && (
                   <div
                     className={`w-full sticky bg-white flex mx-auto bottom-0 z-40 h-20 shadow2xl`}
                   >

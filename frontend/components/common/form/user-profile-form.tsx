@@ -79,6 +79,9 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
       setUIIsUserEditingMode({
         uiIsUserEditingMode: !uiIsUserEditingMode,
         uiEditorInProfileMode: true,
+        uiIsAdminInEditingMode: false,
+        uiIsPageContentEditingMode: false
+        
       })
     );
   };
@@ -115,6 +118,10 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
       setUIIsUserEditingMode({
         uiIsUserEditingMode: false,
         uiEditorInProfileMode: true,
+        uiIsAdminInEditingMode: false,
+        uiIsPageContentEditingMode: false
+        
+
       })
     );
   }, []);
@@ -230,10 +237,10 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
         )}
         <div className="mt-20">
           {isSameUser && uiIsUserEditingMode ? (
-            <span className="font-semibold  mr-1 text-gray-700">About</span>
+            <span className="font-semibold  mr-1 text-gray-700">About Me</span>
           ) : (
             <div>
-              <p className="font-semibold text-lg text-gray-700">About</p>
+              <p className="font-semibold text-lg text-gray-700">About Me</p>
               <Divider />
             </div>
           )}

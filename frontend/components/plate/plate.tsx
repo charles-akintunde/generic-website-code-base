@@ -28,11 +28,15 @@ export const PlateEditor: React.FC<PlateEditorProps> = ({
   );
   const uiEditorInProfileMode = uiActiveUserProfileEdit.uiEditorInProfileMode;
   const uiIsUserEditingMode = uiActiveUserProfileEdit.uiIsUserEditingMode;
+  const uiIsPageContentEditingMode = uiActiveUserProfileEdit.uiIsPageContentEditingMode;
+  const uiIsAdminInEditingMode = uiActiveUserProfileEdit.uiIsAdminInEditingMode;
   let canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
 
-  if (uiEditorInProfileMode) {
-    canEdit = uiIsUserEditingMode;
+  if (uiEditorInProfileMode || uiIsPageContentEditingMode) {
+    canEdit = uiIsUserEditingMode || uiIsAdminInEditingMode;
   }
+
+  
 
   return (
     <TooltipProvider>

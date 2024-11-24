@@ -53,15 +53,15 @@ const ActionsButtons: React.FC<IActionProps> = ({
             >
               {href ? (
                 <Link href={href}>
-                  <EditOutlined className="w-4 h-4 text-blue-500" />
-                  <span className="pl-3 text-sm text-blue-500 font-medium">
+                  <EditOutlined className="w-4 h-4 text-primary" />
+                  <span className="pl-3 text-sm text-primary font-medium">
                     Edit
                   </span>
                 </Link>
               ) : (
                 <>
-                  <EditOutlined className="w-4 h-4 text-blue-500" />
-                  <span className="pl-3 text-sm text-blue-500 font-medium">
+                  <EditOutlined className="w-4 h-4 text-primary" />
+                  <span className="pl-3 text-sm text-primary font-medium">
                     Edit
                   </span>
                 </>

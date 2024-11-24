@@ -3,7 +3,7 @@ import { appConfig } from '../../../utils/appConfig';
 
 const HomeWithoutFooter = () => {
   return (
-    <div className="relative w-full text-black h-screen overflow-hidden">
+    <div className="relative w-full text-black h-[calc(100vh-5rem)] overflow-hidden">
       <video
         className="absolute top-0 left-0 w-full h-full object-cover"
         autoPlay

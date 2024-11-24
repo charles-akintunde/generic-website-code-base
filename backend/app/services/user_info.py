@@ -11,7 +11,7 @@ from app.models.user_info import T_UserInfo
 from app.config import settings
 from app.utils.file_utils import  delete_and_save_file_azure, delete_file_from_azure, save_file_to_azure
 from app.utils.response_json import build_page_content_json_with_excerpt, build_user_page_content_json, create_user_response, create_users_response
-from app.models.enums import E_UserRole
+from app.models.enums import E_MemberPosition, E_UserRole
 from app.core.auth import get_current_user
 from app.utils.utils import is_super_admin
 from app.crud import page
@@ -39,6 +39,22 @@ def update_user_role_status(db: Session, user_role_status_update: UserRoleStatus
     """
     Update a user's role.
     """
+
+    if user_role_status_update.UI_Role and E_UserRole.SuperAdmin in user_role_status_update.UI_Role:
+        existing_superadmin = db.query(T_UserInfo).filter(T_UserInfo.UI_Role.any(E_UserRole.SuperAdmin)).first()
+        if existing_superadmin and existing_superadmin.UI_ID != user_role_status_update.UI_ID:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="There is already an existing SuperAdmin in the system."
+            )
+        
+    if user_role_status_update.UI_MemberPosition == E_MemberPosition.DIRECTOR:
+        existing_director = db.query(T_UserInfo).filter(T_UserInfo.UI_MemberPosition == E_MemberPosition.DIRECTOR).first()
+        if existing_director and existing_director.UI_ID != user_role_status_update.UI_ID:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="There is already an existing Director in the system."
+            )
 
     if user_role_status_update.UI_Role and E_UserRole.Member in user_role_status_update.UI_Role and not user_role_status_update.UI_MemberPosition:
         raise HTTPException(

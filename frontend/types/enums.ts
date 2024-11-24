@@ -26,4 +26,10 @@ export enum EMemberPosition {
   Phd = '2',
   Master = '3',
   Undergrad = '4',
+  PrincipalInvestigator= '6',
+  Applicant= '7',
+  CoApplicant= '8',
+  ResearchManager= '9',
+  ResearchAssistant= '10',
+  ResearchAssociate= '11',
 }

@@ -23,6 +23,7 @@ from app.crud import blacklisted_token
 router = APIRouter()
 ACCESS_TOKEN_EXPIRE_SECONDS = settings.ACCESS_TOKEN_EXPIRE_SECONDS
 REFRESH_TOKEN_EXPIRE_SECONDS = settings.REFRESH_TOKEN_EXPIRE_SECONDS
+COOKIE_DOMAIN=settings.COOKIE_DOMAIN
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 @router.post("/password-reset", response_model=StandardResponse)
 async def request_password_reset_endpoint(
@@ -116,7 +117,7 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
         samesite='none',
         secure=True,
         max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-        domain='.generic-api-app.azurewebsites.net' 
+        domain=COOKIE_DOMAIN
     )
 
         response.set_cookie(
@@ -126,28 +127,9 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
         samesite='none',
         secure=True,
         max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
-        domain='.generic-api-app.azurewebsites.net'  
+        domain=COOKIE_DOMAIN
     )
         
-        response.set_cookie(
-        key='refresh_token',
-        value=token.refresh_token,
-        httponly=True,
-        samesite='none',
-        secure=True,
-        max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
-        domain='localhost'  
-    )
-        
-        response.set_cookie(
-        key='access_token',
-        value=token.access_token,
-        httponly=True,
-        samesite='none',
-        secure=True,
-        max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-        domain='localhost' 
-    )
 
         print(response.headers,"HEADER")
         return success_response(message='Login Successful',data=token.dict(),status_code=200,headers=response.headers)
@@ -179,7 +161,7 @@ async def refresh_token_endpoint(
             samesite='none',
             secure=True,
             max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
-           #domain='.generic-api-app.azurewebsites.net'
+            domain=COOKIE_DOMAIN
         )
 
         return success_response(message='Token Refreshed Succesfully',status_code=200,headers=response.headers)

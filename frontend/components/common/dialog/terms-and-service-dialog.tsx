@@ -46,13 +46,13 @@ const TermsAndService = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <p className="text-blue-500 font-medium hover:underline cursor-pointer">
-          Terms and Services
+        <p className="text-primary font-medium hover:underline cursor-pointer">
+          Terms of Services
         </p>
       </DialogTrigger>
       <DialogContent className="max-w-full sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[70vw] xl:max-w-[60vw] mx-auto p-4 sm:p-6 max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Terms and Service</DialogTitle>
+          <DialogTitle>Terms of Service</DialogTitle>
           <DialogDescription>
             Please review the terms and conditions before proceeding.
           </DialogDescription>

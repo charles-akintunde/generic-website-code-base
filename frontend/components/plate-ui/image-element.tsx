@@ -24,7 +24,19 @@ export const ImageElement = withHOC(
       const uiActiveUser = useAppSelector(
         (state) => state.userSlice.uiActiveUser
       );
-      const canEdit = uiActiveUser.uiCanEdit;
+      const uiActiveUserProfileEdit = useAppSelector(
+        (state) => state.userSlice.uiActiveUserProfileEdit
+      );
+      let canEdit = uiActiveUser.uiCanEdit;
+      const uiEditorInProfileMode = uiActiveUserProfileEdit.uiEditorInProfileMode;
+      const uiIsUserEditingMode = uiActiveUserProfileEdit.uiIsUserEditingMode;
+      const uiIsPageContentEditingMode = uiActiveUserProfileEdit.uiIsPageContentEditingMode;
+      const uiIsAdminInEditingMode = uiActiveUserProfileEdit.uiIsAdminInEditingMode;
+
+      if (uiEditorInProfileMode || uiIsPageContentEditingMode) {
+        canEdit = uiIsUserEditingMode || uiIsAdminInEditingMode;
+      }
+      
 
       return (
         <MediaPopover pluginKey={ELEMENT_IMAGE}>

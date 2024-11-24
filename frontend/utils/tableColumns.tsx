@@ -18,7 +18,7 @@ export const userColumns = [
           href={''}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-500 hover:underline flex items-center"
+          className="text-primary hover:underline flex items-center"
         >
           <span className="font-medium">
             {record.uiFirstName} {record.uiLastName}

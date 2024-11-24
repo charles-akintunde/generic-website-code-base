@@ -13,7 +13,7 @@ const LoadingButton: React.FC<ILoadingButton> = ({
   return (
     <Button
       type={type}
-      className={`${className} w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 flex items-center justify-center`}
+      className={`${className} w-full bg-primary text-white py-2 rounded-lg hover:bg-primary flex items-center justify-center`}
       disabled={loading}
       onClick={onClick}
     >

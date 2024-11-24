@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     AZURE_STORAGE_CONTAINER_NAME: str
     DEVELOPER_SQL_INJECTION_PASSWORD: str
     PRODUCTION_MODE: bool
+    COOKIE_DOMAIN: str
 
     class Config:
         env_file = ".env"

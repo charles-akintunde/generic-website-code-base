@@ -22,7 +22,7 @@ const useLogout = () => {
   );
   const router = useRouter();
 
-  const sendLogoutRequest = async (handleCloseDrawer: any) => {
+  const sendLogoutRequest = async () => {
     try {
       const response = await useLogout().unwrap();
       notify('Success', response.message || successMessage, 'success');
@@ -47,7 +47,7 @@ const useLogout = () => {
         })
       );
 
-      handleCloseDrawer();
+      // handleCloseDrawer();
       router.refresh();
       reloadPage();
     } catch (error: any) {

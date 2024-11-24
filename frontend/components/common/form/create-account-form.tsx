@@ -47,8 +47,15 @@ const CreateAccountForm = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto">
-      <h2 className="font-bold mb-3 text-md  text-gray-800">Create Account</h2>
+    <div className="max-w-md mx-auto space-y-4">
+      <h2 className="font-bold mb-3 text-lg text-center  text-gray-800">Create Account</h2>
+
+      <p className="text-gray-600 text-center text-sm">
+          Already have an account?{' '}
+          <Link href="/sign-in" legacyBehavior passHref>
+            <a className="text-primary font-medium hover:underline">Sign In</a>
+          </Link>
+        </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="flex justify-center space-x-4">
@@ -97,12 +104,7 @@ const CreateAccountForm = () => {
         </form>
       </Form>
       <div className="mt-6 text-center">
-        <p className="text-gray-600">
-          Already have an account?{' '}
-          <Link href="/sign-in" legacyBehavior passHref>
-            <a className="text-blue-500 font-medium hover:underline">Sign In</a>
-          </Link>
-        </p>
+      
         <p className="text-gray-500 text-sm mt-2">
           By clicking you agree to our <TermsAndService />
         </p>

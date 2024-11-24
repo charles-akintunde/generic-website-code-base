@@ -2,17 +2,10 @@
 
 # WORKDIR /app
 
-# ENV NODE_ENV=production
-
 # COPY package*.json ./
-
-# RUN npm install
+# RUN npm install --legacy-peer-deps
 
 # COPY . .
-
-# RUN mkdir -p /app/.next/export /app/.next/server/pages
-
-# RUN npm install sharp
 
 # RUN npm run build
 
@@ -20,17 +13,16 @@
 
 # WORKDIR /app
 
-# ENV NODE_ENV=production
-
 # COPY --from=builder /app/package*.json ./
 # COPY --from=builder /app/.next ./.next
 # COPY --from=builder /app/public ./public
 
-# RUN npm install --only=production
+# RUN npm install --only=production --legacy-peer-deps
 
 # EXPOSE 80
 
 # CMD ["npm", "run", "start", "--", "-p", "80"]
+
 
 FROM node:18
 

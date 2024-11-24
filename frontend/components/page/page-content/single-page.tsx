@@ -1,4 +1,4 @@
-import { pageContentPaddingStyles } from '../../../styles/globals';
+import { containerNoFlexPaddingStyles, pageContentPaddingStyles } from '../../../styles/globals';
 import {
   createPageContentItem,
   fromKebabCase,
@@ -186,9 +186,9 @@ const SinglePage = () => {
         title={`${!isSinglePageCreated ? 'Edit' : ''} ${fromKebabCase(pageDisplayURL)}`}
       >
         <div
-          className={`flex flex-col mt-10 min-h-screen w-full ${pageContentPaddingStyles}`}
+          className={`flex flex-col mt-10 min-h-screen w-full ${containerNoFlexPaddingStyles} `}
         >
-          <div className={`space-y-6 mb-10 min-h-screen  shadow-md`}>
+          <div className={`space-y-6 mb-10 w-full shadow-md`}>
             <PlateEditor
               key={plateEditorKey}
               value={plateEditor}
@@ -199,7 +199,7 @@ const SinglePage = () => {
           </div>
           {canEdit && (
             <div
-              className={`w-full sticky bg-white flex mx-auto bottom-0 z-40 h-20 shadow2xl`}
+              className={`w-full sticky bg-pg flex mx-auto bottom-0 z-40 h-20 shadow2xl\\`}
             >
               <LoadingButton
                 className=""

@@ -43,6 +43,12 @@ class E_MemberPosition(enum.Enum):
     PHD = 2
     MASTER = 3
     UNDERGRAD = 4
+    PRINCIPAL_INVESTIGATOR = 6
+    APPLICANT = 7
+    CO_APPLICANT = 8
+    RESEARCH_MANAGER = 9
+    RESEARCH_ASSISTANT = 10
+    RESEARCH_ASSOCIATE = 11
 
 
 # class E_MemberType(enum.Enum):

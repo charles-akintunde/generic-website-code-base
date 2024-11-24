@@ -15,6 +15,7 @@ import AppLoading from '../../../../../../components/common/app-loading';
 import backgroundImage from '../../../../../../assets/images/page-list-img1.jpg';
 import Image from 'next/image';
 import { EUserRole } from '../../../../../../types/enums';
+import { containerNoFlexPaddingStyles } from '../../../../../../styles/globals';
 
 const { Title } = Typography;
 
@@ -25,7 +26,16 @@ const EMemberPosition = {
   Master: '3',
   Undergrad: '4',
   Alumni: '5',
+  PrincipalInvestigator: '6',
+  Applicant: '7',
+  CoApplicant: '8',
+  ResearchManager: '9',
+  ResearchAssistant: '10',
+  ResearchAssociate: '11',
 };
+
+
+
 
 const Teams = () => {
   const [users, setUsers] = useState<IUserBase[]>();
@@ -75,18 +85,52 @@ const Teams = () => {
         user.uiMemberPosition === EMemberPosition.Undergrad &&
         !user.uiRole.includes(EUserRole.Alumni)
     ),
+    [EMemberPosition.PrincipalInvestigator]: users?.filter(
+      (user) =>
+        user.uiMemberPosition === EMemberPosition.PrincipalInvestigator &&
+        !user.uiRole.includes(EUserRole.Alumni)
+    ),
+    [EMemberPosition.Applicant]: users?.filter(
+      (user) =>
+        user.uiMemberPosition === EMemberPosition.Applicant &&
+        !user.uiRole.includes(EUserRole.Alumni)
+    ),
+    [EMemberPosition.CoApplicant]: users?.filter(
+      (user) =>
+        user.uiMemberPosition === EMemberPosition.CoApplicant &&
+        !user.uiRole.includes(EUserRole.Alumni)
+    ),
+    [EMemberPosition.ResearchManager]: users?.filter(
+      (user) =>
+        user.uiMemberPosition === EMemberPosition.ResearchManager &&
+        !user.uiRole.includes(EUserRole.Alumni)
+    ),
+    [EMemberPosition.ResearchAssistant]: users?.filter(
+      (user) =>
+        user.uiMemberPosition === EMemberPosition.ResearchAssistant &&
+        !user.uiRole.includes(EUserRole.Alumni)
+    ),
+    [EMemberPosition.ResearchAssociate]: users?.filter(
+      (user) =>
+        user.uiMemberPosition === EMemberPosition.ResearchAssociate &&
+        !user.uiRole.includes(EUserRole.Alumni)
+    ),
     [EMemberPosition.Alumni]: users?.filter((user) =>
       user.uiRole.includes(EUserRole.Alumni)
     ),
   };
+  
 
   const renderUserCard = (user: IUserBase) => {
     const avatarSize =
       user.uiMemberPosition === EMemberPosition.Director ? 150 : 100;
     const cardHeight =
       user.uiMemberPosition === EMemberPosition.Director ? '250px' : '200px';
-
-    // Determine if the user is an Alumni and get their position title
+    const fullName = `${user.uiFirstName} ${user.uiLastName}`;
+    const transformedName = fullName
+    .toLowerCase() 
+    .replace(/\s+/g, '-');
+    const userUrl = `${transformedName}?id=${user.id}`
     const isAlumni = user.uiRole.includes(EUserRole.Alumni);
     // @ts-ignore
     const positionTitle = isAlumni
@@ -96,7 +140,7 @@ const Teams = () => {
 
     return (
       <div key={user.uiEmail} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
-        <Link href={`user-profile/${user.id}`}>
+        <Link href={`profile/${userUrl}`}>
           <div
             className="border rounded-lg bg-white p-6 text-center shadow-sm transform transition-transform hover:scale-104 hover:shadow-md"
             style={{ height: cardHeight }} // Dynamic height for the card
@@ -146,7 +190,7 @@ const Teams = () => {
           </h1>
         </div>
       </header>
-      <div className="container mx-auto">
+      <div className={`${containerNoFlexPaddingStyles}`}>
         {users && users.length > 0 ? (
           <>
             {groupedUsers[EMemberPosition.Director] &&
@@ -174,6 +218,78 @@ const Teams = () => {
                   </Row>
                 </section>
               )}
+
+  {groupedUsers[EMemberPosition.PrincipalInvestigator] &&
+      groupedUsers[EMemberPosition.PrincipalInvestigator].length > 0 && (
+        <section className="mb-12">
+          <Title level={3} className="text-center mb-6 text-primary">
+            <Divider>Principal Investigators</Divider>
+          </Title>
+          <Row gutter={[16, 16]} className="flex justify-center">
+            {groupedUsers[EMemberPosition.PrincipalInvestigator]?.map(renderUserCard)}
+          </Row>
+        </section>
+      )}
+
+    {groupedUsers[EMemberPosition.Applicant] &&
+      groupedUsers[EMemberPosition.Applicant].length > 0 && (
+        <section className="mb-12">
+          <Title level={3} className="text-center mb-6 text-primary">
+            <Divider>Applicants</Divider>
+          </Title>
+          <Row gutter={[16, 16]} className="flex justify-center">
+            {groupedUsers[EMemberPosition.Applicant]?.map(renderUserCard)}
+          </Row>
+        </section>
+      )}
+
+    {groupedUsers[EMemberPosition.CoApplicant] &&
+      groupedUsers[EMemberPosition.CoApplicant].length > 0 && (
+        <section className="mb-12">
+          <Title level={3} className="text-center mb-6 text-primary">
+            <Divider>Co-Applicants</Divider>
+          </Title>
+          <Row gutter={[16, 16]} className="flex justify-center">
+            {groupedUsers[EMemberPosition.CoApplicant]?.map(renderUserCard)}
+          </Row>
+        </section>
+      )}
+
+      {groupedUsers[EMemberPosition.ResearchManager] &&
+        groupedUsers[EMemberPosition.ResearchManager].length > 0 && (
+          <section className="mb-12">
+            <Title level={3} className="text-center mb-6 text-primary">
+              <Divider>Research Managers</Divider>
+            </Title>
+            <Row gutter={[16, 16]} className="flex justify-center">
+              {groupedUsers[EMemberPosition.ResearchManager]?.map(renderUserCard)}
+            </Row>
+          </section>
+        )}
+
+      {groupedUsers[EMemberPosition.ResearchAssistant] &&
+        groupedUsers[EMemberPosition.ResearchAssistant].length > 0 && (
+          <section className="mb-12">
+            <Title level={3} className="text-center mb-6 text-primary">
+              <Divider>Research Assistants</Divider>
+            </Title>
+            <Row gutter={[16, 16]} className="flex justify-center">
+              {groupedUsers[EMemberPosition.ResearchAssistant]?.map(renderUserCard)}
+            </Row>
+          </section>
+        )}
+
+      {groupedUsers[EMemberPosition.ResearchAssociate] &&
+        groupedUsers[EMemberPosition.ResearchAssociate].length > 0 && (
+          <section className="mb-12">
+            <Title level={3} className="text-center mb-6 text-primary">
+              <Divider>Research Associates</Divider>
+            </Title>
+            <Row gutter={[16, 16]} className="flex justify-center">
+              {groupedUsers[EMemberPosition.ResearchAssociate]?.map(renderUserCard)}
+            </Row>
+          </section>
+        )}
 
             {groupedUsers[EMemberPosition.Phd] &&
               groupedUsers[EMemberPosition.Phd].length > 0 && (

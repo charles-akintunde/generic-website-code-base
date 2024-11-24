@@ -71,17 +71,19 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
     );
     const uiEditorInProfileMode = activeUserProfileEdit.uiEditorInProfileMode;
     const uiIsUserEditingMode = activeUserProfileEdit.uiIsUserEditingMode;
+    const uiIsAdminInEditingMode = activeUserProfileEdit.uiIsAdminInEditingMode;
+    const uiIsPageContentEditingMode = activeUserProfileEdit.uiIsPageContentEditingMode;
 
     let finalReadOnly = !canEdit || readOnly;
     let finalDisabled = !canEdit || disabled;
     let finalFocused = canEdit && focused;
     let canEditClassName = !canEdit ? 'border-none' : '';
 
-    if (uiEditorInProfileMode) {
-      finalReadOnly = !uiIsUserEditingMode || false;
-      finalDisabled = !uiIsUserEditingMode || false;
-      finalFocused = uiIsUserEditingMode || false;
-      canEditClassName = !uiIsUserEditingMode ? 'border-none' : '';
+    if (uiEditorInProfileMode || uiIsPageContentEditingMode) {
+      finalReadOnly = !uiIsUserEditingMode || !uiIsAdminInEditingMode || false;
+      finalDisabled = !uiIsUserEditingMode || !uiIsAdminInEditingMode || false;
+      finalFocused = uiIsUserEditingMode || uiIsAdminInEditingMode || false;
+      canEditClassName = !uiIsUserEditingMode || !uiIsUserEditingMode ? 'border-none' : '';
     }
 
     return (

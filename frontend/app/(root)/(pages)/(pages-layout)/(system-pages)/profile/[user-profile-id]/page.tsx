@@ -25,13 +25,14 @@ import {
   IPageContentMain,
   IUserInfo,
 } from '../../../../../../../types/componentInterfaces';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import AppLoading from '../../../../../../../components/common/app-loading';
 import {
   useAppDispatch,
   useAppSelector,
 } from '../../../../../../../hooks/redux-hooks';
 import { PageContentCarouselCard } from '../../../../../../../components/common/carousel/page-content-carousel';
+import { containerNoFlexPaddingStyles, userProfilePaddingStyles } from '../../../../../../../styles/globals';
 
 export function sanitizeAndCompare(str1: string, str2: string) {
   if (!str1 || !str2) return false;
@@ -46,7 +47,9 @@ const UserProfilePage = () => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const uiIsAdmin = uiActiveUser ? uiActiveUser.uiIsAdmin : false;
   const pathname = usePathname();
-  const userId = pathname.split('/')[2];
+  const searchParams = useSearchParams();
+  const userId = searchParams.get('id');
+ // const userId = pathname.split('/')[2];
   const [isEditing, setIsEditing] = useState(false);
   const userQueryResult =
     userId && isValidUUID(userId)
@@ -108,7 +111,7 @@ const UserProfilePage = () => {
       observer.observe(observerRef.current);
     }
 
-    console.log('I want called once', pageNumber);
+ 
 
     return () => {
       if (observerRef.current) observer.unobserve(observerRef.current);
@@ -152,12 +155,13 @@ const UserProfilePage = () => {
   return (
     <>
       {userInfo && (
-        <div className="py-10 text-sm bg-pg px-6">
-          <div className="max-w-5xl mx-auto p-6 bg-white shadow-sm rounded-md">
+        <div className='bg-pg'>
+             <div className={`py-10 text-sm  px-6 ${containerNoFlexPaddingStyles}`}>
+          <div className={`${containerNoFlexPaddingStyles} p-6 bg-white shadow-sm rounded-md`}>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="col-span-1 flex justify-center md:justify-start">
                 <Avatar
-                  size={150}
+                  size={200}
                   src={userInfo.uiPhoto as string}
                   alt={`${userInfo.uiFirstName} ${userInfo.uiLastName}`}
                   icon={!userInfo.uiPhoto && <UserOutlined />}
@@ -262,7 +266,7 @@ const UserProfilePage = () => {
               <UserProfileForm userInfo={userInfo} />
             </section>
           </div>
-          <section className="max-w-5xl mx-auto mt-6 ">
+          <section className={`${containerNoFlexPaddingStyles}  mt-6 `}>
             <h2 className="text-2xl font-bold mb-6 text-center">
               Related Posts
             </h2>
@@ -306,6 +310,8 @@ const UserProfilePage = () => {
             )}{' '}
           </section>
         </div>
+        </div>
+     
       )}
     </>
   );

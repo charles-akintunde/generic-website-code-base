@@ -2,6 +2,7 @@ import { Divider } from 'antd';
 import Link from 'next/link';
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
   return (
     <footer className="bg-gray-900 text-[#f9f9f9ff] py-8">
       <div className="container mx-auto px-6">
@@ -127,7 +128,7 @@ export default function Footer() {
         {/* Footer Bottom Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="text-xs text-[#f9f9f9ff]">
-            © 2024 ClimateSmartLab.com - All rights reserved
+            © {currentYear} ClimateSmartLab.com - All rights reserved
           </div>
           <div className="flex justify-center md:justify-end space-x-4">
             <Link
