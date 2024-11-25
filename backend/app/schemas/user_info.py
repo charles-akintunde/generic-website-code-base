@@ -91,6 +91,7 @@ class UserLogin(BaseModel):
 class Token(BaseModel):
     access_token: str
     refresh_token : str
+    user_data: Optional[UserResponse] = None
     #token_type: str
 
 class UIToken(BaseModel):

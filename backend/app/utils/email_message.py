@@ -3,6 +3,16 @@
 from typing import Optional
 from app.utils.app_config import app_config
 
+import base64
+
+def convert_image_to_base64(image_path):
+    with open(image_path, "rb") as img_file:
+        base64_string = base64.b64encode(img_file.read()).decode('utf-8')
+    return base64_string
+
+base64_logo = convert_image_to_base64("app/static/assets/gw-logo.png")
+
+
 def email_html_content(
     confirmation_link: str,
     button_text: str,
@@ -93,7 +103,7 @@ def email_html_content(
     <body>
         <div class="container">
             <div class="header">
-                <img src="{app_config['app_logo_url']}" alt="Your Company Logo" class="logo">
+                <img src="{app_config['app_logo_url']}" alt={app_config['app_logo_url']} class="logo">
                 <h1>{app_config['company_name']}</h1>
             </div>
             <div class="content">

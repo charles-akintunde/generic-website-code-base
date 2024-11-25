@@ -19,6 +19,7 @@ import {
   ResizeHandle,
   mediaResizeHandleVariants,
 } from './resizable';
+import { useAppSelector } from '../../hooks/redux-hooks';
 
 export const MediaEmbedElement = withHOC(
   ResizableProvider,
@@ -38,6 +39,26 @@ export const MediaEmbedElement = withHOC(
     const width = useResizableStore().get.width();
     const provider = embed?.provider;
 
+    const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+    const uiActiveUserProfileEdit = useAppSelector(
+    (state) => state.userSlice.uiActiveUserProfileEdit
+  );
+      let isAdmin = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+
+  
+    const uiEditorInProfileMode = uiActiveUserProfileEdit.uiEditorInProfileMode;
+    const uiIsUserEditingMode = uiActiveUserProfileEdit.uiIsUserEditingMode;
+    const uiIsPageContentEditingMode = uiActiveUserProfileEdit.uiIsPageContentEditingMode;
+    const uiIsAdminInEditingMode = uiActiveUserProfileEdit.uiIsAdminInEditingMode;
+  
+    let canEdit = false;
+  
+    if (uiEditorInProfileMode) {
+      canEdit = uiIsUserEditingMode;
+    } else if (uiIsPageContentEditingMode || uiIsAdminInEditingMode) {
+      canEdit = isAdmin && uiIsAdminInEditingMode;
+    }
+
     return (
       <MediaPopover pluginKey={ELEMENT_MEDIA_EMBED}>
         <PlateElement
@@ -54,10 +75,13 @@ export const MediaEmbedElement = withHOC(
                 minWidth: isTweet ? 300 : 100,
               }}
             >
-              <ResizeHandle
+              {
+                canEdit &&   <ResizeHandle
                 className={mediaResizeHandleVariants({ direction: 'left' })}
                 options={{ direction: 'left' }}
               />
+              }
+            
 
               {isVideo ? (
                 isYoutube ? (
@@ -117,11 +141,13 @@ export const MediaEmbedElement = withHOC(
                   <Tweet id={embed!.id!} />
                 </div>
               )}
-
-              <ResizeHandle
-                className={mediaResizeHandleVariants({ direction: 'right' })}
-                options={{ direction: 'right' }}
-              />
+          {
+            canEdit && <ResizeHandle
+            className={mediaResizeHandleVariants({ direction: 'right' })}
+            options={{ direction: 'right' }}
+          />
+          }
+              
             </Resizable>
 
             <Caption align={align} style={{ width }}>

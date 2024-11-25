@@ -26,16 +26,21 @@ export const PlateEditor: React.FC<PlateEditorProps> = ({
   const uiActiveUserProfileEdit = useAppSelector(
     (state) => state.userSlice.uiActiveUserProfileEdit
   );
-  const uiEditorInProfileMode = uiActiveUserProfileEdit.uiEditorInProfileMode;
-  const uiIsUserEditingMode = uiActiveUserProfileEdit.uiIsUserEditingMode;
-  const uiIsPageContentEditingMode = uiActiveUserProfileEdit.uiIsPageContentEditingMode;
-  const uiIsAdminInEditingMode = uiActiveUserProfileEdit.uiIsAdminInEditingMode;
-  let canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+  let isAdmin = uiActiveUser ? uiActiveUser.uiCanEdit : false;
 
-  if (uiEditorInProfileMode || uiIsPageContentEditingMode) {
-    canEdit = uiIsUserEditingMode || uiIsAdminInEditingMode;
-  }
-
+    
+    const uiEditorInProfileMode = uiActiveUserProfileEdit.uiEditorInProfileMode;
+    const uiIsUserEditingMode = uiActiveUserProfileEdit.uiIsUserEditingMode;
+    const uiIsPageContentEditingMode = uiActiveUserProfileEdit.uiIsPageContentEditingMode;
+    const uiIsAdminInEditingMode = uiActiveUserProfileEdit.uiIsAdminInEditingMode;
+  
+    let canEdit = false;
+  
+    if (uiEditorInProfileMode) {
+      canEdit = uiIsUserEditingMode;
+    } else if (uiIsPageContentEditingMode || uiIsAdminInEditingMode) {
+      canEdit = isAdmin && uiIsAdminInEditingMode;
+    }
   
 
   return (

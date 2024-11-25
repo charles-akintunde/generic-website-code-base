@@ -22,41 +22,41 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   } = useGetActiveUserQuery();
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    if (activeUserData?.data) {
-      const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
+  // useEffect(() => {
+  //   if (activeUserData?.data) {
+  //     const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
 
-      dispatch(
-        setUIActiveUser({
-          uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
-          uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
-          uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
-          uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
-          uiIsLoading: isActiveUserFetchLoading,
-          uiId: userProfile.id,
-          uiCanEdit:
-            userProfile.uiRole.includes(EUserRole.Admin) ||
-            userProfile.uiRole.includes(EUserRole.SuperAdmin),
-          uiRole: userProfile.uiRole,
-          uiPhotoURL: userProfile.uiPhoto,
-        })
-      );
-    } else {
-      dispatch(
-        setUIActiveUser({
-          uiId: null,
-          uiFullName: '',
-          uiInitials: '',
-          uiIsAdmin: false,
-          uiIsLoading: isActiveUserFetchLoading,
-          uiIsSuperAdmin: false,
-          uiCanEdit: false,
-          uiRole: [EUserRole.Public],
-          uiPhotoURL: null,
-        })
-      );
-    }
-  }, [activeUserData, isActiveUserFetchLoading]);
+  //     dispatch(
+  //       setUIActiveUser({
+  //         uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+  //         uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+  //         uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
+  //         uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
+  //         uiIsLoading: isActiveUserFetchLoading,
+  //         uiId: userProfile.id,
+  //         uiCanEdit:
+  //           userProfile.uiRole.includes(EUserRole.Admin) ||
+  //           userProfile.uiRole.includes(EUserRole.SuperAdmin),
+  //         uiRole: userProfile.uiRole,
+  //         uiPhotoURL: userProfile.uiPhoto,
+  //       })
+  //     );
+  //   } else {
+  //     dispatch(
+  //       setUIActiveUser({
+  //         uiId: null,
+  //         uiFullName: '',
+  //         uiInitials: '',
+  //         uiIsAdmin: false,
+  //         uiIsLoading: isActiveUserFetchLoading,
+  //         uiIsSuperAdmin: false,
+  //         uiCanEdit: false,
+  //         uiRole: [EUserRole.Public],
+  //         uiPhotoURL: null,
+  //       })
+  //     );
+  //   }
+  // }, [activeUserData, isActiveUserFetchLoading]);
   // const {} = useUserInfo();
 
   if (isActiveUserFetchLoading) {

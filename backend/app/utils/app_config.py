@@ -10,7 +10,7 @@ class Config:
 
 
 app_config = {
-    "app_logo_url": "app/assets/logo-white.png",  
+    "app_logo_url": f"{settings.BASE_URL}/static/assets/gw-logo.png",  
     "company_name": settings.MAIL_FROM_NAME,
     "frontend_url": settings.FRONTEND_URL,
     "super_admin_email": "icakintunde@upei.ca", # Change this to the super admin's email

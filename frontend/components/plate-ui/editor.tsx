@@ -62,29 +62,43 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
     },
     ref
   ) => {
-    const uiActiveUser = useAppSelector(
-      (state) => state.userSlice.uiActiveUser
-    );
+    const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+    const activeUserProfileEdit = useAppSelector((state) => state.userSlice.uiActiveUserProfileEdit);
     const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
-    const activeUserProfileEdit = useAppSelector(
-      (state) => state.userSlice.uiActiveUserProfileEdit
-    );
-    const uiEditorInProfileMode = activeUserProfileEdit.uiEditorInProfileMode;
-    const uiIsUserEditingMode = activeUserProfileEdit.uiIsUserEditingMode;
-    const uiIsAdminInEditingMode = activeUserProfileEdit.uiIsAdminInEditingMode;
-    const uiIsPageContentEditingMode = activeUserProfileEdit.uiIsPageContentEditingMode;
 
-    let finalReadOnly = !canEdit || readOnly;
-    let finalDisabled = !canEdit || disabled;
-    let finalFocused = canEdit && focused;
-    let canEditClassName = !canEdit ? 'border-none' : '';
+    const {
+      uiEditorInProfileMode,
+      uiIsUserEditingMode,
+      uiIsAdminInEditingMode,
+      uiIsPageContentEditingMode,
+    } = activeUserProfileEdit;
 
-    if (uiEditorInProfileMode || uiIsPageContentEditingMode) {
-      finalReadOnly = !uiIsUserEditingMode || !uiIsAdminInEditingMode || false;
-      finalDisabled = !uiIsUserEditingMode || !uiIsAdminInEditingMode || false;
-      finalFocused = uiIsUserEditingMode || uiIsAdminInEditingMode || false;
-      canEditClassName = !uiIsUserEditingMode || !uiIsUserEditingMode ? 'border-none' : '';
+    let finalReadOnly = true;
+    let finalDisabled = true;
+    let finalFocused = false;
+    let canEditClassName = 'border-none';
+
+    if (uiEditorInProfileMode) {
+      finalReadOnly = !uiIsUserEditingMode; 
+      finalDisabled = !uiIsUserEditingMode;
+      finalFocused = uiIsUserEditingMode;
+      canEditClassName = uiIsUserEditingMode ? '' : 'border-none';
+    } else if (uiIsPageContentEditingMode ) {
+
+      if (canEdit) {
+        finalReadOnly = !uiIsAdminInEditingMode;
+        finalDisabled = !uiIsAdminInEditingMode;
+        finalFocused = uiIsAdminInEditingMode;
+        canEditClassName = uiIsAdminInEditingMode ? '' : 'border-none';
+      } else {
+
+        finalReadOnly = true;
+        finalDisabled = true;
+        finalFocused = false;
+        canEditClassName = 'border-none';
+      }
     }
+
 
     return (
       <div className="relative w-full" ref={ref}>

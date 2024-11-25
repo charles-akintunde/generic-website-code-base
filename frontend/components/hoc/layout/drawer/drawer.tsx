@@ -99,7 +99,7 @@ const Drawer: React.FC = () => {
                   }
                 />
               </HoverableCard>
-              <Link onClick={handleClose} href={`/user-profile/${uiId}`}>
+              {/* <Link onClick={handleClose} href={`/user-profile/${uiId}`}>
                 <HoverableCard classNames="flex items-center cursor-pointer space-x-2">
                   <Avatar
                     style={{
@@ -114,7 +114,7 @@ const Drawer: React.FC = () => {
                   </Avatar>
                   <p className="text-xs">{uiFullName}</p>
                 </HoverableCard>
-              </Link>
+              </Link> */}
             </div>
           ) : (
             <HoverableCard>

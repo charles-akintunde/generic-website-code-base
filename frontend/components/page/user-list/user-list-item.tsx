@@ -33,7 +33,7 @@ import { useUserInfo } from '../../../hooks/api-hooks/use-user-info';
 const UserListItem = () => {
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 5,
+    pageSize: 10,
   });
   const [fetchParams, setFetchParams] = useState(pagination);
   const [totalUserCount, setTotalUserCount] = useState<number>();
@@ -205,7 +205,7 @@ const UserListItem = () => {
               pageSize: pagination.pageSize,
               total: totalUserCount || 0,
               showSizeChanger: true,
-              pageSizeOptions: ['5', '10', '15'],
+              pageSizeOptions: ['10', '20', '30'],
             }}
             loading={isUsersFetchLoading}
             onChange={handleTableChange}

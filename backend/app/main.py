@@ -42,8 +42,8 @@ def create_app() -> FastAPI:
     # Initialize FastAPI application with lifespan
     app = FastAPI(lifespan=lifespan)
 
-    if not is_production:
-        app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+    app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
     app.add_middleware(ExceptionHandlingMiddleware)
 

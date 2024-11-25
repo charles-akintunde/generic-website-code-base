@@ -20,6 +20,7 @@ from app.models.enums import E_Status
 from app.schemas.blacklisted_token import BlackListedToken
 from app.crud.blacklisted_token import blacklisted_token_crud
 from app.database import get_db
+from app.utils.response_json import create_user_response
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -99,6 +100,9 @@ def authenticate_user(db: Session, email: str, password: str, response: Response
             detail="Account is disabled! Contact Admin",
         )
     
+
+    user_data = create_user_response(user)
+    
     token_data = {
         "sub": user.UI_Email,
         "firstname": user.UI_FirstName,
@@ -114,7 +118,7 @@ def authenticate_user(db: Session, email: str, password: str, response: Response
 
     # print(response.headers)
 
-    return Token(access_token=access_token, refresh_token=refresh_token)
+    return Token(access_token=access_token, refresh_token=refresh_token, user_data=user_data)
 
 async def register_user(db: Session, user: UserCreate):
     """

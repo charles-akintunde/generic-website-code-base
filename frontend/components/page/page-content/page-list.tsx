@@ -72,7 +72,7 @@ const CreatePageContent = () => {
     (state) => state.userSlice.uiActiveUserProfileEdit
   );
 
-  const uiIsUserEditingMode = activeUserProfileEdit.uiIsUserEditingMode;
+  const uiIsAdminInEditingMode = activeUserProfileEdit.uiIsAdminInEditingMode;
 
   const { submitPageContent, isCreatePageContentSuccess } = usePageContent({
     pageDisplayURL,
@@ -152,7 +152,7 @@ const CreatePageContent = () => {
   useEffect(() => {
     dispatch(
       setUIIsUserEditingMode({
-        uiIsAdminInEditingMode: false,
+        uiIsAdminInEditingMode: true,
         uiIsPageContentEditingMode: true,
         uiIsUserEditingMode: false,
         uiEditorInProfileMode: false,
@@ -186,29 +186,43 @@ const CreatePageContent = () => {
 
   return (
     <PageLayout title="Create Page Content">
-      <div
-        className={`flex flex-col mt-10 min-h-screen w-full ${containerNoFlexPaddingStyles} pt-8 shadow-md rounded-sm bg-white`}
-      >
-        <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="">
-          <div className="flex justify-end">
-            <Switch
-              checkedChildren="Editing Mode"
-              unCheckedChildren="Viewing Mode"
-              checked={uiIsAdminInEditingMode}
-              onChange={handleModeChange}
-            />
+    <div
+      className={`flex flex-col mt-10 w-full ${containerNoFlexPaddingStyles} pt-8 shadow-md rounded-sm bg-white`}
+    >
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+          <div className="flex w-full justify-end mb-4">
+            {canEdit && (
+              <Switch
+                checkedChildren="Editing Mode"
+                unCheckedChildren="Viewing Mode"
+                checked={uiIsAdminInEditingMode}
+                onChange={handleModeChange}
+              />
+            )}
           </div>
-            <div className={`space-y-6 my-10 min-h-screen }`}>
-              {canEdit && uiIsAdminInEditingMode && (
-                <>
-                  <FormField
-                    control={form.control}
-                    name="pageContentName"
-                    label="Content Name"
-                    placeholder=""
-                  />
-
+  
+        
+          <div className={`space-y-6 my-10 text-left w-full`}>
+            {canEdit && uiIsAdminInEditingMode && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="pageContentName"
+                  label="Content Name"
+                  placeholder=""
+                />
+  
+                <FormField
+                  control={form.control}
+                  name="pageContentDisplayURL"
+                  label="Display URL"
+                  placeholder=""
+                  type="text"
+                  onBlur={handlePageDisplayUrlChange}
+                />
+  
+                {pageType == EPageType.ResList && (
                   <FormField
                     control={form.control}
                     name="pageContentDisplayURL"
@@ -217,88 +231,81 @@ const CreatePageContent = () => {
                     type="text"
                     onBlur={handlePageDisplayUrlChange}
                   />
-
-                  {pageType == EPageType.ResList && (
-                    <FormField
-                      control={form.control}
-                      name="pageContentDisplayURL"
-                      label="Display URL"
-                      placeholder=""
-                      type="text"
-                      onBlur={handlePageDisplayUrlChange}
-                    />
-                  )}
-
+                )}
+  
+                <FormField
+                  control={form.control}
+                  name="pageContentDisplayImage"
+                  label="Display Image"
+                  placeholder=""
+                  type="picture"
+                />
+  
+                {pageType == EPageType.ResList && (
                   <FormField
                     control={form.control}
-                    name="pageContentDisplayImage"
-                    label="Display Image"
+                    name="pageContentResource"
+                    label="Display Document"
                     placeholder=""
-                    type="picture"
+                    type="document"
                   />
-
-                  {pageType == EPageType.ResList && (
-                    <FormField
-                      control={form.control}
-                      name="pageContentResource"
-                      label="Display Document"
-                      placeholder=""
-                      type="document"
-                    />
-                  )}
-
-                  {pageType == EPageType.PageList && OPTIONS && (
-                    <FormField
-                      placeholder="Select page contents users"
-                      control={form.control}
-                      name="pageContentUsersId"
-                      label="Page Content Users"
-                      type="multiple-select"
-                      options={OPTIONS}
-                      multiple={true}
-                    />
-                  )}
-
-                  {pageType == EPageType.PageList && (
-                    <FormField
-                      control={form.control}
-                      name="pageContentCreatedAt"
-                      label="Content Creation Date"
-                      placeholder=""
-                      type="datetime"
-                    />
-                  )}
-
+                )}
+  
+                {pageType == EPageType.PageList && OPTIONS && (
+                  <FormField
+                    placeholder="Select page contents users"
+                    control={form.control}
+                    name="pageContentUsersId"
+                    label="Page Content Users"
+                    type="multiple-select"
+                    options={OPTIONS}
+                    multiple={true}
+                  />
+                )}
+  
+                {pageType == EPageType.PageList && (
                   <FormField
                     control={form.control}
-                    name="isPageContentHidden"
-                    label=""
-                    placeholder="Hide this Content"
-                    type="checkbox"
+                    name="pageContentCreatedAt"
+                    label="Content Creation Date"
+                    placeholder=""
+                    type="datetime"
                   />
-                  {pageType != EPageType.ResList && (
-                    <PlateEditor
-                      key={plateEditorKey}
-                      value={plateEditor}
-                      onChange={(value) => {
-                        setPlateEditor(value);
-                      }}
-                    />
-                  )}
-                </>
-              )}
-            </div>
-            {canEdi && uiIsAdminInEditingMode && (
-              <div
-                className={`w-full sticky bg-white flex mx-auto bottom-0 z-40 h-20 shadow2xl`}
-              >
-                <LoadingButton className="" buttonText="Post" loading={false} />
+                )}
+  
+                <FormField
+                  control={form.control}
+                  name="isPageContentHidden"
+                  label=""
+                  placeholder="Hide this Content"
+                  type="checkbox"
+                />
+              </>
+            )}
+  
+            {pageType != EPageType.ResList && (
+              <div className={`w-full space-y-6 mb-10 `}>
+                <PlateEditor
+                  key={plateEditorKey}
+                  value={plateEditor}
+                  onChange={(value) => {
+                    setPlateEditor(value);
+                  }}
+                />
               </div>
             )}
-          </form>
-        </FormProvider>
-      </div>
-    </PageLayout>
+          </div>
+  
+          {canEdit && uiIsAdminInEditingMode && (
+            <div className={`w-full sticky bg-white flex mx-auto bottom-0 z-40 h-20 shadow2xl`}>
+              <LoadingButton className="" buttonText="Post" loading={false} />
+            </div>
+          )}
+        </form>
+      </FormProvider>
+    </div>
+  </PageLayout>
+  
   );
 };
 
@@ -503,12 +510,15 @@ const EditPageContent = () => {
           <div className={`flex flex-col min-h-screen w-full }`}>
             <FormProvider {...form}>
             <div className="flex my-6 justify-end">
-            <Switch
-              checkedChildren="Editing Mode"
-              unCheckedChildren="Viewing Mode"
-              checked={uiIsAdminInEditingMode}
-              onChange={handleModeChange}
-            />
+              {
+                canEdit &&   <Switch
+                checkedChildren="Editing Mode"
+                unCheckedChildren="Viewing Mode"
+                checked={uiIsAdminInEditingMode}
+                onChange={handleModeChange}
+              />
+              }
+          
           </div>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <div className={`space-y-6 mb-10 min-h-screen `}>

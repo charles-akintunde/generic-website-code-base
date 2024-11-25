@@ -26,7 +26,7 @@ const PageListItem: React.FC = () => {
   const [totalPageCount, setTotalPageCount] = useState<number>();
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 5,
+    pageSize: 10,
   });
   const [fetchParams, setFetchParams] = useState(pagination);
   const {
@@ -164,7 +164,7 @@ const PageListItem: React.FC = () => {
         pagination={{
           pageSize: pagination.pageSize,
           showSizeChanger: true,
-          pageSizeOptions: ['5', '10', '15'],
+          pageSizeOptions: ['10', '20', '30'],
           total: totalPageCount,
         }}
       />

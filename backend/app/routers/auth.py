@@ -2,8 +2,9 @@
 API endpoints for user authentication.
 """
 
-from typing import Optional
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Header, Request, Response, status
+import datetime
+import json
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import EmailStr
@@ -18,7 +19,7 @@ from app.models.enums import E_Status, E_UserRole
 from app.schemas.response import StandardResponse
 from app.utils.response_json import create_user_response
 from app.config import settings
-from app.crud import blacklisted_token
+
 
 router = APIRouter()
 ACCESS_TOKEN_EXPIRE_SECONDS = settings.ACCESS_TOKEN_EXPIRE_SECONDS
@@ -109,6 +110,8 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
 
     try:
         token = authenticate_user(db=db, email=user_login.UI_Email, password=user_login.UI_Password,response=response)
+        expiration_time = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=ACCESS_TOKEN_EXPIRE_SECONDS)
+
         
         response.set_cookie(
         key='access_token',
@@ -119,7 +122,17 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
         max_age=ACCESS_TOKEN_EXPIRE_SECONDS,
         domain=COOKIE_DOMAIN
     )
-
+        
+        response.set_cookie(
+        key='access_token_metadata',
+        value=json.dumps({
+            "exp": int(expiration_time.timestamp())
+        }),  
+        httponly=False, 
+        samesite='none', 
+        secure=True, 
+        domain=COOKIE_DOMAIN  
+    )
         response.set_cookie(
         key='refresh_token',
         value=token.refresh_token,
@@ -130,8 +143,6 @@ async def login_endpoint(response: Response, user_login: UserLogin, db: Session 
         domain=COOKIE_DOMAIN
     )
         
-
-        print(response.headers,"HEADER")
         return success_response(message='Login Successful',data=token.dict(),status_code=200,headers=response.headers)
     
     except HTTPException as e:
@@ -267,6 +278,7 @@ async def logout(
     """
     try:
         access_token = request.cookies.get('access_token')
+        access_token_metadata = request.get('access_token_metadata')
         refresh_token = request.cookies.get('refresh_token')
 
         if not access_token and not refresh_token:
@@ -283,6 +295,16 @@ async def logout(
                 secure=True,
                 domain=None
             )
+
+        if access_token_metadata:
+            response.delete_cookie(
+                key="access_token_metadata",
+                httponly=False,
+                samesite='none',
+                secure=True,
+                domain=None
+            )
+
         if refresh_token:
             response.delete_cookie(
                 key="refresh_token",

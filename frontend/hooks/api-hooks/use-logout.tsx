@@ -8,7 +8,7 @@ import {
   setUIIsUserEditingMode,
 } from '../../store/slice/userSlice';
 import { EUserRole } from '../../types/enums';
-import { reloadPage } from '../../utils/helper';
+import Cookies from 'js-cookie';
 
 const useLogout = () => {
   const dispatch = useAppDispatch();
@@ -22,10 +22,25 @@ const useLogout = () => {
   );
   const router = useRouter();
 
-  const sendLogoutRequest = async () => {
+  const sendLogoutRequest = async (handleCloseDrawer?: any) => {
     try {
       const response = await useLogout().unwrap();
+
+      if(handleCloseDrawer){
+        handleCloseDrawer();
+      }
       notify('Success', response.message || successMessage, 'success');
+   
+      dispatch(
+        setUIIsUserEditingMode({
+          uiIsUserEditingMode: false,
+          uiEditorInProfileMode: false,
+          uiIsAdminInEditingMode:false,
+          uiIsPageContentEditingMode:false
+        })
+      );
+
+      router.replace('/');
       dispatch(
         setUIActiveUser({
           uiId: null,
@@ -40,16 +55,7 @@ const useLogout = () => {
         })
       );
 
-      dispatch(
-        setUIIsUserEditingMode({
-          uiIsUserEditingMode: false,
-          uiEditorInProfileMode: false,
-        })
-      );
 
-      // handleCloseDrawer();
-      router.refresh();
-      reloadPage();
     } catch (error: any) {
       console.log(error);
       notify(

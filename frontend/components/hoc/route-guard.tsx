@@ -93,41 +93,41 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
   //     item.href.startsWith(decodeURIComponent(`/${pathname.split('/')[1]}`))
   // );
 
-  useEffect(() => {
-    if (activeUserData?.data) {
-      const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
+  // useEffect(() => {
+  //   if (activeUserData?.data) {
+  //     const userProfile: IUserInfo = transformToUserInfo(activeUserData?.data);
 
-      dispatch(
-        setUIActiveUser({
-          uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
-          uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
-          uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
-          uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
-          uiIsLoading: isActiveUserFetchLoading,
-          uiId: userProfile.id,
-          uiCanEdit:
-            userProfile.uiRole.includes(EUserRole.Admin) ||
-            userProfile.uiRole.includes(EUserRole.SuperAdmin),
-          uiRole: userProfile.uiRole,
-          uiPhotoURL: userProfile.uiPhoto,
-        })
-      );
-    } else {
-      dispatch(
-        setUIActiveUser({
-          uiId: null,
-          uiFullName: '',
-          uiInitials: '',
-          uiIsAdmin: false,
-          uiIsLoading: isActiveUserFetchLoading,
-          uiIsSuperAdmin: false,
-          uiCanEdit: false,
-          uiRole: [EUserRole.Public],
-          uiPhotoURL: null,
-        })
-      );
-    }
-  }, [activeUserData, pathname]);
+  //     dispatch(
+  //       setUIActiveUser({
+  //         uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+  //         uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+  //         uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
+  //         uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
+  //         uiIsLoading: isActiveUserFetchLoading,
+  //         uiId: userProfile.id,
+  //         uiCanEdit:
+  //           userProfile.uiRole.includes(EUserRole.Admin) ||
+  //           userProfile.uiRole.includes(EUserRole.SuperAdmin),
+  //         uiRole: userProfile.uiRole,
+  //         uiPhotoURL: userProfile.uiPhoto,
+  //       })
+  //     );
+  //   } else {
+  //     dispatch(
+  //       setUIActiveUser({
+  //         uiId: null,
+  //         uiFullName: '',
+  //         uiInitials: '',
+  //         uiIsAdmin: false,
+  //         uiIsLoading: isActiveUserFetchLoading,
+  //         uiIsSuperAdmin: false,
+  //         uiCanEdit: false,
+  //         uiRole: [EUserRole.Public],
+  //         uiPhotoURL: null,
+  //       })
+  //     );
+  //   }
+  // }, [activeUserData, pathname]);
 
   useEffect(() => {
     if (currentPage) {
