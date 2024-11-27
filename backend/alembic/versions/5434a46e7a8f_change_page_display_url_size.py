@@ -25,12 +25,54 @@ def upgrade() -> None:
                type_=sa.String(length=100),
                existing_nullable=True)
     
-    op.execute("ALTER TYPE e_memberposition ADD VALUE 'PRINCIPAL_INVESTIGATOR'")
-    op.execute("ALTER TYPE e_memberposition ADD VALUE 'APPLICANT'")
-    op.execute("ALTER TYPE e_memberposition ADD VALUE 'CO_APPLICANT'")
-    op.execute("ALTER TYPE e_memberposition ADD VALUE 'RESEARCH_MANAGER'")
-    op.execute("ALTER TYPE e_memberposition ADD VALUE 'RESEARCH_ASSISTANT'")
-    op.execute("ALTER TYPE e_memberposition ADD VALUE 'RESEARCH_ASSOCIATE'")
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'PRINCIPAL_INVESTIGATOR' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'e_memberposition')) THEN
+                ALTER TYPE e_memberposition ADD VALUE 'PRINCIPAL_INVESTIGATOR';
+            END IF;
+        END $$;
+    """)
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'APPLICANT' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'e_memberposition')) THEN
+                ALTER TYPE e_memberposition ADD VALUE 'APPLICANT';
+            END IF;
+        END $$;
+    """)
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'CO_APPLICANT' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'e_memberposition')) THEN
+                ALTER TYPE e_memberposition ADD VALUE 'CO_APPLICANT';
+            END IF;
+        END $$;
+    """)
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'RESEARCH_MANAGER' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'e_memberposition')) THEN
+                ALTER TYPE e_memberposition ADD VALUE 'RESEARCH_MANAGER';
+            END IF;
+        END $$;
+    """)
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'RESEARCH_ASSISTANT' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'e_memberposition')) THEN
+                ALTER TYPE e_memberposition ADD VALUE 'RESEARCH_ASSISTANT';
+            END IF;
+        END $$;
+    """)
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'RESEARCH_ASSOCIATE' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'e_memberposition')) THEN
+                ALTER TYPE e_memberposition ADD VALUE 'RESEARCH_ASSOCIATE';
+            END IF;
+        END $$;
+    """)
     # ### end Alembic commands ###
 
 

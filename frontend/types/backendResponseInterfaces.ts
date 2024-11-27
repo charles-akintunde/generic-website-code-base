@@ -40,6 +40,7 @@ export interface IPageContentResponse {
 export interface UserResponse {
   UI_ID: string;
   UI_FirstName: string;
+  UI_UniqueURL: string;
   UI_LastName: string;
   UI_Email: string;
   UI_Role: EUserRole[];
@@ -49,6 +50,8 @@ export interface UserResponse {
   UI_PhotoURL: string | null;
   UI_MemberPosition: string;
   UI_Country?: string | null | undefined;
+  UI_Prefix: string | null;
+  UI_Suffix: string | null;
 }
 
 export interface ICompleteUserResponse extends UserResponse {

@@ -21,6 +21,7 @@ from app.schemas.blacklisted_token import BlackListedToken
 from app.crud.blacklisted_token import blacklisted_token_crud
 from app.database import get_db
 from app.utils.response_json import create_user_response
+from app.utils.utils import generate_unique_url
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -140,6 +141,7 @@ async def register_user(db: Session, user: UserCreate):
     user.UI_ConfirmationTokenHash = confirmation_token
 
     new_user = user_crud.create_user(db=db, user=user)
+    user.UI_UNIQUEURL = generate_unique_url(db=db, first_name=user.UI_FirstName, last_name=user.UI_LastName)
 
     await send_confirmation_email(user.UI_Email, confirmation_token)
 

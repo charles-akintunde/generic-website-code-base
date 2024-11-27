@@ -9,6 +9,8 @@ from app.models.user_info import T_UserInfo
 from app.models.enums import E_PageType, E_UserRole
 from app.schemas.page_content import PageContentResponse
 from app.utils.response import error_response
+import shortuuid
+from sqlalchemy.orm import Session
 
 TElement = Dict[str, Any]
 TDescendant = Union[TElement, Dict[str, str]]
@@ -159,3 +161,32 @@ def estimate_reading_time(page_contents: List[TElement] ) -> int:
     total_reading_time_minutes = reading_time_minutes + image_time_minutes
 
     return round(total_reading_time_minutes)
+
+def generate_unique_url(db: Session, first_name: str, last_name: str):
+    """
+    Generate a unique URL based on the user's first and last name.
+    If the URL already exists in the database, append a short UUID.
+
+    Args:
+        db (Session): Database session.
+        first_name (str): User's first name.
+        last_name (str): User's last name.
+
+    Returns:
+        str: A unique URL.
+    """
+    base_url = f"{first_name.lower()}-{last_name.lower()}".replace(" ", "-")
+
+    existing_url = db.query(T_UserInfo).filter_by(UI_UniqueURL=base_url).first()
+
+    if not existing_url:
+        return base_url
+
+    while True:
+        short_uuid = shortuuid.ShortUUID().random(length=9)
+        unique_url = f"{base_url}-{short_uuid}"
+
+        if not db.query(T_UserInfo).filter_by(url=unique_url).first():
+            break
+
+    return unique_url

@@ -13,7 +13,7 @@ from app.utils.file_utils import  delete_and_save_file_azure, delete_file_from_a
 from app.utils.response_json import build_page_content_json_with_excerpt, build_user_page_content_json, create_user_response, create_users_response
 from app.models.enums import E_MemberPosition, E_UserRole
 from app.core.auth import get_current_user
-from app.utils.utils import is_super_admin
+from app.utils.utils import generate_unique_url, is_super_admin
 from app.crud import page
 
 
@@ -121,8 +121,20 @@ async def update_user_profile(db: Session, user_id: str, profile_update: UserPro
             )
         del profile_update.UI_Photo  # Remove the photo from the update data
 
+
+
     update_data = profile_update.model_dump(exclude_unset=True)
     update_data = {k: v for k, v in update_data.items() if v is not None}
+
+    if "UI_FirstName" in update_data or "UI_LastName" in update_data:
+        first_name = update_data.get("UI_FirstName", existing_user.UI_FirstName)
+        last_name = update_data.get("UI_LastName", existing_user.UI_LastName)
+
+        update_data["UI_UniqueURL"] = generate_unique_url(
+            db=db,
+            first_name=first_name,
+            last_name=last_name
+        )
 
     updated_user = user_crud.update_user_profile(
         db=db, 

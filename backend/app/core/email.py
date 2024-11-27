@@ -46,7 +46,8 @@ async def send_confirmation_email(email: EmailStr, token: str):
             confirmation_link=confirmation_link,
             button_text="Verify Email Address",
         ),
-        subtype="html"
+        subtype="html",
+        from_=(settings.MAIL_FROM, settings.MAIL_USERNAME)
     )
 
     await fm.send_message(message)

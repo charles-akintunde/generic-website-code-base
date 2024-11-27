@@ -350,6 +350,7 @@ export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
   // @ts-ignore
   return {
     id: data.UI_ID,
+    uiUniqueURL: data.UI_UniqueURL,
     uiFirstName: data.UI_FirstName,
     uiLastName: data.UI_LastName,
     uiEmail: data.UI_Email,
@@ -363,6 +364,8 @@ export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
     uiPostalCode: data.UI_PostalCode,
     uiPhoneNumber: data.UI_PhoneNumber,
     uiOrganization: data.UI_Organization,
+    uiPrefix: data.UI_Prefix,
+    uiSuffix: data.UI_Suffix,
     uiAbout: data.UI_About?.UI_About,
     uiUserPageContents: normalizeUserPageContents(data.UI_UserPageContents),
   };

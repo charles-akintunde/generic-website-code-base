@@ -26,6 +26,9 @@ class UserBase(BaseModel):
     UI_PhotoURL: Optional[str] = None
     UI_PhoneNumber: Optional[str] = None
     UI_Organization: Optional[str] = None
+    UI_Prefix: Optional[str] = None
+    UI_Suffix: Optional[str] = None
+    UI_UniqueURL: Optional[str] = None
 
 class UserPartial(BaseModel):
     UI_ID: str
@@ -110,6 +113,7 @@ class UserCreate(BaseModel):
     UI_Email: EmailStr
     UI_Password: str 
     UI_ConfirmationTokenHash: Optional[str] = None
+    UI_UNIQUEURL: Optional[str] =None
    
 class User(UserBase):
     """

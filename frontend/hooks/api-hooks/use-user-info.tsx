@@ -264,6 +264,7 @@ export const useUserInfo = () => {
         formData.append('UI_FirstName', userInfo.uiFirstName);
       }
 
+
       if (userInfo.uiLastName) {
         formData.append('UI_LastName', userInfo.uiLastName);
       }
@@ -320,6 +321,32 @@ export const useUserInfo = () => {
           formData.append('UI_PostalCode', ' ');
         } else {
           formData.append('UI_PostalCode', userInfo.uiPostalCode ?? '');
+        }
+      }
+
+      if (userInfo.uiSuffix !== undefined) {
+        if (
+          userInfo.uiSuffix &&
+          userInfo.uiSuffix.length === 0 &&
+          initialUserInfo?.uiSuffix &&
+          initialUserInfo.uiSuffix.length > 0
+        ) {
+          formData.append('UI_Suffix', ' ');
+        } else {
+          formData.append('UI_Suffix', userInfo.uiSuffix ?? '');
+        }
+      }
+
+      if (userInfo.uiPrefix !== undefined) {
+        if (
+          userInfo.uiPrefix &&
+          userInfo.uiPrefix.length === 0 &&
+          initialUserInfo?.uiPrefix &&
+          initialUserInfo.uiPrefix.length > 0
+        ) {
+          formData.append('UI_Prefix', ' ');
+        } else {
+          formData.append('UI_Prefix', userInfo.uiPrefix ?? '');
         }
       }
 

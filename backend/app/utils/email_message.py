@@ -103,7 +103,7 @@ def email_html_content(
     <body>
         <div class="container">
             <div class="header">
-                <img src="{app_config['app_logo_url']}" alt={app_config['app_logo_url']} class="logo">
+               
                 <h1>{app_config['company_name']}</h1>
             </div>
             <div class="content">

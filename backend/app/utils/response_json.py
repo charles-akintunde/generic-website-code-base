@@ -158,9 +158,12 @@ def create_users_response(users: List[UserPartial], total_users_count: int ,new_
 def create_user_response(user: T_UserInfo, page_contents : Optional[List[PageContentResponse]] = None) -> UserResponse:
     return UserResponse(
         UI_ID=str(user.UI_ID),
+        UI_UniqueURL=user.UI_UniqueURL,
         UI_FirstName=str(user.UI_FirstName),
         UI_LastName=str(user.UI_LastName),
         UI_Email=str(user.UI_Email),
+        UI_Prefix=user.UI_Prefix,
+        UI_Suffix=user.UI_Suffix,
         UI_Role=[role.value for role in user.UI_Role],
         UI_Status=user.UI_Status.value,
         UI_RegDate=str(user.UI_RegDate),

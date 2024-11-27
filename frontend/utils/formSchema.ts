@@ -252,6 +252,16 @@ export const optionalImagePageContentSchema = z.object({
 export const userProfileSchema = z.object({
   uiFirstName: requiredTextSchema('First Name'),
   uiLastName: requiredTextSchema('Last Name'),
+  uiPrefix: z
+  .string()
+  .max(10, "Prefix must be 10 characters or fewer.")
+  .nullable()
+  .optional(),
+  uiSuffix: z
+  .string()
+  .max(10, "Suffix must be 10 characters or fewer.")
+  .nullable()
+  .optional(),
   uiCity: z.string().nullable().optional(),
   uiProvince: z.string().nullable().optional(),
   uiCountry: z.string().nullable().optional(),

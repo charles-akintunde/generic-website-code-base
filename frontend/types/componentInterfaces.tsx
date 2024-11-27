@@ -31,6 +31,7 @@ export interface IOptionType {
 
 export interface IUserBase {
   id: string;
+  uiUniqueURL: string;
   uiFirstName: string;
   uiLastName: string;
   uiEmail: string;
@@ -42,6 +43,8 @@ export interface IUserBase {
   uiMemberPosition?: string | null;
   uiCountry?: string | null | undefined;
   uiInitials?: string | null | undefined;
+  uiPrefix?: string | null | undefined;
+  uiSuffix?: string | null | undefined;
   uiFullName?: string | null | undefined;
   uiIsUserAlumni: boolean;
 }

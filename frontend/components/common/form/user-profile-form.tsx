@@ -106,6 +106,8 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
       uiPostalCode: '',
       uiPhoneNumber: '',
       uiOrganization: '',
+      uiPrefix: '',
+      uiSuffix: ''
     },
   });
 
@@ -185,6 +187,24 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
               label="Last Name"
               placeholder=""
             />
+        <div className="flex flex-wrap md:flex-nowrap gap-4">
+        <div className="flex-1">
+          <FormField
+            control={form.control}
+            name="uiPrefix"
+            label="Prefix"
+            placeholder=""
+          />
+        </div>
+        <div className="flex-1">
+          <FormField
+            control={form.control}
+            name="uiSuffix"
+            label="Suffix"
+            placeholder=""
+          />
+        </div>
+      </div>
             <FormField
               control={form.control}
               name="uiCountry"

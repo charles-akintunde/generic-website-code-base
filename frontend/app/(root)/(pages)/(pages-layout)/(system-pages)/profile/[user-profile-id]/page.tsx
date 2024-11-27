@@ -98,7 +98,6 @@ const UserProfilePage = () => {
     [hasMore, isUserFetchLoading, setPageNumber]
   );
 
-  console.log(pageNumber, 'pageNumber');
 
   useEffect(() => {
     const observer = new IntersectionObserver(handleObserver, {
@@ -173,7 +172,10 @@ const UserProfilePage = () => {
                   <Tooltip
                     title={`${userInfo.uiFirstName} ${userInfo.uiLastName}`}
                   >
-                    <h1 className="text-3xl font-bold text-gray-900">{`${userInfo.uiFirstName} ${userInfo.uiLastName}`}</h1>
+                  <h1 className="text-3xl font-bold text-gray-900">
+              {`${userInfo.uiPrefix ? userInfo.uiPrefix + ' ' : ''}${userInfo.uiFirstName} ${userInfo.uiLastName}${userInfo.uiSuffix ? ', ' + userInfo.uiSuffix : ''}`}
+            </h1>
+
                   </Tooltip>
                 </div>
                 <div className="space-y-4">

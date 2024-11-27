@@ -18,11 +18,11 @@ class T_UserInfo(Base):
     __annotations__ = UserInfoTypeAnnotations.__annotations__
    
     UI_ID = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    UI_PREFIX = Column(String(10), nullable=True)
-    UI_SUFFIX = Column(String(10), nullable=True)
+    UI_Prefix = Column(String(10), nullable=True)
+    UI_Suffix = Column(String(10), nullable=True)
     UI_FirstName = Column(String(50), nullable=False)
     UI_LastName = Column(String(50), nullable=False)
-    UI_UNIQUEURL = Column(String(150),nullable=False, unique=True, index=True)
+    UI_UniqueURL = Column(String(150),nullable=False, unique=True, index=True)
     UI_Email = Column(String(100), nullable=False, unique=True)
     UI_PasswordHash = Column(String(255), nullable=False)
     UI_Role = Column(ARRAY(Enum(E_UserRole)), nullable=False, default=[E_UserRole.Public])
@@ -43,7 +43,7 @@ class T_UserInfo(Base):
     UI_PageContents = relationship("T_PageContent", back_populates="PC_UserInfo")
 
     __table_args__ = (
-        Index("ix_user_uniqueurl", "UI_UNIQUEURL"),  # Custom index name
+        Index("ix_user_uniqueurl", "UI_UniqueURL"),  # Custom index name
     )
 
     def __repr__(self):

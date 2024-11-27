@@ -139,6 +139,8 @@ async def update_user_profile_endpoint(
     UI_PostalCode: Optional[str] = Form(None),
     UI_PhoneNumber: Optional[str] = Form(None),
     UI_Organization: Optional[str] = Form(None),
+    UI_Prefix: Optional[str] = Form(None),
+    UI_Suffix: Optional[str] = Form(None),
     UI_About: Optional[str] = Form(None),
     db: Session = Depends(get_db), 
     current_user: T_UserInfo = Depends(get_current_user)):
@@ -165,6 +167,8 @@ async def update_user_profile_endpoint(
             UI_PostalCode=UI_PostalCode,
             UI_PhoneNumber=UI_PhoneNumber,
             UI_Organization=UI_Organization,
+            UI_Suffix=UI_Suffix,
+            UI_Prefix=UI_Prefix,
             UI_About=json.loads(UI_About) if UI_About else None
             
         )
