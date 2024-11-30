@@ -72,12 +72,18 @@ export interface IUserResponseData {
   total_users_count: number;
 }
 
+export interface IUserPageContentResponseData {
+  user_response: ICompleteUserResponse;
+  total_page_content: number;
+}
+
+
 export interface IUserResponseWrapper {
   data: IUserResponseData;
 }
 
 export interface ICompleteUserResponseWrapper {
-  data: ICompleteUserResponse;
+  data: IUserPageContentResponseData | IUserResponseData;
 }
 
 export interface PagesData {

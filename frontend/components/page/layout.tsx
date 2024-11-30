@@ -10,14 +10,23 @@ interface LayoutProps {
   useGradient?: boolean; 
 }
 
-const gradients = [
+export const gradients = [
   'bg-gradient-to-r from-blue-100 via-blue-100 to-purple-100',
   'bg-gradient-to-r from-green-100 via-teal-100 to-blue-100',
   'bg-gradient-to-r from-purple-100 via-pink-100 to-red-100',
   'bg-gradient-to-r from-yellow-100 via-orange-100 to-pink-100',
   'bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100',
+  'bg-gradient-to-r from-teal-100 via-green-200 to-lime-100',
+  'bg-gradient-to-r from-pink-100 via-red-100 to-yellow-100',
+  'bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300',
+  'bg-gradient-to-r from-sky-100 via-sky-200 to-indigo-100',
+  'bg-gradient-to-r from-emerald-100 via-lime-100 to-yellow-100',
+  'bg-gradient-to-r from-cyan-100 via-blue-200 to-purple-200',
+  'bg-gradient-to-r from-rose-100 via-pink-200 to-fuchsia-200',
+  'bg-gradient-to-r from-red-200 via-orange-200 to-yellow-200',
+  'bg-gradient-to-r from-blue-50 via-purple-100 to-indigo-200',
+  'bg-gradient-to-r from-green-50 via-teal-100 to-cyan-200',
 ];
-
 
 const PageLayout: React.FC<LayoutProps> = ({
   children,

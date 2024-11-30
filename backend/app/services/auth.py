@@ -139,9 +139,9 @@ async def register_user(db: Session, user: UserCreate):
     user.UI_Password = pwd_context.hash(user.UI_Password)
     confirmation_token = create_confirmation_token(user.UI_Email)
     user.UI_ConfirmationTokenHash = confirmation_token
-
+    user.UI_UniqueURL = generate_unique_url(db=db, first_name=user.UI_FirstName, last_name=user.UI_LastName)
     new_user = user_crud.create_user(db=db, user=user)
-    user.UI_UNIQUEURL = generate_unique_url(db=db, first_name=user.UI_FirstName, last_name=user.UI_LastName)
+
 
     await send_confirmation_email(user.UI_Email, confirmation_token)
 

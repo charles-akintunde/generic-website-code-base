@@ -69,9 +69,9 @@ const UploadPageContentImage = () => {
     copyToClipboard(pageContentImageURL, notify);
   };
 
-  if (!canEdit) {
-    return <></>;
-  }
+  // if (!canEdit) {
+  //   return <></>;
+  // }
 
   return (
     <Dialog>

@@ -10,7 +10,7 @@ from app.schemas.user_info import  UserRoleStatusUpdate, UserProfileUpdate, User
 from app.models.user_info import T_UserInfo
 from app.config import settings
 from app.utils.file_utils import  delete_and_save_file_azure, delete_file_from_azure, save_file_to_azure
-from app.utils.response_json import build_page_content_json_with_excerpt, build_user_page_content_json, create_user_response, create_users_response
+from app.utils.response_json import build_page_content_json_with_excerpt, build_transform_user_to_partial_json, build_user_page_content_json, create_user_page_content_response, create_user_response, create_users_response
 from app.models.enums import E_MemberPosition, E_UserRole
 from app.core.auth import get_current_user
 from app.utils.utils import generate_unique_url, is_super_admin
@@ -39,7 +39,7 @@ def update_user_role_status(db: Session, user_role_status_update: UserRoleStatus
     """
     Update a user's role.
     """
-
+    existing_user = db.query(T_UserInfo).filter(T_UserInfo.UI_ID == user_role_status_update.UI_ID).first()
     if user_role_status_update.UI_Role and E_UserRole.SuperAdmin in user_role_status_update.UI_Role:
         existing_superadmin = db.query(T_UserInfo).filter(T_UserInfo.UI_Role.any(E_UserRole.SuperAdmin)).first()
         if existing_superadmin and existing_superadmin.UI_ID != user_role_status_update.UI_ID:
@@ -56,11 +56,16 @@ def update_user_role_status(db: Session, user_role_status_update: UserRoleStatus
                 detail="There is already an existing Director in the system."
             )
 
-    if user_role_status_update.UI_Role and E_UserRole.Member in user_role_status_update.UI_Role and not user_role_status_update.UI_MemberPosition:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="A position must be assigned to a member user."
-        )
+    if (
+        user_role_status_update.UI_Role 
+        and E_UserRole.Member in user_role_status_update.UI_Role 
+        and not user_role_status_update.UI_MemberPosition
+    ):
+        if not existing_user.UI_MemberPosition:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="A position must be assigned to a member user."
+            )
     
     if user_role_status_update.UI_Role and not E_UserRole.Member in user_role_status_update.UI_Role and len(user_role_status_update.UI_Role) > 1:
         raise HTTPException(
@@ -74,24 +79,34 @@ def update_user_role_status(db: Session, user_role_status_update: UserRoleStatus
             detail="Too many roles assigned. Even for a 'Member', the maximum allowed roles are two."
         )
 
-
     if user_role_status_update.UI_ID == current_user.UI_ID:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You cannot update your own role!")
 
-    if  user_role_status_update.UI_Role and E_UserRole.Alumni in  user_role_status_update.UI_Role:
+    if user_role_status_update.UI_Role and E_UserRole.Alumni in user_role_status_update.UI_Role:
         user_role_status_update.UI_Role = [E_UserRole.Alumni]
 
 
+    # Prepare update data
     update_data = user_role_status_update.model_dump(exclude_unset=True)
     update_data = {k: v for k, v in update_data.items() if v is not None}
+
+    if user_role_status_update.UI_Role and (
+        E_UserRole.User in user_role_status_update.UI_Role 
+        or E_UserRole.Public in user_role_status_update.UI_Role
+    ):
+        update_data["UI_MemberPosition"] = None
+
+    print(user_role_status_update,"user_role_status_update")
     
     user = user_crud.update_user_role_status(
         db, 
         user_role_status_update.UI_ID, 
-        update_data)
+        update_data
+    )
     
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
     return user
 
 async def update_user_profile(db: Session, user_id: str, profile_update: UserProfileUpdate):
@@ -148,7 +163,7 @@ async def update_user_profile(db: Session, user_id: str, profile_update: UserPro
             detail="Internal Server Error"
         )
     
-    return updated_user
+    return build_transform_user_to_partial_json(updated_user)
 
 async def delete_user(db: Session, delete_user_id: str, current_user: T_UserInfo ):
     """
@@ -233,7 +248,7 @@ def get_user_by_id(db: Session, user_id, pg_offset: Optional[int] = 8, pg_page_n
     pg_offset = pg_offset or 8
     pg_page_number = pg_page_number or 1
 
-    user_fetched = user_crud.get_user_by_id(db=db, user_id=user_id)
+    user_fetched = user_crud.get_user_by_url(db=db, user_id=user_id)
     
     if not user_fetched:
         raise HTTPException(
@@ -258,3 +273,57 @@ def get_user_by_id(db: Session, user_id, pg_offset: Optional[int] = 8, pg_page_n
         transformed_user_page_contents.append(transformed_user_page_content)
 
     return create_user_response(user=user_fetched, page_contents=transformed_user_page_contents)
+
+
+
+def get_user_by_url(db: Session, user_url, pg_offset: Optional[int] = 10, pg_page_number: Optional[int] = 1):
+    """
+    Retrieve a user by their URL from the database.
+    """
+    pg_offset = pg_offset or 8
+    pg_page_number = pg_page_number or 1
+
+    # Fetch user from the database
+    user_fetched = user_crud.get_user_by_url(db=db, user_url=user_url)
+    if not user_fetched:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'User with URL {user_url} not found.'
+        )
+    
+    user_page_contents = user_fetched.UI_UsersPageContents
+    total_page_content_count = len(user_page_contents)
+
+    total_pages = (total_page_content_count + pg_offset - 1) // pg_offset  # Ceiling division
+
+    if pg_page_number > total_pages:
+        # Option 1: Return an empty response
+        return create_user_page_content_response(
+            total_page_content=total_page_content_count,
+            user_response=create_user_response(user=user_fetched, page_contents=[])
+        )
+        # Option 2: Raise an error (uncomment if preferred)
+        # raise HTTPException(
+        #     status_code=status.HTTP_400_BAD_REQUEST,
+        #     detail=f'Page number {pg_page_number} exceeds total pages {total_pages}.'
+        # )
+
+    start_index = (pg_page_number - 1) * pg_offset
+    end_index = start_index + pg_offset
+    paginated_user_page_contents = user_page_contents[start_index:end_index]
+
+    transformed_user_page_contents = []
+    for user_page_content in paginated_user_page_contents:
+        user = user_crud.get_user_by_id(db=db, user_id=user_page_content.UI_ID)
+        existing_page = page.page_crud.get_page_by_id(db=db, page_id=user_page_content.PG_ID)
+        transformed_content = build_page_content_json_with_excerpt(
+            user_page_content, user, page=existing_page
+        )
+        transformed_user_page_contents.append(transformed_content)
+
+    user_response = create_user_response(user=user_fetched, page_contents=transformed_user_page_contents)
+
+    return create_user_page_content_response(
+        total_page_content=total_page_content_count,
+        user_response=user_response
+    )

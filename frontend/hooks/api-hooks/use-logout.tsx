@@ -30,7 +30,7 @@ const useLogout = () => {
         handleCloseDrawer();
       }
       notify('Success', response.message || successMessage, 'success');
-   
+      Cookies.remove('access_token_metadata');
       dispatch(
         setUIIsUserEditingMode({
           uiIsUserEditingMode: false,
@@ -46,6 +46,7 @@ const useLogout = () => {
           uiId: null,
           uiFullName: '',
           uiInitials: '',
+          uiUniqueURL: '',
           uiIsAdmin: false,
           uiIsLoading: false,
           uiIsSuperAdmin: false,

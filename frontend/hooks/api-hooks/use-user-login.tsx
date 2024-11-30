@@ -15,6 +15,7 @@ import { reloadPage, transformToUserInfo } from '../../utils/helper';
 import { setUIActiveUser } from '../../store/slice/userSlice';
 import { useNotification } from '../../components/hoc/notification-provider';
 import { Cookie } from 'lucide-react';
+import { ICompleteUserResponse } from '../../types/backendResponseInterfaces';
 
 const useUserLogin = () => {
   const dispatch = useAppDispatch();
@@ -59,6 +60,7 @@ const useUserLogin = () => {
         uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
         uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
         uiId: userProfile.id,
+        uiUniqueURL: userProfile.uiUniqueURL,
         uiIsLoading: isActiveUserFetchLoading,
         uiCanEdit:
           userProfile.uiRole.includes(EUserRole.Admin) ||
@@ -87,8 +89,10 @@ const useUserLogin = () => {
   useEffect(() => {
     const fetchUserData = () => {
       if (activeUserData?.data) {
+        const activeUserDataUnknown: unknown = activeUserData?.data;
+
         const userProfile: IUserInfo = transformToUserInfo(
-          activeUserData?.data
+          activeUserDataUnknown as ICompleteUserResponse
         );
         dispatch(
           setUIActiveUser({
@@ -97,6 +101,7 @@ const useUserLogin = () => {
             uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
             uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
             uiId: userProfile.id,
+            uiUniqueURL: userProfile.uiUniqueURL,
             uiIsLoading: isActiveUserFetchLoading,
             uiCanEdit:
               userProfile.uiRole.includes(EUserRole.Admin) ||
@@ -110,6 +115,7 @@ const useUserLogin = () => {
           setUIActiveUser({
             uiId: null,
             uiFullName: '',
+            uiUniqueURL: '',
             uiInitials: '',
             uiIsAdmin: false,
             uiIsLoading: isActiveUserFetchLoading,

@@ -42,15 +42,13 @@ def create_app() -> FastAPI:
     # Initialize FastAPI application with lifespan
     app = FastAPI(lifespan=lifespan)
 
-
-    app.mount("/static", StaticFiles(directory="app/static"), name="static")
+    if not is_production:
+        app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
     app.add_middleware(ExceptionHandlingMiddleware)
 
     origins = [
         settings.FRONTEND_URL,  
-       'https://localhost:3000',
-        # Add other origins as needed
     ]
 
     app.add_middleware(

@@ -12,6 +12,9 @@ from app.utils.response import error_response
 import shortuuid
 from sqlalchemy.orm import Session
 
+
+
+
 TElement = Dict[str, Any]
 TDescendant = Union[TElement, Dict[str, str]]
 
@@ -175,6 +178,7 @@ def generate_unique_url(db: Session, first_name: str, last_name: str):
     Returns:
         str: A unique URL.
     """
+    shortuuid.set_alphabet("abcdefghijklmnopqrstuvwxyz")
     base_url = f"{first_name.lower()}-{last_name.lower()}".replace(" ", "-")
 
     existing_url = db.query(T_UserInfo).filter_by(UI_UniqueURL=base_url).first()
@@ -183,10 +187,10 @@ def generate_unique_url(db: Session, first_name: str, last_name: str):
         return base_url
 
     while True:
-        short_uuid = shortuuid.ShortUUID().random(length=9)
+        short_uuid = shortuuid.ShortUUID().random(length=9).lower()
         unique_url = f"{base_url}-{short_uuid}"
 
-        if not db.query(T_UserInfo).filter_by(url=unique_url).first():
+        if not db.query(T_UserInfo).filter_by(UI_UniqueURL=unique_url).first():
             break
 
     return unique_url

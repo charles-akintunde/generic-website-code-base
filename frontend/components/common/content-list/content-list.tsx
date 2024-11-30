@@ -162,16 +162,16 @@ const ContentList: React.FC<ContentListProps> = ({
     const observer = new IntersectionObserver(handleObserver, {
       root: null,
       rootMargin: '350px',
-      threshold: 0,
+      threshold: 0.1,
     });
 
     if (observerRef.current) {
       observer.observe(observerRef.current);
     }
 
-    return () => {
-      if (observerRef.current) observer.unobserve(observerRef.current);
-    };
+    // return () => {
+    //   if (observerRef.current) observer.unobserve(observerRef.current);
+    // };
   }, [handleObserver]);
 
   useEffect(() => {

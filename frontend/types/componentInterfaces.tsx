@@ -60,8 +60,14 @@ export interface IUserInfo extends IUserBase {
   uiUserPageContents?: IPageContentMain[];
 }
 
+export interface IUserPageContent {
+  user: IUserInfo,
+  totalPageContent: number
+}
+
 export interface IUIActiveUser {
   uiId: string | null;
+  uiUniqueURL: string;
   uiFullName: string;
   uiInitials: string;
   uiIsAdmin: boolean;

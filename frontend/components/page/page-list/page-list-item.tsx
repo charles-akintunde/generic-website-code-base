@@ -16,6 +16,7 @@ import { useGetPagesWithOffsetQuery } from '../../../api/pageApi';
 import { useRouter } from 'next/navigation';
 import { useAppSelector } from '../../../hooks/redux-hooks';
 import { ExternalLink } from 'lucide-react';
+import AppLoading from '../../common/app-loading';
 
 const PageListItem: React.FC = () => {
   const router = useRouter();
@@ -57,7 +58,6 @@ const PageListItem: React.FC = () => {
 
   useEffect(() => {
     if (hasPagesFetchError) {
-      console.log('Accessed Denied From Page List!!!');
       handleRoutingOnError(router, hasPagesFetchError, pagesFetchError);
     }
   }, [hasPagesFetchError, pagesFetchError, router]);
@@ -151,9 +151,15 @@ const PageListItem: React.FC = () => {
     }));
   };
 
+  if (isPagesFetchLoading) {
+    return <AppLoading />;
+  }
+
   return (
     <div className=" space-y-4">
-      <Table
+
+      {
+        pages &&  <Table
         // @ts-ignore
         columns={columns}
         scroll={{ x: 1200 }}
@@ -168,6 +174,8 @@ const PageListItem: React.FC = () => {
           total: totalPageCount,
         }}
       />
+      }
+     
     </div>
   );
 };

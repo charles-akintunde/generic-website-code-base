@@ -8,6 +8,7 @@ import {
   useDeleteUserMutation,
   useEditRoleAndStatusMutation,
   useEditUserMutation,
+  userApi
 } from '../../api/userApi';
 import {
   useGetActiveUserQuery,
@@ -213,6 +214,15 @@ export const useUserInfo = () => {
 
       roles = [...new Set(roles)];
 
+      console.log({
+        UI_ID: userId,
+        UI_Role: roles.length == 0 ? undefined : roles,
+        UI_Status: Number(userInfo.uiStatus),
+        UI_MemberPosition: userInfo.uiMemberPosition
+          ? Number(userInfo.uiMemberPosition)
+          : undefined,
+      },)
+
       if (uiActiveUser.uiIsSuperAdmin && !isSameUser) {
         const response = await editRoleAndStatus({
           UI_ID: userId,
@@ -263,11 +273,10 @@ export const useUserInfo = () => {
       if (userInfo.uiFirstName) {
         formData.append('UI_FirstName', userInfo.uiFirstName);
       }
-
-
       if (userInfo.uiLastName) {
         formData.append('UI_LastName', userInfo.uiLastName);
       }
+
       if (userInfo.uiCity !== undefined) {
         if (
           userInfo.uiCity &&
@@ -386,7 +395,39 @@ export const useUserInfo = () => {
           // @ts-ignore
           formData,
         }).unwrap();
+      
+      const userProfile = transformToUserInfo(response.data);
+      if(initialUserInfo.uiUniqueURL != userProfile.uiUniqueURL){
 
+        const activeUserData = {
+          uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+          uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+          uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
+          uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
+          uiId: userProfile.id,
+          uiUniqueURL: userProfile.uiUniqueURL,
+          uiIsLoading: isActiveUserFetchLoading,
+          uiCanEdit:
+            userProfile.uiRole.includes(EUserRole.Admin) ||
+            userProfile.uiRole.includes(EUserRole.SuperAdmin),
+          uiRole: userProfile.uiRole,
+          uiPhotoURL: userProfile.uiPhoto,
+        };
+  
+        dispatch(
+          setUIActiveUser(activeUserData)
+        );
+  
+        const newUrl = `/${'profile'}/${response.data.UI_UniqueURL}`;
+        router.replace(newUrl);
+      }else{
+        dispatch(
+          userApi.util.invalidateTags([
+            { type: 'User', id: userId },
+          
+          ])
+        );
+      }
         notify(
           'Success',
           response.message ||
@@ -397,10 +438,7 @@ export const useUserInfo = () => {
     } catch (error: any) {
       console.error('Error editing user:', error);
 
-      const errorMessage =
-        error.data?.message ||
-        error.data?.detail ||
-        'Failed to update the user information. Please try again later.';
+      const errorMessage = error.data?.message || error.data?.detail || 'Failed to update the user information. Please try again later.';
       notify('Error', errorMessage, 'error');
     }
   };

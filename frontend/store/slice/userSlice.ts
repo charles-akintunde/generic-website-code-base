@@ -26,6 +26,7 @@ const initialState: UserState = {
   isDialogOpen: false,
   uiActiveUser: {
     uiId: null,
+    uiUniqueURL: '',
     uiFullName: '',
     uiInitials: '',
     uiIsLoading: true,

@@ -25,7 +25,7 @@ class T_UserInfo(Base):
     UI_UniqueURL = Column(String(150),nullable=False, unique=True, index=True)
     UI_Email = Column(String(100), nullable=False, unique=True)
     UI_PasswordHash = Column(String(255), nullable=False)
-    UI_Role = Column(ARRAY(Enum(E_UserRole)), nullable=False, default=[E_UserRole.Public])
+    UI_Role = Column(ARRAY(Enum(E_UserRole)), nullable=False, default=[E_UserRole.User])
     UI_Status = Column(Enum(E_Status), nullable=False, default=E_Status.Unauthenticated)
     UI_City = Column(String(100))
     UI_Province = Column(String(100))

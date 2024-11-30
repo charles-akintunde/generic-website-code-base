@@ -13,7 +13,7 @@ from app.schemas.response import StandardResponse
 from app.schemas.user_info import UserDelete, UserProfileUpdate, UserRoleStatusUpdate, UserStatusUpdate
 from app.utils.utils import is_admin, is_super_admin
 from app.models.user_info import T_UserInfo
-from app.services.user_info import delete_user, get_user_by_id, get_users, get_users_assigned_with_positions, update_user_profile, update_user_role_status, update_user_status
+from app.services.user_info import delete_user, get_user_by_id, get_user_by_url, get_users, get_users_assigned_with_positions, update_user_profile, update_user_role_status, update_user_status
 from app.utils.response import error_response, success_response
 from app.utils.file_utils import  delete_and_save_file_azure, delete_file_from_azure, save_file_to_azure
 
@@ -172,10 +172,8 @@ async def update_user_profile_endpoint(
             UI_About=json.loads(UI_About) if UI_About else None
             
         )
-
-        print(profile_update,"profile_update")
         user = await update_user_profile(db, str(current_user.UI_ID), profile_update)
-        return success_response("User profile updated successfully")
+        return success_response(data=user.model_dump(), message="User profile updated successfully")
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)
     
@@ -226,7 +224,7 @@ async def get_users_endpoint(
     current_user: T_UserInfo = Depends(get_current_user)
   ):
     try:
-        #is_super_admin(current_user)
+        is_super_admin(current_user)
         users_response = get_users(db=db, page=page, limit=limit)
         return success_response(data = users_response.model_dump(), message='Users fetched successfully')
     except HTTPException as e:
@@ -255,9 +253,9 @@ async def get_member_users_endpoint(
 #     """
 #     return  success_response( message='Pages fetched successfully')
     
-@router.get("/{user_id}", response_model=StandardResponse)
-async def get_user_endpoint( user_id: str, pg_page_number: int = Query(1),
-    pg_offset: int = Query(8), db: Session = Depends(get_db)):
+@router.get("/{user_url}", response_model=StandardResponse)
+async def get_user_endpoint( user_url: str, pg_page_number: int = Query(1),
+    pg_offset: int = Query(10), db: Session = Depends(get_db)):
     """
     Fetch user details by user ID.
 
@@ -274,7 +272,7 @@ async def get_user_endpoint( user_id: str, pg_page_number: int = Query(1),
         HTTPException: If the user is not found or any other error occurs.
     """
     try:
-        user_response = get_user_by_id(db=db,user_id=user_id, pg_page_number=pg_page_number, pg_offset=pg_offset)
+        user_response = get_user_by_url(db=db,user_url=user_url, pg_page_number=pg_page_number, pg_offset=pg_offset)
         return success_response(data= user_response.model_dump(), message="User fetched successfully.")
     except HTTPException as e:
         return error_response(message=e.detail,status_code=e.status_code)

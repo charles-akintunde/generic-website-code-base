@@ -5,6 +5,7 @@ import {
   IUserResponseData,
   Page,
   PagesData,
+  IUserPageContentResponseData,
 } from '../types/backendResponseInterfaces';
 import {
   IPageList,
@@ -16,6 +17,7 @@ import {
   IUserList,
   IUserInfo,
   Notify,
+  IUserPageContent,
 } from '../types/componentInterfaces';
 import {
   EMemberPosition,
@@ -371,6 +373,14 @@ export const transformToUserInfo = (data: ICompleteUserResponse): IUserInfo => {
   };
 };
 
+export const transformUserPageContent = (data:IUserPageContentResponseData): IUserPageContent => {
+  return {
+    user: transformToUserInfo(data.user_response),
+    totalPageContent: data.total_page_content
+  }
+
+}
+
 // const pageContentResponse: IPageContentMain = {
 //   pageContentId: pageContent.PC_ID,
 //   pageId: pageContent.PG_ID,
@@ -515,13 +525,16 @@ export const mapToIIUserList = (data: IUserResponseData): IUserList => {
     uiFirstName: user.UI_FirstName,
     uiLastName: user.UI_LastName,
     uiEmail: user.UI_Email,
+    uiUniqueURL: user.UI_UniqueURL,
+    uiPrefix: user.UI_Prefix,
+    uiSuffix: user.UI_Suffix,
     uiRole: user.UI_Role,
     uiMainRoles: user.UI_Role.filter((role) => role != EUserRole.Alumni)[0],
     uiIsUserAlumni: user.UI_Role.includes(EUserRole.Alumni),
     uiStatus: user.UI_Status,
     uiRegDate: user.UI_RegDate,
     uiPhotoUrl: user.UI_PhotoURL,
-    uiMemberPosition: user.UI_MemberPosition,
+    uiMemberPosition: user.UI_MemberPosition ?  user.UI_MemberPosition : '',
     uiCountry: user.UI_Country,
     uiFullName: `${user.UI_FirstName} ${user.UI_LastName}`,
     uiInitials: user.UI_FirstName[0] + user.UI_LastName[0],
@@ -643,20 +656,30 @@ export const handleRoutingOnError = (
   clearState?: () => void
 ) => {
   if (hasError && error) {
-    if (error.status === 404) {
-      router.replace('/404');
-    } else if (error.status === 500) {
-      router.replace('/500');
-    } else if (error.status === 307) {
-    } else {
-      router.replace('/access-denied');
+    switch (error.status) {
+      case 404:
+        router.replace('/404');
+        break;
+      case 500:
+        router.replace('/internal-server-error'); 
+        break;
+      case 307:
+        //
+        break;
+      default:
+        router.replace('/access-denied');
     }
 
     if (clearState) {
       clearState();
     }
+
+    if (clearCache) {
+      clearCache();
+    }
   }
 };
+
 
 export function sanitizeAndCompare(str1: string, str2: string) {
   if (!str1 || !str2) return false;
@@ -774,3 +797,22 @@ export const clearAllCaches = (dispatch: Dispatch) => {
   );
   // Add other APIs and tags as needed
 };
+
+
+export const gradients = [
+  'bg-gradient-to-r from-blue-100 via-blue-100 to-purple-100',
+  'bg-gradient-to-r from-green-100 via-teal-100 to-blue-100',
+  'bg-gradient-to-r from-purple-100 via-pink-100 to-red-100',
+  'bg-gradient-to-r from-yellow-100 via-orange-100 to-pink-100',
+  'bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100',
+  'bg-gradient-to-r from-teal-100 via-green-200 to-lime-100',
+  'bg-gradient-to-r from-pink-100 via-red-100 to-yellow-100',
+  'bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300',
+  'bg-gradient-to-r from-sky-100 via-sky-200 to-indigo-100',
+  'bg-gradient-to-r from-emerald-100 via-lime-100 to-yellow-100',
+  'bg-gradient-to-r from-cyan-100 via-blue-200 to-purple-200',
+  'bg-gradient-to-r from-rose-100 via-pink-200 to-fuchsia-200',
+  'bg-gradient-to-r from-red-200 via-orange-200 to-yellow-200',
+  'bg-gradient-to-r from-blue-50 via-purple-100 to-indigo-200',
+  'bg-gradient-to-r from-green-50 via-teal-100 to-cyan-200',
+];

@@ -2,13 +2,9 @@
 import React from 'react';
 import { Result } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
-import { primarySolidButtonStyles } from '../../../../../styles/globals';
-import AppButton from '../../../../../components/common/button/app-button';
+import { primarySolidButtonStyles } from '../../styles/globals';
+import AppButton from './button/app-button';
 
-interface AccessDeniedProps {
-  currentUserRole: string;
-  pagePermission: string[];
-}
 
 const InternalServerError  = () => {
   return (

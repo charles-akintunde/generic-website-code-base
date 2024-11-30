@@ -51,9 +51,7 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
   const canEdit = uiActiveUser.uiCanEdit;
   const { sendLogoutRequest } = useLogout();
   const userFullName = uiActiveUser.uiFullName;
-  const transformedName = userFullName
-  .toLowerCase() 
-  .replace(/\s+/g, '-');
+
 
   return (
     <DropdownMenu>
@@ -64,7 +62,7 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href={`/profile/${transformedName}?id=${uiId}`}>
+          <Link href={`/profile/${uiActiveUser.uiUniqueURL}`}>
             <DropdownMenuItem className="cursor-pointer">
               <User className="mr-2 h-4 w-4" />
               Profile
@@ -169,7 +167,6 @@ const Header: React.FC = ({}) => {
 
   const metadataCookie = Cookies.get('access_token_metadata');
 
-  console.log( Cookies.get('access_token_metadata'),"ACCESS TOKEN")
 
   useEffect(() => {
     const key = hasNavItems(navMenuItems, pathname);

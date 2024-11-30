@@ -1,16 +1,18 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import useVerifyAccount from '../../../../../../hooks/api-hooks/use-verify-account';
 import AppRequestResult from '../../../../../../components/common/app-request-result';
 import { ArrowRightIcon, ReloadIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import { Button } from '../../../../../../components/ui/button';
-import AppLoading from '../../../../../../components/common/app-loading';
+import { Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const VerifyUserAccount: React.FC = () => {
   const params = useParams();
   const { type, token } = params as { type: string; token: string };
+
   const {
     sendAccountVerificationToken,
     isLoading,
@@ -19,62 +21,71 @@ const VerifyUserAccount: React.FC = () => {
     errorMessage,
     successMessage,
   } = useVerifyAccount();
-  const requestStatus = isSuccess ? 'success' : 'error';
+
+  const [isTokenSent, setIsTokenSent] = useState(false);
 
   useEffect(() => {
-    sendAccountVerificationToken(token);
-  }, [token]);
+    if (token && !isTokenSent) {
+      sendAccountVerificationToken(token);
+      setIsTokenSent(true);
+    }
+  }, [token, isTokenSent, sendAccountVerificationToken]);
 
-  if (isLoading || !isError) {
-    return <AppLoading />;
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center">
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 50 }} spin />} />
+      </div>
+    );
   }
 
   return (
     <>
       {isSuccess ? (
         <AppRequestResult
-          status={requestStatus}
+          status="success"
           title="Success"
           subTitle={successMessage}
           extra={[
             <Button
+              key="login"
               className="text-white bg-primary flex items-center hover:bg-primary hover:text-white"
               asChild
             >
-              <Link href={'/sign-in'}>
+              <Link href="/sign-in">
                 Go to Login Page <ArrowRightIcon className="ml-2" />
               </Link>
             </Button>,
           ]}
         />
-      ) : (
+      ) : isError ? (
         <AppRequestResult
-          status={requestStatus}
+          status="error"
           title="Error"
           subTitle={errorMessage}
           extra={
-            <div className="flex flex-nowrap  justify-center space-x-4">
+            <div className="flex flex-nowrap justify-center space-x-4">
               <Button
-                variant={'outline'}
+                key="retry"
+                variant="outline"
                 className="border border-primary hover:bg-primary text-primary hover:text-white font-medium py-2 px-4 rounded-md transition duration-200 ease-in-out flex items-center"
-                asChild
+                onClick={() => window.location.reload()} // Reloads the page
               >
-                <Link href={''}>
-                  Retry <ReloadIcon className="ml-2" />
-                </Link>
+                Retry <ReloadIcon className="ml-2" />
               </Button>
               <Button
-                className="text-white text-sm bg-primary hover:bg-primary hover:text-white font-medium py-2 px-4  rounded-md transition duration-200 ease-in-out flex items-center"
+                key="login"
+                className="text-white text-sm bg-primary hover:bg-primary hover:text-white font-medium py-2 px-4 rounded-md transition duration-200 ease-in-out flex items-center"
                 asChild
               >
-                <Link href={'/sign-in'}>
+                <Link href="/sign-in">
                   Go to Login Page <ArrowRightIcon className="ml-2" />
                 </Link>
               </Button>
             </div>
           }
         />
-      )}
+      ) : null}
     </>
   );
 };

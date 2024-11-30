@@ -37,8 +37,8 @@ export const userApi = createApi({
       query: () => `${url}/members`,
     }),
     getUser: builder.query<ICompleteUserResponseWrapper, IUserGetRequest>({
-      query: ({ UI_ID, PG_PageNumber, PG_PageOffset }) => {
-        let queryString = `${url}/${UI_ID}?pg_page_number=${PG_PageNumber}`;
+      query: ({ UI_UniqueURL, PG_PageNumber, PG_PageOffset }) => {
+        let queryString = `${url}/${UI_UniqueURL}?pg_page_number=${PG_PageNumber}`;
         if (PG_PageOffset !== undefined) {
           queryString += `&pg_offset=${PG_PageOffset}`;
         }
@@ -48,7 +48,7 @@ export const userApi = createApi({
       providesTags: (result) =>
         result
           ? [
-              { type: 'User', id: result.data.UI_ID },
+              { type: 'User', id: result.data.user_response.UI_ID },
               { type: 'User', id: 'USER_PROFILE' },
             ]
           : [{ type: 'User', id: 'USER_PROFILE' }],
@@ -62,9 +62,9 @@ export const userApi = createApi({
         method: 'PUT',
         body: (patch as any).formData,
       }),
-      invalidatesTags: (result, error, { UI_ID }) => [
-        { type: 'User', id: UI_ID },
-      ],
+      // invalidatesTags: (result, error, { UI_ID }) => [
+      //   { type: 'User', id: UI_ID },
+      // ],
     }),
     editRoleAndStatus: builder.mutation<
       IGenericResponse,

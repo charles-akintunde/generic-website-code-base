@@ -69,7 +69,7 @@ const usePage = ({
   } = useGetPageColumnsByDisplayUrlQuery(
     { PG_DisplayURL: pageDisplayURLForDynamicPage ?? '' },
     {
-      skip: !pageDisplayURLForDynamicPage,
+      skip: !pageDisplayURLForDynamicPage ,
     }
   );
 

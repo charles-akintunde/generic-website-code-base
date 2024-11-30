@@ -35,11 +35,12 @@ const customBaseQuery: BaseQueryFn<
         console.log('Token expired. Logging out...');
 
         Cookies.remove('access_token_metadata');
-
+        
         api.dispatch(
           setUIActiveUser({
             uiId: null,
             uiFullName: '',
+            uiUniqueURL: '',
             uiInitials: '',
             uiIsAdmin: false,
             uiIsLoading: false,
@@ -68,6 +69,7 @@ const customBaseQuery: BaseQueryFn<
           uiId: null,
           uiFullName: '',
           uiInitials: '',
+          uiUniqueURL: '',
           uiIsAdmin: false,
           uiIsLoading: false,
           uiIsSuperAdmin: false,

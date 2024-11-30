@@ -30,10 +30,12 @@ class UserCRUD:
         Update the user's role.
         """
         user = db.query(T_UserInfo).filter(T_UserInfo.UI_ID == user_id).first()
+
+        print(update_data,"update_data")
         if user:
             for key, value in update_data.items():
-                if value is None:
-                    continue
+                # if value is None:
+                #     continue
                 setattr(user, key, value)
             db.commit()
             db.refresh(user)
@@ -105,6 +107,19 @@ class UserCRUD:
         """
         return db.query(T_UserInfo).filter(T_UserInfo.UI_ID == user_id).first()
     
+    def get_user_by_url(self, db: Session, user_url: str) -> T_UserInfo:
+        """
+        Get a user by URL.
+
+        Args:
+            db (Session): Database session.
+            email (str): User's Id.
+
+        Returns:
+            User: User object if found, otherwise None.
+        """
+        return db.query(T_UserInfo).filter(T_UserInfo.UI_UniqueURL == user_url).first()
+    
     def get_users_with_assigned_positions(self, db: Session) -> List[UserPartial]:
         """
         Get users with assigned member positions.
@@ -120,6 +135,7 @@ class UserCRUD:
     
         return [UserPartial(
             UI_ID=str(row.UI_ID),
+            UI_UniqueURL = str(row.UI_UniqueURL),
             UI_FirstName=str(row.UI_FirstName),
             UI_LastName=str(row.UI_LastName),
             UI_Email=str(row.UI_Email),
@@ -128,7 +144,8 @@ class UserCRUD:
             UI_RegDate=row.UI_RegDate.isoformat(),
             UI_PhotoURL=str(row.UI_PhotoURL) if row.UI_PhotoURL else None, # type: ignore
             UI_MemberPosition=str(row.UI_MemberPosition.value) if row.UI_MemberPosition else None, # type: ignore
-            UI_Country = str(row.UI_Country) if row.UI_Country else None # type: ignore
+            UI_Country = str(row.UI_Country) if row.UI_Country else None, # type: ignore
+            
 
         ) for row in users]
 
@@ -159,10 +176,12 @@ class UserCRUD:
         """
         db_user = T_UserInfo(
             UI_ID=uuid.uuid4(),
+            UI_UniqueURL=user.UI_UniqueURL,
             UI_Email=user.UI_Email,
             UI_PasswordHash=user.UI_Password,
             UI_FirstName=user.UI_FirstName,
             UI_LastName=user.UI_LastName,
+        
         )
         db.add(db_user)
         db.commit()
@@ -193,6 +212,7 @@ class UserCRUD:
             T_UserInfo.UI_Status,
             T_UserInfo.UI_RegDate,
             T_UserInfo.UI_PhotoURL,
+            T_UserInfo.UI_UniqueURL,
             T_UserInfo.UI_MemberPosition
         )
 
@@ -203,6 +223,7 @@ class UserCRUD:
         
         return [UserPartial(
             UI_ID=str(row.UI_ID),
+            UI_UniqueURL=row.UI_UniqueURL,
             UI_FirstName=row.UI_FirstName,
             UI_LastName=row.UI_LastName,
             UI_Email=row.UI_Email,

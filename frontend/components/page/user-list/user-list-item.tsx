@@ -29,6 +29,7 @@ import ActionsButtons from '../../common/action-buttons';
 import { UserRoleStatusDialog } from '../../common/form/user-profile-form';
 import { useGetUsersQuery } from '../../../api/userApi';
 import { useUserInfo } from '../../../hooks/api-hooks/use-user-info';
+import AppLoading from '../../common/app-loading';
 
 const UserListItem = () => {
   const [pagination, setPagination] = useState({
@@ -108,7 +109,7 @@ const UserListItem = () => {
             title={`${record.uiFirstName} ${record.uiLastName}`}
           >
             <a
-              href={`/user-profile/${record.id}`}
+              href={`/profile/${record.uiUniqueURL}`}
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-blue-500 space-x-1 text-left flex items-center text-gray-700"
@@ -192,6 +193,10 @@ const UserListItem = () => {
     handleRoutingOnError(router, hasUserFetchError, userFetchError);
   }, [hasUserFetchError, userFetchError, router]);
 
+  if (isUsersFetchLoading) {
+    return <AppLoading />;
+  }
+
   return (
     <div className="p-4">
       {users && (
@@ -200,6 +205,7 @@ const UserListItem = () => {
             scroll={{ x: 1400 }}
             // @ts-ignore
             columns={userColumns}
+            loading={isUsersFetchLoading}
             dataSource={users && users}
             pagination={{
               pageSize: pagination.pageSize,
@@ -207,7 +213,6 @@ const UserListItem = () => {
               showSizeChanger: true,
               pageSizeOptions: ['10', '20', '30'],
             }}
-            loading={isUsersFetchLoading}
             onChange={handleTableChange}
             rowKey="uiId"
           />

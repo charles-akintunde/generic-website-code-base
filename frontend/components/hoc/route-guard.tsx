@@ -22,6 +22,14 @@ interface IRouteGuardProps {
   children: React.ReactNode;
 }
 
+const capitalizeTitle = (text: string) =>
+  text
+    .toLowerCase()
+    .split('-') 
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) 
+    .join(' ');
+
+
 interface isExistingRouteProps {
   allAppRoutes: IPageMenuItem[];
   pathname: string;
@@ -131,11 +139,22 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
 
   useEffect(() => {
     if (currentPage) {
-      document.title = `${currentPage.pageName} | ${appConfig.appName}`;
-
-      const metaDescription = document.querySelector(
-        'meta[name="description"]'
-      );
+      const lastSegment = pathname.split('/').filter(Boolean).pop();
+  
+      const capitalizeTitle = (text: string) =>
+        text
+          .toLowerCase()
+          .split('-') 
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+  
+      const title = lastSegment
+        ? capitalizeTitle(decodeURIComponent(lastSegment))
+        : capitalizeTitle(currentPage.pageName);
+  
+      document.title = `${appConfig.appName} - ${title}`;
+  
+      const metaDescription = document.querySelector('meta[name="description"]');
       if (metaDescription) {
         metaDescription.setAttribute(
           'content',
@@ -147,36 +166,36 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
         meta.content = currentPage.description || 'Default description for SEO';
         document.head.appendChild(meta);
       }
-
+  
       const ogTitle = document.querySelector('meta[property="og:title"]');
       if (ogTitle) {
-        ogTitle.setAttribute('content', currentPage.pageName);
+        ogTitle.setAttribute('content', title);
       }
-
+  
       const ogDescription = document.querySelector(
         'meta[property="og:description"]'
       );
       if (ogDescription) {
         ogDescription.setAttribute(
           'content',
-          currentPage.description ||
-            'Default description for social media sharing'
+          currentPage.description || 'Default description for social media sharing'
         );
       }
-
+  
       const ogUrl = document.querySelector('meta[property="og:url"]');
       if (ogUrl) {
         ogUrl.setAttribute('content', `${appConfig.appURL}${currentPage.href}`);
       }
     }
   }, [pathname, currentPage]);
+  
 
   useEffect(() => {
     if (uiIsLoading || !currentPage) return;
     if (allAppRoutes && allAppRoutes.length > 0) {
       const isValidRoute =
         currentPage ||
-        pathname.split('/')[1].startsWith('user-profile') ||
+        pathname.split('/')[1].startsWith('profile') ||
         pathname.startsWith('/confirm-user/account-creation') ||
         pathname.startsWith('/confirm-user/reset-password') ||
         isExistingRoute({ allAppRoutes: allAppRoutes, pathname: pathname }) ||
@@ -207,6 +226,8 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
       setUIIsUserEditingMode({
         uiIsUserEditingMode: false,
         uiEditorInProfileMode: false,
+        uiIsAdminInEditingMode: false,
+        uiIsPageContentEditingMode: false
       })
     );
 

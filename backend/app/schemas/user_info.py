@@ -34,6 +34,7 @@ class UserPartial(BaseModel):
     UI_ID: str
     UI_FirstName: str
     UI_LastName: str
+    UI_UniqueURL:str
     UI_Email: str
     UI_Role: List[str]
     UI_Status: str
@@ -64,7 +65,9 @@ class UserResponse(UserBase):
     UI_MemberPosition: Optional[int] = None
     UI_UserPageContents: Optional[List[PageContentResponse]] = None
 
-
+class UserPageContentsResponse(UserBase):
+    user_response: UserResponse
+    total_page_content: int
 
 class UserDelete(BaseModel):
     UI_ID: str
@@ -113,7 +116,7 @@ class UserCreate(BaseModel):
     UI_Email: EmailStr
     UI_Password: str 
     UI_ConfirmationTokenHash: Optional[str] = None
-    UI_UNIQUEURL: Optional[str] =None
+    UI_UniqueURL: Optional[str] =None
    
 class User(UserBase):
     """

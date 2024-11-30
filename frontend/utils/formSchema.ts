@@ -274,7 +274,22 @@ export const userProfileSchema = z.object({
 
 export const userRoleStatusSchema = z
   .object({
-    uiMainRoles: z.string().optional(),
+    uiMainRoles: z
+      .string()
+      .optional()
+      .refine(
+        //@ts-ignore
+        (value, ctx) => {
+          const isUserAlumni = ctx?.parent?.uiIsUserAlumni;
+          const memberPosition = ctx?.parent?.uiMemberPosition;
+          // If not Alumni and Member Position is empty, Role is required
+          if (!isUserAlumni && (!value || value.trim() === '') && !memberPosition) {
+            return false;
+          }
+          return true;
+        },
+        { message: 'Role must be selected if Member Position is empty and the user is not an Alumni.' }
+      ),
     uiStatus: z.string().optional(),
     uiMemberPosition: z.string().optional(),
     uiIsUserAlumni: z.boolean().default(false),
@@ -291,7 +306,19 @@ export const userRoleStatusSchema = z
       return true;
     },
     {
-      message: 'When uiRole is "Member", uiMemberPosition is required.',
-      path: ['uiMemberPosition'],
+      message:"Member Position is required when the role is 'Member'.",
+      path: ['uiMemberPosition'], // Attach the error to uiMemberPosition
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.uiIsUserAlumni && (!data.uiMemberPosition || data.uiMemberPosition.trim() === '')) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: 'Member Position cannot be empty when the user is an Alumni.',
+      path: ['uiMemberPosition'], // Attach the error to uiMemberPosition
     }
   );
