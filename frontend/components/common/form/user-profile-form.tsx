@@ -43,6 +43,7 @@ import { useUserInfo } from '../../../hooks/api-hooks/use-user-info';
 
 interface UserProfileFormProps {
   userInfo: IUserInfo;
+  isUserFetchLoading: boolean;
   setDialogOpen?: (open: boolean) => void;
 }
 
@@ -50,6 +51,7 @@ type UserProfileFormData = z.infer<typeof userProfileSchema>;
 
 export const UserProfileForm: React.FC<UserProfileFormProps> = ({
   userInfo,
+  isUserFetchLoading
 }) => {
   const dispatch = useAppDispatch();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
@@ -286,7 +288,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
             <LoadingButton
               className=""
               buttonText="Save Changes"
-              loading={false}
+      loading={isUserFetchLoading}
             />
           </div>
         )}
@@ -350,7 +352,7 @@ type UserRoleStatusFormData = z.infer<typeof userRoleStatusSchema>;
 export const UserRoleStatusDialog = () => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const activeUserId = uiActiveUser.uiId;
-  const { submitEditRoleStatus } = useUserInfo();
+  const { submitEditRoleStatus, isEditRoleAndStatusLoading } = useUserInfo();
   const dispatch = useAppDispatch();
   const isDialogOpen = useAppSelector((state) => state.userSlice.isDialogOpen);
   const userInfo = useAppSelector((state) => state.userSlice.editingUser);
@@ -474,7 +476,7 @@ export const UserRoleStatusDialog = () => {
 
                   <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4 flex justify-center">
                     <LoadingButton
-                      loading={false}
+                      loading={isEditRoleAndStatusLoading}
                       buttonText={'Save changes'}
                     />
                   </div>

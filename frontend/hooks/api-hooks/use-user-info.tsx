@@ -456,5 +456,7 @@ export const useUserInfo = () => {
     uiActiveUser,
     isActiveUserFetchLoading,
     activePageRefetch,
+    isResetPasswordWithTokenLoading,
+    isEditRoleAndStatusLoading
   };
 };

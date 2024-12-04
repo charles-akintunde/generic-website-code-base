@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Badge } from '../../ui/badge';
-import { Table, Tooltip } from 'antd';
+import { Empty, Table, Tooltip } from 'antd';
 import { EPageType, EUserRole } from '../../../types/enums';
 import {
   handleRoutingOnError,
@@ -159,7 +159,7 @@ const PageListItem: React.FC = () => {
     <div className=" space-y-4">
 
       {
-        pages &&  <Table
+        pages ?  <Table
         // @ts-ignore
         columns={columns}
         scroll={{ x: 1200 }}
@@ -173,7 +173,10 @@ const PageListItem: React.FC = () => {
           pageSizeOptions: ['10', '20', '30'],
           total: totalPageCount,
         }}
-      />
+      /> :   <Empty
+      description="No pages added yet"
+      image={Empty.PRESENTED_IMAGE_SIMPLE}
+    />
       }
      
     </div>

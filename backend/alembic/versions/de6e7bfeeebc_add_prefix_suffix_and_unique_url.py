@@ -29,6 +29,8 @@ def upgrade() -> None:
     # Get a bind to the current database session
     bind = op.get_bind()
     session = Session(bind=bind)
+    shortuuid.set_alphabet("abcdefghijklmnopqrstuvwxyz")
+
 
     # Fetch all existing users to populate unique URLs
     users = session.execute(
@@ -45,7 +47,7 @@ def upgrade() -> None:
             sa.text('SELECT 1 FROM "T_UserInfo" WHERE "UI_UniqueURL" = :unique_url'),
             {'unique_url': unique_url}
         ).fetchone():
-            unique_url = f"{base_url}-{shortuuid.ShortUUID().random(length=9)}"
+            unique_url = f"{base_url}-{shortuuid.ShortUUID().random(length=9).lower()}"
 
         # Update the user's unique URL
         session.execute(

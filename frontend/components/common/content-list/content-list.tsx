@@ -184,6 +184,9 @@ const ContentList: React.FC<ContentListProps> = ({
     );
   }, [router, hasPageFetchError, pageFetchError]);
 
+
+  
+
   if (isPageFetchLoading) {
     return <AppLoading />;
   }

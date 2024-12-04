@@ -30,7 +30,7 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ token }) => {
     },
   });
   const [loading, setLoading] = useState(false);
-  const { submitPasswordResetWithToken } = useUserInfo();
+  const { submitPasswordResetWithToken, isResetPasswordWithTokenLoading } = useUserInfo();
 
   // const errors = form.formState.errors;
 
@@ -65,7 +65,7 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ token }) => {
           />
           <LoadingButton
             buttonText="Reset Password"
-            loading={loading}
+            loading={isResetPasswordWithTokenLoading}
             type="submit"
           />
         </form>
@@ -86,6 +86,7 @@ const ResetPasswordWithEmailForm = () => {
     submitEmailForPasswordReset,
     isResetPasswordWithSuccess,
     resetPasswordSuccessMessage,
+    isResetPasswordWithLoading
   } = useUserInfo();
 
   const onSubmit = async (data: any) => {
@@ -115,7 +116,7 @@ const ResetPasswordWithEmailForm = () => {
 
           <LoadingButton
             buttonText="Reset Password"
-            loading={loading}
+            loading={isResetPasswordWithLoading}
             type="submit"
           />
         </form>

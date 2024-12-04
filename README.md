@@ -1,5 +1,3 @@
-
-
 # Generic Website Code Base Local Setup
 
 This repository contains a full-stack application with frontend and backend services, using Docker Compose to simplify the setup. Follow the instructions below to get everything up and running.

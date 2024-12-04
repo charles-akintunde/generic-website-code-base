@@ -217,7 +217,7 @@ const SinglePage = () => {
     <>
     <PageLayout
       type="singlePage"
-      title={`${!isSinglePageCreated ? 'Edit' : ''} ${fromKebabCase(pageDisplayURL)}`}
+      title={`${!isSinglePageCreated ? 'Edit' : ''} ${page?.pageName}`}
     >
       <div
         className={`flex flex-col mt-10 min-h-screen w-full ${containerNoFlexPaddingStyles}`}

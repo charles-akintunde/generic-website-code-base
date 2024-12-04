@@ -1,7 +1,7 @@
 'use-client';
 import React, { useEffect, useState } from 'react';
 import { EUserStatus, EMemberPosition, EUserRole } from '../../../types/enums';
-import { Avatar, Tooltip } from 'antd';
+import { Avatar, Empty,  Tooltip } from 'antd';
 import { Table } from 'antd';
 import { ExternalLink } from 'lucide-react';
 import {
@@ -199,7 +199,7 @@ const UserListItem = () => {
 
   return (
     <div className="p-4">
-      {users && (
+      {users ? (
         <>
           <Table
             scroll={{ x: 1400 }}
@@ -218,7 +218,11 @@ const UserListItem = () => {
           />
           <UserRoleStatusDialog />
         </>
-      )}
+      ): <Empty
+      description="No pages added yet"
+      image={Empty.PRESENTED_IMAGE_SIMPLE}
+    />
+      }
     </div>
   );
 };

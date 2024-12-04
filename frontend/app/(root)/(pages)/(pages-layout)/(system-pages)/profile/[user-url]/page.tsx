@@ -35,6 +35,7 @@ import {
 import { PageContentCarouselCard } from '../../../../../../../components/common/carousel/page-content-carousel';
 import { containerNoFlexPaddingStyles, userProfilePaddingStyles } from '../../../../../../../styles/globals';
 import { Pagination } from 'antd';
+import { IUserPageContentResponseData } from '../../../../../../../types/backendResponseInterfaces';
 export function sanitizeAndCompare(str1: string, str2: string) {
   if (!str1 || !str2) return false;
   return str1.trim().toLowerCase() === str2.trim().toLowerCase();
@@ -79,7 +80,7 @@ const UserProfilePage = () => {
 
   useEffect(() => {
     if (userData?.data) {
-      const userPageContentResponse: IUserPageContent =  transformUserPageContent(userData?.data);
+      const userPageContentResponse: IUserPageContent =  transformUserPageContent(userData?.data as IUserPageContentResponseData);
       const userInfo = userPageContentResponse?.user;
       const userPageContents = userPageContentResponse.user.uiUserPageContents;
       setTotalPages(userPageContentResponse.totalPageContent);

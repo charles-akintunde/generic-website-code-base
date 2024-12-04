@@ -1,7 +1,7 @@
 """Change Page Display URL Size
 
 Revision ID: 5434a46e7a8f
-Revises: 22401bd0b1d7
+Revises: 
 Create Date: 2024-11-22 10:14:22.906524
 
 """
@@ -13,9 +13,9 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '5434a46e7a8f'
-down_revision: Union[str, None] = '22401bd0b1d7'
+down_revision: Union[str, None] = 'b766b82bdb19'
 branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = '22401bd0b1d7'
+depends_on: Union[str, Sequence[str], None] = 'b766b82bdb19'
 
 
 def upgrade() -> None:
