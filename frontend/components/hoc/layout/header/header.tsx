@@ -20,21 +20,21 @@ import {
 import { User, RefreshCw, LogOut, LogIn, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
-import LogoutButton from '../../../common/button/logout-button';
-import { Separator } from '../../../ui/separator';
 import HoverableCard from '../../../common/hover-card';
 import {
   IUIActiveUser,
 
 } from '../../../../types/componentInterfaces';
 import usePage from '../../../../hooks/api-hooks/use-page';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import AppLoading from '../../../common/app-loading';
 import { hasNavItems } from '../../../../utils/helper';
-import { useUserInfo } from '../../../../hooks/api-hooks/use-user-info';
 import useUserLogin from '../../../../hooks/api-hooks/use-user-login';
 import { containerNoFlexPaddingStyles } from '../../../../styles/globals';
 import useLogout from '../../../../hooks/api-hooks/use-logout';
+import Cookies from 'js-cookie';
+import { useDispatch } from 'react-redux';
+import ExpiredSessionHandler from '../../../common/expired-session-handler';
 
 interface UserProfileDropDownProps {
   uiActiveUser: IUIActiveUser;
@@ -51,9 +51,7 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
   const canEdit = uiActiveUser.uiCanEdit;
   const { sendLogoutRequest } = useLogout();
   const userFullName = uiActiveUser.uiFullName;
-  const transformedName = userFullName
-  .toLowerCase() 
-  .replace(/\s+/g, '-');
+
 
   return (
     <DropdownMenu>
@@ -64,18 +62,13 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href={`/profile/${transformedName}?id=${uiId}`}>
+          <Link href={`/profile/${uiActiveUser.uiUniqueURL}`}>
             <DropdownMenuItem className="cursor-pointer">
               <User className="mr-2 h-4 w-4" />
               Profile
             </DropdownMenuItem>
           </Link>
-          <Link href={`/reset-password`}>
-            <DropdownMenuItem className="cursor-pointer">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Reset Password
-            </DropdownMenuItem>
-          </Link>
+        
           {canEdit && (
             <Link href={`/admin-panel`}>
               <DropdownMenuItem className="cursor-pointer">
@@ -84,10 +77,16 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
               </DropdownMenuItem>
             </Link>
           )}
-           <DropdownMenuItem  className="cursor-pointer">
-            <div className='flex items-center' onClick={() => {
-             sendLogoutRequest();
-          }}>
+            <Link href={`/reset-password`}>
+            <DropdownMenuItem className="cursor-pointer">
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Reset Password
+            </DropdownMenuItem>
+          </Link>
+           <DropdownMenuItem onClick={() => {
+             sendLogoutRequest();}} className="cursor-pointer">
+            <div className='flex items-center' 
+             >
             <LogOut className="mr-2 h-4 w-4" />
             Log out
               </div>
@@ -101,29 +100,17 @@ export const UserProfileDropDown: React.FC<UserProfileDropDownProps> = ({
 
 export const UserProfile = () => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
-  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
   const initails = uiActiveUser.uiInitials;
-  const uiId = uiActiveUser.uiId;
 
-  if (!uiId) {
-    return (
-      <Link
-        href={'/sign-in'}
-        className="text-md justify-between cursor-pointer flex text-primary items-center transition duration-300 ease-in-out"
-      >
-        <HoverableCard>
-          <LogIn className="mr-2 h-4 w-4" /> Log in
-        </HoverableCard>
-      </Link>
-    );
-  }
+ 
 
   return (
     <div className="flex items-center space-x-1">
      
-      <HoverableCard>
+
         <UserProfileDropDown
           trigger={
+            <HoverableCard>
             <span className="flex space-x-1 items-center">
               <Avatar
                 style={{
@@ -139,18 +126,20 @@ export const UserProfile = () => {
 
               <ChevronDown className="h-3 w-3" />
             </span>
+             </HoverableCard>
           }
           uiActiveUser={uiActiveUser}
         />
-      </HoverableCard>
+     
     </div>
   );
 };
 
 const Header: React.FC = ({}) => {
   const dispatch = useAppDispatch();
-  const { isActiveUserFetchLoading } = useUserLogin();
+  const { isActiveUserFetchLoading, activeUserRefetch } = useUserLogin();
   const pathname = usePathname();
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
 
   const handleDrawerToggle = () => {
     dispatch(toggleDrawer());
@@ -176,6 +165,9 @@ const Header: React.FC = ({}) => {
     }
   };
 
+  const metadataCookie = Cookies.get('access_token_metadata');
+
+
   useEffect(() => {
     const key = hasNavItems(navMenuItems, pathname);
     setActiveNavItem(key);
@@ -188,6 +180,7 @@ const Header: React.FC = ({}) => {
 
   return (
     <>
+    <ExpiredSessionHandler isActiveUserFetchLoading ={uiActiveUser.uiIsLoading}/>
       {true ? (
         <>
           {' '}
@@ -220,7 +213,17 @@ const Header: React.FC = ({}) => {
               </div>
               <div className="flex-1 flex justify-end items-center space-x-4">
                 <div className="hidden lg:block">
-                  <UserProfile />
+                  {
+                    uiActiveUser.uiId ? <UserProfile key={uiActiveUser.uiId} />: <Link
+                    href={'/sign-in'}
+                    className="text-md justify-between cursor-pointer flex text-primary items-center transition duration-300 ease-in-out"
+                  >
+                    <HoverableCard>
+                      <LogIn className="mr-2 h-4 w-4" /> Log in
+                    </HoverableCard>
+                  </Link>
+                  }
+                
                 </div>
                 <div
                   className="block lg:hidden cursor-pointer"

@@ -27,7 +27,7 @@ export const transitionStyles = 'transition duration-300 ease-in-out ';
 export const globalTheme = {
   token: {
     fontSize: 16,
-    colorPrimary: '#42f569', 
+    colorPrimary: '#17a34a', 
   },
   components: {
     Menu: {

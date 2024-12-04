@@ -26,6 +26,9 @@ import { useGetPageQuery } from '../../../api/pageApi';
 import { Page } from '../../../types/backendResponseInterfaces';
 import { useAppSelector } from '../../../hooks/redux-hooks';
 import { useGetPageWithPaginationQuery } from '../../../api/pageContentApi';
+import { Switch } from 'antd';
+import { useDispatch } from 'react-redux';
+import { setUIIsUserEditingMode } from '../../../store/slice/userSlice';
 
 const SinglePage = () => {
   const router = useRouter();
@@ -84,12 +87,17 @@ const SinglePage = () => {
   const [plateEditorKey, setPlateEditorKey] = useState<string>(
     JSON.stringify(plateEditor)
   );
+  const dispatch = useDispatch();
   const { submitEditedPageContent } = usePageContent();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
-  const uiId = uiActiveUser.uiId;
+  const {uiId} = uiActiveUser;
   const [singlePage, setSinglePage] = useState<IPageMain>();
   const [isDataSet, setIsDatSet] = useState<boolean>(false);
+  const activeUserProfileEdit = useAppSelector(
+    (state) => state.userSlice.uiActiveUserProfileEdit
+  );
+  const {uiIsAdminInEditingMode} = activeUserProfileEdit;
 
   useEffect(() => {
     setPageDisplayURL(pathname.split('/')[1]);
@@ -127,6 +135,7 @@ const SinglePage = () => {
 
   const handleSinglePageSubmit = async () => {
     const pageContentId = singlePageContent && singlePageContent.pageContentId;
+
     const pageContentName = page?.pageName;
     const isPageContentHidden = false;
     const pageContentDisplayImage =
@@ -149,6 +158,7 @@ const SinglePage = () => {
 
       kebabCasePageName
     );
+
     const newDataWithContents = { editorContent: plateEditor };
     const originalData = { editorContent: originalSinglePageData };
     const changedFields = getChangedFields(originalData, newDataWithContents);
@@ -172,6 +182,30 @@ const SinglePage = () => {
   };
 
   useEffect(() => {
+    dispatch(
+      setUIIsUserEditingMode({
+        uiIsAdminInEditingMode: false,
+        uiIsPageContentEditingMode: true,
+        uiIsUserEditingMode: false,
+        uiEditorInProfileMode: false,
+       
+      })
+    );
+  },[]);
+
+  const handleModeChange = (checked: boolean) => {
+    dispatch(
+      setUIIsUserEditingMode({
+        uiIsAdminInEditingMode: !uiIsAdminInEditingMode,
+        uiIsPageContentEditingMode: true,
+        uiIsUserEditingMode: false,
+        uiEditorInProfileMode: false,
+      })
+    );
+  };
+
+
+  useEffect(() => {
     handleRoutingOnError(router, hasPageFetchError, pageFetchError);
   }, [hasPageFetchError, router, pageFetchError]);
 
@@ -181,37 +215,49 @@ const SinglePage = () => {
 
   return (
     <>
-      <PageLayout
-        type="singlePage"
-        title={`${!isSinglePageCreated ? 'Edit' : ''} ${fromKebabCase(pageDisplayURL)}`}
+    <PageLayout
+      type="singlePage"
+      title={`${!isSinglePageCreated ? 'Edit' : ''} ${fromKebabCase(pageDisplayURL)}`}
+    >
+      <div
+        className={`flex flex-col mt-10 min-h-screen w-full ${containerNoFlexPaddingStyles}`}
       >
-        <div
-          className={`flex flex-col mt-10 min-h-screen w-full ${containerNoFlexPaddingStyles} `}
-        >
-          <div className={`space-y-6 mb-10 w-full shadow-md`}>
-            <PlateEditor
-              key={plateEditorKey}
-              value={plateEditor}
-              onChange={(value) => {
-                setPlateEditor(value);
-              }}
-            />
-          </div>
+        <div className="flex my-6 justify-end w-full">
           {canEdit && (
-            <div
-              className={`w-full sticky bg-pg flex mx-auto bottom-0 z-40 h-20 shadow2xl\\`}
-            >
-              <LoadingButton
-                className=""
-                buttonText="Save Changes"
-                loading={isPageFetchLoading}
-                onClick={handleSinglePageSubmit}
+            <div className="flex justify-end">
+              <Switch
+                checkedChildren="Editing Mode"
+                unCheckedChildren="Viewing Mode"
+                checked={uiIsAdminInEditingMode}
+                onChange={handleModeChange}
               />
             </div>
           )}
         </div>
-      </PageLayout>
-    </>
+  
+        <div className={`space-y-6 mb-10 w-full shadow-md`}>
+          <PlateEditor
+            key={plateEditorKey}
+            value={plateEditor}
+            onChange={(value) => {
+              setPlateEditor(value);
+            }}
+          />
+        </div>
+  
+        {canEdit && uiIsAdminInEditingMode && (
+          <div className={`w-full sticky bg-pg flex mx-auto bottom-0 z-40 h-20 shadow2xl`}>
+            <LoadingButton
+              className=""
+              buttonText="Save Changes"
+              loading={isPageFetchLoading}
+              onClick={handleSinglePageSubmit}
+            />
+          </div>
+        )}
+      </div>
+    </PageLayout>
+  </>
   );
 };
 

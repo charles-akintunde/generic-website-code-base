@@ -17,10 +17,8 @@ mail_config = ConnectionConfig(
     MAIL_PASSWORD=settings.MAIL_PASSWORD,
     MAIL_FROM=settings.MAIL_FROM,
     MAIL_PORT=settings.MAIL_PORT,
-    MAIL_SERVER=settings.MAIL_SERVER,
-   
-#MAIL_TLS=settings.MAIL_TLS,
-   # MAIL_SSL=settings.MAIL_SSL,
+     MAIL_SERVER=settings.MAIL_SERVER,
+    MAIL_FROM_NAME = settings.MAIL_FROM_NAME,
     MAIL_STARTTLS=settings.MAIL_STARTTLS,
     MAIL_SSL_TLS=settings.MAIL_SSL_TLS,
     USE_CREDENTIALS=True,
@@ -46,7 +44,8 @@ async def send_confirmation_email(email: EmailStr, token: str):
             confirmation_link=confirmation_link,
             button_text="Verify Email Address",
         ),
-        subtype="html"
+        subtype="html",
+        
     )
 
     await fm.send_message(message)
@@ -60,7 +59,9 @@ async def send_password_reset_email(email: str, token: str):
         message="We received a request to reset your password. If you did not make this request, please ignore this email. Otherwise, you can reset your password by clicking the button below:",
         confirmation_link=reset_url,
         button_text="Reset Password",
-    )
+       
+    ),
+     from_=(settings.MAIL_FROM, settings.MAIL_USERNAME)
 ,
         subtype="html"
     )

@@ -31,7 +31,7 @@ export interface IPageGetRequest {
 }
 
 export interface IUserGetRequest {
-  UI_ID: string;
+  UI_UniqueURL: string;
   PG_PageNumber: number;
   PG_PageOffset?: number;
 }

@@ -162,6 +162,7 @@ async def get_pages_with_offset_endpoint(
         StandardResponse: The response indication the result of the operation.
     """
     try:
+        is_super_admin(current_user)
         pages_response = get_pages_with_offset(db = db, pg_page_number=pg_page_number, pg_page_limit=pg_page_limit)
         return success_response(data = pages_response.model_dump(), message='Pages fetched successfully')
     except HTTPException as e:
@@ -186,7 +187,7 @@ async def update_page_endpoint(
         StandardResponse: The response indicating the result of the operation.
     """
     try:
-        updated_page = update_page(
+        updated_page = await update_page(
             db=db, 
             page_id=page_id, 
             page_update=page_update, 

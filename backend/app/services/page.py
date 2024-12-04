@@ -191,7 +191,7 @@ async def update_page(db: Session, page_id: str, page_update: PageUpdateRequest,
             await page_crud.remove_page_content(db=db, page=existing_page)
      
     page_data = page_update.model_dump(exclude_unset=True)
-    updated_page: dict[str, Any] = page_crud.update_page(
+    updated_page: dict[str, Any] =  page_crud.update_page(
         db, 
         page_id=page_id, 
         page_data=page_data)

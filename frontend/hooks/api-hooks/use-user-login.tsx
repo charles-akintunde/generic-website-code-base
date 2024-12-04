@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-
+import Cookies from 'js-cookie'
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '../redux-hooks';
 import {
@@ -14,6 +14,8 @@ import { EUserRole } from '../../types/enums';
 import { reloadPage, transformToUserInfo } from '../../utils/helper';
 import { setUIActiveUser } from '../../store/slice/userSlice';
 import { useNotification } from '../../components/hoc/notification-provider';
+import { Cookie } from 'lucide-react';
+import { ICompleteUserResponse } from '../../types/backendResponseInterfaces';
 
 const useUserLogin = () => {
   const dispatch = useAppDispatch();
@@ -23,7 +25,7 @@ const useUserLogin = () => {
     isError: hasActiveUserFetchError,
     isSuccess: isActiveUserFetchSuccess,
     isLoading: isActiveUserFetchLoading,
-    refetch: activePageRefetch,
+    refetch: activeUserRefetch,
   } = useGetActiveUserQuery();
   const [
     refreshToken,
@@ -48,14 +50,34 @@ const useUserLogin = () => {
         UI_Password: userLoginData.password,
       };
       const response = await userLogin(userLoginRequestData).unwrap();
+      const userData = response.data.user_data;
+      const userProfile: IUserInfo = transformToUserInfo(
+        userData
+      );
+      const activeUserData = {
+        uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+        uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+        uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
+        uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
+        uiId: userProfile.id,
+        uiUniqueURL: userProfile.uiUniqueURL,
+        uiIsLoading: isActiveUserFetchLoading,
+        uiCanEdit:
+          userProfile.uiRole.includes(EUserRole.Admin) ||
+          userProfile.uiRole.includes(EUserRole.SuperAdmin),
+        uiRole: userProfile.uiRole,
+        uiPhotoURL: userProfile.uiPhoto,
+      };
+
+      dispatch(
+        setUIActiveUser(activeUserData)
+      );
+
+
       notify('Success', response.message || successMessage, 'success');
 
-      activePageRefetch();
+      activeUserRefetch();
       router.replace('/');
-
-      setTimeout(() => {
-        reloadPage();
-      }, 1000);
     } catch (error: any) {
       const errorMessage =
         error?.data?.message ||
@@ -67,8 +89,10 @@ const useUserLogin = () => {
   useEffect(() => {
     const fetchUserData = () => {
       if (activeUserData?.data) {
+        const activeUserDataUnknown: unknown = activeUserData?.data;
+
         const userProfile: IUserInfo = transformToUserInfo(
-          activeUserData?.data
+          activeUserDataUnknown as ICompleteUserResponse
         );
         dispatch(
           setUIActiveUser({
@@ -77,6 +101,7 @@ const useUserLogin = () => {
             uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
             uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
             uiId: userProfile.id,
+            uiUniqueURL: userProfile.uiUniqueURL,
             uiIsLoading: isActiveUserFetchLoading,
             uiCanEdit:
               userProfile.uiRole.includes(EUserRole.Admin) ||
@@ -90,6 +115,7 @@ const useUserLogin = () => {
           setUIActiveUser({
             uiId: null,
             uiFullName: '',
+            uiUniqueURL: '',
             uiInitials: '',
             uiIsAdmin: false,
             uiIsLoading: isActiveUserFetchLoading,
@@ -113,6 +139,7 @@ const useUserLogin = () => {
     isLoading,
     sendLoginRequest,
     isActiveUserFetchLoading,
+    activeUserRefetch
   };
 };
 

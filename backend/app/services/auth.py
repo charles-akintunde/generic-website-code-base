@@ -20,6 +20,8 @@ from app.models.enums import E_Status
 from app.schemas.blacklisted_token import BlackListedToken
 from app.crud.blacklisted_token import blacklisted_token_crud
 from app.database import get_db
+from app.utils.response_json import create_user_response
+from app.utils.utils import generate_unique_url
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -99,6 +101,9 @@ def authenticate_user(db: Session, email: str, password: str, response: Response
             detail="Account is disabled! Contact Admin",
         )
     
+
+    user_data = create_user_response(user)
+    
     token_data = {
         "sub": user.UI_Email,
         "firstname": user.UI_FirstName,
@@ -114,7 +119,7 @@ def authenticate_user(db: Session, email: str, password: str, response: Response
 
     # print(response.headers)
 
-    return Token(access_token=access_token, refresh_token=refresh_token)
+    return Token(access_token=access_token, refresh_token=refresh_token, user_data=user_data)
 
 async def register_user(db: Session, user: UserCreate):
     """
@@ -134,8 +139,9 @@ async def register_user(db: Session, user: UserCreate):
     user.UI_Password = pwd_context.hash(user.UI_Password)
     confirmation_token = create_confirmation_token(user.UI_Email)
     user.UI_ConfirmationTokenHash = confirmation_token
-
+    user.UI_UniqueURL = generate_unique_url(db=db, first_name=user.UI_FirstName, last_name=user.UI_LastName)
     new_user = user_crud.create_user(db=db, user=user)
+
 
     await send_confirmation_email(user.UI_Email, confirmation_token)
 

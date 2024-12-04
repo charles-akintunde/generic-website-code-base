@@ -103,9 +103,9 @@ export function FixedToolbarButtons() {
             <ToolbarGroup>
               <LinkToolbarButton />
 
-              {!uiEditorInProfileMode && (
+          
                 <MediaToolbarButton nodeType={ELEMENT_IMAGE} />
-              )}
+          
               <UploadPageContentImage />
               <TableDropdownMenu />
               <MoreDropdownMenu />

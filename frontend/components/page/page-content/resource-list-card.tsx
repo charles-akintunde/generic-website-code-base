@@ -46,7 +46,7 @@ const ResourceListCard: React.FC<PageContentCardProps> = ({
 
   return (
     <Card className="rounded-lg shadow-lg overflow-hidden border border-gray-200">
-      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-400 to-indigo-500 text-white">
+     <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary to-primary text-white">
         <h2 className="text-2xl font-extrabold md:text-xl">
           <Link
             href={pageContent?.href as string}

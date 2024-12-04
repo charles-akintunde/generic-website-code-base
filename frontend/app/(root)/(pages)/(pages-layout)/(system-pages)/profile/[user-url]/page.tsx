@@ -18,55 +18,46 @@ import {
   roleBadgeClasses,
   statusBadgeClasses,
   transformToUserInfo,
+  transformUserPageContent,
   userRoleLabels,
   userStatusLabels,
 } from '../../../../../../../utils/helper';
 import {
   IPageContentMain,
   IUserInfo,
+  IUserPageContent,
 } from '../../../../../../../types/componentInterfaces';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import AppLoading from '../../../../../../../components/common/app-loading';
 import {
-  useAppDispatch,
   useAppSelector,
 } from '../../../../../../../hooks/redux-hooks';
 import { PageContentCarouselCard } from '../../../../../../../components/common/carousel/page-content-carousel';
 import { containerNoFlexPaddingStyles, userProfilePaddingStyles } from '../../../../../../../styles/globals';
-
+import { Pagination } from 'antd';
 export function sanitizeAndCompare(str1: string, str2: string) {
   if (!str1 || !str2) return false;
   return str1.trim().toLowerCase() === str2.trim().toLowerCase();
 }
 
+
+
 const UserProfilePage = () => {
   const router = useRouter();
   const [pageNumber, setPageNumber] = useState(1);
-  const observerRef = useRef<HTMLDivElement>(null);
-  const [hasMore, setHasMore] = useState(true);
+  const [totalPages, setTotalPages] = useState(0); 
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const uiIsAdmin = uiActiveUser ? uiActiveUser.uiIsAdmin : false;
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const userId = searchParams.get('id');
- // const userId = pathname.split('/')[2];
+  const userURL = pathname.split('/')[2];
   const [isEditing, setIsEditing] = useState(false);
-  const userQueryResult =
-    userId && isValidUUID(userId)
-      ? useGetUserQuery({
-          UI_ID: userId,
+  const userQueryResult = useGetUserQuery({
+          UI_UniqueURL: userURL,
           PG_PageNumber: pageNumber,
-          PG_PageOffset: 4,
-        })
-      : {
-          data: undefined,
-          isError: true,
-          isSuccess: false,
-          isLoading: false,
-          refetch: () => Promise.resolve({}),
-          error: null,
-        };
-
+          PG_PageOffset: 10,
+        });
   const {
     data: userData,
     isError: hasUserFetchError,
@@ -76,47 +67,6 @@ const UserProfilePage = () => {
     error: userFetchError,
   } = userQueryResult;
 
-  useEffect(() => {
-    setPageNumber(1);
-    setHasMore(true);
-  }, [userId]);
-
-  const handleObserver = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      const target = entries[0];
-      console.log(
-        'hasMore:',
-        hasMore,
-        'isUserFetchLoading:',
-        isUserFetchLoading
-      ); // Debugging log
-      if (target.isIntersecting && hasMore && !isUserFetchLoading) {
-        console.log('Page number incremented');
-        setPageNumber((prevPage) => prevPage + 1);
-      }
-    },
-    [hasMore, isUserFetchLoading, setPageNumber]
-  );
-
-  console.log(pageNumber, 'pageNumber');
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(handleObserver, {
-      root: null,
-      rootMargin: '0px',
-      threshold: 1.0,
-    });
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
- 
-
-    return () => {
-      if (observerRef.current) observer.unobserve(observerRef.current);
-    };
-  }, [handleObserver, observerRef]);
 
   const [userInfo, setUserInfo] = useState<IUserInfo>();
   const handleEditToggle = () => {
@@ -129,20 +79,21 @@ const UserProfilePage = () => {
 
   useEffect(() => {
     if (userData?.data) {
-      const userProfile: IUserInfo = transformToUserInfo(userData?.data);
-      setUserInfo(userProfile);
-      setPageContents(userProfile.uiUserPageContents as IPageContentMain[]);
+      const userPageContentResponse: IUserPageContent =  transformUserPageContent(userData?.data);
+      const userInfo = userPageContentResponse?.user;
+      const userPageContents = userPageContentResponse.user.uiUserPageContents;
+      setTotalPages(userPageContentResponse.totalPageContent);
+      setUserInfo(userInfo);
+      setPageContents(userPageContents as IPageContentMain[]);
       const isSameUser = sanitizeAndCompare(
         uiActiveUser?.uiId as string,
-        userProfile?.id
+        userInfo?.id
       );
       setIsSameUser(isSameUser);
 
-      if ((userProfile.uiUserPageContents as IPageContentMain[]).length < 4) {
-        setHasMore(false);
-      }
     }
   }, [userData, isUserFetchLoading]);
+
 
   useEffect(() => {
     handleRoutingOnError(router, hasUserFetchError, userFetchError);
@@ -151,6 +102,11 @@ const UserProfilePage = () => {
   if (isUserFetchLoading || !userInfo) {
     return <AppLoading />;
   }
+
+  const handlePageChange = (page: number) => {
+    setPageNumber(page);
+  };
+
 
   return (
     <>
@@ -173,7 +129,10 @@ const UserProfilePage = () => {
                   <Tooltip
                     title={`${userInfo.uiFirstName} ${userInfo.uiLastName}`}
                   >
-                    <h1 className="text-3xl font-bold text-gray-900">{`${userInfo.uiFirstName} ${userInfo.uiLastName}`}</h1>
+                  <h1 className="text-3xl font-bold text-gray-900">
+              {`${userInfo.uiPrefix ? userInfo.uiPrefix + ' ' : ''}${userInfo.uiFirstName} ${userInfo.uiLastName}${userInfo.uiSuffix ? ', ' + userInfo.uiSuffix : ''}`}
+            </h1>
+
                   </Tooltip>
                 </div>
                 <div className="space-y-4">
@@ -285,30 +244,20 @@ const UserProfilePage = () => {
                     />
                   ))}
                 </div>
-                <div className="flex w-full  p-10 bg-red justify-center">
-                  {/* {hasMore && (
-                    <div
-                      ref={observerRef}
-                      className="h-20 bg-blue-500 flex items-center justify-center"
-                      style={{
-                        height: '20px',
-                        color: 'white',
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      Loading more content...
-                    </div>
-                  )} */}
+           
+                <Pagination
+        current={pageNumber}
+        total={totalPages}
+        pageSize={10}
+        onChange={handlePageChange}
+        className="mt-4 text-center"
+      />
 
-                  {/* {(hasMore || isUserFetchLoading) && (
-                    <>
-                      <Spin size="small" />
-                    </>
-                  )} */}
-                </div>
               </>
             )}{' '}
           </section>
+          
+          
         </div>
         </div>
      

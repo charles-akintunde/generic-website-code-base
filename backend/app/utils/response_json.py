@@ -12,7 +12,7 @@ from app.schemas.page_content import PC_PageContentImgResponse, PageContentRespo
 from app.models.page_content import T_PageContent
 from app.models.page import T_Page
 from app.schemas.page import PG_PagesResponse, PageResponse, PageSingleContent, Page
-from app.schemas.user_info import UserPartial, UserResponse, UsersResponse
+from app.schemas.user_info import UserPageContentsResponse, UserPartial, UserResponse, UsersResponse
 from app.utils.utils import estimate_reading_time, get_excerpt
 from app.models.enums import E_PageType
 
@@ -48,6 +48,21 @@ def build_page_content_json(page_content : T_PageContent,user: T_UserInfo,page:T
   
     )
 
+def build_transform_user_to_partial_json(user: T_UserInfo):
+    return UserPartial(
+            UI_ID=str(user.UI_ID),
+            UI_UniqueURL = str(user.UI_UniqueURL),
+            UI_FirstName=str(user.UI_FirstName),
+            UI_LastName=str(user.UI_LastName),
+            UI_Email=str(user.UI_Email),
+            UI_Role=[str(role.value) for role in user.UI_Role], 
+            UI_Status=str(user.UI_Status.value),
+            UI_RegDate=user.UI_RegDate.isoformat(),
+            UI_PhotoURL=str(user.UI_PhotoURL) if user.UI_PhotoURL else None, # type: ignore
+            UI_MemberPosition=str(user.UI_MemberPosition.value) if user.UI_MemberPosition else None, # type: ignore
+            UI_Country = str(user.UI_Country) if user.UI_Country else None, # type: ignore
+            )
+            
 
 def build_user_page_content_json(page_content: T_PageContent) -> UserPageContentResponse:
     if page_content is None:
@@ -158,9 +173,12 @@ def create_users_response(users: List[UserPartial], total_users_count: int ,new_
 def create_user_response(user: T_UserInfo, page_contents : Optional[List[PageContentResponse]] = None) -> UserResponse:
     return UserResponse(
         UI_ID=str(user.UI_ID),
+        UI_UniqueURL=user.UI_UniqueURL,
         UI_FirstName=str(user.UI_FirstName),
         UI_LastName=str(user.UI_LastName),
         UI_Email=str(user.UI_Email),
+        UI_Prefix=user.UI_Prefix,
+        UI_Suffix=user.UI_Suffix,
         UI_Role=[role.value for role in user.UI_Role],
         UI_Status=user.UI_Status.value,
         UI_RegDate=str(user.UI_RegDate),
@@ -174,6 +192,12 @@ def create_user_response(user: T_UserInfo, page_contents : Optional[List[PageCon
         UI_About=user.UI_About if user.UI_About is not None else None, # type: ignore
         UI_MemberPosition=user.UI_MemberPosition.value if user.UI_MemberPosition is not None else None,
         UI_UserPageContents=page_contents if page_contents is not None else None
+    )
+
+def create_user_page_content_response(user_response: UserResponse, total_page_content: int):
+    return UserPageContentsResponse(
+        user_response= user_response,
+        total_page_content= total_page_content
     )
 
 

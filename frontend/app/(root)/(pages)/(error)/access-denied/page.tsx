@@ -3,13 +3,9 @@ import React, { useEffect } from 'react';
 import { Result } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
 import AppButton from '../../../../../components/common/button/app-button';
-import { reloadPage } from '../../../../../utils/helper';
 
 const AccessDenied = () => {
 
-  // useEffect(() => {
-  //   reloadPage();
-  // })
   return (
     <div className='h-[calc(100vh-5rem)] overflow-hidden'>
    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100 flex flex-col items-center justify-center py-10 px-4 animate-fadeIn">

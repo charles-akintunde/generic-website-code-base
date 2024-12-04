@@ -21,22 +21,25 @@ export const ImageElement = withHOC(
       const { align = 'center', focused, readOnly, selected } = useMediaState();
 
       const width = useResizableStore().get.width();
-      const uiActiveUser = useAppSelector(
-        (state) => state.userSlice.uiActiveUser
-      );
+      const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
       const uiActiveUserProfileEdit = useAppSelector(
-        (state) => state.userSlice.uiActiveUserProfileEdit
-      );
-      let canEdit = uiActiveUser.uiCanEdit;
+      (state) => state.userSlice.uiActiveUserProfileEdit
+    );
+        let isAdmin = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+
+    
       const uiEditorInProfileMode = uiActiveUserProfileEdit.uiEditorInProfileMode;
       const uiIsUserEditingMode = uiActiveUserProfileEdit.uiIsUserEditingMode;
       const uiIsPageContentEditingMode = uiActiveUserProfileEdit.uiIsPageContentEditingMode;
       const uiIsAdminInEditingMode = uiActiveUserProfileEdit.uiIsAdminInEditingMode;
-
-      if (uiEditorInProfileMode || uiIsPageContentEditingMode) {
-        canEdit = uiIsUserEditingMode || uiIsAdminInEditingMode;
+    
+      let canEdit = false;
+    
+      if (uiEditorInProfileMode) {
+        canEdit = uiIsUserEditingMode;
+      } else if (uiIsPageContentEditingMode || uiIsAdminInEditingMode) {
+        canEdit = isAdmin && uiIsAdminInEditingMode;
       }
-      
 
       return (
         <MediaPopover pluginKey={ELEMENT_IMAGE}>

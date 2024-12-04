@@ -34,46 +34,46 @@ const AuthGuard: React.FC<IAuthGuardProps> = ({ children }) => {
     },
   ] = useRefreshTokenMutation();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (activeUserData?.data) {
-        const userProfile: IUserInfo = transformToUserInfo(
-          activeUserData?.data
-        );
-        dispatch(
-          setUIActiveUser({
-            uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
-            uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
-            uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
-            uiIsLoading: false,
-            uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
-            uiId: userProfile.id,
-            uiCanEdit:
-              userProfile.uiRole.includes(EUserRole.Admin) ||
-              userProfile.uiRole.includes(EUserRole.SuperAdmin),
-            uiRole: userProfile.uiRole,
-            uiPhotoURL: userProfile.uiPhoto,
-          })
-        );
-      } else if (!isActiveUserFetchLoading && !hasActiveUserFetchError) {
-        // dispatch(
-        //   setUIActiveUser({
-        //     uiId: null,
-        //     uiFullName: '',
-        //     uiInitials: '',
-        //     uiIsAdmin: false,
-        //     uiIsSuperAdmin: false,
-        //     uiCanEdit: false,
-        //     uiRole: EUserRole.Public,
-        //     uiPhotoURL: null,
-        //   })
-        // );
-        await refreshToken();
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     if (activeUserData?.data) {
+  //       const userProfile: IUserInfo = transformToUserInfo(
+  //         activeUserData?.data
+  //       );
+  //       dispatch(
+  //         setUIActiveUser({
+  //           uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+  //           uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+  //           uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
+  //           uiIsLoading: false,
+  //           uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
+  //           uiId: userProfile.id,
+  //           uiCanEdit:
+  //             userProfile.uiRole.includes(EUserRole.Admin) ||
+  //             userProfile.uiRole.includes(EUserRole.SuperAdmin),
+  //           uiRole: userProfile.uiRole,
+  //           uiPhotoURL: userProfile.uiPhoto,
+  //         })
+  //       );
+  //     } else if (!isActiveUserFetchLoading && !hasActiveUserFetchError) {
+  //       // dispatch(
+  //       //   setUIActiveUser({
+  //       //     uiId: null,
+  //       //     uiFullName: '',
+  //       //     uiInitials: '',
+  //       //     uiIsAdmin: false,
+  //       //     uiIsSuperAdmin: false,
+  //       //     uiCanEdit: false,
+  //       //     uiRole: EUserRole.Public,
+  //       //     uiPhotoURL: null,
+  //       //   })
+  //       // );
+  //       await refreshToken();
+  //     }
+  //   };
 
-    fetchUserData();
-  }, [activeUserData, dispatch, pathname]);
+  //   fetchUserData();
+  // }, [activeUserData, dispatch, pathname]);
 
   return children;
 };

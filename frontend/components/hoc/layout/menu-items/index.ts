@@ -173,7 +173,7 @@ export const routes = [
 
   {
     pageName: 'User Profile',
-    href: '/user-profile',
+    href: '/profile',
     isHidden: true,
     pagePermission: ['0', '1', '2', '3', '4'],
     pageType: '3',
@@ -189,7 +189,7 @@ export const routes = [
   },
   {
     pageName: 'Internal Server Error',
-    href: '/500',
+    href: '/internal-server-error',
     isHidden: true,
     pagePermission: ['0', '1', '2', '3', '4'],
     pageType: '3',

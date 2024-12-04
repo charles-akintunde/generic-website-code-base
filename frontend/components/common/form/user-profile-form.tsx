@@ -106,6 +106,8 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
       uiPostalCode: '',
       uiPhoneNumber: '',
       uiOrganization: '',
+      uiPrefix: '',
+      uiSuffix: ''
     },
   });
 
@@ -185,6 +187,24 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
               label="Last Name"
               placeholder=""
             />
+        <div className="flex flex-wrap md:flex-nowrap gap-4">
+        <div className="flex-1">
+          <FormField
+            control={form.control}
+            name="uiPrefix"
+            label="Prefix"
+            placeholder=""
+          />
+        </div>
+        <div className="flex-1">
+          <FormField
+            control={form.control}
+            name="uiSuffix"
+            label="Suffix"
+            placeholder=""
+          />
+        </div>
+      </div>
             <FormField
               control={form.control}
               name="uiCountry"
@@ -318,6 +338,12 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
 //     </Dialog>
 //   );
 // };
+const filterNullValues = (obj: Record<string, any>): Record<string, any> => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, value]) => value !== null)
+  );
+};
+
 
 type UserRoleStatusFormData = z.infer<typeof userRoleStatusSchema>;
 
@@ -333,13 +359,14 @@ export const UserRoleStatusDialog = () => {
     sanitizeAndCompare(activeUserId as string, userInfo?.id as string)
   );
   const { notify } = useNotification();
-
+  const sanitizedUserInfo = userInfo ? filterNullValues(userInfo) : null;
   const form = useForm<UserRoleStatusFormData>({
     resolver: zodResolver(userRoleStatusSchema),
     // @ts-ignore
-    defaultValues: userInfo || {
+    defaultValues: sanitizedUserInfo || {
       uiMainRoles: '',
       uiStatus: '',
+      uiMemberPosition: '',
       uiIsUserAlumni: false,
     },
   });
@@ -367,12 +394,15 @@ export const UserRoleStatusDialog = () => {
   };
 
   const { watch, setValue } = form;
+  const currentFormData = watch(); // Returns an object with all current form values
   const uiRole = watch('uiMainRoles');
   const isUserAlumni = watch('uiIsUserAlumni');
 
   useEffect(() => {
     if (isUserAlumni) {
       setValue('uiMainRoles', EUserRole.Alumni);
+    }else{
+      setValue('uiMainRoles', EUserRole.User);
     }
   }, [isUserAlumni, setValue]);
 
@@ -419,19 +449,20 @@ export const UserRoleStatusDialog = () => {
                     />
                   )}
 
-                  {uiRole &&
+              {(uiRole &&
                     (uiRole.includes(EUserRole.SuperAdmin) ||
                       uiRole.includes(EUserRole.Admin) ||
-                      uiRole.includes(EUserRole.Member)) && (
-                      <FormField
-                        control={form.control}
-                        name="uiMemberPosition"
-                        label="Member Position"
-                        placeholder="Select Member Position"
-                        type="select"
-                        options={MEMBERPOSITION_OPTIONS}
-                      />
-                    )}
+                      uiRole.includes(EUserRole.Member))) ||
+                  isUserAlumni ? (
+                    <FormField
+                      control={form.control}
+                      name="uiMemberPosition"
+                      label="Member Position"
+                      placeholder="Select Member Position"
+                      type="select"
+                      options={MEMBERPOSITION_OPTIONS}
+                    />
+                  ) : null}
 
                   <FormField
                     control={form.control}

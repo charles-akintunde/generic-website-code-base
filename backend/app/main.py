@@ -49,8 +49,6 @@ def create_app() -> FastAPI:
 
     origins = [
         settings.FRONTEND_URL,  
-       'https://localhost:3000',
-        # Add other origins as needed
     ]
 
     app.add_middleware(

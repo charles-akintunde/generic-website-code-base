@@ -13,7 +13,7 @@ const AdminPage = () => {
   return (
     <div className="bg-pg min-h-screen">
       <div className={`${containerNoFlexPaddingStyles}`}>
-      <AdminPanel />;
+      <AdminPanel />
       </div>
    
     </div>

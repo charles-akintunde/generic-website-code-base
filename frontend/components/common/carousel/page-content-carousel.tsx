@@ -115,7 +115,7 @@ const PageContentCarousel: React.FC = () => {
         </CarouselItem>
       ))}
     </CarouselContent>
-    {fetchedPageContents.length > 2 && (
+    {fetchedPageContents.length > 1 && (
       <>
         <CarouselPrevious
           className="absolute left-[-2rem] top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2"

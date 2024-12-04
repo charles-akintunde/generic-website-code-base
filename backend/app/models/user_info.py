@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import ARRAY, JSON, Column, String, Enum, DateTime, Text
+from sqlalchemy import ARRAY, JSON, Column, Index, String, Enum, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from pydantic import EmailStr 
@@ -18,11 +18,14 @@ class T_UserInfo(Base):
     __annotations__ = UserInfoTypeAnnotations.__annotations__
    
     UI_ID = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    UI_Prefix = Column(String(10), nullable=True)
+    UI_Suffix = Column(String(10), nullable=True)
     UI_FirstName = Column(String(50), nullable=False)
     UI_LastName = Column(String(50), nullable=False)
+    UI_UniqueURL = Column(String(150),nullable=False, unique=True, index=True)
     UI_Email = Column(String(100), nullable=False, unique=True)
     UI_PasswordHash = Column(String(255), nullable=False)
-    UI_Role = Column(ARRAY(Enum(E_UserRole)), nullable=False, default=[E_UserRole.Public])
+    UI_Role = Column(ARRAY(Enum(E_UserRole)), nullable=False, default=[E_UserRole.User])
     UI_Status = Column(Enum(E_Status), nullable=False, default=E_Status.Unauthenticated)
     UI_City = Column(String(100))
     UI_Province = Column(String(100))
@@ -38,6 +41,10 @@ class T_UserInfo(Base):
 
     UI_UsersPageContents = relationship("T_PageContent", secondary=T_UsersPageContents,back_populates="PC_UsersPageContents")
     UI_PageContents = relationship("T_PageContent", back_populates="PC_UserInfo")
+
+    __table_args__ = (
+        Index("ix_user_uniqueurl", "UI_UniqueURL"),  # Custom index name
+    )
 
     def __repr__(self):
         return f"<T_UserInfo(UI_ID={self.UI_ID}, UI_FirstName={self.UI_FirstName}, UI_LastName={self.UI_LastName})>"

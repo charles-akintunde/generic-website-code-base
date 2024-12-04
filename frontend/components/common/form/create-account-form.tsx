@@ -41,7 +41,7 @@ const CreateAccountForm = () => {
       <AppRequestResult
         status="success"
         title="Success"
-        subTitle={successMessage}
+        subTitle={"Your account has been created.Please go to you mail to complete verification."}
       />
     );
   }
