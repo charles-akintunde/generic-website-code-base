@@ -13,7 +13,7 @@ from app.utils.file_utils import  delete_and_save_file_azure, delete_file_from_a
 from app.utils.response_json import build_page_content_json_with_excerpt, build_transform_user_to_partial_json, build_user_page_content_json, create_user_page_content_response, create_user_response, create_users_response
 from app.models.enums import E_MemberPosition, E_UserRole
 from app.core.auth import get_current_user
-from app.utils.utils import generate_unique_url, is_super_admin
+from app.utils.utils import generate_unique_url, is_admin, is_super_admin
 from app.crud import page
 
 
@@ -109,13 +109,20 @@ def update_user_role_status(db: Session, user_role_status_update: UserRoleStatus
     
     return user
 
-async def update_user_profile(db: Session, user_id: str, profile_update: UserProfileUpdate):
+async def update_user_profile(db: Session, current_user: T_UserInfo, profile_update: UserProfileUpdate):
     """
     Update a user's profile.
     """
+    print(str(current_user.UI_ID) != str(profile_update.UI_ID), "GGGGGGGGGGGGG")
+    if str(current_user.UI_ID) != str(profile_update.UI_ID):
+        is_admin(
+            current_user=current_user,
+            detail="You do not have sufficient permissions to perform this action. Only admins or super admins are allowed."
+        )
+
     existing_user = user_crud.get_user_by_id(
         db=db,
-        user_id=user_id
+        user_id=profile_update.UI_ID
     )
 
     if not existing_user:

@@ -37,7 +37,8 @@ class GetPageRequest(BaseModel):
 
 
 class PageMultipleContent(PageResponse):
-    PG_PageContents: Optional[Any]   
+    PG_PageContents: Optional[Any] = None
+    PG_TotalPageContents: Optional[int] = None
 
 class PageSingleContent(PageResponse):
     PG_PageContent: PageContentResponse

@@ -70,7 +70,7 @@ async def create_page_content_endpoint(
             PC_UsersId=user_ids  
         )
 
-        print(page_content_data,"page_content_data")
+
         
         new_page_content = await create_page_content(
             db=db,

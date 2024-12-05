@@ -172,7 +172,7 @@ async def update_user_profile_endpoint(
             UI_About=json.loads(UI_About) if UI_About else None
             
         )
-        user = await update_user_profile(db, str(current_user.UI_ID), profile_update)
+        user = await update_user_profile(db, current_user, profile_update)
         return success_response(data=user.model_dump(), message="User profile updated successfully")
     except HTTPException as e:
         return error_response(message=e.detail, status_code=e.status_code)

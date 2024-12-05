@@ -468,6 +468,8 @@ const usePageContent = ({
     submitUploadPageContentImage,
     uploadPageContentImage,
     isUploadPageContentImageLoading,
+    isCreatePageContentLoading,
+    isEditPageContentLoading,
     pageContents,
     hasMore,
     setPageNumber,

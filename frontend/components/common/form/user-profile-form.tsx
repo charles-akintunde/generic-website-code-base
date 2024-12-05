@@ -55,6 +55,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const canEdit = uiActiveUser.uiCanEdit;
   const activeUserId = uiActiveUser.uiId;
   const countries = getNames();
   const { notify } = useNotification();
@@ -164,7 +165,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
         // @ts-ignore
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        {isSameUser && activeUserId && (
+        {((isSameUser || canEdit) && activeUserId) && (
           <div className="flex justify-end">
             <Switch
               checkedChildren="Editing Mode"
@@ -175,7 +176,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
           </div>
         )}
 
-        {isSameUser && uiIsUserEditingMode && (
+        {(isSameUser || canEdit) && uiIsUserEditingMode && (
           <>
             <FormField
               control={form.control}
@@ -258,7 +259,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
           </>
         )}
         <div className="mt-20">
-          {isSameUser && uiIsUserEditingMode ? (
+          {(isSameUser || canEdit) && uiIsUserEditingMode ? (
             <span className="font-semibold  mr-1 text-gray-700">About Me</span>
           ) : (
             <div>
@@ -281,14 +282,14 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
           </div>
         )} */}
 
-        {isSameUser && uiIsUserEditingMode && (
+        {(isSameUser || canEdit) && uiIsUserEditingMode && (
           <div
             className={`w-full sticky bg-white flex mx-auto bottom-0 z-40 h-20 shadow2xl`}
           >
             <LoadingButton
               className=""
               buttonText="Save Changes"
-      loading={isUserFetchLoading}
+              loading={false}
             />
           </div>
         )}
@@ -352,7 +353,7 @@ type UserRoleStatusFormData = z.infer<typeof userRoleStatusSchema>;
 export const UserRoleStatusDialog = () => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const activeUserId = uiActiveUser.uiId;
-  const { submitEditRoleStatus, isEditRoleAndStatusLoading } = useUserInfo();
+  const { submitEditRoleStatus } = useUserInfo();
   const dispatch = useAppDispatch();
   const isDialogOpen = useAppSelector((state) => state.userSlice.isDialogOpen);
   const userInfo = useAppSelector((state) => state.userSlice.editingUser);
@@ -476,7 +477,7 @@ export const UserRoleStatusDialog = () => {
 
                   <div className="fixed z-30 mt-20 bottom-0 left-0 right-0 bg-white p-4 flex justify-center">
                     <LoadingButton
-                      loading={isEditRoleAndStatusLoading}
+                      loading={false}
                       buttonText={'Save changes'}
                     />
                   </div>

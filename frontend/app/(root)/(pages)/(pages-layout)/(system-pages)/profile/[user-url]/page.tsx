@@ -223,7 +223,7 @@ const UserProfilePage = () => {
             </div>
 
             <section className="mt-10">
-              <UserProfileForm userInfo={userInfo} />
+              <UserProfileForm isUserFetchLoading={isUserFetchLoading} userInfo={userInfo} />
             </section>
           </div>
           <section className={`${containerNoFlexPaddingStyles}  mt-6 `}>

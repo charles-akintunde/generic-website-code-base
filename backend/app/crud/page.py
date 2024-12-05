@@ -115,10 +115,12 @@ class PageCRUD:
         page_query = db.query(T_Page).filter(
         func.lower(T_Page.PG_DisplayURL) == func.lower(unquote(pg_display_url)))
         valid_pg_offset = pg_offset if pg_offset is not None else 8
+        limit = valid_pg_offset 
         page = page_query.first()
 
         if not pg_page_number:
             return page
+        
         
         if page: 
             offset = (pg_page_number - 1) * valid_pg_offset
@@ -128,7 +130,7 @@ class PageCRUD:
             .order_by(T_PageContent.PC_CreatedAt.desc())
             .order_by(T_PageContent.PC_ID.asc())  
             .offset(offset)  
-            .limit(8) 
+            .limit(limit) 
             .all()
         )
             if not page_contents:

@@ -78,6 +78,7 @@ export const useUserInfo = () => {
     refetch: activePageRefetch,
   } = useGetActiveUserQuery();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
   const { notify } = useNotification();
   const dispatch = useAppDispatch();
   const [resetPasswordSuccessMessage, setResetPasswordSuccessMessage] =
@@ -277,31 +278,33 @@ export const useUserInfo = () => {
         formData.append('UI_LastName', userInfo.uiLastName);
       }
 
+      
+      if (userInfo.uiPhoto !== undefined) {
+        formData.append('UI_Photo', userInfo.uiPhoto ?? '');
+      }
+
       if (userInfo.uiCity !== undefined) {
         if (
-          userInfo.uiCity &&
-          userInfo.uiCity.length === 0 &&
+     
+          userInfo?.uiCity?.length === 0 &&
           initialUserInfo?.uiCity &&
           initialUserInfo.uiCity.length > 0
         ) {
-          formData.append('UI_City', ' ');
+          formData.append('UI_City', '_EMPTY_');
         } else {
           formData.append('UI_City', userInfo.uiCity ?? '');
         }
       }
 
-      if (userInfo.uiPhoto !== undefined) {
-        formData.append('UI_Photo', userInfo.uiPhoto ?? '');
-      }
 
       if (userInfo.uiProvince !== undefined) {
         if (
-          userInfo.uiProvince &&
-          userInfo.uiProvince.length === 0 &&
+         
+          userInfo?.uiProvince?.length === 0 &&
           initialUserInfo?.uiProvince &&
           initialUserInfo.uiProvince.length > 0
         ) {
-          formData.append('UI_Province', ' ');
+          formData.append('UI_Province', '_EMPTY_');
         } else {
           formData.append('UI_Province', userInfo.uiProvince ?? '');
         }
@@ -309,12 +312,12 @@ export const useUserInfo = () => {
 
       if (userInfo.uiCountry !== undefined) {
         if (
-          userInfo.uiCountry &&
-          userInfo.uiCountry.length === 0 &&
+          
+          userInfo?.uiCountry?.length === 0 &&
           initialUserInfo?.uiCountry &&
           initialUserInfo.uiCountry.length > 0
         ) {
-          formData.append('UI_Country', ' ');
+          formData.append('UI_Country', '_EMPTY_');
         } else {
           formData.append('UI_Country', userInfo.uiCountry ?? '');
         }
@@ -322,38 +325,44 @@ export const useUserInfo = () => {
 
       if (userInfo.uiPostalCode !== undefined) {
         if (
-          userInfo.uiPostalCode &&
-          userInfo.uiPostalCode.length === 0 &&
+
+          userInfo?.uiPostalCode?.length === 0 &&
           initialUserInfo?.uiPostalCode &&
           initialUserInfo.uiPostalCode.length > 0
         ) {
-          formData.append('UI_PostalCode', ' ');
+          formData.append('UI_PostalCode', '_EMPTY_');
         } else {
           formData.append('UI_PostalCode', userInfo.uiPostalCode ?? '');
         }
       }
 
+      console.log(userInfo.uiSuffix &&
+        userInfo.uiSuffix.length === 0 &&
+        initialUserInfo?.uiSuffix &&
+        initialUserInfo.uiSuffix.length > 0)
+
       if (userInfo.uiSuffix !== undefined) {
         if (
-          userInfo.uiSuffix &&
-          userInfo.uiSuffix.length === 0 &&
+          userInfo.uiSuffix?.length === 0 &&
           initialUserInfo?.uiSuffix &&
-          initialUserInfo.uiSuffix.length > 0
+          initialUserInfo?.uiSuffix?.length > 0
         ) {
-          formData.append('UI_Suffix', ' ');
+          formData.append('UI_Suffix', '_EMPTY_');
+          
         } else {
-          formData.append('UI_Suffix', userInfo.uiSuffix ?? '');
+          formData.append('UI_Suffix', userInfo.uiSuffix ?? ' ');
+         
         }
       }
 
       if (userInfo.uiPrefix !== undefined) {
         if (
-          userInfo.uiPrefix &&
-          userInfo.uiPrefix.length === 0 &&
+     
+          userInfo?.uiPrefix?.length === 0 &&
           initialUserInfo?.uiPrefix &&
           initialUserInfo.uiPrefix.length > 0
         ) {
-          formData.append('UI_Prefix', ' ');
+          formData.append('UI_Prefix', '_EMPTY_');
         } else {
           formData.append('UI_Prefix', userInfo.uiPrefix ?? '');
         }
@@ -366,7 +375,7 @@ export const useUserInfo = () => {
           initialUserInfo?.uiPhoneNumber &&
           initialUserInfo.uiPhoneNumber.length > 0
         ) {
-          formData.append('UI_PhoneNumber', ' ');
+          formData.append('UI_PhoneNumber', '_EMPTY_');
         } else {
           formData.append('UI_PhoneNumber', userInfo.uiPhoneNumber ?? '');
         }
@@ -374,12 +383,12 @@ export const useUserInfo = () => {
 
       if (userInfo.uiOrganization !== undefined) {
         if (
-          userInfo.uiOrganization &&
-          userInfo.uiOrganization.length === 0 &&
+  
+          userInfo?.uiOrganization?.length === 0 &&
           initialUserInfo?.uiOrganization &&
           initialUserInfo.uiOrganization.length > 0
         ) {
-          formData.append('UI_Organization', ' ');
+          formData.append('UI_Organization', '_EMPTY_');
         } else {
           formData.append('UI_Organization', userInfo.uiOrganization ?? '');
         }
@@ -389,7 +398,7 @@ export const useUserInfo = () => {
         formData.append('UI_About', JSON.stringify(userInfoObj));
       }
 
-      if (isSameUser) {
+      if (isSameUser || canEdit) {
         const response = await editPage({
           UI_ID: userId,
           // @ts-ignore
@@ -399,24 +408,27 @@ export const useUserInfo = () => {
       const userProfile = transformToUserInfo(response.data);
       if(initialUserInfo.uiUniqueURL != userProfile.uiUniqueURL){
 
-        const activeUserData = {
-          uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
-          uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
-          uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
-          uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
-          uiId: userProfile.id,
-          uiUniqueURL: userProfile.uiUniqueURL,
-          uiIsLoading: isActiveUserFetchLoading,
-          uiCanEdit:
-            userProfile.uiRole.includes(EUserRole.Admin) ||
-            userProfile.uiRole.includes(EUserRole.SuperAdmin),
-          uiRole: userProfile.uiRole,
-          uiPhotoURL: userProfile.uiPhoto,
-        };
-  
-        dispatch(
-          setUIActiveUser(activeUserData)
-        );
+        if (isSameUser){
+          const activeUserData = {
+            uiFullName: `${userProfile.uiFirstName} ${userProfile.uiLastName}`,
+            uiInitials: userProfile.uiFirstName[0] + userProfile.uiLastName[0],
+            uiIsAdmin: userProfile.uiRole.includes(EUserRole.Admin),
+            uiIsSuperAdmin: userProfile.uiRole.includes(EUserRole.SuperAdmin),
+            uiId: userProfile.id,
+            uiUniqueURL: userProfile.uiUniqueURL,
+            uiIsLoading: isActiveUserFetchLoading,
+            uiCanEdit:
+              userProfile.uiRole.includes(EUserRole.Admin) ||
+              userProfile.uiRole.includes(EUserRole.SuperAdmin),
+            uiRole: userProfile.uiRole,
+            uiPhotoURL: userProfile.uiPhoto,
+          };
+    
+          dispatch(
+            setUIActiveUser(activeUserData)
+          );
+        }
+     
   
         const newUrl = `/${'profile'}/${response.data.UI_UniqueURL}`;
         router.replace(newUrl);

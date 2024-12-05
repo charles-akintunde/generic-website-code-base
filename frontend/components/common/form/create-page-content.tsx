@@ -5,6 +5,8 @@ import FormField from '../form-field';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  createPageContentResourceSchema,
+  pageContentResourceSchema,
   pageContentSchema,
   pageContentSchemaEdit,
 } from '../../../utils/formSchema';
@@ -87,29 +89,25 @@ export const CreatePageContentModal = ({
         >
           <span>
             <PlusIcon className="mr-2 h-4 w-4" />
-            {`Create Content`}
+            {`Create Resource`}
           </span>
         </Button>
       </DialogTrigger>
       <DialogContent
         className="
-       w-[90vw] max-w-[400px]
-      sm:w-[80vw] sm:max-w-[500px]
-      md:w-[70vw] md:max-w-[600px]
-      lg:w-[60vw] lg:max-w-[700px]
-      xl:w-[50vw] xl:max-w-[800px]
-      2xl:w-[40vw] 2xl:max-w-[900px]
-      max-h-[70vh] p-4
       "
       >
         <DialogHeader>
           <DialogTitle>
-            {`${isEditingMode ? 'Edit' : 'Create'} Content`}
+            {`${isEditingMode ? 'Edit' : 'Create'} Resource`}
           </DialogTitle>
         </DialogHeader>
-        <ScrollArea className="w-full">
-          <CreatePageContentForm />
-        </ScrollArea>
+        
+        <div className='m-4'>
+        <CreatePageContentForm />
+        </div>
+     
+        
       </DialogContent>
     </Dialog>
   );
@@ -131,9 +129,7 @@ export const CreatePageContentForm = ({}) => {
       children: [{ text: 'Hello, World!' }],
     },
   ]);
-  const [plateEditorKey, setPlateEditorKey] = useState<string>(
-    JSON.stringify(plateEditor)
-  );
+
   //   const searchParams = useSearchParams();
   const pageId = currentUserPage?.pageId;
   const pageType = currentUserPage?.pageType;
@@ -145,19 +141,18 @@ export const CreatePageContentForm = ({}) => {
     submitPageContent,
     submitEditedPageContent,
     isCreatePageContentSuccess,
+    isEditPageContentLoading,
+    isCreatePageContentLoading
   } = usePageContent({
     pageDisplayURL,
   });
 
   const form = useForm({
-    resolver: zodResolver(pageContentSchema),
+    resolver: zodResolver(createPageContentResourceSchema(isEditingMode as boolean)),
     defaultValues: existingPageContent || {
       pageContentName: '',
-      pageContentDisplayURL: '',
-      pageContentDisplayImage: undefined,
       pageContentResource: undefined,
       isPageContentHidden: false,
-      editorContent: plateEditor,
     },
   });
 
@@ -195,15 +190,15 @@ export const CreatePageContentForm = ({}) => {
       // @ts-ignore
       let pageContent: IPageContentItem = {
         pageContentName: data.pageContentName,
-        pageContentDisplayImage: data.pageContentDisplayImage,
+        // pageContentDisplayImage: data.pageContentDisplayImage,
         pageContentResource: data.pageContentResource,
         isPageContentHidden: data.isPageContentHidden,
         pageContentDisplayURL: data.pageContentDisplayURL,
-        editorContent: plateEditor,
+        // editorContent: plateEditor,
         pageId: pageId as string,
         pageName: pageName,
         pageType: pageType ? pageType : '',
-        href: `${pageName}/${data.pageContentDisplayURL}`,
+        // href: `${pageName}/${data.pageContentDisplayURL}`,
         userId: (uiId && uiId) as string,
       };
       await submitPageContent(pageContent);
@@ -235,7 +230,7 @@ export const CreatePageContentForm = ({}) => {
     <>
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="">
-          <div className={`space-y-6 mb-10 min-h-screen }`}>
+          <div className={`space-y-6 mb-10 }`}>
             {canEdit && (
               <>
                 <FormField
@@ -267,13 +262,13 @@ export const CreatePageContentForm = ({}) => {
                     />
                   )} */}
 
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="pageContentDisplayImage"
                   label="Display Image"
                   placeholder=""
                   type="picture"
-                />
+                /> */}
 
                 {pageType == EPageType.ResList && (
                   <FormField
@@ -291,7 +286,7 @@ export const CreatePageContentForm = ({}) => {
                   placeholder="Hide this Content"
                   type="checkbox"
                 />
-                {pageType != EPageType.ResList && (
+                {/* {pageType != EPageType.ResList && (
                   <PlateEditor
                     key={plateEditorKey}
                     value={plateEditor}
@@ -299,7 +294,7 @@ export const CreatePageContentForm = ({}) => {
                       setPlateEditor(value);
                     }}
                   />
-                )}
+                )} */}
               </>
             )}
             {canEdit && (
@@ -307,7 +302,7 @@ export const CreatePageContentForm = ({}) => {
                 <LoadingButton
                   className=""
                   buttonText={`${isEditingMode ? 'Save Changes' : 'Post'}`}
-                  loading={false}
+                  loading={isEditingMode ?  isEditPageContentLoading : isCreatePageContentLoading}
                 />
               </div>
             )}

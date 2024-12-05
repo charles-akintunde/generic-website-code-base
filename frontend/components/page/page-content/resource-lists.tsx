@@ -5,16 +5,18 @@ import { IPageContentMain } from '../../../types/componentInterfaces';
 import usePage from '../../../hooks/api-hooks/use-page';
 import { usePathname } from 'next/navigation';
 import ContentList from '../../common/content-list/content-list';
-import ResourceListCard from './resource-list-card';
+import ResourceTableList from './resource-table-list';
 import { useAppSelector } from '../../../hooks/redux-hooks';
+import ContentTableList from '../../common/content-list/content-table-list';
 
 const ResourceLists = () => {
   const pathname = usePathname();
-  const [pageName, setPageName] = useState(pathname.split('/')['1']);
+  const [pageDisplayURL, setPageName] = useState(pathname.split('/')['1']);
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
-  const { currentPage } = usePage({ pageName });
+  const { currentPage } = usePage({ pageName: pageDisplayURL });
   const page = currentPage;
+  const pageName = page?.pageName;
   const pageType = (page && page?.pageType) ?? '';
   const createPageHref = (pageNameKebab: string, queryString: string) =>
     `/${pageNameKebab}/create-page-content?${queryString}`;
@@ -22,28 +24,14 @@ const ResourceLists = () => {
   const pageId = page?.pageId ?? '';
   const pageContents: IPageContentMain[] =
     (page?.pageContents as IPageContentMain[]) ?? [];
-  const queryParams = {
-    pageName: pageName,
-    pageType: pageType,
-    pageId: pageId,
-  };
-  const queryString = new URLSearchParams(queryParams).toString();
 
   return (
-    <ContentList
-      isResourcePage={true}
-      pageType={page?.pageType ?? ''}
-      pageId={pageId}
-      pageName={page?.pageName ?? ''}
-      pageContents={pageContents}
-      canEdit={canEdit}
-      queryString={queryString}
-      pageNameKebab={pageNameKebab}
-      //@ts-ignore
-      ListCardComponent={ResourceListCard}
-      createPageHref={createPageHref}
-      emptyDescription={`No content for ${page?.pageName.toLowerCase()}`}
-    />
+  <ContentTableList
+  pageDisplayURL={pageDisplayURL}
+  pageId={pageId}
+  pageName={pageName as string}
+  pageType={pageType}
+  />
   );
 };
 

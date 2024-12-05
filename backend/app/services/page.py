@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.schemas.page import GetPageRequest, PageCreate, PageMultipleContent, PageResponse, PageUpdateRequest, PagesResponse
 from app.crud.page import page_crud
 from app.crud.user_info import user_crud
+from app.crud.page_content import page_content_crud
 from app.models.enums import E_UserRole
 from app.models.page import T_Page
 from app.core.auth import get_current_user_without_exception
@@ -138,6 +139,8 @@ def get_page(
         pg_page_number=pg_page_number,
         pg_offset= pg_offset)
     
+    page_content_count = page_content_crud.get_total_pages_content_count(db=db, page_id=existing_page.PG_ID)
+    
     if not existing_page:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -166,7 +169,8 @@ def get_page(
             PG_Name=str(existing_page.PG_Name),
             PG_DisplayURL=str(existing_page.PG_DisplayURL),
             PG_Permission=[role.value for role in existing_page.PG_Permission],   # Assuming this is already a list of E_UserRole # type: ignore
-            PG_PageContents=converted_page_contents if converted_page_contents else []
+            PG_PageContents=converted_page_contents if converted_page_contents else [],
+            PG_TotalPageContents=page_content_count
         )
     return existing_page
 

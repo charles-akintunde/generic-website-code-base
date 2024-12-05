@@ -38,7 +38,8 @@ interface ContentListProps {
   queryString: string;
   pageNameKebab: string;
   ListCardComponent: React.FC<{
-    pageContent: IPageContentMain;
+    pageContent?: IPageContentMain ;
+    pageContents?: IPageContentMain[] ;
     pageName: string;
   }>;
   pageId: string;
@@ -138,6 +139,7 @@ const ContentList: React.FC<ContentListProps> = ({
       const responseData = pageContentsData.data;
       const dynamicPage = normalizeMultiContentPage(responseData, false);
       const newPageContents = dynamicPage.pageContents as IPageContentMain[];
+      console.log(responseData,"RES")
       //  console.log(newPageContents, 'newPageContents');
       //@ts-ignore
       dispatch(addPageContents(newPageContents));
@@ -228,8 +230,16 @@ const ContentList: React.FC<ContentListProps> = ({
           )}
         </header>
         {sortedPageContents && sortedPageContents.length > 0 ? (
-          <div className={`grid ${className}`}>
-            {sortedPageContents
+          <>
+            {pageType == EPageType.ResList ? (
+              <>
+                <ListCardComponent
+                  pageName={pageName}
+                  // @ts-ignore
+                  pageContents={sortedPageContents}
+                />
+            </>) : (<div className={`grid ${className}`}>
+              {sortedPageContents
               .filter(
                 (pageContent) => canEdit || !pageContent.isPageContentHidden
               )
@@ -240,8 +250,9 @@ const ContentList: React.FC<ContentListProps> = ({
                   // @ts-ignore
                   pageContent={pageContent}
                 />
-              ))}
-          </div>
+              ))}</div>)}
+          
+          </>
         ) : (
           <Empty
             description="No content available"

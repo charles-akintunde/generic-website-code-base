@@ -12,6 +12,7 @@ export interface Page {
   PC_ReadingTime?: string;
   PG_PageContents?: IPageContentResponse[];
   PG_PageContent?: IPageContentResponse;
+  PG_TotalPageContents: number
 }
 
 export interface IUsersPageContents {

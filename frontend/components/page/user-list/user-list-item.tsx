@@ -30,6 +30,7 @@ import { UserRoleStatusDialog } from '../../common/form/user-profile-form';
 import { useGetUsersQuery } from '../../../api/userApi';
 import { useUserInfo } from '../../../hooks/api-hooks/use-user-info';
 import AppLoading from '../../common/app-loading';
+import { PinLeftIcon } from '@radix-ui/react-icons';
 
 const UserListItem = () => {
   const [pagination, setPagination] = useState({
@@ -89,49 +90,59 @@ const UserListItem = () => {
   };
 
   const userColumns = [
-    {
-      title: 'Name',
-      dataIndex: 'uiFirstName',
-      fixed: 'left',
-      key: 'userName',
-      render: (_: any, record: IUserBase) => (
-        <div className="flex space-x-2 justify-start text-left items-center">
-          <Avatar
-            src={record.uiPhoto as string}
-            className="text-gray-700"
-            style={{ backgroundColor: '#d9d9d9' }}
-          >
-            {record.uiFirstName[0]}
-            {record.uiLastName[0]}
-          </Avatar>
-          <Tooltip
-            placement="left"
-            title={`${record.uiFirstName} ${record.uiLastName}`}
-          >
-            <a
-              href={`/profile/${record.uiUniqueURL}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-blue-500 space-x-1 text-left flex items-center text-gray-700"
-            >
-              <span className="font-medium truncate w-20 text-nowrap">
-                {record.uiFirstName} {record.uiLastName}
-              </span>
-              <ExternalLink className="h-3 w-3 text-blue-500" />
-            </a>
-          </Tooltip>
-        </div>
-      ),
-    },
+{
+  title: 'Name',
+  dataIndex: 'uiFirstName',
+  fixed: 'left',
+  width: 400, 
+  key: 'userName',
+  render: (_: any, record: IUserBase) => (
+    <div className="flex space-x-2 justify-start items-center text-left">
+      {/* Avatar */}
+      <Avatar
+        src={record.uiPhoto as string}
+        className="text-gray-700 flex-shrink-0" 
+        style={{ backgroundColor: '#d9d9d9' }}
+      >
+        {record.uiFirstName[0]}
+        {record.uiLastName[0]}
+      </Avatar>
+
+      <Tooltip
+        placement="left"
+        title={`${record.uiFirstName} ${record.uiLastName}`}
+      >
+        <a
+          href={`/profile/${record.uiUniqueURL}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-primary flex items-center text-gray-700 w-full"
+        >
+         
+          <span className="font-medium truncate overflow-hidden text-ellipsis whitespace-nowrap">
+            {record.uiFirstName} {record.uiLastName}
+          </span>
+         
+          <ExternalLink className="h-3 w-3 text-primary flex-shrink-0 ml-1" />
+        </a>
+      </Tooltip>
+    </div>
+  ),
+},
+    
+    ,
     {
       title: 'Email',
       dataIndex: 'uiEmail',
       key: 'email',
+      fixed: 'left',
+      width: 300
     },
     {
       title: 'Role',
       dataIndex: 'uiRole',
       key: 'role',
+      width: 150,
       render: (roles: EUserRole[]) => (
         <div className="flex gap-1 flex-wrap ">
           {roles.map((role, index) => (
@@ -160,24 +171,32 @@ const UserListItem = () => {
       title: 'Position',
       dataIndex: 'uiMemberPosition',
       key: 'memberPosition',
+      width:200,
       render: (position: EMemberPosition) => (
-        <Badge
-          className={`${classNames(positionColors[position])} cursor-pointer hover:bg-inherit ${transitionStyles}`}
-        >
-          {memberPositionLabels[position]}
-        </Badge>
+        <>
+        {position &&
+            <Badge
+            className={`${classNames(positionColors[position])} cursor-pointer hover:bg-inherit ${transitionStyles}`}
+          >
+            {memberPositionLabels[position]}
+          </Badge>
+        }
+        </>
+      
       ),
     },
     {
       title: 'Reg Date',
       dataIndex: 'uiRegDate',
       key: 'regDate',
+
       render: (date: string) => formatDate(date),
     },
     {
       title: 'Actions',
       key: 'actions',
       fixed: 'right',
+      width: 100,
       render: (_: any, record: IUserBase) => (
         <ActionsButtons
           entity="user"

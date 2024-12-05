@@ -19,6 +19,7 @@ export interface IPageMain {
   pageDisplayURL?: string;
   pagePermission: string[];
   pageContents?: IPageContentItem[] | IPageContentMain[];
+  totalPageContents?: number;
   pageContent?: IPageContentMain;
   isHidden: boolean;
   href: string;

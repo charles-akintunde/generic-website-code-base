@@ -484,6 +484,7 @@ export const normalizeMultiContentPage = (
         pageContentCreatedAt: pageContent.PC_CreatedAt as string,
         pageContentLastUpdatedAt: pageContent.PC_LastUpdatedAt as string,
         editorContent: pageContent.PC_Content?.PC_Content,
+        
       };
     });
 
@@ -498,6 +499,8 @@ export const normalizeMultiContentPage = (
     isHidden: false,
     pageDisplayURL: `${response.PG_DisplayURL}`,
     href: `/${response.PG_DisplayURL}`,
+    totalPageContents: response.PG_TotalPageContents
+
   };
 };
 

@@ -134,6 +134,18 @@ class PageContentCRUD:
     ),  T_PageContent.PG_ID == page_id
 ).first()
  
+ def get_total_pages_content_count(self, db: Session, page_id) -> int:
+            """
+            Get the total count of pages content.
+
+            Args:
+                db (Session): Database session.
+
+            Returns:
+                int: Total count of pages content.
+            """
+            return db.query(T_PageContent).filter(T_PageContent.PG_ID == page_id).count()
+ 
  def get_page_content_by_display_url(
        self, 
        db: Session, 

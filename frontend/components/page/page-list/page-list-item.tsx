@@ -72,6 +72,7 @@ const PageListItem: React.FC = () => {
       title: 'Page Name',
       dataIndex: 'pageName',
       key: 'pageName',
+      width: 400,
       fixed: 'left',
       render: (text: string, record: IPageMain) => (
         <Tooltip placement="left" title={`${text}`}>
@@ -79,18 +80,23 @@ const PageListItem: React.FC = () => {
             href={record.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-primary flex items-center space-x-2"
+            className="hover:text-primary flex items-center"
           >
-            <p className="font-medium truncate w-30"> {text}</p>
-            <ExternalLink className="h-3 w-3" />
+            <div className="flex items-center space-x-1 w-full">
+              <p className="font-medium truncate overflow-hidden text-ellipsis whitespace-nowrap max-w-full">
+                {text}
+              </p>
+              <ExternalLink className="h-3 w-3 flex-shrink-0" />
+            </div>
           </a>
         </Tooltip>
-      ),
+      )
     },
     {
       title: 'Type',
       dataIndex: 'pageType',
       key: 'pageType',
+      width: 200,
       render: (type: EPageType) => (
         <Badge className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-blue-100 bg-opacity-50 text-blue-400 px-2 py-1 hover:bg-blue-100 hover:bg-opacity-50">
           {pageTypeLabels[type]}
@@ -101,13 +107,14 @@ const PageListItem: React.FC = () => {
       title: 'Permissions',
       dataIndex: 'pagePermission',
       key: 'pagePermission',
+      width: 350,
       render: (roles: EUserRole[]) => (
         <div className="flex gap-1 flex-wrap ">
           {roles.map((role, index) => (
             <Badge
               key={index}
               className="mr-2 mb-2 lg:mr-4 lg:mb-0 bg-gray-200 bg-opacity-50 text-gray-500 px-2 py-1 hover:bg-gray-200 hover:bg-opacity-50"
-              variant="secondary"
+              // variant="secondary"
             >
               {userRoleLabels[role]}
             </Badge>
@@ -119,6 +126,7 @@ const PageListItem: React.FC = () => {
       title: 'Actions',
       key: 'actions',
       fixed: 'right',
+      width: 100,
       render: (_: any, record: IPageMain) => (
         <>
           {canEdit && (

@@ -102,7 +102,7 @@ def get_page_columns(pg_display_url: str, db: Session = Depends(get_db)):
 async def get_page_with_offset_endpoint(
     page_display_url: str, 
     pg_page_number: int = Query(1),
-    pg_offset: int = Query(8),
+    pg_page_offset: int = Query(8),
     db: Session = Depends(get_db), 
     current_user: Optional[T_UserInfo] = Depends(get_current_user_without_exception)):
     """
@@ -120,7 +120,7 @@ async def get_page_with_offset_endpoint(
         existing_page = get_page(
             db=db, 
             pg_page_number=pg_page_number,
-            pg_offset = pg_offset,
+            pg_offset = pg_page_offset,
             page_display_url=decoded_page_display_url,
             current_user=current_user)
         return success_response(message="Page fetched successfully", data=existing_page.model_dump())

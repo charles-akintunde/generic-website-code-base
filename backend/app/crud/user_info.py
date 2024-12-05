@@ -31,7 +31,7 @@ class UserCRUD:
         """
         user = db.query(T_UserInfo).filter(T_UserInfo.UI_ID == user_id).first()
 
-        print(update_data,"update_data")
+
         if user:
             for key, value in update_data.items():
                 # if value is None:
@@ -45,10 +45,15 @@ class UserCRUD:
         """
         Update the user's profile.
         """
+        print(update_data,"update_data")
         if user:
+            update_data.pop("UI_ID", None)
             for key, value in update_data.items():
-                if value is None:
+                
+                if value is None or value == "":
                     continue
+                if value == "_EMPTY_":
+                    value = ""
                 setattr(user, key, value)
             db.commit()
             db.refresh(user)

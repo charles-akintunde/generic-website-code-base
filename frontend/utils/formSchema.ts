@@ -182,7 +182,7 @@ const fileSchema = z.union([docFileSchema, urlSchema]);
 export const pageContentSchema = z.object({
   pageContentName: requiredTextSchemaAllowDash('Content Name').max(
     200,
-    `Page Name must be at most 100 characters long`
+    `Page Name must be at most 200 characters long`
   ),
   pageContentDisplayImage: imageSchema,
   pageContentCreatedAt: z
@@ -198,6 +198,27 @@ export const pageContentSchema = z.object({
   editorContent: plateJsSchema.optional(),
   isPageContentHidden: z.boolean().default(false),
 });
+
+export const createPageContentResourceSchema = (isEditingMode: boolean) =>
+  z.object({
+    pageContentName: requiredTextSchemaAllowDash("Content Name").max(
+      200,
+      `Page Name must be at most 200 characters long`
+    ),
+    pageContentCreatedAt: z
+      .union([z.date(), z.string()])
+      .transform((val) => (typeof val === "string" ? new Date(val) : val))
+      .optional(),
+    pageContentUsersId: z.array(z.string()).optional(),
+    pageContentResource: fileSchema.optional().refine(
+      (val) => isEditingMode || !!val,
+      {
+        message: "Page Content Resource is required",
+      }
+    ),
+    editorContent: plateJsSchema.optional(),
+    isPageContentHidden: z.boolean().default(false),
+  });
 
 export const pageContentSchemaEdit = z.object({
   pageContentName: requiredTextSchemaAllowDash('Content Name').max(
