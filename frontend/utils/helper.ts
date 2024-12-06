@@ -661,16 +661,16 @@ export const handleRoutingOnError = (
   if (hasError && error) {
     switch (error.status) {
       case 404:
-        router.replace('/404');
+        router.replace('/error?type=404');
         break;
       case 500:
-        router.replace('/internal-server-error'); 
+        router.replace('/error?type=internal-server-error'); 
         break;
       case 307:
         //
         break;
       default:
-        router.replace('/access-denied');
+        router.replace('/error?type=access-denied');
     }
 
     if (clearState) {

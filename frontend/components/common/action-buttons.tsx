@@ -14,6 +14,7 @@ interface IActionProps {
   handleEditButtonClick: (record: any) => void;
   handleRemove: (recordId: any) => void;
   hasAccess?: boolean;
+  hideDeleteButton?: boolean
 }
 
 const ActionsButtons: React.FC<IActionProps> = ({
@@ -23,6 +24,7 @@ const ActionsButtons: React.FC<IActionProps> = ({
   handleEditButtonClick,
   handleRemove,
   hasAccess = true,
+  hideDeleteButton = false
 }) => {
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
@@ -30,6 +32,8 @@ const ActionsButtons: React.FC<IActionProps> = ({
   if (!(canEdit && hasAccess)) {
     return <></>;
   }
+
+  console.log(hideDeleteButton,"hideDeleteButton")
 
   return (
     <div className="flex gap-1 items-center">
@@ -67,6 +71,7 @@ const ActionsButtons: React.FC<IActionProps> = ({
                 </>
               )}
             </Button>
+            {hideDeleteButton && (
             <AppPopconfirm
               entity={entity}
               onDelete={() => handleRemove(record)}
@@ -78,7 +83,7 @@ const ActionsButtons: React.FC<IActionProps> = ({
                 <DeleteOutlined className="w-4 h-4" />
                 <span className="text-sm font-medium">Delete</span>
               </Button>
-            </AppPopconfirm>
+            </AppPopconfirm>)}
           </div>
         </PopoverContent>
       </Popover>

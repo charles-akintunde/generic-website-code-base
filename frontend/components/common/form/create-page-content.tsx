@@ -89,7 +89,7 @@ export const CreatePageContentModal = ({
         >
           <span>
             <PlusIcon className="mr-2 h-4 w-4" />
-            {`Create Resource`}
+            {`Create Content`}
           </span>
         </Button>
       </DialogTrigger>

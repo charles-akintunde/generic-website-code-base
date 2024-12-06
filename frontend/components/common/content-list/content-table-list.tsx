@@ -11,6 +11,7 @@ import ResourceListTable from '../../page/page-content/resource-table-list';
 import { CreatePageContentModal } from '../form/create-page-content';
 import { containerNoFlexPaddingStyles } from '../../../styles/globals';
 import { TablePaginationConfig } from 'antd';
+import { useRouter } from 'next/navigation';
 
 interface ContentListProps {
   pageDisplayURL: string;
@@ -32,15 +33,16 @@ const ContentTableList: React.FC<ContentListProps> = ({pageDisplayURL, pageId,pa
   const [totalPageContents, setTotalPageContents] = useState<number>();
   const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
   const canEdit = uiActiveUser ? uiActiveUser.uiCanEdit : false;
+  const pathname = usePathname();
+  const router = useRouter();
   const [currentPageConfig, setCurrentPageConfig] = useState<IPageConfig>({
     currentPage: 1,
     pageOffSet: 10
   });
 
-  console.log(currentPageConfig, "currentPageConfig")
   
 
-  const { data: pageContentsData, isLoading: isPageContentFetchLoading } =
+  const { data: pageContentsData, isError:hasPageContentFetchError,error: pageContentFetchError,isLoading: isPageContentFetchLoading } =
     useGetPageWithPaginationQuery(
       {
         PG_DisplayURL: pageDisplayURL ?? '',
@@ -84,6 +86,15 @@ const ContentTableList: React.FC<ContentListProps> = ({pageDisplayURL, pageId,pa
 
 
   }, [pageContentsData, dispatch, isPageContentFetchLoading]);
+
+  
+  useEffect(() => {
+    handleRoutingOnError(
+      router,
+      hasPageContentFetchError,
+      pageContentFetchError
+    );
+  }, [hasPageContentFetchError, pageContentFetchError, pathname]);
 
   if (isPageContentFetchLoading) {
     return <AppLoading />;

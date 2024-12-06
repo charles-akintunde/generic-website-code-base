@@ -35,6 +35,8 @@ const DynamicPage = () => {
   const pageFetchError = fetchedSinglePageData?.pageFetchError;
   const pageName = fetchedPage && (fetchedPage.pageName as string);
 
+  console.log(fetchedPage,"FTAEHED PAGES")
+
   useEffect(() => {
     if (hasPageFetchError) {
       handleRoutingOnError(

@@ -507,7 +507,7 @@ const EditPageContent = () => {
     <>
       {isPageContentFetchSuccess && originalData ? (
         <PageListLayout pageContent={originalData}>
-          <div className={`flex flex-col min-h-screen w-full }`}>
+          <div className={`flex flex-col w-full }`}>
             <FormProvider {...form}>
             <div className="flex my-6 justify-end">
               {
@@ -521,7 +521,7 @@ const EditPageContent = () => {
           
           </div>
               <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div className={`space-y-6 mb-10 min-h-screen `}>
+                <div className={`space-y-6 mb-10 `}>
                   <>
                     {canEdit && uiIsAdminInEditingMode && (
                       <>
@@ -626,6 +626,17 @@ const PageList = () => {
   const pathname = usePathname();
   const page = pathname.split('/');
   const pageContentName = page[2];
+  const router = useRouter();
+
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+
+  const canEdit = uiActiveUser.uiCanEdit;
+
+  useEffect(() => {
+    if(!canEdit){
+      router.replace('/error?type=access-denied')
+    }
+  },[])
 
   if (pageContentName === 'create-page-content') {
     return <CreatePageContent />;

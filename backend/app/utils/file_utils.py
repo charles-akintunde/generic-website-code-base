@@ -39,7 +39,7 @@ async def save_file_to_azure(file: UploadFile, delimiter: str = '-') -> str:
     """
     try:
         if is_production:
-            unique_filename = f"{uuid.uuid4()}{delimiter}{file.filename}"
+            unique_filename = f"{uuid.uuid4()}"
             blob_client = blob_service_client.get_blob_client(container=container_name, blob=unique_filename)
             
             content_type = file.content_type
@@ -101,7 +101,7 @@ async def save_file(file: UploadFile, folder: str = 'static/uploads', delimiter:
     """
     os.makedirs(folder, exist_ok=True)
     file_name, file_extension = os.path.splitext(file.filename or '')
-    unique_filename = f"{file_name}{delimiter}{uuid.uuid4()}{file_extension}"
+    unique_filename = f"{uuid.uuid4()}{file_extension}"
     file_path = os.path.join(cwd,'app',folder, unique_filename)
 
     with open(file_path, "wb") as buffer:

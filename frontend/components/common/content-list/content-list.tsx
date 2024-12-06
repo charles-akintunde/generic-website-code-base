@@ -73,6 +73,7 @@ const ContentList: React.FC<ContentListProps> = ({
     (state: RootState) => state.page.pageContents
   );
 
+
   const visiblePageContents = fetchedPageContents.filter(
     (content: any) => !content.deleted
   );

@@ -45,7 +45,6 @@ class UserCRUD:
         """
         Update the user's profile.
         """
-        print(update_data,"update_data")
         if user:
             update_data.pop("UI_ID", None)
             for key, value in update_data.items():

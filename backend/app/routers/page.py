@@ -14,7 +14,7 @@ from app.schemas.page import GetPageRequest, PageCreate, PageResponse, PageUpdat
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.database import get_db
 from app.core.auth import get_current_user, get_current_user_without_exception
-from app.utils.utils import is_super_admin
+from app.utils.utils import is_admin, is_super_admin
 from app.models.user_info import T_UserInfo
 from app.services.page import create_new_page, delete_page, get_page, get_page_specific_columns_by_display_url, get_pages, get_pages_with_offset, update_page
 from app.utils.response import error_response, success_response
@@ -40,7 +40,7 @@ async def create_page_endpoint(
     Returns
         StandardResponse.
     """
-    is_super_admin(current_user=current_user)
+    is_admin(current_user=current_user)
     try: 
         new_page =await create_new_page(db,page, current_user)
         return success_response("Page create successfully")
@@ -162,7 +162,7 @@ async def get_pages_with_offset_endpoint(
         StandardResponse: The response indication the result of the operation.
     """
     try:
-        is_super_admin(current_user)
+        is_admin(current_user)
         pages_response = get_pages_with_offset(db = db, pg_page_number=pg_page_number, pg_page_limit=pg_page_limit)
         return success_response(data = pages_response.model_dump(), message='Pages fetched successfully')
     except HTTPException as e:

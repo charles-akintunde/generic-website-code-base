@@ -13,8 +13,10 @@ from app.utils.file_utils import  delete_and_save_file_azure, delete_file_from_a
 from app.utils.response_json import build_page_content_json_with_excerpt, build_transform_user_to_partial_json, build_user_page_content_json, create_user_page_content_response, create_user_response, create_users_response
 from app.models.enums import E_MemberPosition, E_UserRole
 from app.core.auth import get_current_user
-from app.utils.utils import generate_unique_url, is_admin, is_super_admin
+from app.utils.utils import check_user_role, generate_unique_url, is_admin, is_super_admin
 from app.crud import page
+from datetime import datetime
+
 
 
 
@@ -96,7 +98,6 @@ def update_user_role_status(db: Session, user_role_status_update: UserRoleStatus
     ):
         update_data["UI_MemberPosition"] = None
 
-    print(user_role_status_update,"user_role_status_update")
     
     user = user_crud.update_user_role_status(
         db, 
@@ -283,12 +284,14 @@ def get_user_by_id(db: Session, user_id, pg_offset: Optional[int] = 8, pg_page_n
 
 
 
-def get_user_by_url(db: Session, user_url, pg_offset: Optional[int] = 10, pg_page_number: Optional[int] = 1):
+def get_user_by_url(db: Session,  current_user: T_UserInfo, user_url: str, pg_offset: Optional[int] = 10, pg_page_number: Optional[int] = 1,):
     """
     Retrieve a user by their URL from the database.
     """
     pg_offset = pg_offset or 8
     pg_page_number = pg_page_number or 1
+    user_roles = (current_user.UI_Role if current_user else [E_UserRole.Public])
+    current_time = datetime.now()
 
     # Fetch user from the database
     user_fetched = user_crud.get_user_by_url(db=db, user_url=user_url)
@@ -298,7 +301,11 @@ def get_user_by_url(db: Session, user_url, pg_offset: Optional[int] = 10, pg_pag
             detail=f'User with URL {user_url} not found.'
         )
     
-    user_page_contents = user_fetched.UI_UsersPageContents
+    user_page_contents =  [
+        content for content in user_fetched.UI_UsersPageContents
+        if check_user_role(user_roles, [E_UserRole.SuperAdmin, E_UserRole.Admin]) or
+           (not content.PC_IsHidden and content.PC_CreatedAt <= current_time)
+    ]
     total_page_content_count = len(user_page_contents)
 
     total_pages = (total_page_content_count + pg_offset - 1) // pg_offset  # Ceiling division
@@ -321,6 +328,11 @@ def get_user_by_url(db: Session, user_url, pg_offset: Optional[int] = 10, pg_pag
 
     transformed_user_page_contents = []
     for user_page_content in paginated_user_page_contents:
+        if not check_user_role(user_roles, [E_UserRole.SuperAdmin, E_UserRole.Admin]): 
+            print(user_page_content.PC_CreatedAt , current_time)
+            if user_page_content.PC_IsHidden or user_page_content.PC_CreatedAt > current_time:
+
+                continue
         user = user_crud.get_user_by_id(db=db, user_id=user_page_content.UI_ID)
         existing_page = page.page_crud.get_page_by_id(db=db, page_id=user_page_content.PG_ID)
         transformed_content = build_page_content_json_with_excerpt(

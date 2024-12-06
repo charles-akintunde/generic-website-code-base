@@ -8,7 +8,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile, status
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.core.auth import get_current_user
+from app.core.auth import get_current_user, get_current_user_without_exception
 from app.schemas.response import StandardResponse
 from app.schemas.user_info import UserDelete, UserProfileUpdate, UserRoleStatusUpdate, UserStatusUpdate
 from app.utils.utils import is_admin, is_super_admin
@@ -224,7 +224,7 @@ async def get_users_endpoint(
     current_user: T_UserInfo = Depends(get_current_user)
   ):
     try:
-        is_super_admin(current_user)
+        is_admin(current_user)
         users_response = get_users(db=db, page=page, limit=limit)
         return success_response(data = users_response.model_dump(), message='Users fetched successfully')
     except HTTPException as e:
@@ -255,7 +255,7 @@ async def get_member_users_endpoint(
     
 @router.get("/{user_url}", response_model=StandardResponse)
 async def get_user_endpoint( user_url: str, pg_page_number: int = Query(1),
-    pg_offset: int = Query(10), db: Session = Depends(get_db)):
+    pg_offset: int = Query(10), db: Session = Depends(get_db), current_user: T_UserInfo = Depends(get_current_user_without_exception)):
     """
     Fetch user details by user ID.
 
@@ -272,7 +272,7 @@ async def get_user_endpoint( user_url: str, pg_page_number: int = Query(1),
         HTTPException: If the user is not found or any other error occurs.
     """
     try:
-        user_response = get_user_by_url(db=db,user_url=user_url, pg_page_number=pg_page_number, pg_offset=pg_offset)
+        user_response = get_user_by_url(db=db,current_user=current_user,user_url=user_url, pg_page_number=pg_page_number, pg_offset=pg_offset)
         return success_response(data= user_response.model_dump(), message="User fetched successfully.")
     except HTTPException as e:
         return error_response(message=e.detail,status_code=e.status_code)

@@ -47,7 +47,7 @@ const PageListLayout: React.FC<PageListLayoutProps> = ({
             <div className="flex items-center mb-4">
               {/* <Avatar size="large" icon={<UserOutlined />} /> */}
               <div className="">
-               <div className="font-medium"> {'Posted by'} {creatorFullName}</div>
+               <div className="font-medium text-sm"> <span className='text-gray-500'>{'posted by'}</span> {creatorFullName}</div>
                 <div className="text-gray-500 text-sm">
                  {'on'} {createdAt} ({estimatedReadTime} min{estimatedReadTime > 1 ? 's' : ''} read)
                   

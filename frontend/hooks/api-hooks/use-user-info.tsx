@@ -224,7 +224,7 @@ export const useUserInfo = () => {
           : undefined,
       },)
 
-      if (uiActiveUser.uiIsSuperAdmin && !isSameUser) {
+      if (uiActiveUser.uiCanEdit) {
         const response = await editRoleAndStatus({
           UI_ID: userId,
           UI_Role: roles.length == 0 ? undefined : roles,
@@ -241,7 +241,8 @@ export const useUserInfo = () => {
           'success'
         );
       } else {
-        notify('Notice', 'You are not permitted to edit this user', 'warning');
+        
+        notify('Notice','You are not permitted to edit this user', 'warning');
       }
     } catch (error: any) {
       console.error('Error editing user:', error);

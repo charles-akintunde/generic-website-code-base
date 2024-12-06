@@ -100,6 +100,8 @@ const UserProfilePage = () => {
     handleRoutingOnError(router, hasUserFetchError, userFetchError);
   }, [hasUserFetchError, router, userFetchError]);
 
+  console.log(pageContents,"PAGE CONTENTS")
+
   if (isUserFetchLoading || !userInfo) {
     return <AppLoading />;
   }

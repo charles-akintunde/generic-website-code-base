@@ -27,7 +27,7 @@ def is_super_admin(current_user: T_UserInfo):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Only superadmin can access this route.")
     
 
-def is_admin(current_user: T_UserInfo, detail: str):
+def is_admin(current_user: T_UserInfo, detail: Optional[str]= "You do not have permission to delete this page"):
     """
     Check whether user is a super admin.
     """

@@ -55,8 +55,9 @@ const ResourceListTable: React.FC<PageContentTableProps> = ({
     {
       title: 'Page Content Name',
       dataIndex: 'pageContentName',
-      width: 300,
+      width: 500,
       key: 'pageContentName',
+      fixed: 'left',
       render: (text: string) => (
        
           <div className="flex items-center space-x-2">
@@ -88,6 +89,7 @@ const ResourceListTable: React.FC<PageContentTableProps> = ({
     {
       title: 'Download',
       key: 'download',
+      fixed: 'right',
       render: (_: any, record: IPageContentMain) => (
            <Link
             href={record?.href ? record?.href : ''} 
@@ -108,6 +110,7 @@ const ResourceListTable: React.FC<PageContentTableProps> = ({
     shouldShowActions && {
       title: 'Actions',
       key: 'actions',
+      fixed:'right',
       render: (_: any, pageContent: IPageContentMain) => (
         <ActionsButtons
           handleEditButtonClick={() => {
@@ -140,7 +143,6 @@ const ResourceListTable: React.FC<PageContentTableProps> = ({
   }));
 
 
-  console.log(tableData,"tableData")
   return (
     <section className="bg-gray-100 rounded-lg shadow-sm p-4 mt-4">
     <Table

@@ -54,6 +54,7 @@ const PageLists = () => {
       canEdit={canEdit}
       queryString={queryString}
       pageNameKebab={pageNameKebab}
+      //@ts-ignore
       ListCardComponent={PageListCard}
       createPageHref={createPageHref}
       emptyDescription={`No content for ${page?.pageName.toLowerCase()}`}

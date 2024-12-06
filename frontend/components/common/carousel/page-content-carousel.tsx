@@ -32,43 +32,42 @@ export const PageContentCarouselCard: React.FC<
 > = ({ pageContent }) => {
   const date = formatDate(pageContent.pageContentCreatedAt as string);
   return (
-    <div className="p-4 bg-white shadow-sm rounded-lg hover:shadow-md transition-shadow duration-300">
-      <Link href={pageContent.href}>
-        <img
-          className="w-full h-48 object-cover rounded-md transition-opacity duration-300 hover:opacity-90"
-          src={pageContent.pageContentDisplayImage as string}
-          alt={pageContent.pageContentName}
-        />
-      </Link>
+<div className="p-4 bg-white shadow-sm rounded-lg hover:shadow-md transition-shadow duration-300 h-[400px] flex flex-col justify-between">
+  <div>
+    <Link href={pageContent.href}>
+      <img
+        className="w-full h-48 object-cover rounded-md transition-opacity duration-300 hover:opacity-90"
+        src={pageContent.pageContentDisplayImage as string}
+        alt={pageContent.pageContentName}
+      />
+    </Link>
 
-      <Tooltip
-        placement="topLeft"
-        title={`Read: ${pageContent.pageContentName}`}
-      >
-        <div className="mt-4">
-          <Link href={pageContent.href}>
-            <h2 className="text-lg font-semibold transition-colors duration-300 hover:text-primary overflow-hidden text-ellipsis whitespace-nowrap">
-              {pageContent.pageContentName}
-            </h2>
-          </Link>
-        </div>
-      </Tooltip>
-
-      <div className="mt-2 h-20 text-sm text-gray-700 overflow-hidden text-ellipsis">
-        {pageContent.pageContentExcerpt}{' '}
+    <Tooltip placement="topLeft" title={`Read: ${pageContent.pageContentName}`}>
+      <div className="mt-4">
+        <Link href={pageContent.href}>
+          <h2 className="text-lg font-semibold transition-colors duration-300 hover:text-primary overflow-hidden text-ellipsis whitespace-nowrap">
+            {pageContent.pageContentName}
+          </h2>
+        </Link>
       </div>
+    </Tooltip>
 
-      <Link href={pageContent.href}>
-        <span className="text-primary text-sm mt-2 block hover:opacity-70 transition-opacity duration-300">
-          Read More
-        </span>
-      </Link>
-
-      <div className=" text-sm text-gray-500 mt-4">
-        <span>{date}</span> |
-        <span> {pageContent.pageContentReadingTime} min read</span>
-      </div>
+    <div className="mt-2 text-sm text-gray-700 overflow-hidden" style={{ maxHeight: '4rem' }}>
+      {pageContent.pageContentExcerpt}
     </div>
+
+    <Link href={pageContent.href}>
+      <span className="text-primary text-sm mt-2 block hover:opacity-70 transition-opacity duration-300">
+        Read More
+      </span>
+    </Link>
+  </div>
+
+  <div className="text-sm text-gray-500 mt-4">
+    <span>{date}</span> | <span>{pageContent.pageContentReadingTime} min read</span>
+  </div>
+</div>
+
   );
 };
 

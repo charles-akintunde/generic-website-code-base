@@ -204,7 +204,7 @@ const RouteGuard: React.FC<IRouteGuardProps> = ({ children }) => {
           pathname: `/${pathname.split('/')[1]}`,
         });
       if (!isValidRoute) {
-        router.replace('/404');
+        router.replace('/error?type=404');
       } else {
         // if (
         //   !hasPermission(

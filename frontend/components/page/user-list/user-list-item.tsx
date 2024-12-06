@@ -18,7 +18,7 @@ import {
 import classNames from 'classnames';
 import { useRouter } from 'next/navigation';
 import { IUserBase, IUserList } from '../../../types/componentInterfaces';
-import { useAppDispatch } from '../../../hooks/redux-hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux-hooks';
 import {
   setEditingUser,
   toggleCreateUserDialog,
@@ -53,6 +53,8 @@ const UserListItem = () => {
   const [users, setUsers] = useState<IUserBase[]>();
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const uiActiveUser = useAppSelector((state) => state.userSlice.uiActiveUser);
+  const isSuperAdmin = uiActiveUser.uiIsSuperAdmin;
 
   useEffect(() => {
     if (usersResponseData && usersResponseData.data) {
@@ -203,6 +205,7 @@ const UserListItem = () => {
           handleEditButtonClick={() => handleEditButtonClick(record)}
           handleRemove={handleRemoveUser}
           record={record}
+          hideDeleteButton={isSuperAdmin}
         />
       ),
     },

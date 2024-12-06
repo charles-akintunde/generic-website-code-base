@@ -2,6 +2,7 @@
     Manages CRUD operations for pages.
 """
 
+from datetime import datetime
 from typing import Any, List, Optional
 
 from fastapi import HTTPException, status
@@ -17,6 +18,7 @@ from app.schemas.page_content import PageContent, PageContentCreateRequest
 from app.crud.page_content import page_content_crud
 from urllib.parse import unquote
 from app.models.page_content import T_PageContent
+from app.utils.utils import check_user_role
 
 
 # class PageContent(BaseModel):
@@ -98,6 +100,7 @@ class PageCRUD:
             self, 
             db: Session,
             pg_display_url: str,
+            current_user_roles: Any,
             pg_offset: Optional[int] = 8,
             pg_page_number: Optional[int] = 1) -> T_Page:
         """
@@ -123,16 +126,26 @@ class PageCRUD:
         
         
         if page: 
+
+            page_contents_query = (
+            db.query(T_PageContent)
+            .filter(T_PageContent.PG_ID == page.PG_ID)
+            .order_by(T_PageContent.PC_CreatedAt.desc(), T_PageContent.PC_ID.asc())
+        )
+        
+            if not check_user_role(current_user_roles, [E_UserRole.SuperAdmin, E_UserRole.Admin]):
+                page_contents_query = page_contents_query.filter(
+                    ~T_PageContent.PC_IsHidden,  # Exclude hidden content
+                    T_PageContent.PC_CreatedAt <= datetime.now()  # Exclude future content
+                )
+        
             offset = (pg_page_number - 1) * valid_pg_offset
             page_contents = (
-            db.query(T_PageContent)
-            .filter(T_PageContent.PG_ID == page.PG_ID) 
-            .order_by(T_PageContent.PC_CreatedAt.desc())
-            .order_by(T_PageContent.PC_ID.asc())  
-            .offset(offset)  
-            .limit(limit) 
-            .all()
-        )
+                page_contents_query
+                .offset(offset)
+                .limit(valid_pg_offset)
+                .all()
+            )
             if not page_contents:
                 page.PG_PageContents = []  
             else:
@@ -249,7 +262,7 @@ class PageCRUD:
         Remove page content from db.
         """
         for page_content in page.PG_PageContents:
-            print(page_content,"page_conetnt")
+            (page_content,"page_conetnt")
             await page_content_crud.delete_page_content(db=db,page_content_to_delete=page_content)
   
     def update_page(self, db: Session, page_id, page_data) -> T_Page:
@@ -275,7 +288,7 @@ class PageCRUD:
         Delete page
         """
         try:
-            print(page,"THE PAGE")
+            (page,"THE PAGE")
             await  self.remove_page_content(db=db, page=page)
             db.delete(page)
             db.commit()

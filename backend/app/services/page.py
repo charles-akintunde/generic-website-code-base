@@ -131,21 +131,22 @@ def get_page(
         PageResponse: Page data with paginated content.
     """
     user_roles = (current_user.UI_Role if current_user else [E_UserRole.Public])
-    current_time = datetime.now()
 
     existing_page = page_crud.get_page_by_display_url_with_offest(
         db=db,
         pg_display_url=page_display_url,
+        current_user_roles=user_roles,
         pg_page_number=pg_page_number,
         pg_offset= pg_offset)
     
-    page_content_count = page_content_crud.get_total_pages_content_count(db=db, page_id=existing_page.PG_ID)
     
     if not existing_page:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Page with Display URL '{page_display_url}' was not found."
         )
+    page_content_count = page_content_crud.get_total_pages_content_count(db=db, page_id=existing_page.PG_ID)
+
 
     page_is_accessible_to: List[E_UserRole] = existing_page.PG_Permission  # type: ignore
 
@@ -156,9 +157,6 @@ def get_page(
     converted_page_contents = []
 
     for page_content in existing_page.PG_PageContents:
-        if not check_user_role(user_roles, [E_UserRole.SuperAdmin, E_UserRole.Admin]): # type: ignore
-            if page_content.PC_IsHidden or page_content.PC_CreatedAt > current_time:  
-                continue
         user = user_crud.get_user_by_id(db=db,user_id=page_content.UI_ID)
         converted_page_content = build_page_content_json_with_excerpt(page_content, user, page=existing_page)
         converted_page_contents.append(converted_page_content)
@@ -178,7 +176,6 @@ async def update_page(db: Session, page_id: str, page_update: PageUpdateRequest,
     """
     Service to update page.
     """
-    print(page_update,"page_update")
     existing_page = page_crud.get_page_by_id(db, page_id)
 
     if not existing_page:
@@ -227,7 +224,6 @@ async def delete_page(db: Session, page_id: str, user: T_UserInfo) -> bool:
         current_user=user,
         detail="You do not have permission to delete this page"
         )
-    print(existing_page,"existing_page")
     is_success = await page_crud.delete_page(
         db, 
         page=existing_page)

@@ -413,9 +413,7 @@ export const UserRoleStatusDialog = () => {
     dispatch(toggleCreateUserDialog());
   };
 
-  if (!uiIsSuperAdmin) {
-    return <></>;
-  }
+  
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
