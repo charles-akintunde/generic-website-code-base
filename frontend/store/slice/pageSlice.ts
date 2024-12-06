@@ -190,7 +190,6 @@ const pageSlice = createSlice({
         state.pageContents[existingIndex].deleted = true;
       }
 
-      console.log('FLAGGED AS DELETED');
     },
     addPageContents: (state, action: PayloadAction<IPageContentRecord[]>) => {
       const newContents = action.payload;
